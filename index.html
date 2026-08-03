@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>蜂乐玛运营系统中心</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div id="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">蜂</span>
+          <div>
+            <h1>蜂乐玛</h1>
+            <p>运营系统中心</p>
+          </div>
+        </div>
+
+        <label class="search">
+          <span>搜索</span>
+          <input id="searchInput" type="search" placeholder="页面 / 系统名称" />
+        </label>
+
+        <button id="overviewButton" class="overview-button is-active" type="button">
+          <span>业务总览</span>
+          <strong>工作台</strong>
+        </button>
+
+        <p class="nav-label">系统模块</p>
+        <nav id="systemNav" class="system-nav"></nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p id="systemType" class="eyebrow">加载中</p>
+            <h2 id="systemTitle">正在整理素材</h2>
+          </div>
+          <div class="toolbar">
+            <button id="systemButton" class="view-button is-active" type="button">系统</button>
+            <button id="gridButton" class="icon-button is-active" type="button" title="缩略图视图" aria-label="缩略图视图">
+              <span class="icon-grid"></span>
+            </button>
+            <button id="previewButton" class="icon-button" type="button" title="单页预览" aria-label="单页预览">
+              <span class="icon-preview"></span>
+            </button>
+            <a class="ghost-button" href="./prototype.html">进入系统原型</a>
+            <a id="openSource" class="ghost-button" target="_blank" rel="noreferrer">打开原型</a>
+          </div>
+        </header>
+
+        <section id="summary" class="summary"></section>
+
+        <section id="content" class="content"></section>
+      </main>
+    </div>
+
+    <template id="systemTemplate">
+      <button class="system-button" type="button">
+        <span class="system-name"></span>
+        <span class="system-count"></span>
+      </button>
+    </template>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

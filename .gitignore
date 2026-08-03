@@ -1,0 +1,15 @@
+# Dependencies and generated build output
+**/node_modules/
+**/dist/
+**/.vite/
+
+# Local operating-system and editor files
+.DS_Store
+*.swp
+*.swo
+
+# Runtime logs and local secrets
+*.log
+.env
+.env.*
+!.env.example

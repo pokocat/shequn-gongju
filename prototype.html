@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>蜂乐玛运营系统</title>
+    <link rel="stylesheet" href="./prototype.css" />
+  </head>
+  <body>
+    <div class="floating-entry">
+      <button id="systemEntry" type="button">切换端</button>
+      <div id="systemMenu" class="system-menu" hidden></div>
+    </div>
+
+    <div class="prototype-app" id="prototypeApp">
+      <aside class="pc-sidebar">
+        <div class="logo-block">
+          <span>蜂</span>
+          <div>
+            <strong>蜂乐玛</strong>
+            <em>私域运营中台</em>
+          </div>
+        </div>
+        <nav id="sideNav"></nav>
+        <a class="back-link" href="./index.html">运营首页</a>
+      </aside>
+
+      <main class="pc-main">
+        <header class="pc-header">
+          <div>
+            <p id="pageKicker">PC 后台</p>
+            <h1 id="pageTitle">总览</h1>
+          </div>
+          <div class="header-actions">
+            <input id="globalSearch" type="search" placeholder="搜索手机号 / 微信号 / 群名 / 用户" />
+            <button type="button" data-command="export">导出</button>
+            <button type="button" class="primary" data-command="create">新增</button>
+          </div>
+        </header>
+
+        <section id="pcContent"></section>
+      </main>
+    </div>
+
+    <script src="./prototype.js" type="module"></script>
+  </body>
+</html>

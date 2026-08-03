@@ -1,0 +1,1125 @@
+{
+  "generatedAt": "2026-07-01T18:25:00.391Z",
+  "systems": [
+    {
+      "id": "pc-backend",
+      "title": "PC端后台",
+      "type": "后台系统",
+      "screens": [
+        {
+          "title": "操作台-订单详情",
+          "path": "extracted_packages/pc_backend/操作台-订单详情 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "操作台-历史操作记录",
+          "path": "extracted_packages/pc_backend/操作台-历史操作记录 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "操作台正常状态",
+          "path": "extracted_packages/pc_backend/操作台正常状态 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "待处理任务点击详情",
+          "path": "extracted_packages/pc_backend/待处理任务点击详情 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "回访单-订单回访记录",
+          "path": "extracted_packages/pc_backend/回访单-订单回访记录 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "回访单-用户信息回访",
+          "path": "extracted_packages/pc_backend/回访单-用户信息回访 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "活动通知列表-草稿箱",
+          "path": "extracted_packages/pc_backend/活动通知列表-草稿箱 副本(1).png",
+          "kind": "desktop"
+        },
+        {
+          "title": "活动通知列表-草稿箱",
+          "path": "extracted_packages/pc_backend/活动通知列表-草稿箱 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "活动通知列表-已发布",
+          "path": "extracted_packages/pc_backend/活动通知列表-已发布 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服管理",
+          "path": "extracted_packages/pc_backend/客服管理 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服管理 新建客服信息",
+          "path": "extracted_packages/pc_backend/客服管理 新建客服信息 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服信息 展示",
+          "path": "extracted_packages/pc_backend/客服信息 展示 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "链接页面",
+          "path": "extracted_packages/pc_backend/链接页面 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信管理",
+          "path": "extracted_packages/pc_backend/微信管理 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信管理 新建微信号",
+          "path": "extracted_packages/pc_backend/微信管理  新建微信号 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理",
+          "path": "extracted_packages/pc_backend/微信群管理 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理 入群人名单列表",
+          "path": "extracted_packages/pc_backend/微信群管理 入群人名单列表 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理 新建微信群",
+          "path": "extracted_packages/pc_backend/微信群管理  新建微信群 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "我发布的的（可修改备注）",
+          "path": "extracted_packages/pc_backend/我发布的的（可修改备注） 副本(1).png",
+          "kind": "desktop"
+        },
+        {
+          "title": "我发布的的（可修改备注）",
+          "path": "extracted_packages/pc_backend/我发布的的（可修改备注） 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "我回访的",
+          "path": "extracted_packages/pc_backend/我回访的 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "新建活动-富文本编辑",
+          "path": "extracted_packages/pc_backend/新建活动-富文本编辑 副本.png",
+          "kind": "desktop"
+        }
+      ]
+    },
+    {
+      "id": "backend-order-service-member",
+      "title": "后台运营：订单 / 客服 / 会员",
+      "type": "后台系统",
+      "screens": [
+        {
+          "title": "帮助与引导",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/帮助与引导 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "绑定手机-验证错误",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/绑定手机-验证错误.png",
+          "kind": "phone"
+        },
+        {
+          "title": "操作台-订单详情",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/操作台-订单详情 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "操作台-订单详情",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/操作台-订单详情.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "待处理任务点击详情",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/待处理任务点击详情 副本.png",
+          "kind": "phone"
+        },
+        {
+          "title": "待处理任务点击详情",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/待处理任务点击详情.png",
+          "kind": "phone"
+        },
+        {
+          "title": "等待商家处理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/等待商家处理.png",
+          "kind": "phone"
+        },
+        {
+          "title": "等待商家处理 退款退货",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/等待商家处理 退款退货.png",
+          "kind": "phone"
+        },
+        {
+          "title": "等待商家收货",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/等待商家收货 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "等待商家收货",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/等待商家收货.png",
+          "kind": "phone"
+        },
+        {
+          "title": "点击搜索订单",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/点击搜索订单.png",
+          "kind": "phone"
+        },
+        {
+          "title": "点击修改地址时",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/点击修改地址时 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情 -待付款",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情 -待付款 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情 -交易成功",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情 -交易成功 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情 退款",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情 退款.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情 已发货 -拆单",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情 已发货 -拆单.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情- 待发货-单件",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情- 待发货-单件 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情- 待发货-多件（可批量退款）",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情- 待发货-多件（可批量退款）.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情- 待发货-退款成功+退款中状态",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情- 待发货-退款成功+退款中状态.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情-交易关闭",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情-交易关闭 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情-已发货-未拆单",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/订单详情-已发货-未拆单.png",
+          "kind": "phone"
+        },
+        {
+          "title": "购物车",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/购物车 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "购物车-缺省页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/购物车-缺省页 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "回访单-订单回访记录",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/回访单-订单回访记录 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "回访单-订单回访记录",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/回访单-订单回访记录.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "会员等级",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/会员等级 (2).png",
+          "kind": "phone"
+        },
+        {
+          "title": "会员等级",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/会员等级 (3).png",
+          "kind": "phone"
+        },
+        {
+          "title": "会员中心",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/会员中心  (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "活动详情页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/活动详情页.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增扫码详情",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/今日新增扫码详情.png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/客服.png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/客服管理 副本 (2).png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/客服管理 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服管理 新建客服信息",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/客服管理 新建客服信息 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服信息 展示",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/客服信息 展示 副本 (1).png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服信息 展示",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/客服信息 展示 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "客服信息 展示",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/客服信息 展示 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "类别详情-128升级",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/类别详情-128升级.png",
+          "kind": "phone"
+        },
+        {
+          "title": "商家同意退货申请",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/商家同意退货申请.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益 提现 支付宝",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/收益 提现 支付宝.png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页 专属客服",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/首页  专属客服.png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页-升级提示",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/首页-升级提示 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的订单",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/我的订单 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的订单 -缺省页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/我的订单 -缺省页 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "新用户-绑定手机",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/新用户-绑定手机 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "新用户-绑定手机",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/新用户-绑定手机 copy (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "新增收货地址",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/新增收货地址 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "新增收货地址-填写",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/新增收货地址-填写 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "支付宝 提现金额-错误提示",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/支付宝 提现金额-错误提示.png",
+          "kind": "phone"
+        },
+        {
+          "title": "app-消息中心",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_订单客服会员/app-消息中心.png",
+          "kind": "phone"
+        }
+      ]
+    },
+    {
+      "id": "backend-wechat-community",
+      "title": "后台运营：微信社群",
+      "type": "后台系统",
+      "screens": [
+        {
+          "title": "分享至群",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/分享至群 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "分销店预估-体验官",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/分销店预估-体验官.png",
+          "kind": "phone"
+        },
+        {
+          "title": "分销店预估-尊享官",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/分销店预估-尊享官.png",
+          "kind": "phone"
+        },
+        {
+          "title": "间接体验",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/间接体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "间接游客-详细信息",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/间接游客-详细信息.png",
+          "kind": "phone"
+        },
+        {
+          "title": "解冻更多收益",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/解冻更多收益.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日-时间选择",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/今日-时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增关注",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/今日新增关注.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增体验",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/今日新增体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增运营商",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/今日新增运营商.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增VIP",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/今日新增VIP.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增VIP5",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/今日新增VIP5.png",
+          "kind": "phone"
+        },
+        {
+          "title": "其他体验",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/其他体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "日报收益",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/日报收益.png",
+          "kind": "phone"
+        },
+        {
+          "title": "升级体验官",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/升级体验官 copy.png",
+          "kind": "phone"
+        },
+        {
+          "title": "升级体验官",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/升级体验官.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-日报（体验官）",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/收益-日报（体验官）.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-日报时间选择",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/收益-日报时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "体验官-个人中心",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/体验官-个人中心 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "微信管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信管理 副本 副本 (1).png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信管理 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信管理 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信管理 新建微信号",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信管理  新建微信号 副本 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信管理 新建微信号",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信管理  新建微信号 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信群管理 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信群管理.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理 入群人名单列表",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信群管理 入群人名单列表.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理 新建微信群",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信群管理  新建微信群 副本.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "微信群管理 新建微信群",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/微信群管理  新建微信群.png",
+          "kind": "desktop"
+        },
+        {
+          "title": "我的推广中心",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/我的推广中心 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的推广中心-标签筛选",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/我的推广中心-标签筛选 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "邀请入群",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/邀请入群 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "直属体验",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/直属体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "直属游客-详细信息",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/直属游客-详细信息.png",
+          "kind": "phone"
+        },
+        {
+          "title": "尊享官-点击运营商提示",
+          "path": "source_materials/蜂乐玛/UI设计截图/2026-01-26_后台运营_微信社群/尊享官-点击运营商提示.png",
+          "kind": "phone"
+        }
+      ]
+    },
+    {
+      "id": "miniapp-jinfu",
+      "title": "蜂乐玛金服小程序",
+      "type": "小程序",
+      "screens": [
+        {
+          "title": "本月-时间选择",
+          "path": "extracted_packages/miniapp_jinfu/本月-时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "操作台-订单详情",
+          "path": "extracted_packages/miniapp_jinfu/操作台-订单详情.png",
+          "kind": "phone"
+        },
+        {
+          "title": "操作台-历史操作记录",
+          "path": "extracted_packages/miniapp_jinfu/操作台-历史操作记录.png",
+          "kind": "phone"
+        },
+        {
+          "title": "操作台正常状态",
+          "path": "extracted_packages/miniapp_jinfu/操作台正常状态.png",
+          "kind": "phone"
+        },
+        {
+          "title": "待处理任务点击详情",
+          "path": "extracted_packages/miniapp_jinfu/待处理任务点击详情.png",
+          "kind": "phone"
+        },
+        {
+          "title": "点击搜索订单",
+          "path": "extracted_packages/miniapp_jinfu/点击搜索订单.png",
+          "kind": "phone"
+        },
+        {
+          "title": "分销店预估",
+          "path": "extracted_packages/miniapp_jinfu/分销店预估.png",
+          "kind": "phone"
+        },
+        {
+          "title": "分销店预估-体验官",
+          "path": "extracted_packages/miniapp_jinfu/分销店预估-体验官.png",
+          "kind": "phone"
+        },
+        {
+          "title": "分销店预估-尊享官",
+          "path": "extracted_packages/miniapp_jinfu/分销店预估-尊享官(1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "分销店预估-尊享官",
+          "path": "extracted_packages/miniapp_jinfu/分销店预估-尊享官.png",
+          "kind": "phone"
+        },
+        {
+          "title": "复制成功操作提醒",
+          "path": "extracted_packages/miniapp_jinfu/复制成功操作提醒(1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "复制成功操作提醒",
+          "path": "extracted_packages/miniapp_jinfu/复制成功操作提醒.png",
+          "kind": "phone"
+        },
+        {
+          "title": "回访单-订单回访记录",
+          "path": "extracted_packages/miniapp_jinfu/回访单-订单回访记录.png",
+          "kind": "phone"
+        },
+        {
+          "title": "回访单-用户信息回访",
+          "path": "extracted_packages/miniapp_jinfu/回访单-用户信息回访.png",
+          "kind": "phone"
+        },
+        {
+          "title": "活动通知",
+          "path": "extracted_packages/miniapp_jinfu/活动通知 .png",
+          "kind": "phone"
+        },
+        {
+          "title": "活动通知列表-草稿箱",
+          "path": "extracted_packages/miniapp_jinfu/活动通知列表-草稿箱.png",
+          "kind": "phone"
+        },
+        {
+          "title": "活动通知列表-已发布",
+          "path": "extracted_packages/miniapp_jinfu/活动通知列表-已发布.png",
+          "kind": "phone"
+        },
+        {
+          "title": "活动详情页",
+          "path": "extracted_packages/miniapp_jinfu/活动详情页.png",
+          "kind": "phone"
+        },
+        {
+          "title": "间接体验",
+          "path": "extracted_packages/miniapp_jinfu/间接体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "间接游客-详细信息",
+          "path": "extracted_packages/miniapp_jinfu/间接游客-详细信息.png",
+          "kind": "phone"
+        },
+        {
+          "title": "解冻更多收益",
+          "path": "extracted_packages/miniapp_jinfu/解冻更多收益.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日-时间选择",
+          "path": "extracted_packages/miniapp_jinfu/今日-时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增关注",
+          "path": "extracted_packages/miniapp_jinfu/今日新增关注.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增扫码详情",
+          "path": "extracted_packages/miniapp_jinfu/今日新增扫码详情.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增扫码详情-点击复制",
+          "path": "extracted_packages/miniapp_jinfu/今日新增扫码详情-点击复制.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增体验",
+          "path": "extracted_packages/miniapp_jinfu/今日新增体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增运营商",
+          "path": "extracted_packages/miniapp_jinfu/今日新增运营商.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增VIP",
+          "path": "extracted_packages/miniapp_jinfu/今日新增VIP.png",
+          "kind": "phone"
+        },
+        {
+          "title": "今日新增VIP5",
+          "path": "extracted_packages/miniapp_jinfu/今日新增VIP5.png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服",
+          "path": "extracted_packages/miniapp_jinfu/客服.png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服管理",
+          "path": "extracted_packages/miniapp_jinfu/客服管理 副本.png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服管理 新建客服信息",
+          "path": "extracted_packages/miniapp_jinfu/客服管理 新建客服信息 副本.png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服信息 展示",
+          "path": "extracted_packages/miniapp_jinfu/客服信息 展示 副本.png",
+          "kind": "phone"
+        },
+        {
+          "title": "类别详情 -每日领取",
+          "path": "extracted_packages/miniapp_jinfu/类别详情 -每日领取.png",
+          "kind": "phone"
+        },
+        {
+          "title": "类别详情-128升级",
+          "path": "extracted_packages/miniapp_jinfu/类别详情-128升级.png",
+          "kind": "phone"
+        },
+        {
+          "title": "链接页面",
+          "path": "extracted_packages/miniapp_jinfu/链接页面.png",
+          "kind": "phone"
+        },
+        {
+          "title": "年报-时间选择",
+          "path": "extracted_packages/miniapp_jinfu/年报-时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "其他体验",
+          "path": "extracted_packages/miniapp_jinfu/其他体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "其他游客-详细信息",
+          "path": "extracted_packages/miniapp_jinfu/其他游客-详细信息.png",
+          "kind": "phone"
+        },
+        {
+          "title": "钱包通知",
+          "path": "extracted_packages/miniapp_jinfu/钱包通知.png",
+          "kind": "phone"
+        },
+        {
+          "title": "人群",
+          "path": "extracted_packages/miniapp_jinfu/人群.png",
+          "kind": "phone"
+        },
+        {
+          "title": "日报收益",
+          "path": "extracted_packages/miniapp_jinfu/日报收益.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益 提现 支付宝",
+          "path": "extracted_packages/miniapp_jinfu/收益 提现 支付宝.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-年报",
+          "path": "extracted_packages/miniapp_jinfu/收益-年报.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-年报（体验官）",
+          "path": "extracted_packages/miniapp_jinfu/收益-年报（体验官）.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-年报时间选择",
+          "path": "extracted_packages/miniapp_jinfu/收益-年报时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-日报（体验官）",
+          "path": "extracted_packages/miniapp_jinfu/收益-日报（体验官）.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-日报时间选择",
+          "path": "extracted_packages/miniapp_jinfu/收益-日报时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-月报",
+          "path": "extracted_packages/miniapp_jinfu/收益-月报.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-月报（体验官）",
+          "path": "extracted_packages/miniapp_jinfu/收益-月报（体验官）.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-月报时间选择",
+          "path": "extracted_packages/miniapp_jinfu/收益-月报时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-总报",
+          "path": "extracted_packages/miniapp_jinfu/收益-总报.png",
+          "kind": "phone"
+        },
+        {
+          "title": "收益-总报（体验官）",
+          "path": "extracted_packages/miniapp_jinfu/收益-总报（体验官）.png",
+          "kind": "phone"
+        },
+        {
+          "title": "微信管理",
+          "path": "extracted_packages/miniapp_jinfu/微信管理 副本.png",
+          "kind": "phone"
+        },
+        {
+          "title": "微信管理 新建微信号",
+          "path": "extracted_packages/miniapp_jinfu/微信管理  新建微信号 副本.png",
+          "kind": "phone"
+        },
+        {
+          "title": "微信群管理",
+          "path": "extracted_packages/miniapp_jinfu/微信群管理.png",
+          "kind": "phone"
+        },
+        {
+          "title": "微信群管理 入群人名单列表",
+          "path": "extracted_packages/miniapp_jinfu/微信群管理 入群人名单列表.png",
+          "kind": "phone"
+        },
+        {
+          "title": "微信群管理 新建微信群",
+          "path": "extracted_packages/miniapp_jinfu/微信群管理  新建微信群.png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的好友(游客88人)",
+          "path": "extracted_packages/miniapp_jinfu/我的好友(游客88人).png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的影响力",
+          "path": "extracted_packages/miniapp_jinfu/我的影响力.png",
+          "kind": "phone"
+        },
+        {
+          "title": "我发布的的（可修改备注）",
+          "path": "extracted_packages/miniapp_jinfu/我发布的的（可修改备注）.png",
+          "kind": "phone"
+        },
+        {
+          "title": "我回访的",
+          "path": "extracted_packages/miniapp_jinfu/我回访的.png",
+          "kind": "phone"
+        },
+        {
+          "title": "系统通知",
+          "path": "extracted_packages/miniapp_jinfu/系统通知.png",
+          "kind": "phone"
+        },
+        {
+          "title": "新建活动-富文本编辑",
+          "path": "extracted_packages/miniapp_jinfu/新建活动-富文本编辑.png",
+          "kind": "phone"
+        },
+        {
+          "title": "银行卡 提现",
+          "path": "extracted_packages/miniapp_jinfu/银行卡 提现.png",
+          "kind": "phone"
+        },
+        {
+          "title": "银行卡 提现-输入后",
+          "path": "extracted_packages/miniapp_jinfu/银行卡 提现-输入后.png",
+          "kind": "phone"
+        },
+        {
+          "title": "运营商预估",
+          "path": "extracted_packages/miniapp_jinfu/运营商预估.png",
+          "kind": "phone"
+        },
+        {
+          "title": "支付宝 提现金额",
+          "path": "extracted_packages/miniapp_jinfu/支付宝 提现金额.png",
+          "kind": "phone"
+        },
+        {
+          "title": "支付宝 提现金额-错误提示",
+          "path": "extracted_packages/miniapp_jinfu/支付宝 提现金额-错误提示.png",
+          "kind": "phone"
+        },
+        {
+          "title": "直属体验",
+          "path": "extracted_packages/miniapp_jinfu/直属体验.png",
+          "kind": "phone"
+        },
+        {
+          "title": "直属游客-详细信息",
+          "path": "extracted_packages/miniapp_jinfu/直属游客-详细信息.png",
+          "kind": "phone"
+        },
+        {
+          "title": "直营店预估",
+          "path": "extracted_packages/miniapp_jinfu/直营店预估.png",
+          "kind": "phone"
+        },
+        {
+          "title": "总报-时间选择",
+          "path": "extracted_packages/miniapp_jinfu/总报-时间选择.png",
+          "kind": "phone"
+        },
+        {
+          "title": "尊享官-点击运营商提示",
+          "path": "extracted_packages/miniapp_jinfu/尊享官-点击运营商提示.png",
+          "kind": "phone"
+        },
+        {
+          "title": "app-消息中心",
+          "path": "extracted_packages/miniapp_jinfu/app-消息中心.png",
+          "kind": "phone"
+        }
+      ]
+    },
+    {
+      "id": "mall-order-cart",
+      "title": "商城小程序：会员 / 订单 / 购物车",
+      "type": "小程序",
+      "screens": [
+        {
+          "title": "帮助与引导",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/帮助与引导.png",
+          "kind": "phone"
+        },
+        {
+          "title": "点击修改地址时",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/点击修改地址时.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情 -待付款",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/订单详情 -待付款.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情 -交易成功",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/订单详情 -交易成功.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情- 待发货-单件",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/订单详情- 待发货-单件.png",
+          "kind": "phone"
+        },
+        {
+          "title": "订单详情-交易关闭",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/订单详情-交易关闭.png",
+          "kind": "phone"
+        },
+        {
+          "title": "购物车",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/购物车.png",
+          "kind": "phone"
+        },
+        {
+          "title": "购物车-缺省页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/购物车-缺省页.png",
+          "kind": "phone"
+        },
+        {
+          "title": "会员等级",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/会员等级 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "会员等级",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/会员等级.png",
+          "kind": "phone"
+        },
+        {
+          "title": "会员中心",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/会员中心 .png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/客服管理 副本 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "客服管理",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/客服管理 副本.png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/首页 (1).png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/首页 (2).png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/首页 (3).png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/首页 (4).png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/首页.png",
+          "kind": "phone"
+        },
+        {
+          "title": "首页-升级提示",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/首页-升级提示.png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的订单",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/我的订单.png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的订单 -缺省页",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/我的订单 -缺省页.png",
+          "kind": "phone"
+        },
+        {
+          "title": "新用户-绑定手机",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/新用户-绑定手机 copy.png",
+          "kind": "phone"
+        },
+        {
+          "title": "新用户-绑定手机",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/新用户-绑定手机.png",
+          "kind": "phone"
+        },
+        {
+          "title": "新增收货地址",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/新增收货地址.png",
+          "kind": "phone"
+        },
+        {
+          "title": "新增收货地址-填写",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员订单购物车/新增收货地址-填写.png",
+          "kind": "phone"
+        }
+      ]
+    },
+    {
+      "id": "mall-promotion",
+      "title": "商城小程序：会员推广",
+      "type": "小程序",
+      "screens": [
+        {
+          "title": "分享至群",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员推广/分享至群.png",
+          "kind": "phone"
+        },
+        {
+          "title": "体验官-个人中心",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员推广/体验官-个人中心.png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的推广中心",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员推广/我的推广中心.png",
+          "kind": "phone"
+        },
+        {
+          "title": "我的推广中心-标签筛选",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员推广/我的推广中心-标签筛选.png",
+          "kind": "phone"
+        },
+        {
+          "title": "邀请入群",
+          "path": "source_materials/蜂乐玛/UI设计截图/2025-11_商城前台_会员推广/邀请入群.png",
+          "kind": "phone"
+        }
+      ]
+    },
+    {
+      "id": "group-prototypes",
+      "title": "群管理与群营销 Axure 原型",
+      "type": "可交互原型",
+      "prototypeLinks": [
+        {
+          "title": "群管理后台",
+          "description": "包含社群管理、微信号管理、员工管理等后台页面。",
+          "path": "extracted_packages/group_management/群管理/index.html"
+        },
+        {
+          "title": "群营销工具小程序",
+          "description": "包含社群、数据分析、商品分享、我的等小程序页面。",
+          "path": "extracted_packages/group_marketing/群营销工具小程序/index.html"
+        }
+      ],
+      "screens": []
+    }
+  ]
+}
