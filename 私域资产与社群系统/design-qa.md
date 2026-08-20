@@ -49,3 +49,54 @@
 - P3: Once one direction is chosen as the final default, tune exact table density and right-panel copy for that single direction.
 
 final result: passed
+
+---
+
+# 微信管理 - 个人微信账号优化 QA
+
+**Source visual truth path**
+
+- `/var/folders/fq/2wgfkk712_32yvd32s9ztdqc0000gn/T/codex-clipboard-d41e329b-2c88-469e-bee7-0f7f93b2a00d.png`
+
+**Implementation screenshot paths**
+
+- `/Users/binbinchen/Documents/社群管理工具/私域资产与社群系统/artifacts/product-audit/wechat-management/03-optimized-list.jpg`
+- `/Users/binbinchen/Documents/社群管理工具/私域资产与社群系统/artifacts/product-audit/wechat-management/04-account-detail.jpg`
+
+**Viewport and state**
+
+- Desktop PC backend at 1422 x 800.
+- Personal WeChat list, selected high-capacity account, right-side detail open.
+
+**Patches made**
+
+- Replaced the 19-column account asset table with a nine-column operational list.
+- Moved low-frequency account fields into a right-side detail panel.
+- Added friend and group capacity meters, alert states, city/risk/sync filters, QR synchronization actions, and a 20-row desktop page size.
+- Kept card browsing and list browsing connected to the same account detail state.
+
+**Interaction checks**
+
+- Opening and closing account detail: passed.
+- Friend-capacity warning filter: passed.
+- Card browsing and opening detail from a card: passed.
+- Production build: passed.
+
+**Required fidelity surfaces**
+
+- Fonts and typography: retains the existing compact monospace hierarchy.
+- Spacing and layout rhythm: list density is reduced to operational columns and the detail panel consumes the former unused width.
+- Colors and tokens: retains the white, black, and acid-lime palette; capacity warnings use amber in addition to labels.
+- Image quality: existing account avatars retain their original crop and dimensions.
+- Copy and content: labels now distinguish capacity, sync, QR state, and handover actions.
+
+**Full-view comparison evidence**
+
+- Blocked. The supplied source image and implementation capture are available, but the in-app browser security policy blocks opening a local comparison page containing both images. No workaround was attempted.
+
+**Findings**
+
+- No outstanding P0/P1/P2 defects were found in the exercised list, filter, card, or detail states.
+- P3: The 9-column list will still horizontally scroll on narrow laptop widths. The primary operational fields remain first and the right-side detail preserves access to secondary data.
+
+final result: blocked

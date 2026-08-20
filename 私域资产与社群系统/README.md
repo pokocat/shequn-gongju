@@ -1,11 +1,45 @@
+# 私域资产与社群系统
 
-  # 私域资产与社群系统
+当前项目的主应用是一个 React + Vite 的 PC 管理后台原型，服务于蜂乐玛私域运营场景。页面以统一的黑白、荧光绿和紫色工作台视觉为基础，重点覆盖账号资产、微信资源、社群资源、客服协同和会员运营。
 
-  This is a code bundle for 私域资产与社群系统. The original project is available at https://www.figma.com/design/RJbLiKRiThX7s9wDqdvv4F/%E7%A7%81%E5%9F%9F%E8%B5%84%E4%BA%A7%E4%B8%8E%E7%A4%BE%E7%BE%A4%E7%B3%BB%E7%BB%9F.
+## 运行
 
-  ## Running the code
+需要 Node.js 和 npm：
 
-  Run `npm i` to install the dependencies.
+```bash
+npm install
+npm run dev -- --host 127.0.0.1 --port 5182
+```
 
-  Run `npm run dev` to start the development server.
-  
+打开 `http://127.0.0.1:5182/?view=pc&module=wechat` 可直接查看微信管理；`module=community`、`module=accounts`、`module=customer-service` 等参数可切换其他 PC 模块。
+
+```bash
+npm run build
+```
+
+## 主要模块
+
+- `PCLayout`：PC 后台壳层、模块导航、页面标题和响应式布局。
+- `WeChatManagement`：个人微信/企业微信切换，状态筛选，统一搜索栏，列表/卡片视图，账号容量、同步状态、二维码和交接交互。
+- `CommunityManagement`：社群运营列表、状态看板、主从详情、成员名单和群运营操作。
+- `AccountAssets`：手机号、邮箱、微信和媒体账号资产，支持列表和紧凑卡片浏览。
+- `CustomerService`：客服账号、地区、微信号和群组的管理。
+- `GroupAssignment`：用户入群推荐、群容量和分配规则。
+- `InfluenceRanking`：用户影响力排行和运营操作台。
+- `MemberOperationsWorkbench`、`ZhuLiRenApp`：会员运营与小程序相关工作台原型。
+
+## 近期变更
+
+1. 补齐个人微信与企业微信的并行信息架构：顶部切换、状态栏、搜索/筛选和列表/卡片浏览保持一致。
+2. 扩充企业微信列表字段，加入绑定个人微信、项目/地区、服务负责人、成员容量、管理群位、同步状态、最近同步、二维码和操作列。
+3. 增加二维码预览、复制链接、账号详情抽屉、交接表单和提交反馈，列表和卡片视图共用同一套交互状态。
+4. 将社群四个高频操作收敛到群详情上下文，补充群状态选择、成员名单、容量进度和运营反馈。
+5. 完善账号资产列表/卡片模式和紧凑卡片字段，扩展客服、群分配、影响力和 PC 布局模块。
+6. 新增设计验收记录和预览用静态资源，便于继续对照截图迭代。
+
+## 目录约定
+
+- `src/`：应用源码和组件。
+- `public/`：运行时需要的静态图片、字体和演示资源。
+- `artifacts/`：设计验收截图、审计资料和可追溯的原型产物。
+- `dist/`、`node_modules/`、`.vite/` 等是本地依赖或构建中间产物，已由仓库根目录 `.gitignore` 排除，不作为项目源码提交。

@@ -1,9 +1,9 @@
 import { ReactNode, useState } from "react";
 import {
-  LayoutDashboard, Database, MessageCircle, Users2, GitBranch,
+  LayoutDashboard, Database, MessageCircle, Users2,
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Radio,
-  BarChart2, Send, Star, DollarSign, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen
+  BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 
 // ─── 软圆角赛博朋克 · 柔和边框 ────────────────────────────────
@@ -32,8 +32,7 @@ const navGroups = [
   { label: "配置中心", items: [
     { id: "accounts",   label: "账号资产中心",   icon: Database,        badge: null },
     { id: "wechat",     label: "微信账号管理",   icon: MessageCircle,   badge: "2"  },
-    { id: "community",  label: "社群规则与群库", icon: Users2,          badge: null },
-    { id: "assignment", label: "群分配规则",     icon: GitBranch,       badge: "8"  },
+    { id: "community",  label: "微信群管理",     icon: Users2,          badge: "8"  },
     { id: "cs",         label: "客服与服务资源", icon: Headphones,      badge: null },
     { id: "channel",    label: "渠道流量绑定",   icon: Radio,            badge: null },
     { id: "cities",     label: "城市分站",       icon: MapPin,          badge: null },
@@ -42,8 +41,6 @@ const navGroups = [
   { label: "日常运营", items: [
     { id: "users",      label: "会员运营工作台", icon: User,            badge: null },
     { id: "members",    label: "会员权益",       icon: Star,             badge: null },
-    { id: "pushtasks",  label: "推送任务",       icon: Send,             badge: "3"  },
-    { id: "activities", label: "活动运营",       icon: CalendarDays,     badge: null },
   ]},
   { label: "服务与交易", items: [
     { id: "orders",     label: "支付订单",       icon: CreditCard,       badge: "3"  },
@@ -192,7 +189,7 @@ export default function PCLayout({ activeModule, onModuleChange, children }: PCL
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-auto" style={{ background: S.bg }}>
+        <div data-pc-content className="flex-1 overflow-auto" style={{ background: S.bg }}>
           {children}
         </div>
       </div>

@@ -1,17 +1,15 @@
-import { useState } from "react";
-import { Monitor, Smartphone, Globe } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Monitor, Smartphone, Globe, Star } from "lucide-react";
 import PCLayout from "./components/PCLayout";
 import Overview from "./components/Overview";
 import AccountAssets from "./components/AccountAssets";
 import WeChatManagement from "./components/WeChatManagement";
 import CommunityManagement from "./components/CommunityManagement";
-import GroupAssignment from "./components/GroupAssignment";
 import CustomerService from "./components/CustomerService";
 import InfluenceRanking from "./components/InfluenceRanking";
+import MemberOperationsWorkbench from "./components/MemberOperationsWorkbench";
 import EcosystemManagement from "./components/EcosystemManagement";
 import ChannelFlow from "./components/ChannelFlow";
-import PushTasks from "./components/PushTasks";
-import Activities from "./components/Activities";
 import Orders from "./components/Orders";
 import Tickets from "./components/Tickets";
 import ApprovalCenter from "./components/ApprovalCenter";
@@ -21,6 +19,7 @@ import ReportCenter from "./components/ReportCenter";
 import MemberBenefits from "./components/MemberBenefits";
 import Commission from "./components/Commission";
 import MobileApp from "./components/MobileApp";
+import ZhuLiRenApp from "./components/ZhuLiRenApp";
 import LandingPage from "./components/LandingPage";
 
 const moduleMap: Record<string, React.ComponentType> = {
@@ -28,15 +27,12 @@ const moduleMap: Record<string, React.ComponentType> = {
   accounts:   AccountAssets,
   wechat:     WeChatManagement,
   community:  CommunityManagement,
-  assignment: GroupAssignment,
   cs:         CustomerService,
   influence:  InfluenceRanking,
   channel:    ChannelFlow,
-  users:      InfluenceRanking,
+  users:      MemberOperationsWorkbench,
   segment:    InfluenceRanking,
   members:    MemberBenefits,
-  pushtasks:  PushTasks,
-  activities: Activities,
   orders:     Orders,
   tickets:    Tickets,
   approval:   ApprovalCenter,
@@ -47,14 +43,17 @@ const moduleMap: Record<string, React.ComponentType> = {
   ecosystem:  EcosystemManagement,
 };
 
-type ViewMode = "landing" | "pc" | "mobile";
+type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
 
 export default function App() {
   const [view, setView] = useState<ViewMode>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view");
-    return requestedView === "pc" || requestedView === "mobile" ? requestedView : "landing";
+    return requestedView === "pc" || requestedView === "mobile" || requestedView === "zhuliren" ? requestedView : "landing";
   });
-  const [activeModule, setActiveModule] = useState("overview");
+  const [activeModule, setActiveModule] = useState(() => {
+    const requestedModule = new URLSearchParams(window.location.search).get("module");
+    return requestedModule && requestedModule in moduleMap ? requestedModule : "overview";
+  });
 
   const ActiveComponent = moduleMap[activeModule] || Overview;
   const selectView = (nextView: ViewMode) => {
@@ -64,6 +63,28 @@ export default function App() {
     else url.searchParams.set("view", nextView);
     window.history.replaceState({}, "", url);
   };
+
+  const selectModule = (nextModule: string) => {
+    if (!(nextModule in moduleMap)) return;
+    setActiveModule(nextModule);
+    const url = new URL(window.location.href);
+    if (nextModule === "overview") url.searchParams.delete("module");
+    else url.searchParams.set("module", nextModule);
+    window.history.pushState({}, "", url);
+  };
+
+  useEffect(() => {
+    const syncRouteState = () => {
+      const params = new URLSearchParams(window.location.search);
+      const nextView = params.get("view");
+      const nextModule = params.get("module");
+      if (nextView === "pc" || nextView === "mobile" || nextView === "zhuliren") setView(nextView);
+      if (nextModule && nextModule in moduleMap) setActiveModule(nextModule);
+      else if (!nextModule) setActiveModule("overview");
+    };
+    window.addEventListener("popstate", syncRouteState);
+    return () => window.removeEventListener("popstate", syncRouteState);
+  }, []);
 
   if (view === "landing") {
     return (
@@ -77,7 +98,10 @@ export default function App() {
             <Monitor size={12} /> PC 后台
           </button>
           <button onClick={() => selectView("mobile")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
-            <Smartphone size={12} /> 小程序
+            <Smartphone size={12} /> 会员小程序
+          </button>
+          <button onClick={() => selectView("zhuliren")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
+            <Star size={12} /> 主理人公社
           </button>
         </div>
         <LandingPage onEnterApp={() => selectView("pc")} />
@@ -88,24 +112,33 @@ export default function App() {
   return (
     <div className="size-full relative" style={{ background: "#f5f6fa" }}>
       {/* View switcher */}
-      <div className="fixed top-3 right-4 z-50 flex gap-0 p-0" style={{ background: "#000", border: "1px solid #ccff00", borderRadius: 0 }}>
+      {view !== "zhuliren" && <div className="fixed top-3 right-4 z-50 flex gap-0 p-0" style={{ background: "#000", border: "1px solid #ccff00", borderRadius: 0 }}>
         <button onClick={() => selectView("landing")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "landing" ? "#ccff00" : "transparent", color: view === "landing" ? "#000" : "#ccff00", borderRadius: 0, borderRight: "1px solid #333" }}>
           <Globe size={11} /> WEB
         </button>
         <button onClick={() => selectView("pc")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "pc" ? "#ccff00" : "transparent", color: view === "pc" ? "#000" : "#ccff00", borderRadius: 0, borderRight: "1px solid #333" }}>
           <Monitor size={11} /> PC
         </button>
-        <button onClick={() => selectView("mobile")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "mobile" ? "#ccff00" : "transparent", color: view === "mobile" ? "#000" : "#ccff00", borderRadius: 0 }}>
-          <Smartphone size={11} /> APP
+        <button onClick={() => selectView("mobile")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "mobile" ? "#ccff00" : "transparent", color: view === "mobile" ? "#000" : "#ccff00", borderRadius: 0, borderRight: "1px solid #333" }}>
+          <Smartphone size={11} /> 会员APP
         </button>
-      </div>
+        <button onClick={() => selectView("zhuliren")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "zhuliren" ? "#ccff00" : "transparent", color: view === "zhuliren" ? "#000" : "#ccff00", borderRadius: 0 }}>
+          <Star size={11} /> 主理人
+        </button>
+      </div>}
 
       {view === "pc" ? (
-        <PCLayout activeModule={activeModule} onModuleChange={setActiveModule}>
+        <PCLayout activeModule={activeModule} onModuleChange={selectModule}>
           <ActiveComponent />
         </PCLayout>
-      ) : (
+      ) : view === "mobile" ? (
         <MobileApp />
+      ) : (
+        <ZhuLiRenApp
+          onOpenWeb={() => selectView("landing")}
+          onOpenPc={() => selectView("pc")}
+          onOpenMobile={() => selectView("mobile")}
+        />
       )}
     </div>
   );

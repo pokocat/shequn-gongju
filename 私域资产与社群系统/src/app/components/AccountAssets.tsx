@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Plus, AlertTriangle, X, Phone, Mail, MessageCircle, Globe, ChevronDown, Filter, ExternalLink, Upload, CreditCard, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { Search, Plus, AlertTriangle, X, Phone, Mail, MessageCircle, Globe, ChevronDown, Filter, ExternalLink, Upload, CreditCard, Eye, EyeOff, CheckCircle, List, LayoutGrid } from "lucide-react";
 
 const S = {
   bg: "#fafafa",
@@ -97,6 +97,19 @@ function RiskIcon({ risk }: { risk: string }) {
   if (risk === "high") return <AlertTriangle size={12} style={{ color: "#1a1a1a" }} />;
   if (risk === "warning") return <AlertTriangle size={12} style={{ color: S.muted }} />;
   return null;
+}
+
+function BrowseModeToggle({ value, onChange, label }: { value: "list" | "cards"; onChange: (value: "list" | "cards") => void; label: string }) {
+  return (
+    <div className="flex items-center p-0.5" aria-label={label} style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+      <button type="button" title="列表浏览" aria-label="列表浏览" aria-pressed={value === "list"} className="w-8 h-7 flex items-center justify-center transition-all" style={{ background: value === "list" ? "#0d0d0d" : "transparent", color: value === "list" ? S.accent : S.muted, borderRadius: "4px" }} onClick={() => onChange("list")}>
+        <List size={15} />
+      </button>
+      <button type="button" title="卡片浏览" aria-label="卡片浏览" aria-pressed={value === "cards"} className="w-8 h-7 flex items-center justify-center transition-all" style={{ background: value === "cards" ? "#0d0d0d" : "transparent", color: value === "cards" ? S.accent : S.muted, borderRadius: "4px" }} onClick={() => onChange("cards")}>
+        <LayoutGrid size={15} />
+      </button>
+    </div>
+  );
 }
 
 function Row({ children, selected, onClick }: { children: React.ReactNode; selected: boolean; onClick: () => void }) {
@@ -665,7 +678,7 @@ function WechatTab({ search }: { search: string }) {
 }
 
 // ─── 媒体账号 Tab ─────────────────────────────────────────────
-function MediaTab({ search, platform }: { search: string; platform: string }) {
+function MediaTab({ search, platform, viewMode }: { search: string; platform: string; viewMode: "list" | "cards" }) {
   const [selected, setSelected] = useState<number | null>(null);
 
   const filtered = mediaAccounts.filter(m =>
@@ -686,32 +699,63 @@ function MediaTab({ search, platform }: { search: string; platform: string }) {
     const isSelected = selected === account.id;
     return (
       <button
-        className="w-full p-4 text-left transition-all"
+        className="w-full p-3 text-left transition-all"
         style={{ background: isSelected ? S.accentLight : S.surface, border: `1px solid ${isSelected ? S.accent : S.border}`, borderRadius: S.radius, boxShadow: isSelected ? `inset 3px 0 0 ${S.accent}` : "none" }}
         onClick={() => setSelected(isSelected ? null : account.id)}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="text-xl leading-none">{account.emoji}</span>
+            <span className="text-lg leading-none">{account.emoji}</span>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5"><span className="text-xs font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.name}</span>{account.verified && <span className="text-xs px-1" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>✓</span>}</div>
-              <div className="text-xs mt-1" style={{ color: S.muted, fontFamily: "monospace" }}>{account.platform} · {account.manager}</div>
+              <div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted, fontFamily: "monospace" }}>{account.platform} · {account.manager}</div>
             </div>
           </div>
           <StatusBadge status={account.status} />
         </div>
-        <div className="grid grid-cols-3 gap-2 mt-4">
+        <div className="grid grid-cols-3 gap-1.5 mt-3">
           {[["粉丝", account.followers], ["内容", account.contentCount], ["互动", account.engagement]].map(([label, value]) => (
-            <div key={label as string} className="px-2 py-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+            <div key={label as string} className="px-2 py-1.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
               <div className="text-xs font-semibold truncate" style={{ color: S.text, fontFamily: "monospace" }}>{value}</div>
               <div className="text-xs mt-0.5" style={{ color: S.muted, fontSize: "10px", fontFamily: "monospace" }}>{label}</div>
             </div>
           ))}
         </div>
-        <div className="flex items-center justify-between mt-3 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>
-          <span className="truncate">{account.loginId}</span><span className="flex-shrink-0 ml-2">{account.lastPost}</span>
+        <div className="flex items-center justify-between gap-2 mt-2.5 pt-2 text-[10px]" style={{ color: S.muted, borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}>
+          <span className="truncate">负责人：{account.manager}</span><span className="flex-shrink-0">发布 {account.lastPost}</span>
         </div>
       </button>
+    );
+  }
+
+  function MediaList({ accounts }: { accounts: typeof mediaAccounts }) {
+    return (
+      <div className="overflow-auto flex-1" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+        <div className="min-w-[920px]">
+          <div className="flex items-center gap-3 px-3 py-2.5 text-xs" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555", fontFamily: "monospace" }}>
+            {[['账号 / 平台', 240], ['状态', 78], ['粉丝', 90], ['内容', 112], ['互动率', 82], ['登录方式', 180], ['负责人', 130], ['最近发布', 95]].map(([label, width]) => <div key={label as string} className="flex-shrink-0 font-semibold" style={{ width }}>{label}</div>)}
+          </div>
+          {accounts.map(account => {
+            const isSelected = selected === account.id;
+            return (
+              <button key={account.id} type="button" className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all" style={{ background: isSelected ? S.accentLight : "transparent", borderBottom: `1px solid ${S.border}`, borderLeft: isSelected ? `3px solid ${S.accent}` : "3px solid transparent", fontFamily: "monospace" }} onClick={() => setSelected(isSelected ? null : account.id)}>
+                <div className="flex items-center gap-2 flex-shrink-0" style={{ width: 240 }}>
+                  <span className="text-base">{account.emoji}</span>
+                  <div className="min-w-0"><div className="flex items-center gap-1 text-xs font-bold truncate" style={{ color: S.text }}>{account.name}{account.verified && <span className="px-1 text-[10px]" style={{ background: S.accent, color: "#000", borderRadius: 3 }}>✓</span>}</div><div className="text-[10px] truncate" style={{ color: S.muted }}>{account.platform} · {account.loginId}</div></div>
+                </div>
+                <div className="flex-shrink-0" style={{ width: 78 }}><StatusBadge status={account.status} /></div>
+                <div className="flex-shrink-0 text-xs font-semibold" style={{ width: 90, color: S.text }}>{account.followers}</div>
+                <div className="flex-shrink-0 text-xs" style={{ width: 112, color: S.textSec }}>{account.contentCount}</div>
+                <div className="flex-shrink-0 text-xs font-semibold" style={{ width: 82, color: S.text }}>{account.engagement}</div>
+                <div className="flex-shrink-0 text-[10px] truncate" style={{ width: 180, color: S.muted }}>{account.loginType}</div>
+                <div className="flex-shrink-0 text-xs truncate" style={{ width: 130, color: S.textSec }}>{account.manager}</div>
+                <div className="flex-shrink-0 text-[10px]" style={{ width: 95, color: S.muted }}>{account.lastPost}</div>
+              </button>
+            );
+          })}
+          {!accounts.length && <div className="py-12 text-center text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>未找到匹配的媒体账号</div>}
+        </div>
+      </div>
     );
   }
 
@@ -730,7 +774,7 @@ function MediaTab({ search, platform }: { search: string; platform: string }) {
 
   return (
     <div className="flex gap-4 flex-1 min-h-0">
-      <div className="flex-1 min-w-0 overflow-auto pr-1">
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden pr-1">
         <div className="grid grid-cols-4 gap-3 mb-5">
           {[["媒体账号", filtered.length, "当前筛选结果"], ["全平台粉丝", totalFollowers.toLocaleString(), "累计覆盖"], ["正常运营", activeCount, "可持续更新"], ["待处理", idleCount, "空闲待激活"]].map(([label, value, hint]) => (
             <div key={label as string} className="px-4 py-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
@@ -740,11 +784,7 @@ function MediaTab({ search, platform }: { search: string; platform: string }) {
             </div>
           ))}
         </div>
-        <div className="space-y-6 pb-4">
-          <GroupSection title="微信生态" accounts={wechatGroup} />
-          <GroupSection title="内容平台" accounts={contentGroup} />
-          {!filtered.length && <div className="text-center py-12" style={{ color: S.muted, fontFamily: "monospace" }}>未找到匹配的媒体账号</div>}
-        </div>
+        {viewMode === "list" ? <MediaList accounts={filtered} /> : <div className="space-y-4 overflow-auto pb-4"><GroupSection title="微信生态" accounts={wechatGroup} /><GroupSection title="内容平台" accounts={contentGroup} />{!filtered.length && <div className="text-center py-12" style={{ color: S.muted, fontFamily: "monospace" }}>未找到匹配的媒体账号</div>}</div>}
       </div>
 
       {detail && (
@@ -888,6 +928,7 @@ export default function AccountAssets() {
   const [statusFilter, setStatusFilter] = useState("全部状态");
   const [mediaExpanded, setMediaExpanded] = useState(false);
   const [mediaPlatform, setMediaPlatform] = useState("全部媒体");
+  const [mediaView, setMediaView] = useState<"list" | "cards">("cards");
 
   const riskCount = allAccounts.filter(a => a.risk !== "normal").length;
 
@@ -1007,13 +1048,16 @@ export default function AccountAssets() {
               <span>{filter.emoji}</span>{filter.platform}<span style={{ color: mediaPlatform === filter.platform ? "#000" : S.muted }}>{filter.count}</span>
             </button>
           ))}
+          <div className="ml-auto pl-2 flex-shrink-0" style={{ borderLeft: `1px solid ${S.border}` }}>
+            <BrowseModeToggle value={mediaView} onChange={setMediaView} label="媒体账号浏览方式" />
+          </div>
         </div>
       )}
 
       {activeTab === "all"   && <OverviewTab search={search} />}
       {activeTab === "phone" && <PhoneTab search={search} />}
       {activeTab === "wx"    && <WechatTab search={search} />}
-      {activeTab === "media" && <MediaTab key={mediaPlatform} search={search} platform={mediaPlatform} />}
+      {activeTab === "media" && <MediaTab key={mediaPlatform} search={search} platform={mediaPlatform} viewMode={mediaView} />}
       {activeTab === "other" && <EmailOtherTab search={search} />}
     </div>
   );

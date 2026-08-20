@@ -2,6 +2,12 @@
 **/node_modules/
 **/dist/
 **/.vite/
+**/coverage/
+**/playwright-report/
+**/test-results/
+**/.cache/
+**/.turbo/
+**/*.tsbuildinfo
 
 # Local operating-system and editor files
 .DS_Store
@@ -10,6 +16,15 @@
 
 # Runtime logs and local secrets
 *.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 .env
 .env.*
 !.env.example
+
+# Python and tooling caches
+**/__pycache__/
+**/*.py[cod]

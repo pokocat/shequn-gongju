@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
+import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { getAvatar } from "./Avatar";
 
 const S = {
@@ -30,6 +30,12 @@ const taskCategories = [
 const rankingTabs = ["待处理的任务", "全部任务", "我发布的任务", "回购任务", "关注任务", "收费任务"];
 const profileTabs = ["待处理", "订单详情", "历史操作记录", "回访单"];
 const orderStatusTabs = ["所有订单", "待付款", "待发货", "待收货", "已完成", "退款/换货"];
+const operationTabs = [
+  { id: "issue", label: "问题登记", icon: MessageSquare },
+  { id: "push", label: "推送任务", icon: Send },
+  { id: "activity", label: "活动运营", icon: CalendarDays },
+  { id: "moments", label: "朋友圈", icon: ClipboardCheck },
+] as const;
 
 const rankingData = [
   { rank: 1,  avatar: "盛", name: "盛光年", wechat: "THEv424",  gender: "男", city: "北京-朝阳", job: "工人-工地", inGroup: "是", pendingCount: 80, publishCount: 80, completedCount: 91, totalUsers: 8023, influence: 3510, score: 4858, referrer: "盛光年" },
@@ -222,6 +228,10 @@ export default function InfluenceRanking() {
   const [isTaskPanelCollapsed, setIsTaskPanelCollapsed] = useState(false);
   const [activeOrderStatus, setActiveOrderStatus] = useState(orderStatusTabs[0]);
   const [selectedOrderNo, setSelectedOrderNo] = useState<string | null>(null);
+  const [orderSearchInput, setOrderSearchInput] = useState("");
+  const [orderQuery, setOrderQuery] = useState("");
+  const [orderDateRange, setOrderDateRange] = useState("全部日期");
+  const [activeOperation, setActiveOperation] = useState<(typeof operationTabs)[number]["id"]>("issue");
 
   const showProfileNotice = (notice: string) => {
     setProfileNotice(notice);
@@ -234,9 +244,16 @@ export default function InfluenceRanking() {
   const filteredRankingData = activeTagFilter === "全部"
     ? rankingData
     : rankingData.filter(user => (memberTags[user.rank] ?? []).some(tag => tag.label === activeTagFilter));
-  const visibleOrders = activeOrderStatus === "所有订单"
-    ? memberOrders
-    : memberOrders.filter(order => order.status === activeOrderStatus);
+  const visibleOrders = memberOrders.filter(order => {
+    const statusMatched = activeOrderStatus === "所有订单" || order.status === activeOrderStatus;
+    const queryMatched = !orderQuery || order.no.includes(orderQuery) || order.product.includes(orderQuery);
+    const dateMatched = orderDateRange === "全部日期" || (orderDateRange === "近 7 天" ? order.date.includes("07-") : true);
+    return statusMatched && queryMatched && dateMatched;
+  });
+  const orderStatusCounts = Object.fromEntries(orderStatusTabs.map(status => [
+    status,
+    status === "所有订单" ? memberOrders.length : memberOrders.filter(order => order.status === status).length,
+  ]));
 
   const addTag = () => {
     const label = tagDraft.trim();
@@ -453,57 +470,70 @@ export default function InfluenceRanking() {
             <TreeNode node={relationTree} />
           </div>
 
-          {/* 朋友圈操作 */}
-          <div className="flex-1 min-w-[360px] p-4 flex flex-col gap-3" style={{
+          {/* 统一运营操作台 */}
+          <div className="flex-1 min-w-[360px] p-4 flex flex-col gap-3 overflow-auto" style={{
             background: S.surface,
             border: `1px solid ${S.border}`,
             borderRadius: S.radius,
             boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
           }}>
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-bold" style={{ color: S.text }}>朋友圈操作</div>
-              <span className="text-xs" style={{ color: S.muted }}>发布给当前选中会员</span>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div>
-                <label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>发文字</label>
-                <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入朋友圈文案..." />
+                <div className="text-sm font-bold" style={{ color: S.text }}>运营操作台</div>
+                <span className="text-xs" style={{ color: S.muted }}>针对 {selectedUser.name} 登记问题或发起运营动作</span>
               </div>
-              <div>
-                <label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label>
-                <select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.textSec, borderRadius: S.radiusSm }}>
-                  <option>当前会员</option><option>所在社群</option><option>指定标签会员</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>推送平台</label>
-                <select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="朋友圈" style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.textSec, borderRadius: S.radiusSm }}>
-                  <option>朋友圈</option><option>微信群</option><option>企业微信</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>时间提醒</label>
-                <select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="立即发布" style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.textSec, borderRadius: S.radiusSm }}>
-                  <option>立即发布</option><option>今天 18:00</option><option>明天 09:00</option>
-                </select>
-              </div>
+              <span className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>当前会员</span>
             </div>
-            <div>
-              <label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>备注描述</label>
-              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="补充本次运营动作说明..." />
+            <div className="flex items-center gap-1 overflow-x-auto pb-1" role="tablist" aria-label="运营操作类型">
+              {operationTabs.map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeOperation === tab.id;
+                return <button key={tab.id} type="button" role="tab" aria-selected={isActive} onClick={() => setActiveOperation(tab.id)} className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: isActive ? "#0d0d0d" : "#f7f7f7", color: isActive ? S.accent : S.muted, border: `1px solid ${isActive ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}><Icon size={12} />{tab.label}</button>;
+              })}
             </div>
-            <div className="flex items-center gap-2 px-2.5 py-2" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-              <div className="w-20 h-14 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.04)", border: `1px dashed rgba(0,0,0,0.10)`, borderRadius: S.radiusSm }}>
-                <span className="text-2xl" style={{ color: S.mutedLight }}>+</span>
+
+            {activeOperation === "issue" && <>
+              <div className="grid grid-cols-2 gap-2">
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>问题分类</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="售后问题" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>售后问题</option><option>产品咨询</option><option>社群服务</option><option>投诉建议</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>处理部门</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员运营部" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员运营部</option><option>客服部</option><option>社群运营部</option><option>财务部</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>优先级</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="重要" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>普通</option><option>重要</option><option>紧急</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>指派处理人</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="吴思远" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>吴思远</option><option>林小燕</option><option>客服组</option></select></div>
               </div>
-              <span className="text-xs" style={{ color: S.muted }}>添加图片（最多 9 张）</span>
-            </div>
-            <div className="flex gap-2 mt-auto">
-              <button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button>
-              <button onClick={() => showProfileNotice("朋友圈发布任务已创建")} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}>
-                <Send size={11} className="inline mr-1" />发布
-              </button>
-            </div>
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`登记 ${selectedUser.name} 的问题描述...`} />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice(`已登记 ${selectedUser.name} 的问题并指派至会员运营部`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><ClipboardCheck size={11} className="inline mr-1" />登记并指派</button></div>
+            </>}
+
+            {activeOperation === "push" && <>
+              <div className="grid grid-cols-2 gap-2">
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>任务类型</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员触达" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员触达</option><option>服务提醒</option><option>回访任务</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
+              </div>
+              <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入任务标题..." />
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写推送内容或任务要求..." />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建推送任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />创建推送任务</button></div>
+            </>}
+
+            {activeOperation === "activity" && <>
+              <div className="grid grid-cols-2 gap-2">
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>活动类型</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="课程活动" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>课程活动</option><option>线下沙龙</option><option>打卡挑战</option><option>会员福利</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>参与对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
+              </div>
+              <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入活动名称..." />
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写活动说明、时间和报名要求..." />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建活动运营任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><CalendarDays size={11} className="inline mr-1" />创建活动任务</button></div>
+            </>}
+
+            {activeOperation === "moments" && <>
+              <div className="grid grid-cols-2 gap-2">
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>发文字</label><input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入朋友圈文案..." /></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>推送平台</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="朋友圈" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>朋友圈</option><option>微信群</option><option>企业微信</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>时间提醒</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="立即发布" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>立即发布</option><option>今天 18:00</option><option>明天 09:00</option></select></div>
+              </div>
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="补充本次朋友圈运营动作说明..." />
+              <div className="flex items-center gap-2 px-2.5 py-2" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="w-20 h-12 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.04)", border: `1px dashed rgba(0,0,0,0.10)`, borderRadius: S.radiusSm }}><span className="text-2xl" style={{ color: S.mutedLight }}>+</span></div><span className="text-xs" style={{ color: S.muted }}>添加图片（最多 9 张）</span></div>
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice("朋友圈发布任务已创建")} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />发布</button></div>
+            </>}
           </div>
         </div>
       </div>
@@ -634,26 +664,29 @@ export default function InfluenceRanking() {
         <section className="px-3.5 py-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
           {activeProfileTab === "待处理" && (
             <div>
-              <div className="flex items-center gap-0 overflow-x-auto pb-2" style={{ borderBottom: `1px solid ${S.border}` }}>
+              <div className="grid grid-cols-3 gap-1 pb-2" style={{ borderBottom: `1px solid ${S.border}` }}>
                 {orderStatusTabs.map(status => (
                   <button
                     key={status}
                     onClick={() => setActiveOrderStatus(status)}
-                    className="px-2 py-1 text-[10px] font-bold whitespace-nowrap"
-                    style={{ color: activeOrderStatus === status ? "#6db100" : S.muted, borderBottom: activeOrderStatus === status ? `2px solid ${S.accent}` : "2px solid transparent" }}
+                    className="min-w-0 px-1.5 py-1.5 text-[10px] font-bold truncate transition-all"
+                    style={{ background: activeOrderStatus === status ? S.accentLight : "transparent", color: activeOrderStatus === status ? "#5a6e00" : S.muted, border: `1px solid ${activeOrderStatus === status ? "rgba(204,255,0,0.55)" : "transparent"}`, borderRadius: S.radiusSm }}
                   >
-                    {status}
+                    {status} <span style={{ opacity: 0.7 }}>({orderStatusCounts[status]})</span>
                   </button>
                 ))}
               </div>
-              <div className="grid grid-cols-[1fr_1fr_auto] gap-1.5 py-2">
-                <input className="min-w-0 px-2 py-1.5 text-[10px] outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="订单号" />
-                <select className="min-w-0 px-1.5 py-1.5 text-[10px] outline-none" defaultValue="全部日期" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }}><option>全部日期</option><option>近 7 天</option><option>近 30 天</option></select>
-                <button onClick={() => showProfileNotice("订单查询已执行")} className="px-2 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>查询</button>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-1.5 py-2">
+                <input value={orderSearchInput} onChange={event => setOrderSearchInput(event.target.value)} className="min-w-0 px-2 py-1.5 text-[10px] outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="搜索订单号或商品" aria-label="搜索订单号或商品" />
+                <button onClick={() => { setOrderQuery(orderSearchInput.trim()); showProfileNotice(orderSearchInput.trim() ? "已应用订单搜索" : "已显示全部订单"); }} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>查询</button>
               </div>
-              <div className="flex items-center justify-between pb-1.5">
-                <span className="text-[10px] font-bold" style={{ color: S.text }}>待处理订单 / {visibleOrders.length}</span>
-                <span className="text-[10px]" style={{ color: S.muted }}>按订单、包裹与商品处理</span>
+              <div className="flex items-center gap-1.5 pb-2">
+                <select value={orderDateRange} onChange={event => setOrderDateRange(event.target.value)} aria-label="订单日期范围" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }}><option>全部日期</option><option>近 7 天</option><option>近 30 天</option></select>
+                <button onClick={() => { setOrderSearchInput(""); setOrderQuery(""); setOrderDateRange("全部日期"); setActiveOrderStatus("所有订单"); showProfileNotice("订单筛选已重置"); }} className="px-2 py-1.5 text-[10px] font-bold whitespace-nowrap" style={{ background: "#f7f7f7", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>重置</button>
+              </div>
+              <div className="flex items-center justify-between gap-2 pb-1.5">
+                <div className="min-w-0"><span className="text-[10px] font-bold" style={{ color: S.text }}>{activeOrderStatus} · {visibleOrders.length} 笔</span><span className="block text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>当前会员：{selectedUser.name}</span></div>
+                <span className="text-[10px] text-right" style={{ color: S.muted }}>按订单、包裹与商品处理</span>
               </div>
               {visibleOrders.map(order => (
                 <article key={order.no} className="mb-2 overflow-hidden" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}>
@@ -685,7 +718,12 @@ export default function InfluenceRanking() {
                   </div>
                 </article>
               ))}
-              {visibleOrders.length === 0 && <div className="py-6 text-center text-[10px]" style={{ color: S.muted }}>当前状态暂无订单</div>}
+              {visibleOrders.length === 0 && <div className="px-3 py-5 text-center" style={{ background: "#f7f7f7", border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }}>
+                <Package size={17} className="mx-auto mb-2" style={{ color: S.mutedLight }} />
+                <div className="text-[11px] font-bold" style={{ color: S.textSec }}>暂无「{activeOrderStatus}」订单</div>
+                <div className="text-[10px] mt-1 leading-relaxed" style={{ color: S.muted }}>可查看全部订单，或直接为该会员创建售后跟进。</div>
+                <div className="flex justify-center gap-2 mt-3"><button onClick={() => { setActiveOrderStatus("所有订单"); setOrderQuery(""); setOrderSearchInput(""); }} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>查看全部</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建售后跟进`)} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: "#ffffff", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>创建售后</button></div>
+              </div>}
               <div className="flex items-center justify-center gap-1 pt-1 text-[10px]" style={{ color: S.muted }}><button className="px-1.5 py-1" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>‹</button><span className="px-1.5 py-1 font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>1</span><button className="px-1.5 py-1" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>›</button><span className="ml-1">共 {visibleOrders.length} 笔</span></div>
             </div>
           )}

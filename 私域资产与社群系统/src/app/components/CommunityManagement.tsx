@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getAvatar } from "./Avatar";
-import { Search, Plus, X, ChevronLeft, ChevronRight, QrCode, Users, ArrowLeft, TrendingUp } from "lucide-react";
+import GroupAssignment from "./GroupAssignment";
+import { Search, Plus, X, ChevronLeft, ChevronRight, QrCode, Users, ArrowLeft, GitBranch, RefreshCw, ChevronDown } from "lucide-react";
 
 const S = {
   bg: "#fafafa",
@@ -156,7 +157,7 @@ function NewGroupModal({ onClose }: { onClose: () => void }) {
 
         <div className="flex gap-3 px-6 py-4" style={{ borderTop: `1px solid rgba(0,0,0,0.08)` }}>
           <button onClick={onClose} className="flex-1 py-2.5 text-sm uppercase font-bold" style={{ background: S.bg, color: S.muted, border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radius, fontFamily: "monospace" }}>取消</button>
-          <button className="flex-1 py-2.5 text-sm font-bold uppercase" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>保存</button>
+          <button onClick={onClose} className="flex-1 py-2.5 text-sm font-bold uppercase" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>保存</button>
         </div>
       </div>
     </div>
@@ -167,6 +168,7 @@ function NewGroupModal({ onClose }: { onClose: () => void }) {
 function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: () => void }) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [editingMemberNo, setEditingMemberNo] = useState<string | null>(null);
 
   const filtered = mockMembers.filter(m =>
     m.wechatName.includes(search) || m.name.includes(search) || m.wechatId.includes(search) || m.phone.includes(search)
@@ -206,13 +208,14 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
       </div>
 
       <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-        <div className="flex items-center px-4 py-2.5 flex-shrink-0" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0`, minWidth: "fit-content" }}>
-          {cols.map(c => (
-            <div key={c.label} className="flex-shrink-0 text-xs font-medium uppercase" style={{ width: c.w, color: "#555555", fontFamily: "monospace", letterSpacing: "0.05em" }}>{c.label}</div>
-          ))}
-        </div>
-
-        <div className="flex-1 overflow-auto">
+        {/* 表头与数据行必须共用同一个滚动容器，避免横向滚动后字段错位 */}
+        <div className="flex-1 overflow-auto" aria-label="群成员名单横向滚动表格">
+          <div style={{ minWidth: "1120px" }}>
+            <div className="flex items-center px-4 py-2.5 sticky top-0 z-10" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+              {cols.map(c => (
+                <div key={c.label} className="flex-shrink-0 text-xs font-medium uppercase" style={{ width: c.w, color: "#555555", fontFamily: "monospace", letterSpacing: "0.05em" }}>{c.label}</div>
+              ))}
+            </div>
           {paged.map((m) => (
             <div key={m.no} className="flex items-center px-4 py-2.5 transition-all" style={{ background: "transparent", borderBottom: `1px solid ${S.border}`, minWidth: "fit-content" }}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(204,255,0,0.06)"; }}
@@ -238,10 +241,12 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
                 <span className="text-xs px-1.5 py-0.5 uppercase" style={{ background: m.inGroup ? S.accent : "#1a1a1a", color: m.inGroup ? "#000" : S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{m.inGroup ? "是" : "否"}</span>
               </div>
               <div className="flex-shrink-0" style={{ width: 60 }}>
-                <button className="px-2 py-1 text-xs uppercase font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>修改</button>
+                <button className="px-2 py-1 text-xs uppercase font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={event => { event.stopPropagation(); setEditingMemberNo(m.no); }}>修改</button>
               </div>
             </div>
           ))}
+          {paged.length === 0 && <div className="py-12 text-center text-xs" style={{ color: S.muted }}>暂无匹配成员，请调整搜索条件</div>}
+          </div>
         </div>
 
         <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
@@ -256,12 +261,31 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
           <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>每页 {PAGE_SIZE} 条</div>
         </div>
       </div>
+
+      {editingMemberNo && (() => {
+        const member = mockMembers.find(item => item.no === editingMemberNo);
+        if (!member) return null;
+        return <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.42)" }}>
+          <div className="w-[min(420px,calc(100vw-32px))] overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, boxShadow: "0 18px 50px rgba(0,0,0,0.18)" }}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
+              <div><div className="text-sm font-bold" style={{ color: S.text }}>编辑群成员</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>{member.wechatName} · {member.wechatId}</div></div>
+              <button type="button" title="关闭编辑" aria-label="关闭编辑" onClick={() => setEditingMemberNo(null)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted }}><X size={15} /></button>
+            </div>
+            <div className="p-5 space-y-3">
+              <div className="grid grid-cols-2 gap-3"><div><label className="block text-[10px] mb-1" style={{ color: S.muted }}>群内角色</label><select defaultValue="普通成员" className="w-full px-2.5 py-2 text-xs outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>普通成员</option><option>群管理员</option><option>群主</option></select></div><div><label className="block text-[10px] mb-1" style={{ color: S.muted }}>进群状态</label><select defaultValue={member.inGroup ? "已进群" : "待进群"} className="w-full px-2.5 py-2 text-xs outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>已进群</option><option>待进群</option><option>已退出</option></select></div></div>
+              <div><label className="block text-[10px] mb-1" style={{ color: S.muted }}>成员备注</label><textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="补充成员服务备注..." /></div>
+            </div>
+            <div className="flex gap-2 px-5 py-4" style={{ borderTop: `1px solid ${S.border}` }}><button type="button" onClick={() => setEditingMemberNo(null)} className="flex-1 py-2 text-xs font-bold" style={{ background: "#f0f0ec", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>取消</button><button type="button" onClick={() => setEditingMemberNo(null)} className="flex-1 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>保存修改</button></div>
+          </div>
+        </div>;
+      })()}
     </div>
   );
 }
 
 // ─── 主组件 ───────────────────────────────────────────────────
 export default function CommunityManagement() {
+  const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">("groups");
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("全部");
   const [cityFilter, setCityFilter] = useState("全部");
@@ -269,6 +293,22 @@ export default function CommunityManagement() {
   const [showModal, setShowModal] = useState(false);
   const [memberGroup, setMemberGroup] = useState<typeof mockGroups[0] | null>(null);
   const [selectedGroupNo, setSelectedGroupNo] = useState(mockGroups[1].no);
+  const [ownerStatusOverrides, setOwnerStatusOverrides] = useState<Record<string, string>>({});
+  const [actionNotice, setActionNotice] = useState("");
+
+  if (activeWorkspace === "assignment") return (
+    <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg }}>
+      <div className="flex items-center justify-between flex-shrink-0 gap-4">
+        <div className="min-w-0"><h2 className="font-semibold uppercase" style={{ color: S.text, fontFamily: "monospace", letterSpacing: "0.05em" }}>// 微信群管理</h2><p className="text-xs mt-0.5 truncate" style={{ color: S.muted, fontFamily: "monospace" }}>群库、成员准入与智能分配规则在同一工作区配置</p></div>
+        <span className="hidden xl:inline text-xs px-3 py-2" style={{ background: S.accentLight, color: S.textSec, border: `1px solid ${S.accentMid}`, borderRadius: S.radius, fontFamily: "monospace" }}>成员分配规则</span>
+      </div>
+      <div className="flex items-center gap-1 flex-shrink-0" role="tablist" aria-label="微信群管理功能">
+        <button type="button" role="tab" aria-selected={false} onClick={() => setActiveWorkspace("groups")} className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Users size={13} />群库管理</button>
+        <button type="button" role="tab" aria-selected className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, border: "1px solid #0d0d0d", borderRadius: S.radiusSm }}><GitBranch size={13} />分配规则 <span className="px-1.5 py-0.5" style={{ background: S.accent, color: "#000", borderRadius: "999px", fontSize: "9px" }}>8</span></button>
+      </div>
+      <div className="flex-1 min-h-0"><GroupAssignment embedded /></div>
+    </div>
+  );
 
   if (memberGroup) return <MemberList group={memberGroup} onBack={() => setMemberGroup(null)} />;
 
@@ -281,11 +321,18 @@ export default function CommunityManagement() {
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const selectedGroup = mockGroups.find(g => g.no === selectedGroupNo) || filtered[0] || mockGroups[0];
+  const selectedGroupBase = mockGroups.find(g => g.no === selectedGroupNo) || filtered[0] || mockGroups[0];
+  const selectedGroup = { ...selectedGroupBase, ownerStatus: ownerStatusOverrides[selectedGroupBase.no] || selectedGroupBase.ownerStatus };
   const groupIndex = Math.max(0, Number(selectedGroup.no) - 1);
   const groupMembers = Array.from({ length: 6 }, (_, index) => mockMembers[(groupIndex + index) % mockMembers.length]);
   const capacityPercent = Math.round((selectedGroup.memberCount / selectedGroup.max) * 100);
   const serviceOfficers = ["吴思远", "林小燕", "刘刚", "陈明", "张晓红", "李梦华"];
+  const announceAction = (message: string) => setActionNotice(message);
+  const setOwnerStatus = (nextStatus: string) => {
+    if (nextStatus === selectedGroup.ownerStatus) return;
+    setOwnerStatusOverrides(current => ({ ...current, [selectedGroup.no]: nextStatus }));
+    setActionNotice(`群主状态已调整为“${nextStatus}”`);
+  };
   const tableCols = [
     { label: "编号", w: 60 }, { label: "群名", w: 200 }, { label: "地区", w: 100 },
     { label: "所属微信", w: 90 }, { label: "群类型", w: 100 }, { label: "群主状态", w: 80 },
@@ -306,6 +353,11 @@ export default function CommunityManagement() {
             <Plus size={15} /> 新建微信群
           </button>
         </div>
+      </div>
+
+      <div className="flex items-center gap-1 flex-shrink-0" role="tablist" aria-label="微信群管理功能">
+        <button type="button" role="tab" aria-selected className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, border: "1px solid #0d0d0d", borderRadius: S.radiusSm }}><Users size={13} />群库管理</button>
+        <button type="button" role="tab" aria-selected={false} onClick={() => setActiveWorkspace("assignment")} className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><GitBranch size={13} />分配规则 <span className="px-1.5 py-0.5" style={{ background: S.accent, color: "#000", borderRadius: "999px", fontSize: "9px" }}>8</span></button>
       </div>
 
       <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
@@ -356,8 +408,9 @@ export default function CommunityManagement() {
               const pct = g.memberCount / g.max;
               const active = selectedGroup.no === g.no;
               return (
-                <button key={g.no} className="w-full flex items-center px-4 py-2.5 text-left transition-all group" style={{ background: active ? S.accentLight : "transparent", borderBottom: `1px solid ${S.border}`, minWidth: "1120px", boxShadow: active ? `inset 3px 0 0 ${S.accent}` : "none" }}
+                <div key={g.no} role="button" tabIndex={0} className="w-full flex items-center px-4 py-2.5 text-left transition-all group" style={{ background: active ? S.accentLight : "transparent", borderBottom: `1px solid ${S.border}`, minWidth: "1120px", boxShadow: active ? `inset 3px 0 0 ${S.accent}` : "none" }}
                   onClick={() => setSelectedGroupNo(g.no)}
+                  onKeyDown={event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); setSelectedGroupNo(g.no); } }}
                 >
                   <div className="flex-shrink-0 text-xs" style={{ width: 60, color: S.muted, fontFamily: "monospace" }}>{g.no}</div>
                   <div className="flex-shrink-0" style={{ width: 200 }}>
@@ -384,7 +437,7 @@ export default function CommunityManagement() {
                     </button>
                     <span className="px-2 py-1 text-xs uppercase" style={{ color: active ? S.text : S.muted, fontFamily: "monospace" }}>详情</span>
                   </div>
-                </button>
+                </div>
               );
             })}
           </div>
@@ -409,24 +462,42 @@ export default function CommunityManagement() {
                   <div className="text-lg font-semibold mt-0.5" style={{ fontFamily: "monospace", letterSpacing: 0 }}>{selectedGroup.name}</div>
                   <div className="text-xs mt-1" style={{ color: "rgba(204,255,0,0.72)", fontFamily: "monospace" }}>{selectedGroup.city} · {selectedGroup.wechat} · {selectedGroup.type}</div>
                 </div>
-                <button className="px-2.5 py-1.5 text-xs font-bold flex-shrink-0" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setMemberGroup(selectedGroup)}>
-                  <Users size={12} className="inline mr-1" />入群名单
-                </button>
               </div>
               <div className="grid grid-cols-4 gap-1.5 mt-3">
-                {[["推送", selectedGroup.pushCount], ["扫码", selectedGroup.scanCount], ["入群", selectedGroup.memberCount], ["容量", selectedGroup.max]].map(([l, v]) => (
-                  <div key={l as string} className="p-2" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(204,255,0,0.16)", borderRadius: S.radiusSm }}>
-                    <div className="text-xs" style={{ color: "rgba(204,255,0,0.65)", fontFamily: "monospace" }}>{l}</div>
-                    <div className="text-base font-semibold mt-0.5" style={{ fontFamily: "monospace" }}>{v}</div>
-                  </div>
-                ))}
+                {[["推送", selectedGroup.pushCount], ["扫码", selectedGroup.scanCount], ["入群", selectedGroup.memberCount], ["容量", selectedGroup.max]].map(([l, v]) => {
+                  const metric = (
+                    <>
+                      <div className="flex items-center gap-1 text-xs" style={{ color: "rgba(204,255,0,0.65)", fontFamily: "monospace" }}>{l}{l === "入群" && <Users size={11} />}</div>
+                      <div className="text-base font-semibold mt-0.5" style={{ fontFamily: "monospace" }}>{v}</div>
+                    </>
+                  );
+                  return l === "入群" ? (
+                    <button key={l as string} type="button" className="p-2 text-left transition-all" aria-label="查看入群名单" title="查看入群名单" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(204,255,0,0.16)", borderRadius: S.radiusSm, color: S.accent, fontFamily: "monospace" }} onClick={() => setMemberGroup(selectedGroup)}>
+                      {metric}
+                    </button>
+                  ) : (
+                    <div key={l as string} className="p-2" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(204,255,0,0.16)", borderRadius: S.radiusSm }}>
+                      {metric}
+                    </div>
+                  );
+                })}
               </div>
               <div className="mt-3 pt-2.5" style={{ borderTop: "1px solid rgba(204,255,0,0.16)" }}>
                 <div className="grid grid-cols-3 gap-2">
                   {[["所属项目", selectedGroup.type.replace("群", "项目")], ["专属服务官", serviceOfficers[groupIndex % serviceOfficers.length]], ["群主状态", selectedGroup.ownerStatus]].map(([label, value]) => (
                     <div key={label as string}>
                       <div className="text-xs" style={{ color: "rgba(204,255,0,0.62)", fontFamily: "monospace" }}>{label}</div>
-                      <div className="text-xs font-bold mt-0.5 truncate" style={{ color: value === "待交接" ? "#ffd600" : S.accent, fontFamily: "monospace" }}>{value}</div>
+                      {label === "群主状态" ? (
+                        <div className="relative mt-0.5 w-fit">
+                          <select aria-label="调整群主状态" title="选择群主状态" value={value} onChange={event => setOwnerStatus(event.target.value)} className="appearance-none cursor-pointer bg-transparent pr-4 text-xs font-bold outline-none" style={{ color: value === "待交接" ? "#ffd600" : S.accent, fontFamily: "monospace" }}>
+                            <option value="正常" style={{ background: "#0d0d0d", color: S.accent }}>正常</option>
+                            <option value="待交接" style={{ background: "#0d0d0d", color: "#ffd600" }}>待交接</option>
+                          </select>
+                          <ChevronDown size={12} className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2" style={{ color: value === "待交接" ? "#ffd600" : S.accent }} />
+                        </div>
+                      ) : (
+                        <div className="text-xs font-bold mt-0.5 truncate" style={{ color: value === "待交接" ? "#ffd600" : S.accent, fontFamily: "monospace" }}>{value}</div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -437,6 +508,25 @@ export default function CommunityManagement() {
                   </div>
                 </div>
               </div>
+
+              <div className="mt-3 pt-3" style={{ borderTop: "1px solid rgba(204,255,0,0.16)" }}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold uppercase" style={{ color: "rgba(204,255,0,0.72)", fontFamily: "monospace" }}>群运营操作</span>
+                  <span className="text-[10px] uppercase" style={{ color: "rgba(255,255,255,0.42)", fontFamily: "monospace" }}>QUICK ACTIONS</span>
+                </div>
+                <div className="grid grid-cols-2 gap-1.5">
+                  <button type="button" className="flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold" style={{ background: S.accent, color: "#000", border: `1px solid ${S.accent}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => announceAction(`${selectedGroup.name} 的群二维码更新任务已创建`)}>
+                    <QrCode size={14} /> 更新群二维码
+                  </button>
+                  <button type="button" className="flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold" style={{ background: "rgba(255,255,255,0.08)", color: S.accent, border: "1px solid rgba(204,255,0,0.24)", borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => announceAction(`${selectedGroup.name} 的成员名单同步已排队`)}>
+                    <RefreshCw size={14} /> 同步成员名单
+                  </button>
+                  <button type="button" className="col-span-2 flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold" style={{ background: "transparent", color: "rgba(255,255,255,0.86)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setShowModal(true)}>
+                    <Plus size={14} /> 创建承接新群
+                  </button>
+                </div>
+                {actionNotice && <div role="status" className="mt-2 px-3 py-2 text-xs" style={{ background: "rgba(204,255,0,0.12)", color: S.accent, border: "1px solid rgba(204,255,0,0.24)", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{actionNotice}</div>}
+              </div>
             </div>
 
             <div className="p-4" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
@@ -445,9 +535,7 @@ export default function CommunityManagement() {
                     <div className="text-xs font-bold uppercase" style={{ color: S.text, fontFamily: "monospace" }}>群成员名单</div>
                     <div className="text-xs mt-1" style={{ color: S.muted, fontFamily: "monospace" }}>已入群 {selectedGroup.memberCount} 人 · 展示最近成员</div>
                   </div>
-                  <button className="flex items-center gap-1 text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }} onClick={() => setMemberGroup(selectedGroup)} title="查看全部成员名单">
-                    <TrendingUp size={15} style={{ color: S.muted }} /> 全部
-                  </button>
+                  <span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>最近成员</span>
                 </div>
                 {groupMembers.map((m, i) => (
                   <div key={m.no} className="flex items-center py-2.5" style={{ borderTop: i === 0 ? "none" : `1px solid ${S.border}` }}>
@@ -460,13 +548,6 @@ export default function CommunityManagement() {
                   </div>
                 ))}
               </div>
-            <div className="grid grid-cols-2 gap-2">
-              {["更新群二维码", "同步成员名单", "调整群主状态", "创建承接新群"].map((action, i) => (
-                <button key={action} className="px-3 py-2.5 text-left text-xs font-bold" style={{ background: i === 0 ? S.accent : S.bg, color: "#000", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => i === 3 ? setShowModal(true) : undefined}>
-                  {action}
-                </button>
-              ))}
-            </div>
         </aside>
       </div>
     </div>

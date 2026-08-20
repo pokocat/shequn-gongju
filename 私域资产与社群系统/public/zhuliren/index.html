@@ -1,0 +1,616 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>主理人公社 | Lime Membership OS</title>
+    <link rel="stylesheet" href="./styles.css?v=mini-polish-20260605" />
+  </head>
+  <body>
+    <div class="page-bg" aria-hidden="true">
+      <span class="glow glow-a"></span>
+      <span class="glow glow-b"></span>
+      <span class="giant-word">MEMBER</span>
+    </div>
+
+    <nav class="floating-mode-switch" aria-label="浮动系统切换">
+      <span>预览端</span>
+      <div>
+        <button class="is-active" type="button" data-view="mini">小程序</button>
+        <button type="button" data-view="admin">PC后台</button>
+      </div>
+    </nav>
+
+    <header class="site-header">
+      <div class="brand-lockup">
+        <div class="brand-mark">主</div>
+        <div>
+          <p class="eyebrow">Lime Membership OS</p>
+          <h1>主理人公社会员系统</h1>
+        </div>
+      </div>
+      <div class="header-note">
+        <strong>浅色青柠会员风格</strong>
+        <span>小程序 + PC后台 + AI军师 + 微信联动</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="view-panel is-active" id="mini-view" aria-label="小程序端设计">
+        <div class="intro-copy">
+          <p class="eyebrow">Mini Program Flow</p>
+          <h2>从登录到入群服务的一套主理人会员操作系统</h2>
+          <p>
+            采用参考图的奶油浅底、青柠会员卡、胶囊切换、权益横滑和大 CTA 风格，完整串联登录、注册、缴费、AI分班、服务微信、培训和AI诊断。
+          </p>
+        </div>
+
+        <div class="mini-layout">
+          <aside class="flow-sidebar" aria-label="小程序流程导航">
+            <button class="is-active" type="button" data-screen="login"><span>01</span> 登录授权</button>
+            <button type="button" data-screen="register"><span>02</span> 资料注册</button>
+            <button type="button" data-screen="subscribe"><span>03</span> 会员订阅</button>
+            <button type="button" data-screen="class"><span>04</span> AI分班</button>
+            <button type="button" data-screen="wechat"><span>05</span> 服务微信</button>
+            <button type="button" data-screen="home"><span>06</span> 会员首页</button>
+            <button type="button" data-screen="card"><span>07</span> 会员名片</button>
+            <button type="button" data-screen="ai"><span>08</span> AI军师</button>
+            <button type="button" data-screen="training"><span>09</span> 培训教务</button>
+            <button type="button" data-screen="feed"><span>10</span> 信息发布</button>
+          </aside>
+
+          <div class="phone-stage">
+            <div class="phone-shell" aria-label="小程序手机预览">
+              <div class="phone-bg-tab"></div>
+              <div class="phone-glass">
+                <section class="mini-screen is-active login-screen" data-screen-panel="login">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="mini-topbar">
+                    <button type="button" aria-label="关闭">×</button>
+                    <div class="segmented">
+                      <span class="is-active">登录</span>
+                      <span>会员</span>
+                    </div>
+                    <div class="coin-pill">OPC</div>
+                  </div>
+                  <div class="hero-orb">
+                    <span class="orb-ring"></span>
+                    <span class="orb-card">主</span>
+                    <b>AI</b>
+                  </div>
+                  <div class="screen-title center">
+                    <p>主理人公社</p>
+                    <h3>登录后开启你的会员成长系统</h3>
+                    <span>微信授权、推荐关系、服务链路和AI标签将自动串联。</span>
+                  </div>
+                  <div class="login-actions">
+                    <button type="button" data-next-screen="register">
+                      <i class="wechat-icon"></i>
+                      微信一键授权登录
+                    </button>
+                    <button type="button" data-next-screen="register">手机号验证码登录</button>
+                  </div>
+                  <div class="flow-chips">
+                    <span>授权</span>
+                    <span>注册</span>
+                    <span>缴费</span>
+                    <span>分班</span>
+                  </div>
+                </section>
+
+                <section class="mini-screen form-screen" data-screen-panel="register">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="screen-title">
+                    <p>资料注册</p>
+                    <h3>建立会员身份和推荐关系</h3>
+                    <span>AI会根据这些资料生成初始标签，并推荐合适班级。</span>
+                  </div>
+                  <div class="progress-line">
+                    <span class="done">登录</span>
+                    <span class="active">资料</span>
+                    <span>缴费</span>
+                    <span>分班</span>
+                  </div>
+                  <div class="soft-card form-card">
+                    <label>
+                      <small>昵称 / 品牌</small>
+                      <strong>陈小北 · 私域增长顾问</strong>
+                    </label>
+                    <label>
+                      <small>手机与微信</small>
+                      <strong>138****0881 · 企业微信档案待绑定</strong>
+                    </label>
+                    <label>
+                      <small>推荐来源</small>
+                      <strong>联合创始人 Lily / 华东区 / 杭州增长营</strong>
+                    </label>
+                    <label>
+                      <small>入会目标</small>
+                      <strong>30天完成社群会员产品化并启动招募</strong>
+                    </label>
+                  </div>
+                  <div class="ai-tag-card">
+                    <div>
+                      <small>AI初始标签</small>
+                      <strong>增长型主理人 · 适合陪跑班</strong>
+                    </div>
+                    <b>86%</b>
+                  </div>
+                  <button class="primary-cta" type="button" data-next-screen="subscribe">
+                    保存资料，选择会员权益
+                  </button>
+                </section>
+
+                <section class="mini-screen subscribe-screen" data-screen-panel="subscribe">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="mini-topbar">
+                    <button type="button" aria-label="关闭">×</button>
+                    <div class="segmented">
+                      <span class="is-active">会员订阅</span>
+                      <span>能量点</span>
+                    </div>
+                    <div class="coin-pill">0</div>
+                  </div>
+                  <div class="member-visual">
+                    <div class="crown-tile">♛</div>
+                    <div class="member-card-3d">
+                      <span>OPC</span>
+                      <strong>#Member Card</strong>
+                      <i></i>
+                      <i></i>
+                    </div>
+                    <div class="gem"></div>
+                    <b class="back-word">Member</b>
+                  </div>
+                  <div class="screen-title center compact">
+                    <h3>成为主理人公社会员</h3>
+                    <span>解锁AI军师、培训陪跑、资料库、服务微信和班级社群。</span>
+                  </div>
+                  <div class="benefit-row" aria-label="会员权益">
+                    <article><b>✦</b><span>AI诊断</span></article>
+                    <article><b>★</b><span>权益库</span></article>
+                    <article><b>●</b><span>培训陪跑</span></article>
+                    <article><b>♫</b><span>直播课</span></article>
+                    <article><b>m</b><span>服务微信</span></article>
+                  </div>
+                  <div class="weekly-note">
+                    <span>🎟</span>
+                    <strong>会员每月可领取4次AI诊断</strong>
+                    <i>?</i>
+                  </div>
+                  <button class="price-card" type="button">
+                    <div>
+                      <strong>连续包年 <em>限时3.2折</em></strong>
+                      <p>¥699 <del>¥2199</del></p>
+                    </div>
+                    <span class="radio"></span>
+                  </button>
+                  <button class="price-card selected" type="button">
+                    <div>
+                      <strong>连续包月 <em>限时6.9折</em></strong>
+                      <p>¥99 <del>¥149</del></p>
+                    </div>
+                    <span class="radio">✓</span>
+                  </button>
+                  <button class="primary-cta sticky" type="button" data-next-screen="class">
+                    开始免费试用
+                    <small>7天后自动订阅</small>
+                  </button>
+                  <div class="legal-links">
+                    <span>使用条款</span><i></i><span>隐私政策</span><i></i><span>恢复购买</span>
+                  </div>
+                </section>
+
+                <section class="mini-screen form-screen" data-screen-panel="class">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="screen-title">
+                    <p>AI分班</p>
+                    <h3>支付成功，AI已生成服务方案</h3>
+                    <span>根据区域、目标、推荐链路和服务人员负载自动推荐。</span>
+                  </div>
+                  <div class="success-card">
+                    <span>✓</span>
+                    <div>
+                      <strong>年度会员权益已开通</strong>
+                      <p>ID OPC-2026-0881 · 有效期至 2027-06-05</p>
+                    </div>
+                  </div>
+                  <div class="soft-card class-card">
+                    <small>AI推荐班级</small>
+                    <h4>杭州 A1 主理人成长班</h4>
+                    <div class="class-meta">
+                      <span>Luna 教务</span>
+                      <span>华东区</span>
+                      <span>92%匹配</span>
+                    </div>
+                    <ul>
+                      <li>推荐导师：Ken · 社群商业化</li>
+                      <li>服务人员：Luna 教务</li>
+                      <li>班级群：OPC 杭州A1 主理人陪跑</li>
+                    </ul>
+                  </div>
+                  <button class="primary-cta" type="button" data-next-screen="wechat">确认分班，添加服务微信</button>
+                </section>
+
+                <section class="mini-screen form-screen" data-screen-panel="wechat">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="screen-title">
+                    <p>微信联动</p>
+                    <h3>添加服务微信，进入班级群</h3>
+                    <span>企业微信将自动备注会员ID、班级、来源人和会员等级。</span>
+                  </div>
+                  <div class="qr-panel">
+                    <div class="qr-code"></div>
+                    <strong>OPC-Mentor-07</strong>
+                    <p>扫码添加 Luna 教务</p>
+                  </div>
+                  <div class="remark-card">
+                    <small>自动备注</small>
+                    <strong>OPC-0881 / 杭州A1 / Lily推荐 / 年度会员</strong>
+                  </div>
+                  <div class="task-list">
+                    <span class="done">支付开通</span>
+                    <span class="done">AI分班</span>
+                    <span class="active">添加服务微信</span>
+                    <span>进入班级群</span>
+                  </div>
+                  <button class="primary-cta" type="button" data-next-screen="home">我已添加，进入会员首页</button>
+                </section>
+
+                <section class="mini-screen dashboard-screen" data-screen-panel="home">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="home-header">
+                    <div>
+                      <p>欢迎回来</p>
+                      <h3>陈小北</h3>
+                    </div>
+                    <button type="button">年度Pro</button>
+                  </div>
+                  <div class="home-member-card">
+                    <span>OPC Member</span>
+                    <strong>杭州A1 · AI诊断 88.5</strong>
+                    <p>今日建议：完成会员权益清单作业，预约1v1点评。</p>
+                  </div>
+                  <div class="quick-grid">
+                    <button type="button" data-next-screen="card"><b>名片</b><span>关系链</span></button>
+                    <button type="button" data-next-screen="ai"><b>AI军师</b><span>诊断报告</span></button>
+                    <button type="button" data-next-screen="training"><b>培训</b><span>直播作业</span></button>
+                    <button type="button" data-next-screen="feed"><b>公告</b><span>活动资料</span></button>
+                  </div>
+                  <div class="soft-card agenda-card">
+                    <small>今日待办</small>
+                    <article><span>20:00</span><strong>社群会员产品设计工作坊</strong></article>
+                    <article><span>23:00</span><strong>提交“权益清单”作业</strong></article>
+                  </div>
+                </section>
+
+                <section class="mini-screen form-screen" data-screen-panel="card">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="member-profile-card">
+                    <div class="member-card-3d small-card">
+                      <span>OPC</span>
+                      <strong>#Member Card</strong>
+                    </div>
+                    <h3>陈小北</h3>
+                    <p>联合创始人 · 杭州A1班</p>
+                    <div><span>ID OPC-2026-0881</span><span>AI 88.5</span></div>
+                  </div>
+                  <div class="soft-card relation-card">
+                    <small>关系链</small>
+                    <div>
+                      <span>创始人</span>
+                      <i></i>
+                      <span>联合创始人 Lily</span>
+                      <i></i>
+                      <span>华东区管理员</span>
+                      <i></i>
+                      <span>Luna 教务</span>
+                    </div>
+                  </div>
+                  <div class="stats-grid">
+                    <article><strong>12</strong><span>课程权益</span></article>
+                    <article><strong>4</strong><span>AI诊断</span></article>
+                    <article><strong>1v1</strong><span>陪跑服务</span></article>
+                  </div>
+                  <button class="primary-cta" type="button" data-next-screen="ai">查看AI军师诊断</button>
+                </section>
+
+                <section class="mini-screen form-screen" data-screen-panel="ai">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="screen-title">
+                    <p>AI军师</p>
+                    <h3>社群增长成熟度诊断</h3>
+                  </div>
+                  <div class="ai-score-card">
+                    <div class="score-ring"><span>88</span></div>
+                    <div>
+                      <small>本周状态</small>
+                      <strong>可进入付费转化加速阶段</strong>
+                      <p>AI基于问卷、学习、作业、权益使用和服务记录生成。</p>
+                    </div>
+                  </div>
+                  <div class="advice-list">
+                    <article><b>01</b><div><strong>会员画像偏散</strong><p>建议发布“核心用户三问”调研。</p></div></article>
+                    <article><b>02</b><div><strong>转化窗口打开</strong><p>48小时内推送年度会员案例和直播预约。</p></div></article>
+                    <article><b>03</b><div><strong>区域裂变机会</strong><p>杭州班可推荐2位区域管理员候选人。</p></div></article>
+                  </div>
+                  <button class="primary-cta" type="button" data-next-screen="training">生成培训计划</button>
+                </section>
+
+                <section class="mini-screen form-screen" data-screen-panel="training">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="screen-title">
+                    <p>培训教务</p>
+                    <h3>班级陪跑与作业服务</h3>
+                  </div>
+                  <div class="course-hero">
+                    <span>第2周</span>
+                    <h4>社群会员产品设计工作坊</h4>
+                    <p>今晚20:00直播 · Luna 教务提醒</p>
+                  </div>
+                  <div class="timeline-list">
+                    <article><b>09:30</b><span>AI作业批改：会员权益清单</span></article>
+                    <article><b>14:00</b><span>班级群答疑：成交话术共创</span></article>
+                    <article><b>20:00</b><span>导师直播：区域社群启动模型</span></article>
+                  </div>
+                  <button class="primary-cta" type="button" data-next-screen="feed">查看公社公告</button>
+                </section>
+
+                <section class="mini-screen form-screen" data-screen-panel="feed">
+                  <div class="status-bar">
+                    <strong>11:28</strong>
+                    <div class="status-icons"><span></span><span></span><span></span></div>
+                  </div>
+                  <div class="screen-title">
+                    <p>公社情报站</p>
+                    <h3>公告、活动、资源定向发布</h3>
+                  </div>
+                  <div class="feed-tabs">
+                    <span class="is-active">公告</span>
+                    <span>资源</span>
+                    <span>案例</span>
+                  </div>
+                  <article class="news-card hot">
+                    <span>置顶</span>
+                    <strong>6月主理人闭门会报名开启</strong>
+                    <p>仅限Pro会员，AI会按成长阶段推荐分会场。</p>
+                  </article>
+                  <article class="news-card">
+                    <span>权益</span>
+                    <strong>新增“社群SOP模板库”</strong>
+                    <p>可同步到班级资料库，并触发教务提醒。</p>
+                  </article>
+                  <article class="news-card">
+                    <span>提醒</span>
+                    <strong>杭州A1班作业截止今晚23:00</strong>
+                    <p>未提交成员会自动触发企业微信提醒。</p>
+                  </article>
+                  <button class="primary-cta" type="button" data-view="admin">切到PC后台查看管理</button>
+                </section>
+
+                <nav class="mini-app-tabbar" aria-label="小程序底部导航">
+                  <button type="button" data-screen="home"><span>⌂</span>首页</button>
+                  <button type="button" data-screen="card"><span>◇</span>名片</button>
+                  <button type="button" data-screen="ai"><span>✦</span>AI军师</button>
+                  <button type="button" data-screen="training"><span>▣</span>课程</button>
+                  <button type="button" data-screen="feed"><span>☰</span>公告</button>
+                </nav>
+              </div>
+            </div>
+          </div>
+
+          <aside class="logic-notes">
+            <article>
+              <span>UI规范</span>
+              <p>奶油浅底、青柠会员卡、黑白胶囊、柔和阴影、大价格卡和强CTA，统一为 Lime Membership OS。</p>
+            </article>
+            <article>
+              <span>业务闭环</span>
+              <p>登录授权 → 资料注册 → 缴费开通 → AI分班 → 加服务微信 → 入群服务 → 培训与AI诊断。</p>
+            </article>
+            <article>
+              <span>AI联动</span>
+              <p>AI根据会员资料、支付权益、课程作业、服务记录和互动数据生成标签、分班和运营建议。</p>
+            </article>
+          </aside>
+        </div>
+      </section>
+
+      <section class="view-panel" id="admin-view" aria-label="PC后台设计">
+        <div class="admin-shell">
+          <aside class="admin-sidebar">
+            <div class="admin-brand">
+              <div class="brand-mark small">主</div>
+              <div>
+                <strong>主理人公社</strong>
+                <span>Admin Console</span>
+              </div>
+            </div>
+            <nav aria-label="后台模块">
+              <button class="is-active" type="button" data-admin="overview">运营总览</button>
+              <button type="button" data-admin="members">会员管理</button>
+              <button type="button" data-admin="relations">关系链树</button>
+              <button type="button" data-admin="classes">分班教务</button>
+              <button type="button" data-admin="ai">AI军师</button>
+              <button type="button" data-admin="content">内容发布</button>
+              <button type="button" data-admin="orders">订单权益</button>
+              <button type="button" data-admin="wechat">微信联动</button>
+            </nav>
+          </aside>
+
+          <div class="admin-main">
+            <header class="admin-topbar">
+              <div>
+                <p class="eyebrow">PC Management System</p>
+                <h2 id="admin-title">运营总览</h2>
+              </div>
+              <div class="admin-actions">
+                <button type="button">导出报表</button>
+                <button class="admin-primary" type="button">新建班级</button>
+              </div>
+            </header>
+
+            <section class="metric-grid">
+              <article>
+                <span>付费会员</span>
+                <strong>5,984</strong>
+                <em>+18.6% 本月</em>
+              </article>
+              <article>
+                <span>AI诊断完成</span>
+                <strong>2,416</strong>
+                <em>平均分 82.4</em>
+              </article>
+              <article>
+                <span>活跃班级</span>
+                <strong>42</strong>
+                <em>12个区域</em>
+              </article>
+              <article>
+                <span>服务微信添加率</span>
+                <strong>96%</strong>
+                <em>17人待跟进</em>
+              </article>
+            </section>
+
+            <section class="admin-grid">
+              <article class="panel relation-panel">
+                <div class="panel-title">
+                  <div>
+                    <span>关系链树</span>
+                    <h3>创始人、联合创始人、区域管理员、服务人员与会员全链路</h3>
+                  </div>
+                  <button type="button">查看全部</button>
+                </div>
+                <div class="relation-map">
+                  <div class="node founder">创始人</div>
+                  <div class="relation-row">
+                    <div class="node cofounder">联合创始人 Lily</div>
+                    <div class="node cofounder">联合创始人 Ken</div>
+                  </div>
+                  <div class="relation-row">
+                    <div class="node region">华东区管理员</div>
+                    <div class="node region">华南区管理员</div>
+                    <div class="node region">西南区管理员</div>
+                  </div>
+                  <div class="relation-row">
+                    <div class="node staff">Luna 教务</div>
+                    <div class="node staff">Mia 服务</div>
+                    <div class="node staff">Allen 导师</div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel ai-panel">
+                <div class="panel-title">
+                  <div>
+                    <span>AI军师</span>
+                    <h3>今日运营建议</h3>
+                  </div>
+                  <button type="button">生成周报</button>
+                </div>
+                <div class="ai-advice">
+                  <p>杭州A1班权益使用率高于平均值23%，适合推送年度会员升级。</p>
+                  <p>华南区新增会员未添加服务微信17人，建议触发企业微信补加提醒。</p>
+                  <p>联合创始人 Lily 转介绍链路增长最快，可复制其入会话术进入素材库。</p>
+                </div>
+              </article>
+
+              <article class="panel table-panel">
+                <div class="panel-title">
+                  <div>
+                    <span>会员管理</span>
+                    <h3>班级、角色、缴费、微信服务状态</h3>
+                  </div>
+                  <button type="button">批量分班</button>
+                </div>
+                <div class="data-table" role="table" aria-label="会员管理表">
+                  <div class="table-row table-head" role="row">
+                    <span>会员</span>
+                    <span>角色</span>
+                    <span>班级</span>
+                    <span>服务微信</span>
+                    <span>AI分</span>
+                  </div>
+                  <div class="table-row" role="row">
+                    <span>陈小北</span>
+                    <span>联合创始人</span>
+                    <span>杭州A1</span>
+                    <span class="ok">已添加</span>
+                    <span>88</span>
+                  </div>
+                  <div class="table-row" role="row">
+                    <span>林若初</span>
+                    <span>区域管理员</span>
+                    <span>广州B2</span>
+                    <span class="warning">待确认</span>
+                    <span>76</span>
+                  </div>
+                  <div class="table-row" role="row">
+                    <span>周澜</span>
+                    <span>年度会员</span>
+                    <span>成都C1</span>
+                    <span class="ok">已添加</span>
+                    <span>91</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel workflow-panel">
+                <div class="panel-title">
+                  <div>
+                    <span>自动化流程</span>
+                    <h3>注册后即刻开通权益、AI分班、入群和服务微信跟进</h3>
+                  </div>
+                  <button type="button">编辑流程</button>
+                </div>
+                <div class="workflow">
+                  <span>微信授权</span>
+                  <i></i>
+                  <span>资料注册</span>
+                  <i></i>
+                  <span>支付开通</span>
+                  <i></i>
+                  <span>AI分班</span>
+                  <i></i>
+                  <span>服务微信</span>
+                  <i></i>
+                  <span>培训交付</span>
+                </div>
+              </article>
+            </section>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>

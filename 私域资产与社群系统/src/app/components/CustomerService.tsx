@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ArrowLeft, Eye, EyeOff, QrCode, ExternalLink } from "lucide-react";
 
@@ -54,6 +54,12 @@ const groupDetail = Array.from({ length: 10 }, (_, i) => ({
   updatedAt: ["2026-07-05","2026-07-04","2026-06-28","2026-07-05","2026-07-01","2026-07-05","2026-07-03","2026-07-05","2026-06-20","2026-07-04"][i],
 }));
 
+const getAssignedWechatIds = (staff: typeof csStaff[0]) => Array.from(new Set(staff.wechats));
+const getManagedGroupCount = (staff: typeof csStaff[0]) => {
+  const assigned = getAssignedWechatIds(staff);
+  return groupDetail.filter(group => assigned.includes(group.wechat)).length;
+};
+
 // ─── 新建客服弹窗 ─────────────────────────────────────────────
 function NewStaffModal({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ no: "", gender: "男", name: "", phone: "", account: "", password: "", role: "探哥" });
@@ -107,28 +113,81 @@ function NewStaffModal({ onClose }: { onClose: () => void }) {
 
 // ─── 客服详情页 ───────────────────────────────────────────────
 function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () => void }) {
-  const [activeTab, setActiveTab] = useState(wechatTabs[0]);
+  const initialWechatIds = getAssignedWechatIds(staff);
+  const [configuredWechatIds, setConfiguredWechatIds] = useState(initialWechatIds);
+  const tabOptions = configuredWechatIds.length > 1 ? ["全部", ...configuredWechatIds] : configuredWechatIds;
+  const [activeTab, setActiveTab] = useState<string | null>(tabOptions[0] ?? null);
   const [showPwd, setShowPwd] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
+  const [draftWechatIds, setDraftWechatIds] = useState(initialWechatIds);
   const [page, setPage] = useState(1);
   const GRP_PAGE = 8;
+
+  useLayoutEffect(() => {
+    document.querySelector<HTMLElement>("[data-pc-content]")?.scrollTo({ top: 0, left: 0 });
+  }, []);
 
   const statusCfg: Record<string, { bg: string; color: string }> = {
     "配置完成": { bg: "#f0fff4", color: "#276749" },
     "待配置":   { bg: "#fffbeb", color: "#b45309" },
   };
 
-  const filteredGroups = groupDetail.filter(g => g.wechat === activeTab || activeTab === wechatTabs[0]);
-  const totalPages = Math.ceil(filteredGroups.length / GRP_PAGE);
+  const filteredGroups = activeTab === "全部"
+    ? groupDetail.filter(group => configuredWechatIds.includes(group.wechat))
+    : activeTab
+      ? groupDetail.filter(group => group.wechat === activeTab)
+      : [];
+  const totalPages = Math.max(1, Math.ceil(filteredGroups.length / GRP_PAGE));
   const paged = filteredGroups.slice((page - 1) * GRP_PAGE, page * GRP_PAGE);
+  const hasWechat = configuredWechatIds.length > 0;
+  const openConfig = () => {
+    setDraftWechatIds(configuredWechatIds);
+    setShowConfig(true);
+  };
+  const saveConfig = () => {
+    const nextIds = Array.from(new Set(draftWechatIds));
+    setConfiguredWechatIds(nextIds);
+    setActiveTab(nextIds.length > 1 ? "全部" : nextIds[0] ?? null);
+    setPage(1);
+    setShowConfig(false);
+  };
 
-  const detailCols: [string, number][] = [
-    ["群号",70],["群名",150],["社名",90],["所在群数量",80],["微信账号",90],
-    ["服务员",80],["群主",120],["人工",60],["二维码",60],
-    ["微信好友数量",90],["数量",60],["实际数量",70],["更新时间",95],["状态",80],
+  const detailCols: [string, number, string][] = [
+    ["群号",70, ""],["群名",150, ""],["社名",90, ""],["所在群数量",80, "hidden lg:block"],["微信账号",90, ""],
+    ["服务员",80, ""],["群主",120, "hidden lg:block"],["人工",60, "hidden lg:block"],["二维码",60, "hidden lg:block"],
+    ["微信好友数量",90, ""],["数量",60, "hidden lg:block"],["实际数量",70, "hidden lg:block"],["更新时间",95, "hidden lg:block"],["状态",80, ""],
   ];
 
   return (
     <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg }}>
+      {showConfig && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.35)" }}>
+          <div className="w-[360px] max-w-[calc(100vw-32px)] overflow-hidden" style={{ background: S.surface, borderRadius: S.radiusLg, boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}>
+            <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `1px solid ${S.border}` }}>
+              <div>
+                <div className="font-semibold" style={{ color: S.text }}>配置微信号</div>
+                <div className="mt-0.5 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>为 {staff.name} 选择可管理的微信号</div>
+              </div>
+              <button type="button" aria-label="关闭配置微信号" onClick={() => setShowConfig(false)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted }}><X size={15} /></button>
+            </div>
+            <div className="px-5 py-4 space-y-2">
+              {wechatTabs.map(id => {
+                const checked = draftWechatIds.includes(id);
+                return (
+                  <label key={id} className="flex items-center justify-between px-3 py-2.5 cursor-pointer" style={{ background: checked ? S.accentLight : "#f7f7f7", border: `1px solid ${checked ? "rgba(204,255,0,0.35)" : S.border}`, borderRadius: S.radiusSm }}>
+                    <span className="text-sm font-medium" style={{ color: S.text, fontFamily: "monospace" }}>{id}</span>
+                    <input type="checkbox" checked={checked} onChange={() => setDraftWechatIds(current => checked ? current.filter(value => value !== id) : [...current, id])} />
+                  </label>
+                );
+              })}
+            </div>
+            <div className="flex justify-end gap-2 px-5 py-4" style={{ borderTop: `1px solid ${S.border}` }}>
+              <button type="button" onClick={() => setShowConfig(false)} className="px-3 py-2 text-xs" style={{ background: "#f5f5f5", color: S.textSec, borderRadius: S.radiusSm }}>取消</button>
+              <button type="button" onClick={saveConfig} className="px-3 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>保存配置</button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* 面包屑 */}
       <div className="flex items-center gap-2 flex-shrink-0">
         <button className="flex items-center gap-1.5 text-sm font-medium" style={{ color: S.muted, fontFamily: "monospace" }} onClick={onBack}>
@@ -142,7 +201,7 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
       {/* 档案卡 */}
       <div className="flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
         {/* 头部信息 */}
-        <div className="flex items-start gap-5 p-5">
+        <div className="flex flex-wrap items-start gap-5 p-5">
           <img src={getAvatar(staff.id - 1)} alt={staff.name} style={{ width: 60, height: 60, borderRadius: S.radius, objectFit: "cover", flexShrink: 0 }} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
@@ -151,7 +210,7 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
               <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accentMid, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{staff.role}</span>
             </div>
             {/* 基础信息网格 */}
-            <div className="grid grid-cols-4 gap-x-6 gap-y-1.5">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1.5">
               {[
                 ["工号", staff.no],
                 ["查看账号", staff.account],
@@ -166,13 +225,13 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
             </div>
           </div>
           <div className="flex gap-3 flex-shrink-0">
-            <div className="text-center px-4 py-2.5" style={{ background: S.accentMid, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}>
-              <div className="text-2xl font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{staff.wechatCount || 0}</div>
-              <div className="text-xs mt-0.5" style={{ color: S.textSec, fontFamily: "monospace" }}>配置微信号(个)</div>
+            <div className="text-center px-4 py-2.5" style={{ background: hasWechat ? S.accentMid : "#fff7ed", border: `1px solid ${hasWechat ? "rgba(204,255,0,0.3)" : "#fed7aa"}`, borderRadius: S.radius }}>
+              <div className="text-2xl font-bold" style={{ color: hasWechat ? S.text : "#c2410c", fontFamily: "monospace" }}>{configuredWechatIds.length}</div>
+              <div className="text-xs mt-0.5" style={{ color: hasWechat ? S.textSec : "#9a3412", fontFamily: "monospace" }}>已配置微信号</div>
             </div>
             <div className="text-center px-4 py-2.5" style={{ background: "#f5f5f5", border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-              <div className="text-2xl font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{staff.groupCount || 0}</div>
-              <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>管理群数(个)</div>
+              <div className="text-2xl font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{groupDetail.filter(group => configuredWechatIds.includes(group.wechat)).length}</div>
+              <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>关联群数</div>
             </div>
           </div>
         </div>
@@ -180,7 +239,7 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
         {/* 微信绑定信息 */}
         <div className="px-5 pb-4" style={{ borderTop: `1px solid ${S.border}` }}>
           <div className="text-xs font-semibold pt-3 pb-2" style={{ color: S.muted, fontFamily: "monospace" }}>微信绑定信息</div>
-          <div className="grid grid-cols-4 gap-x-6 gap-y-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-2">
             {[
               ["QQ账号", staff.qqNo],
               ["QQ邮件", staff.qqEmail],
@@ -191,9 +250,18 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
               ["密码", staff.password],
               ["二维码", staff.qrLink !== "暂无" ? "已生成" : "暂无"],
             ].map(([k, v]) => (
-              <div key={k} className="flex gap-1.5 text-xs">
+              <div key={k} className="flex items-center gap-1.5 text-xs">
                 <span style={{ color: S.muted, fontFamily: "monospace", flexShrink: 0 }}>{k}：</span>
-                <span style={{ color: k === "二维码链接" && v !== "暂无" ? "#3182ce" : S.textSec, fontFamily: "monospace" }}>{v}</span>
+                {k === "密码" ? (
+                  <>
+                    <span style={{ color: S.textSec, fontFamily: "monospace" }}>{showPwd ? v : "••••••••"}</span>
+                    <button type="button" aria-label={showPwd ? "隐藏密码" : "显示密码"} onClick={() => setShowPwd(value => !value)}>
+                      {showPwd ? <EyeOff size={12} style={{ color: S.muted }} /> : <Eye size={12} style={{ color: S.muted }} />}
+                    </button>
+                  </>
+                ) : (
+                  <span style={{ color: k === "二维码链接" && v !== "暂无" ? "#3182ce" : S.textSec, fontFamily: "monospace" }}>{v}</span>
+                )}
               </div>
             ))}
           </div>
@@ -201,24 +269,28 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
 
         {/* 微信 Tab 栏 */}
         <div className="flex items-center gap-0 px-5 pb-4 pt-1 flex-wrap" style={{ borderTop: `1px solid ${S.border}` }}>
-          {wechatTabs.map(t => (
+          {tabOptions.map(t => (
             <button key={t} className="px-3 py-1.5 text-xs transition-all" style={{ background: activeTab === t ? "#0d0d0d" : "#f5f5f5", color: activeTab === t ? S.accent : S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace", margin: "2px" }} onClick={() => { setActiveTab(t); setPage(1); }}>
               {t}
             </button>
           ))}
-          <button className="px-3 py-1.5 text-xs font-bold ml-auto" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace", margin: "2px" }}>配置微信</button>
+          {!hasWechat && <span className="text-xs px-2 py-1.5" style={{ color: "#9a3412", fontFamily: "monospace" }}>尚未配置微信号，请先完成绑定</span>}
+          <button type="button" onClick={openConfig} className="px-3 py-1.5 text-xs font-bold ml-auto" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace", margin: "2px" }}>配置微信</button>
         </div>
       </div>
 
       {/* 群组表格 */}
       <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-        <div className="flex items-center px-4 py-2.5 flex-shrink-0 text-xs" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, minWidth: "fit-content", fontFamily: "monospace" }}>
-          {detailCols.map(([l, w]) => (
-            <div key={l} className="flex-shrink-0 font-semibold" style={{ width: w, color: "#555" }}>{l}</div>
-          ))}
-        </div>
         <div className="flex-1 overflow-auto">
-          {paged.map((g) => {
+          <div style={{ minWidth: "100%", width: "max-content" }}>
+            {hasWechat && (
+              <div className="flex items-center px-4 py-2.5 flex-shrink-0 text-xs" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, fontFamily: "monospace" }}>
+                {detailCols.map(([l, w, visibility]) => (
+                  <div key={l} className={`${visibility} flex-shrink-0 font-semibold`} style={{ width: w, color: "#555" }}>{l}</div>
+                ))}
+              </div>
+            )}
+            {paged.map((g) => {
             const st = statusCfg[g.status] || { bg: "#f5f5f5", color: "#888" };
             return (
               <div key={g.groupNo} className="flex items-center px-4 text-xs transition-all" style={{ background: "transparent", borderBottom: `1px solid ${S.border}`, minWidth: "fit-content", paddingTop: "9px", paddingBottom: "9px" }}
@@ -228,26 +300,37 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
                 <div className="flex-shrink-0" style={{ width: 70, color: S.mutedLight, fontFamily: "monospace" }}>{g.groupNo}</div>
                 <div className="flex-shrink-0 font-medium" style={{ width: 150, color: S.text, fontFamily: "monospace" }}>{g.name}</div>
                 <div className="flex-shrink-0" style={{ width: 90, color: S.muted, fontFamily: "monospace" }}>{g.orgName}</div>
-                <div className="flex-shrink-0 font-medium" style={{ width: 80, color: S.text, fontFamily: "monospace" }}>{g.groupInCount}</div>
+                <div className="hidden lg:block flex-shrink-0 font-medium" style={{ width: 80, color: S.text, fontFamily: "monospace" }}>{g.groupInCount}</div>
                 <div className="flex-shrink-0 font-medium" style={{ width: 90, color: S.text, fontFamily: "monospace" }}>{g.wechat}</div>
                 <div className="flex-shrink-0" style={{ width: 80, color: S.textSec, fontFamily: "monospace" }}>{g.serviceStaff}</div>
-                <div className="flex-shrink-0" style={{ width: 120, color: S.muted, fontFamily: "monospace" }}>{g.groupOwner}</div>
-                <div className="flex-shrink-0 font-medium" style={{ width: 60, color: S.text, fontFamily: "monospace" }}>{g.manualCount}</div>
-                <div className="flex-shrink-0" style={{ width: 60 }}>
+                <div className="hidden lg:block flex-shrink-0" style={{ width: 120, color: S.muted, fontFamily: "monospace" }}>{g.groupOwner}</div>
+                <div className="hidden lg:block flex-shrink-0 font-medium" style={{ width: 60, color: S.text, fontFamily: "monospace" }}>{g.manualCount}</div>
+                <div className="hidden lg:block flex-shrink-0" style={{ width: 60 }}>
                   <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#f5f5f5", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                     <QrCode size={13} style={{ color: S.textSec }} />
                   </div>
                 </div>
                 <div className="flex-shrink-0 font-medium" style={{ width: 90, color: S.text, fontFamily: "monospace" }}>{g.friendCount}</div>
-                <div className="flex-shrink-0 font-medium" style={{ width: 60, color: S.text, fontFamily: "monospace" }}>{g.memberCount}</div>
-                <div className="flex-shrink-0" style={{ width: 70, color: g.actualCount < g.memberCount ? "#c53030" : S.textSec, fontFamily: "monospace" }}>{g.actualCount}</div>
-                <div className="flex-shrink-0" style={{ width: 95, color: S.muted, fontFamily: "monospace" }}>{g.updatedAt}</div>
+                <div className="hidden lg:block flex-shrink-0 font-medium" style={{ width: 60, color: S.text, fontFamily: "monospace" }}>{g.memberCount}</div>
+                <div className="hidden lg:block flex-shrink-0" style={{ width: 70, color: g.actualCount < g.memberCount ? "#c53030" : S.textSec, fontFamily: "monospace" }}>{g.actualCount}</div>
+                <div className="hidden lg:block flex-shrink-0" style={{ width: 95, color: S.muted, fontFamily: "monospace" }}>{g.updatedAt}</div>
                 <div className="flex-shrink-0" style={{ width: 80 }}>
                   <span className="px-1.5 py-0.5 font-medium" style={{ background: st.bg, color: st.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{g.status}</span>
                 </div>
               </div>
             );
-          })}
+            })}
+            {paged.length === 0 && (
+              <div className="flex min-h-[180px] items-center justify-center px-6 text-center">
+                <div>
+                  <div className="text-sm font-semibold" style={{ color: S.text }}>暂无关联群组</div>
+                  <div className="mt-1 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>
+                    {hasWechat ? "当前微信号还没有关联群组" : "完成微信绑定后，这里会显示关联群组"}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* 分页 */}
@@ -315,44 +398,46 @@ export default function CustomerService() {
 
       {/* 表格 */}
       <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-        <div className="flex items-center px-4 py-2.5 flex-shrink-0 text-xs" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555", minWidth: "fit-content", fontFamily: "monospace" }}>
-          {cols.map(([l, w]) => <div key={l} className="flex-shrink-0 font-semibold" style={{ width: w }}>{l}</div>)}
-        </div>
         <div className="flex-1 overflow-auto">
-          {paged.map((s) => (
-            <div key={s.no} className="flex items-center px-4 py-3 text-xs transition-all" style={{ background: "transparent", borderBottom: `1px solid ${S.border}`, minWidth: "fit-content" }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.018)"; }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
-            >
-              <div className="flex-shrink-0" style={{ width: 64, color: S.mutedLight, fontFamily: "monospace" }}>{s.no}</div>
-              <div className="flex-shrink-0" style={{ width: 52 }}>
-                <span className="px-1.5 py-0.5 text-xs" style={{ background: s.gender === "女" ? "#fff0f6" : "#eff8ff", color: s.gender === "女" ? "#d53f8c" : "#3182ce", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{s.gender}</span>
-              </div>
-              <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 90 }}>
-                <img src={getAvatar(s.id - 1)} alt={s.name} style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-                <span className="font-medium" style={{ color: S.text, fontFamily: "monospace" }}>{s.name}</span>
-              </div>
-              <div className="flex-shrink-0" style={{ width: 130, color: S.muted, fontFamily: "monospace" }}>{s.phone}</div>
-              <div className="flex-shrink-0 font-medium" style={{ width: 110, color: S.text, fontFamily: "monospace" }}>{s.account}</div>
-              <div className="flex-shrink-0" style={{ width: 120 }}>
-                <div className="flex items-center gap-1.5">
-                  <span style={{ color: S.textSec, fontFamily: "monospace" }}>{showPwds[s.no] ? s.password : "••••••••"}</span>
-                  <button onClick={() => setShowPwds(p => ({ ...p, [s.no]: !p[s.no] }))}>
-                    {showPwds[s.no] ? <EyeOff size={11} style={{ color: S.muted }} /> : <Eye size={11} style={{ color: S.muted }} />}
-                  </button>
+          <div style={{ minWidth: "100%", width: "max-content" }}>
+            <div className="sticky top-0 z-10 flex items-center px-4 py-2.5 text-xs" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555", fontFamily: "monospace" }}>
+              {cols.map(([l, w]) => <div key={l} className="flex-shrink-0 font-semibold" style={{ width: w }}>{l}</div>)}
+            </div>
+            {paged.map((s) => (
+              <div key={s.no} className="flex items-center px-4 py-3 text-xs transition-all" style={{ background: "transparent", borderBottom: `1px solid ${S.border}`, minWidth: "fit-content" }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(0,0,0,0.018)"; }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+              >
+                <div className="flex-shrink-0" style={{ width: 64, color: S.mutedLight, fontFamily: "monospace" }}>{s.no}</div>
+                <div className="flex-shrink-0" style={{ width: 52 }}>
+                  <span className="px-1.5 py-0.5 text-xs" style={{ background: s.gender === "女" ? "#fff0f6" : "#eff8ff", color: s.gender === "女" ? "#d53f8c" : "#3182ce", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{s.gender}</span>
+                </div>
+                <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 90 }}>
+                  <img src={getAvatar(s.id - 1)} alt={s.name} style={{ width: 22, height: 22, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+                  <span className="font-medium" style={{ color: S.text, fontFamily: "monospace" }}>{s.name}</span>
+                </div>
+                <div className="flex-shrink-0" style={{ width: 130, color: S.muted, fontFamily: "monospace" }}>{s.phone}</div>
+                <div className="flex-shrink-0 font-medium" style={{ width: 110, color: S.text, fontFamily: "monospace" }}>{s.account}</div>
+                <div className="flex-shrink-0" style={{ width: 120 }}>
+                  <div className="flex items-center gap-1.5">
+                    <span style={{ color: S.textSec, fontFamily: "monospace" }}>{showPwds[s.no] ? s.password : "••••••••"}</span>
+                    <button onClick={() => setShowPwds(p => ({ ...p, [s.no]: !p[s.no] }))}>
+                      {showPwds[s.no] ? <EyeOff size={11} style={{ color: S.muted }} /> : <Eye size={11} style={{ color: S.muted }} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="flex-shrink-0" style={{ width: 150, color: S.muted, fontFamily: "monospace" }}>{s.area2}</div>
+                <div className="flex-shrink-0" style={{ width: 72 }}>
+                  <span className="px-2 py-0.5 text-xs font-medium" style={{ background: S.accentMid, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{s.role}</span>
+                </div>
+                <div className="flex-shrink-0 font-medium" style={{ width: 105, color: getAssignedWechatIds(s).length > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{getAssignedWechatIds(s).length > 0 ? `${getAssignedWechatIds(s).length} 个` : "暂无"}</div>
+                <div className="flex-shrink-0 font-medium" style={{ width: 100, color: getManagedGroupCount(s) > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{getManagedGroupCount(s) > 0 ? `${getManagedGroupCount(s)} 个` : "暂无"}</div>
+                <div className="flex-shrink-0" style={{ width: 72 }}>
+                  <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setDetailStaff(s)}>管理</button>
                 </div>
               </div>
-              <div className="flex-shrink-0" style={{ width: 150, color: S.muted, fontFamily: "monospace" }}>{s.area2}</div>
-              <div className="flex-shrink-0" style={{ width: 72 }}>
-                <span className="px-2 py-0.5 text-xs font-medium" style={{ background: S.accentMid, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{s.role}</span>
-              </div>
-              <div className="flex-shrink-0 font-medium" style={{ width: 105, color: s.wechatCount > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{s.wechatCount > 0 ? `${s.wechatCount} 个` : "暂无"}</div>
-              <div className="flex-shrink-0 font-medium" style={{ width: 100, color: s.groupCount > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{s.groupCount > 0 ? `${s.groupCount} 个` : "暂无"}</div>
-              <div className="flex-shrink-0" style={{ width: 72 }}>
-                <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setDetailStaff(s)}>管理</button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
         {/* 分页 */}

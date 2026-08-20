@@ -61,7 +61,7 @@ function getRecommendedGroup(user: (typeof pendingUsers)[0]) {
     .slice(0, 3);
 }
 
-export default function GroupAssignment() {
+export default function GroupAssignment({ embedded = false }: { embedded?: boolean }) {
   const [selectedUser, setSelectedUser] = useState<number | null>(1);
   const [assignedGroupId, setAssignedGroupId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
@@ -71,8 +71,8 @@ export default function GroupAssignment() {
   const filteredUsers = pendingUsers.filter(u => u.name.includes(search) || u.phone.includes(search) || u.city.includes(search));
 
   return (
-    <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg, fontFamily: "monospace" }}>
-      <div className="flex items-center justify-between">
+    <div className={embedded ? "h-full flex flex-col gap-4" : "p-6 h-full flex flex-col gap-4"} style={{ background: S.bg, fontFamily: "monospace" }}>
+      {!embedded && <div className="flex items-center justify-between">
         <div>
           <h2 className="font-bold" style={{ color: S.text, fontFamily: "monospace" }}>群分配</h2>
           <p className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>根据用户属性智能推荐合适群组，支持人工调整</p>
@@ -80,7 +80,7 @@ export default function GroupAssignment() {
         <div className="flex items-center gap-2 text-xs px-3 py-1.5" style={{ background: "#fff8e1", color: "#b45309", borderRadius: S.radiusSm, fontFamily: "monospace", fontWeight: "bold" }}>
           <AlertTriangle size={12} /> 待分配 {pendingUsers.length} 人
         </div>
-      </div>
+      </div>}
 
       <div className="flex gap-4 flex-1 min-h-0">
         {/* Left: pending users */}
