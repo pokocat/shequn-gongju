@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2 } from "lucide-react";
+import { useCommunityData } from "../data/communityDataStore";
 
 const S = {
   bg: "#fafafa",
@@ -142,6 +143,45 @@ function NewWechatModal({ onClose }: { onClose: () => void }) {
         </>}
       </div>
       <div className="flex gap-3 px-6 py-4" style={{ borderTop: `1px solid ${S.border}` }}><button type="button" onClick={step === 1 ? onClose : () => setStep(step - 1)} className="flex-1 py-2.5 text-sm font-bold" style={{ background: S.bg, color: S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, fontFamily: "monospace" }}>{step === 1 ? "取消" : "上一步"}</button><button type="button" onClick={() => step === 3 ? onClose() : setStep(step + 1)} className="flex-1 py-2.5 text-sm font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>{step === 3 ? "保存并进入库存" : "下一步"}</button></div>
+    </div>
+  </div>;
+}
+
+// ─── 扫码授权后录入微信号 ──────────────────────────────────────
+function AuthorizedWechatModal({ onClose }: { onClose: () => void }) {
+  const [authorized, setAuthorized] = useState(false);
+  const [form, setForm] = useState({ no: "", wechatId: "", phone: "", nickname: "", wechatPassword: "", qqNo: "", qqPassword: "", qqSecurity: "", boundEmail: "", emailPassword: "", emailSecurity: "", ownerName: "", idCard: "", bankCard: "", opsManager: "", memberManager: "", city: "", region: "", department: "", project: "", accountType: "客服号", status: "库存" });
+  const [contacts, setContacts] = useState(["", "", ""]);
+  const cities = ["北京", "上海", "广州", "深圳", "成都", "杭州", "武汉", "南京", "西安", "其他"];
+  const inputStyle = { background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" };
+  const set = (key: string, value: string) => setForm(current => ({ ...current, [key]: value }));
+  const field = (label: string, key: string, placeholder = "请输入", type = "text") => <label className="block"><span className="block text-xs mb-1.5" style={{ color: S.muted }}>{label}</span><input disabled={!authorized} type={type} className="w-full px-3 py-2 text-xs outline-none disabled:cursor-not-allowed" style={{ ...inputStyle, opacity: authorized ? 1 : 0.56 }} placeholder={placeholder} value={(form as any)[key]} onChange={event => set(key, event.target.value)} /></label>;
+  const section = (title: string, hint: string) => <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: S.border }}><div className="flex items-center gap-2 text-sm font-bold"><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />{title}</div><span className="text-[10px]" style={{ color: S.muted }}>{hint}</span></div>;
+  const authorize = () => {
+    setAuthorized(true);
+    setForm(current => ({ ...current, no: "00011", wechatId: "fengle_bj_03", nickname: "蜂乐·吴思远", phone: "138-0012-3456", project: "北京PRO服务", city: "北京", region: "华北", department: "北京服务中心", ownerName: "吴思远", opsManager: "吴思远", memberManager: "张明" }));
+  };
+  return <div className="fixed inset-0 z-50 flex items-center justify-center p-3" style={{ background: "rgba(0,0,0,0.5)" }}>
+    <div className="w-[min(1080px,calc(100vw-24px))] overflow-hidden" style={{ background: "#fff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}>
+      <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}><div><div className="font-semibold">新建微信号</div><div className="text-xs mt-1" style={{ color: S.muted }}>先扫码授权登录，获取微信资料后再补充账号安全与归属信息</div></div><button type="button" aria-label="关闭录入微信号" onClick={onClose}><X size={16} style={{ color: S.muted }} /></button></div>
+      <div className="grid grid-cols-1 md:grid-cols-[264px_minmax(0,1fr)]" style={{ maxHeight: "80vh" }}>
+        <aside className="p-5 flex flex-col gap-4" style={{ background: "#fbfbfb", borderRight: `1px solid ${S.border}` }}>
+          <div className="flex items-center justify-between"><span className="text-sm font-bold">微信扫码授权</span><span className="px-2 py-1 text-[10px] font-bold" style={{ background: authorized ? "#f0fff4" : "#fff8e8", color: authorized ? "#276749" : "#9a5a00", borderRadius: S.radiusSm }}>{authorized ? "已授权" : "待扫码"}</span></div>
+          <div className="p-3 flex items-center justify-center" style={{ background: "#fff", border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}><img src="/zhuliren-final/assets/addwechat-reference-qr.png" alt="微信授权二维码" style={{ width: 206, height: 206, objectFit: "contain" }} /></div>
+          <div className="text-center"><div className="text-xs font-bold">{authorized ? "授权成功，可继续填写" : "微信扫描二维码进入"}</div><div className="text-[10px] mt-1 leading-relaxed" style={{ color: S.muted }}>请使用待录入微信扫码，授权成功后系统自动读取微信昵称、微信号和头像。</div></div>
+          <div className="p-3 space-y-2" style={{ background: authorized ? S.accentLight : "#fff8e8", border: `1px solid ${authorized ? S.accentMid : "#f2d6a0"}`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-xs font-bold" style={{ color: authorized ? "#276749" : "#9a5a00" }}>{authorized ? <CheckCircle2 size={14} /> : <ShieldCheck size={14} />}{authorized ? "身份已确认" : "授权前不会写入账号"}</div><div className="text-[10px] leading-relaxed" style={{ color: S.muted }}>{authorized ? "自动读取字段可修改，敏感字段仍需人工补充。" : "二维码仅用于本次登录授权，不会直接保存密码。"}</div></div>
+          {!authorized ? <button type="button" className="w-full py-2.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius }} onClick={authorize}>确认已扫码授权</button> : <button type="button" className="w-full py-2.5 text-xs font-bold" style={{ background: "#fff", color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }} onClick={() => setAuthorized(false)}>重新扫码授权</button>}
+        </aside>
+        <div className="min-w-0 overflow-y-auto p-6 space-y-5">
+          <div className="flex items-center justify-between px-3 py-2" style={{ background: authorized ? S.accentLight : "#f5f5f5", border: `1px solid ${authorized ? S.accentMid : S.border}`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-xs font-bold">{authorized ? <CheckCircle2 size={14} style={{ color: "#276749" }} /> : <LockKeyhole size={14} style={{ color: S.muted }} />}{authorized ? "微信资料已获取，请继续完善表单" : "完成扫码授权后解锁表单"}</div><span className="text-[10px]" style={{ color: S.muted }}>必填项标记 *</span></div>
+          <section className="space-y-3">{section("微信信息", "授权字段可修改")}<div className="grid grid-cols-1 lg:grid-cols-[96px_1fr] gap-4"><div className="flex flex-col items-center gap-2"><div className="w-20 h-20 overflow-hidden" style={{ background: "#f0f0f0", borderRadius: S.radius }}>{authorized && <img src={getAvatar(0)} alt="微信头像" className="w-full h-full object-cover" />}</div><span className="text-[10px]" style={{ color: S.muted }}>微信头像</span></div><div className="grid grid-cols-1 sm:grid-cols-2 gap-3">{field("微信昵称", "nickname", "授权后自动获取")}{field("微信号 *", "wechatId", "授权后自动获取")}{field("微信密码", "wechatPassword", "仅授权人员可见", "password")}<label className="block"><span className="block text-xs mb-1.5" style={{ color: S.muted }}>账号类型</span><select disabled={!authorized} className="w-full px-3 py-2 text-xs outline-none disabled:cursor-not-allowed" style={{ ...inputStyle, opacity: authorized ? 1 : 0.56 }} value={form.accountType} onChange={event => set("accountType", event.target.value)}>{["客服号", "招商号", "运营号"].map(value => <option key={value}>{value}</option>)}</select></label></div></div><div className="flex items-center gap-3 px-3 py-2.5" style={{ border: `1px dashed ${S.borderMed}`, background: "#f7f7f7", borderRadius: S.radiusSm, opacity: authorized ? 1 : 0.56 }}><Upload size={14} /><span className="text-xs">补充头像或微信二维码</span><span className="ml-auto text-[10px]" style={{ color: S.muted }}>PNG / JPG</span></div></section>
+          <section className="space-y-3">{section("绑定人信息", "敏感资料保存后脱敏")}<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{field("绑定人姓名", "ownerName")}{field("绑定人手机", "phone", "138-xxxx-xxxx")}{field("身份证号", "idCard", "敏感资料，保存后脱敏")}{field("银行卡号", "bankCard", "敏感资料，保存后脱敏")}</div></section>
+          <section className="space-y-3">{section("QQ / 邮箱绑定信息", "可选")}<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{field("绑定QQ", "qqNo")}{field("QQ密码", "qqPassword", "仅授权人员可见", "password")}{field("QQ密保", "qqSecurity")}{field("绑定邮箱", "boundEmail")}{field("邮箱密码", "emailPassword", "仅授权人员可见", "password")}{field("邮箱密保", "emailSecurity")}</div></section>
+          <section className="space-y-3">{section("紧急联系人信息", "3位微信联系人")}<div className="grid grid-cols-1 sm:grid-cols-3 gap-3">{contacts.map((contact, index) => <div key={index} className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="text-xs font-bold mb-2">联系人 {index + 1}</div><input disabled={!authorized} className="w-full px-2.5 py-2 text-xs outline-none disabled:cursor-not-allowed" style={{ ...inputStyle, opacity: authorized ? 1 : 0.56 }} placeholder="微信联系人姓名" value={contact} onChange={event => setContacts(items => items.map((item, i) => i === index ? event.target.value : item))} /><div className="mt-2 text-[10px]" style={{ color: S.muted }}>二维码与备注可在个人安全中补充</div></div>)}</div></section>
+          <section className="space-y-3">{section("归属与运营信息", "用于自动分配群组与客服")}<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">{field("归属项目", "project", "如 北京PRO服务")}{field("归属员工", "opsManager", "服务负责人")}{field("会员负责人", "memberManager")}{field("归属部门", "department", "如 北京服务中心")}{field("归属大区", "region", "如 华北")}<label className="block"><span className="block text-xs mb-1.5" style={{ color: S.muted }}>城市分站</span><select disabled={!authorized} className="w-full px-3 py-2 text-xs outline-none disabled:cursor-not-allowed" style={{ ...inputStyle, opacity: authorized ? 1 : 0.56 }} value={form.city} onChange={event => set("city", event.target.value)}><option value="">请选择</option>{cities.map(city => <option key={city}>{city}</option>)}</select></label><label className="block"><span className="block text-xs mb-1.5" style={{ color: S.muted }}>初始状态</span><select disabled={!authorized} className="w-full px-3 py-2 text-xs outline-none disabled:cursor-not-allowed" style={{ ...inputStyle, opacity: authorized ? 1 : 0.56 }} value={form.status} onChange={event => set("status", event.target.value)}>{["库存", "未启用", "使用中", "待交接"].map(status => <option key={status}>{status}</option>)}</select></label></div><div className="flex items-center gap-2 text-[10px]" style={{ color: S.muted }}><QrCode size={13} />授权成功后可在详情中绑定最多 20 个微信群</div></section>
+        </div>
+      </div>
+      <div className="flex items-center justify-between gap-3 px-6 py-4" style={{ borderTop: `1px solid ${S.border}` }}><span className="text-[10px]" style={{ color: S.muted }}>{authorized ? "资料已授权，确认后账号进入库存状态" : "请先完成二维码授权"}</span><div className="flex gap-3"><button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold" style={{ background: S.bg, color: S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}>取消</button><button type="button" disabled={!authorized} onClick={onClose} className="px-6 py-2.5 text-sm font-bold disabled:cursor-not-allowed" style={{ background: authorized ? "#0d0d0d" : "#ddd", color: authorized ? S.accent : "#888", borderRadius: S.radius }}>确认录入</button></div></div>
     </div>
   </div>;
 }
@@ -857,14 +897,22 @@ export default function WeChatManagement() {
   const [mainTab, setMainTab] = useState<"personal" | "wecom">("personal");
   const [personalView, setPersonalView] = useState<BrowseMode>("list");
   const [wecomView, setWecomView] = useState<BrowseMode>("cards");
+  const { generatedGroups } = useCommunityData();
+
+  const accounts = mockWechats.map(account => {
+    const generatedGroupCount = generatedGroups.filter(group =>
+      group.service === account.serviceOfficer && group.city.split("/").includes(account.city),
+    ).length;
+    return { ...account, groupCount: account.groupCount + generatedGroupCount };
+  });
 
   const statusTabs = ["全部", "使用中", "异常", "待交接", "库存"];
-  const cities = ["全部城市", ...Array.from(new Set(mockWechats.map(w => w.city).filter(city => city !== "—")))];
-  const projects = ["全部项目", ...Array.from(new Set(mockWechats.map(w => w.project).filter(project => project !== "—")))];
-  const departments = ["全部部门", ...Array.from(new Set(mockWechats.map(w => w.department).filter(department => department !== "—")))];
+  const cities = ["全部城市", ...Array.from(new Set(accounts.map(w => w.city).filter(city => city !== "—")))];
+  const projects = ["全部项目", ...Array.from(new Set(accounts.map(w => w.project).filter(project => project !== "—")))];
+  const departments = ["全部部门", ...Array.from(new Set(accounts.map(w => w.department).filter(department => department !== "—")))];
   const accountTypes = ["全部类型", "客服号", "招商号", "运营号"];
-  const serviceOfficers = ["全部服务官", ...Array.from(new Set(mockWechats.map(w => w.serviceOfficer).filter(value => value !== "—")))];
-  const filtered = mockWechats.filter(w => {
+  const serviceOfficers = ["全部服务官", ...Array.from(new Set(accounts.map(w => w.serviceOfficer).filter(value => value !== "—")))];
+  const filtered = accounts.filter(w => {
     const risk = getAccountRisk(w);
     const searchMatch = w.wechatId.includes(search) || w.opsManager.includes(search) || w.memberManager.includes(search) || w.city.includes(search) || w.project.includes(search) || w.phone.includes(search) || w.nickname.includes(search);
     const capacityMatch = capacityFilter === "全部" || (capacityFilter === "好友预警" && risk.isFriendRisk) || (capacityFilter === "群容量预警" && risk.isGroupRisk) || (capacityFilter === "同步异常" && risk.isSyncRisk);
@@ -872,8 +920,8 @@ export default function WeChatManagement() {
   });
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const counts = { 全部: mockWechats.length, 使用中: mockWechats.filter(w => w.status === "使用中").length, 异常: mockWechats.filter(w => w.status === "异常").length, 待交接: mockWechats.filter(w => w.status === "待交接").length, 库存: mockWechats.filter(w => w.status === "库存").length };
-  const selectedAccount = mockWechats.find(w => w.no === selectedRow) || null;
+  const counts = { 全部: accounts.length, 使用中: accounts.filter(w => w.status === "使用中").length, 异常: accounts.filter(w => w.status === "异常").length, 待交接: accounts.filter(w => w.status === "待交接").length, 库存: accounts.filter(w => w.status === "库存").length };
+  const selectedAccount = accounts.find(w => w.no === selectedRow) || null;
   const activeFilterCount = Number(cityFilter !== "全部城市") + Number(projectFilter !== "全部项目") + Number(departmentFilter !== "全部部门") + Number(accountTypeFilter !== "全部类型") + Number(serviceFilter !== "全部服务官") + Number(capacityFilter !== "全部");
   const clearAdvancedFilters = () => { setCityFilter("全部城市"); setProjectFilter("全部项目"); setDepartmentFilter("全部部门"); setAccountTypeFilter("全部类型"); setServiceFilter("全部服务官"); setCapacityFilter("全部"); setPage(1); };
   const toggleRow = (no: string) => setSelectedRows(current => current.includes(no) ? current.filter(item => item !== no) : [...current, no]);
@@ -890,7 +938,7 @@ export default function WeChatManagement() {
 
   return (
     <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg }}>
-      {showModal && <NewWechatModal onClose={() => setShowModal(false)} />}
+      {showModal && <AuthorizedWechatModal onClose={() => setShowModal(false)} />}
 
       {/* 页头 */}
       <div className="flex items-center justify-between flex-shrink-0">
