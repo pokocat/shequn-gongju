@@ -1,6 +1,6 @@
 import { useLayoutEffect, useState } from "react";
 import { getAvatar } from "./Avatar";
-import { Search, Plus, X, ChevronLeft, ChevronRight, ArrowLeft, Eye, EyeOff, QrCode, ExternalLink } from "lucide-react";
+import { Search, Plus, X, ChevronLeft, ChevronRight, ArrowLeft, Eye, EyeOff, QrCode, ExternalLink, Archive } from "lucide-react";
 
 const S = {
   bg: "#fafafa",
@@ -357,22 +357,30 @@ export default function CustomerService() {
   const [showModal, setShowModal] = useState(false);
   const [detailStaff, setDetailStaff] = useState<typeof csStaff[0] | null>(null);
   const [showPwds, setShowPwds] = useState<Record<string, boolean>>({});
+  const [statusFilter, setStatusFilter] = useState("全部状态");
+  const [statusOverrides, setStatusOverrides] = useState<Record<string, string>>({});
+  const [archivedStaff, setArchivedStaff] = useState<string[]>([]);
+  const [notice, setNotice] = useState("");
 
   if (detailStaff) return <StaffDetail staff={detailStaff} onBack={() => setDetailStaff(null)} />;
 
-  const filtered = csStaff.filter(s => s.name.includes(search) || s.no.includes(search) || s.area.includes(search) || s.account.includes(search));
+  const filtered = csStaff.filter(s => {
+    const status = statusOverrides[s.no] || (s.no === "00001" ? "停用" : "启用");
+    return !archivedStaff.includes(s.no) && (statusFilter === "全部状态" || status === statusFilter) && (s.name.includes(search) || s.no.includes(search) || s.area.includes(search) || s.account.includes(search));
+  });
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const cols: [string, number][] = [
     ["工号",64],["性别",52],["姓名",90],["手机",130],["登录账号",110],
     ["密码",120],["管理地区",150],["服务管",72],
-    ["配置微信号(个)",105],["管理群数(个)",100],["操作",72],
+    ["配置微信号(个)",105],["管理群数(个)",100],["状态",70],["操作",170],
   ];
 
   return (
     <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg }}>
       {showModal && <NewStaffModal onClose={() => setShowModal(false)} />}
+      {notice && <div role="status" className="flex items-center justify-between gap-2 px-4 py-2.5 flex-shrink-0" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius, color: S.text, fontFamily: "monospace" }}><span className="text-xs">{notice}</span><button type="button" aria-label="关闭提示" onClick={() => setNotice("")}><X size={13} /></button></div>}
 
       {/* 页头 */}
       <div className="flex items-center justify-between flex-shrink-0">
@@ -393,6 +401,7 @@ export default function CustomerService() {
           {search && <button onClick={() => setSearch("")}><X size={12} style={{ color: S.muted }} /></button>}
         </div>
         <button className="px-4 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>搜索</button>
+        <select className="px-3 py-2 text-xs outline-none" value={statusFilter} onChange={event => { setStatusFilter(event.target.value); setPage(1); }} style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius, fontFamily: "monospace" }} aria-label="按员工状态筛选"><option>全部状态</option><option>启用</option><option>停用</option></select>
         <div className="text-xs px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radius, fontFamily: "monospace" }}>共 {filtered.length} 名</div>
       </div>
 
@@ -432,8 +441,13 @@ export default function CustomerService() {
                 </div>
                 <div className="flex-shrink-0 font-medium" style={{ width: 105, color: getAssignedWechatIds(s).length > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{getAssignedWechatIds(s).length > 0 ? `${getAssignedWechatIds(s).length} 个` : "暂无"}</div>
                 <div className="flex-shrink-0 font-medium" style={{ width: 100, color: getManagedGroupCount(s) > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{getManagedGroupCount(s) > 0 ? `${getManagedGroupCount(s)} 个` : "暂无"}</div>
-                <div className="flex-shrink-0" style={{ width: 72 }}>
-                  <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setDetailStaff(s)}>管理</button>
+                <div className="flex-shrink-0" style={{ width: 70 }}>
+                  {(() => { const active = (statusOverrides[s.no] || (s.no === "00001" ? "停用" : "启用")) === "启用"; return <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: active ? "#f0fff4" : "#f5f5f5", color: active ? "#276749" : S.muted, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{active ? "启用" : "停用"}</span>; })()}
+                </div>
+                <div className="flex-shrink-0 flex items-center gap-1.5" style={{ width: 170 }}>
+                  <button className="px-2.5 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setDetailStaff(s)}>管理</button>
+                  <button type="button" className="px-2 py-1.5 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setStatusOverrides(current => ({ ...current, [s.no]: (current[s.no] || (s.no === "00001" ? "停用" : "启用")) === "启用" ? "停用" : "启用" }))}>{(statusOverrides[s.no] || (s.no === "00001" ? "停用" : "启用")) === "启用" ? "停用" : "启用"}</button>
+                  <button type="button" title="归档员工" aria-label="归档员工" className="w-7 h-7 grid place-items-center" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => { if (getAssignedWechatIds(s).length || getManagedGroupCount(s)) { setNotice(`${s.name} 仍配置了微信号或群，请先完成交接后归档`); return; } setArchivedStaff(current => [...current, s.no]); setNotice(`${s.name} 已归档`); }}><Archive size={13} /></button>
                 </div>
               </div>
             ))}
