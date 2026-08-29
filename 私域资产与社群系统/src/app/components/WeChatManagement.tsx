@@ -1,7 +1,7 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { getAvatar } from "./Avatar";
-import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RotateCcw } from "lucide-react";
+import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal } from "lucide-react";
 import { useCommunityData } from "../data/communityDataStore";
 import { defaultGroupTypeRules } from "../data/projectGroupRules";
 
@@ -217,6 +217,34 @@ function getAccountRisk(account: PersonalAccount) {
     isSyncRisk,
     isRisk: friendRate >= 0.85 || groupRate >= 0.8 || isSyncRisk,
   };
+}
+
+// ─── 时间相对化（同步显示 / 最近活跃）───────────────────────────────
+function timeAgo(abs: string): { rel: string; abs: string } {
+  if (!abs || abs === "—" || abs.includes("—") || abs.trim() === "") return { rel: "从未同步", abs: "未同步" };
+  const y = parseInt(abs.slice(0, 4), 10);
+  const m = parseInt(abs.slice(5, 7), 10) - 1;
+  const d = parseInt(abs.slice(8, 10), 10);
+  let hh = 9, mm = 0;
+  if (abs.length >= 16 && /\d{2}:\d{2}/.test(abs.slice(11, 16))) {
+    hh = parseInt(abs.slice(11, 13), 10);
+    mm = parseInt(abs.slice(14, 16), 10);
+  }
+  const then = new Date(y, m, d, hh, mm, 0, 0).getTime();
+  if (Number.isNaN(then)) return { rel: abs, abs };
+  const now = new Date("2026-08-30T10:00:00").getTime();
+  const diffMs = now - then;
+  const diffMin = Math.round(diffMs / 60000);
+  const diffH = Math.round(diffMin / 60);
+  const diffD = Math.round(diffH / 24);
+  let rel = "刚刚";
+  if (diffMin < 1) rel = "刚刚";
+  else if (diffMin < 60) rel = `${diffMin} 分钟前`;
+  else if (diffH < 24) rel = `${diffH} 小时前`;
+  else if (diffD < 30) rel = `${diffD} 天前`;
+  else if (diffD < 365) rel = `${Math.round(diffD / 30)} 个月前`;
+  else rel = `${Math.round(diffD / 365)} 年前`;
+  return { rel, abs };
 }
 
 function BrowseModeToggle({ value, onChange, label }: { value: BrowseMode; onChange: (value: BrowseMode) => void; label: string }) {
@@ -513,7 +541,7 @@ function WecomBrowseList({ accounts, selected, onSelect, onQrCode, onTransfer }:
     <div className="flex-1 min-h-0 overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
       <div className="min-w-[1460px]">
         <div className="grid items-center px-4 py-2.5 text-xs font-semibold" style={{ gridTemplateColumns: "1.35fr .95fr 1fr .75fr 1.15fr 1.05fr .8fr .85fr .65fr .6fr 1fr", color: S.textSec, background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, fontFamily: "monospace" }}>
-          <span>企业微信账号</span><span>绑定个人微信</span><span>项目 / 地区</span><span>服务负责人</span><span>成员容量</span><span>管理群位</span><span>同步状态</span><span>最近同步</span><span>二维码</span><span>状态</span><span>操作</span>
+          <span>企业微信账号</span><span>绑定个人微信</span><span>项目 / 地区</span><span>服务负责人</span><span>成员数</span><span>群数</span><span>同步状态</span><span>最近同步</span><span>二维码</span><span>状态</span><span>操作</span>
         </div>
         {accounts.map(w => {
           const isSelected = selected === w.id;
@@ -646,7 +674,7 @@ function WecomTransferModal({ account, onClose, onSubmit }: { account: typeof we
         </div>
         <div className="space-y-4 p-5">
           <div className="grid grid-cols-2 gap-2">
-            {[['绑定个微', account.linkedPersonal], ['运营范围', `${account.city} · ${account.dept}`], ['成员容量', `${account.members.toLocaleString()} / ${account.memberCapacity.toLocaleString()}`], ['管理群位', `${account.groups.length} / ${account.groupCapacity} 群`]].map(([label, value]) => <div key={label} className="px-3 py-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-1 truncate text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{value}</div></div>)}
+            {[['绑定个微', account.linkedPersonal], ['运营范围', `${account.city} · ${account.dept}`], ['成员数', `${account.members.toLocaleString()} / ${account.memberCapacity.toLocaleString()}`], ['群数', `${account.groups.length} / ${account.groupCapacity} 群`]].map(([label, value]) => <div key={label} className="px-3 py-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-1 truncate text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{value}</div></div>)}
           </div>
           <label className="block"><span className="mb-1.5 block text-xs font-medium" style={{ color: S.textSec, fontFamily: "monospace" }}>接手负责人</span><select className="w-full px-3 py-2 text-xs outline-none" value={receiver} onChange={event => setReceiver(event.target.value)} style={{ background: S.bg, border: `1px solid ${S.borderMed}`, color: receiver ? S.text : S.muted, borderRadius: S.radiusSm, fontFamily: "monospace" }}><option value="">请选择接手人</option>{receivers.filter(name => name !== account.admin).map(name => <option key={name}>{name}</option>)}</select></label>
           <label className="block"><span className="mb-1.5 block text-xs font-medium" style={{ color: S.textSec, fontFamily: "monospace" }}>交接说明 <span style={{ color: S.muted }}>（可选）</span></span><textarea className="w-full resize-none px-3 py-2 text-xs outline-none" rows={3} placeholder="例如：人员调岗，完成客户和群组权限交接" value={reason} onChange={event => setReason(event.target.value)} style={{ background: S.bg, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} /></label>
@@ -668,13 +696,14 @@ function PersonalWechatCards({ accounts, selectedRow, onSelect }: { accounts: ty
           const status = statusCfg[w.status] || { bg: "#f5f5f5", color: "#888" };
           const isSelected = selectedRow === w.no;
           const isStock = w.status === "未使用";
+          const selBg = status.bg === "#f0fff4" ? "#dcfce7" : status.bg === "#fff0f0" ? "#fee2e2" : status.bg === "#fffbeb" ? "#fef3c7" : status.bg === "#f5f5f5" ? "#e9e9e9" : S.accentLight;
           return (
             <button
               key={w.no}
               type="button"
               onClick={() => onSelect(isSelected ? null : w.no)}
               className="p-4 text-left transition-all"
-              style={{ background: isSelected ? S.accentLight : S.surface, border: isSelected ? `1px solid ${S.accent}` : `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}
+              style={{ background: isSelected ? selBg : S.surface, border: isSelected ? `2px solid ${S.accent}` : `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: isSelected ? "0 4px 16px rgba(13,13,13,0.08)" : "0 1px 4px rgba(0,0,0,0.05)", fontWeight: isSelected ? 600 : 500 }}
             >
               <div className="flex items-start gap-3">
                 {isStock ? <div className="w-10 h-10 flex items-center justify-center" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm }}><MessageCircle size={16} /></div> : <img src={getAvatar(parseInt(w.no) - 1)} alt={w.nickname} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover" }} />}
@@ -698,19 +727,42 @@ function PersonalWechatCards({ accounts, selectedRow, onSelect }: { accounts: ty
   );
 }
 
-function CapacitySummary({ primaryLabel, primaryValue, primaryMax, primaryWarning, groupValue, groupMax, groupWarning }: {
-  primaryLabel: string; primaryValue: number; primaryMax: number; primaryWarning: boolean;
+// 容量/进度 四级色彩：<60%绿 / 60–85%琥珀 / 85–95%橙 / ≥95%红
+function tierColor(rate: number): { text: string; bar: string } {
+  const r = Math.max(0, Math.min(1, rate));
+  if (r >= 0.95) return { text: "#b91c1c", bar: "#dc2626" };
+  if (r >= 0.85) return { text: "#c2410c", bar: "#ea580c" };
+  if (r >= 0.6) return { text: "#b45309", bar: "#d97706" };
+  return { text: "#166534", bar: "#51b86a" };
+}
+
+function CapacitySummary({ primaryLabel, groupLabel, primaryValue, primaryMax, primaryWarning, groupValue, groupMax, groupWarning }: {
+  primaryLabel: string; groupLabel: string; primaryValue: number; primaryMax: number; primaryWarning: boolean;
   groupValue: number; groupMax: number; groupWarning: boolean;
 }) {
   const metrics = [
     { label: primaryLabel, value: primaryValue, max: primaryMax, warning: primaryWarning },
-    { label: "管理群位", value: groupValue, max: groupMax, warning: groupWarning },
+    { label: groupLabel, value: groupValue, max: groupMax, warning: groupWarning },
   ];
-  return <div className="grid grid-cols-2 divide-x" style={{ borderColor: S.border }}>
-    {metrics.map(metric => <div key={metric.label} className="min-w-0 px-3 first:pl-0 last:pr-0">
-      <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{metric.label}</div>
-      <b className="mt-1 block truncate text-base" style={{ color: metric.warning ? "#c2410c" : S.text, fontFamily: "monospace" }}>{metric.value.toLocaleString()} <span className="text-xs font-medium" style={{ color: S.muted }}>/ {metric.max.toLocaleString()}</span></b>
-    </div>)}
+  return <div className="grid grid-cols-2 gap-3">
+    {metrics.map(metric => {
+      const rate = Math.min(1, metric.value / Math.max(1, metric.max));
+      const col = tierColor(rate);
+      const pct = Math.round(rate * 100);
+      return <div key={metric.label} className="min-w-0">
+        {/* 仅 1 行：圆点·标签·value/max 左对齐，百分比右对齐 */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span style={{ width: 8, height: 8, borderRadius: 99, background: col.bar, flexShrink: 0 }} />
+            <span className="text-[11px] truncate" style={{ color: S.muted, fontFamily: "monospace", whiteSpace: "nowrap" }}>{metric.label}</span>
+            <span className="text-[11px] font-semibold truncate" style={{ color: col.text, fontFamily: "monospace", whiteSpace: "nowrap" }}>{metric.value.toLocaleString()}<span className="text-[10px] font-medium mx-0.5" style={{ color: S.muted }}>/</span>{metric.max.toLocaleString()}</span>
+          </div>
+          <span className="text-[10px] font-semibold flex-shrink-0 ml-1" style={{ color: col.text, fontFamily: "monospace" }}>{pct}%</span>
+        </div>
+        {/* 细进度条 高 2px，不单独占视觉高度 */}
+        <div className="mt-1 h-[2px] rounded-full overflow-hidden" style={{ background: S.borderMed }}><div className="h-full rounded-full transition-all" style={{ width: `${pct}%`, background: col.bar }} /></div>
+      </div>;
+    })}
   </div>;
 }
 
@@ -736,6 +788,37 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
   const lifecycle = lifecycleCfg[account.lifecycleStage];
   const syncStatus = risk.isSyncRisk ? "需核查" : account.status === "未使用" ? "未启用" : "同步正常";
   const syncStyle = risk.isSyncRisk ? { bg: "#fff7ed", color: "#c2410c" } : account.status === "未使用" ? { bg: "#f5f5f5", color: "#777" } : { bg: "#f0fff4", color: "#276749" };
+  // P2-② 详情宽度可拖拽（范围 300–620，默认 360）
+  const [width, setWidth] = useState<number>(() => {
+    try { const v = Number(localStorage.getItem("pw_detail_w") || "360"); return Number.isFinite(v) && v >= 300 ? Math.min(620, v) : 360; } catch { return 360; }
+  });
+  const widthDragRef = useRef<{ x: number; start: number } | null>(null);
+  const persistWidth = (next: number) => {
+    const clamped = Math.max(300, Math.min(620, next));
+    setWidth(clamped);
+    try { localStorage.setItem("pw_detail_w", String(clamped)); } catch {}
+  };
+  const ed: EventListenerOrEventListenerObject = useCallback((e) => {
+    const ev = e as MouseEvent;
+    if (!widthDragRef.current) return;
+    const dx = ev.clientX - widthDragRef.current.x;
+    persistWidth(widthDragRef.current.start + dx); // 左侧手柄向左拖 = 缩小，向右 = 增大（和右侧手柄一致），但因为我们放在 aside 左边缘且 aside 是右对齐，所以 dx 直接加 start 就是新宽度
+  }, []);
+  const eu: EventListenerOrEventListenerObject = useCallback(() => {
+    widthDragRef.current = null;
+    window.removeEventListener("mousemove", ed);
+    window.removeEventListener("mouseup", eu);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  }, [ed]);
+  const onWidthDragStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    widthDragRef.current = { x: e.clientX, start: width };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("mousemove", ed);
+    window.addEventListener("mouseup", eu);
+  };
   const [editing, setEditing] = useState(startEditing);
   const [detailTab, setDetailTab] = useState<"profile" | "binding" | "operations" | "security">("profile");
   const [securityDraft, setSecurityDraft] = useState({ loginAlert: true, twoFactor: true, recoveryEmail: account.boundEmail === "—" ? "" : account.boundEmail });
@@ -744,6 +827,17 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
   const [saved, setSaved] = useState({ project: account.project, city: account.city, opsManager: account.opsManager, memberManager: account.memberManager, targetGroup: account.targetGroup, nickname: account.nickname, gender: account.gender, phone: account.phone, qqNo: account.qqNo, boundEmail: account.boundEmail, accountType: account.accountType });
   const [draft, setDraft] = useState(saved);
   const [editError, setEditError] = useState("");
+  const [qrMenuOpen, setQrMenuOpen] = useState(false);
+  const qrMenuRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!qrMenuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (qrMenuRef.current && !(e.target instanceof Node && qrMenuRef.current.contains(e.target))) setQrMenuOpen(false);
+    };
+    window.addEventListener("mousedown", onClick);
+    return () => window.removeEventListener("mousedown", onClick);
+  }, [qrMenuOpen]);
+  const lastSync = timeAgo(account.lastLogin);
   const updateDraft = (key: keyof typeof draft, value: string) => setDraft(current => ({ ...current, [key]: value }));
   const cancelEdit = () => { setDraft(saved); setEditError(""); setEditing(false); };
   const saveEdit = () => {
@@ -764,7 +858,10 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
   };
 
   return (
-    <aside className="w-[400px] flex-shrink-0 flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="个人微信详情">
+    <aside className="flex-shrink-0 flex flex-row overflow-hidden" style={{ width, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="个人微信详情">
+      {/* P2-② 详情左边缘拖拽手柄条（5px 透明条，悬停显示主题色） */}
+      <div onMouseDown={onWidthDragStart} title="左右拖动调整详情宽度（300–620）" style={{ width: 5, cursor: "col-resize", flexShrink: 0, background: S.border, borderRight: `1px solid ${S.borderMed}`, borderRadius: `${S.radiusLg} 0 0 ${S.radiusLg}` }} onMouseEnter={e => (e.currentTarget.style.background = S.accent)} onMouseLeave={e => (e.currentTarget.style.background = S.border)} />
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
         <div>
           <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>账号详情</div>
@@ -782,15 +879,22 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
       <div className="flex-1 overflow-auto p-4 space-y-4">
         <div className="flex items-start gap-3">
           {isStock ? <div className="w-12 h-12 grid place-items-center" style={{ background: "#f0f0ec", borderRadius: S.radiusSm, color: S.muted }}><MessageCircle size={18} /></div> : <img src={getAvatar(parseInt(account.no) - 1)} alt={account.nickname} style={{ width: 48, height: 48, borderRadius: S.radiusSm, objectFit: "cover" }} />}
+          {/* 发放到人 生命周期标签已去掉（避免和使用中状态胶囊重复） */}
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-1.5 flex-wrap"><b className="text-sm truncate" style={{ color: S.text, fontFamily: "monospace" }}>{isStock ? "备用微信号" : account.nickname}</b><span className="px-1.5 py-0.5 text-xs" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{account.status}</span><span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs" style={{ background: lifecycle.bg, color: lifecycle.color, border: `1px solid ${lifecycle.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}><span style={{ width: 6, height: 6, background: lifecycle.dot, borderRadius: 99 }} />{lifecycle.label}</span></div>
+            <div className="flex items-center gap-1.5 flex-wrap"><b className="text-sm truncate" style={{ color: S.text, fontFamily: "monospace" }}>{isStock ? "备用微信号" : account.nickname}</b><span className="px-1.5 py-0.5 text-xs" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{account.status}</span></div>
             <div className="mt-1 text-xs" style={{ color: S.textSec, fontFamily: "monospace" }}>{account.wechatId}</div>
-            <div className="mt-0.5 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{account.no} · {account.phone}</div>
+            {/* 序号 + 手机号 / 微信号 一行完整显示（不换行） */}
+            <div className="mt-0.5 text-xs truncate whitespace-nowrap" style={{ color: S.muted, fontFamily: "monospace", letterSpacing: "-0.01em" }}>{account.no} · {account.phone} · {account.wechatId}</div>
           </div>
-          <button type="button" title="更新群二维码" className="w-9 h-9 grid place-items-center" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => onAction(`${account.wechatId} 的二维码更新入口已打开`)}><QrCode size={17} /></button>
+          <div className="flex flex-col items-end gap-1">
+            {/* 同步正常/同步异常文字不要，仅显示 6px 状态色小圆点 + 同步按钮 + QrCode + 更多 */}
+            <div className="flex items-center gap-1 flex-wrap justify-end"><span title={`同步状态：${syncStatus}`} className="inline-flex items-center justify-center w-6 h-6" style={{ borderRadius: S.radiusSm, background: S.surface, border: `1px solid ${S.borderMed}` }}><span style={{ width: 6, height: 6, borderRadius: 99, background: syncStyle.color }} /></span><button type="button" title="立即同步账号与群数据" className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold transition-colors" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 已发起同步任务，请等待系统完成更新`)}><RefreshCw size={11} />同步</button><button type="button" title="查看二维码" className="w-7 h-7 grid place-items-center" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => onAction(`${account.wechatId} 的二维码查看入口已打开`)}><QrCode size={13} /></button><div className="relative" ref={qrMenuRef}><button type="button" title="二维码操作" aria-haspopup="menu" aria-expanded={qrMenuOpen} className="w-7 h-7 grid place-items-center" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.textSec }} onClick={() => setQrMenuOpen(o => !o)}><MoreHorizontal size={13} /></button>{qrMenuOpen && createPortal(<div role="menu" className="absolute z-50 w-40 p-1 shadow-lg" style={{ right: 0, top: 32, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}>{[isStock ? { label: "上传微信号二维码", icon: QrCode, msg: `${account.wechatId} 已进入二维码上传流程` } : { label: "查看二维码", icon: Eye, msg: `${account.wechatId} 的二维码查看入口已打开` }, isStock ? { label: "从相册重新上传", icon: Upload, msg: `${account.wechatId} 已进入重新上传流程` } : { label: "重新同步群二维码", icon: RefreshCw, msg: `${account.wechatId} 的群二维码同步任务已创建` }, { label: "下载二维码图", icon: Download, msg: `${account.wechatId} 的二维码图下载已开始` }].map(item => <button key={item.label} role="menuitem" type="button" className="w-full flex items-center gap-2 px-2 py-1.5 text-[11px] text-left hover:brightness-[0.98]" style={{ background: "transparent", color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => { setQrMenuOpen(false); onAction(item.msg); }}><item.icon size={12} />{item.label}</button>)}</div>, qrMenuRef.current || document.body)}</div></div>
+            <div className="text-[10px]" title={`绝对时间：${lastSync.abs}（今日 2026-08-30 10:00 计）`} style={{ color: S.muted, fontFamily: "monospace" }}>最近同步：{lastSync.rel}</div>
+          </div>
         </div>
 
-        {detailTab === "profile" && (risk.isRisk || account.status === "待交接") && (
+
+        {detailTab === "profile" && false && (risk.isRisk || account.status === "待交接") && (
           <div className="flex gap-2 p-3" style={{ background: "#fffaf0", border: "1px solid #fed7aa", borderRadius: S.radius }}>
             <AlertTriangle size={15} style={{ color: "#c2410c", flexShrink: 0, marginTop: 1 }} />
             <div className="text-xs leading-relaxed" style={{ color: "#9a3412", fontFamily: "monospace" }}>
@@ -799,12 +903,10 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
           </div>
         )}
 
-        {detailTab === "profile" && <div className="space-y-2.5 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <CapacitySummary primaryLabel="好友容量" primaryValue={account.friendCount} primaryMax={2000} primaryWarning={risk.isFriendRisk} groupValue={account.groupCount} groupMax={20} groupWarning={risk.isGroupRisk} />
-          <div className="flex items-center justify-between pt-1 text-xs" style={{ borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}>
-            <span style={{ color: S.muted }}>同步状态</span>
-            <div className="flex items-center gap-1.5"><span className="px-1.5 py-0.5" style={{ background: syncStyle.bg, color: syncStyle.color, borderRadius: S.radiusSm }}>{syncStatus}</span><button type="button" title="立即同步账号与群数据" className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold transition-colors" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 已发起同步任务，请等待系统完成更新`)}><RefreshCw size={11} />同步</button></div>
-          </div>
+        {detailTab === "profile" && <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}><div className="grid grid-cols-3 gap-2">{[["归属项目", saved.project], ["归属员工", saved.opsManager], ["账号类型", saved.accountType], ["归属大区", saved.region || "—"], ["归属部门", saved.department || "—"], ["服务官", saved.serviceOfficer]].map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}</div></div>}
+
+        {detailTab === "profile" && <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+          <CapacitySummary primaryLabel="好友数" groupLabel="群数" primaryValue={account.friendCount} primaryMax={2000} primaryWarning={risk.isFriendRisk} groupValue={account.groupCount} groupMax={20} groupWarning={risk.isGroupRisk} />
         </div>}
 
         {detailTab === "profile" && (editing ? (
@@ -821,9 +923,9 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
             {editError && <div className="text-xs" role="alert" style={{ color: "#c2410c", fontFamily: "monospace" }}>{editError}</div>}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">{/* 已移除重复字段：归属项目/城市/运营负责人/会员负责人/目标群 ↔ 下方"绑定关系总览"展示；最近同步 ↔ 顶部行展示；微信昵称 ↔ 头像卡标题展示。保留唯一独有字段共 8 项 */}
             <div className="min-w-0"><div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>账号类型</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{saved.accountType}</div></div>
-            {[["微信昵称", saved.nickname], ["微信号", account.wechatId], ["微信二维码", account.wechatQrName || "待上传"], ["性别", saved.gender], ["绑定手机", saved.phone], ["QQ号", saved.qqNo], ["绑定邮箱", saved.boundEmail], ["归属项目", saved.project], ["城市", saved.city], ["运营负责人", saved.opsManager], ["会员负责人", saved.memberManager], ["目标群", saved.targetGroup], ["认证状态", account.certified ? "已认证" : "未认证"], ["最近同步", account.lastLogin]].map(([label, value]) => (
+            {[["微信号", account.wechatId], ["微信二维码", account.wechatQrName || "待上传"], ["性别", saved.gender], ["绑定手机", saved.phone], ["QQ号", saved.qqNo], ["绑定邮箱", saved.boundEmail], ["认证状态", account.certified ? "已认证" : "未认证"]].map(([label, value]) => (
               <div key={label} className="min-w-0">
                 <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div>
                 <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div>
@@ -832,23 +934,10 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
           </div>
         ))}
 
-        {detailTab === "profile" && <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <div className="flex items-center gap-2 text-xs font-bold mb-2" style={{ color: S.text, fontFamily: "monospace" }}><Link size={13} />绑定关系总览</div>
-          <div className="grid grid-cols-2 gap-2 mb-2">
-            {[["项目 / 地区", `${saved.project} · ${saved.city}`], ["运营负责人", saved.opsManager], ["会员负责人", saved.memberManager], ["目标群", saved.targetGroup]].map(([label, value]) => <div key={label} className="min-w-0"><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div></div>)}
-          </div>
-          <div className="flex items-center justify-between text-xs" style={{ borderTop: `1px solid ${S.border}`, paddingTop: 8, fontFamily: "monospace" }}><span style={{ color: S.muted }}>已关联微信群</span><b style={{ color: S.text }}>{account.groupCount} 个</b></div>
-          <button type="button" className="mt-2 w-full py-2 text-xs font-semibold" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 的绑定配置入口已打开`)}>打开绑定配置</button>
-        </div>}
-
-        {detailTab === "profile" && <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <div className="flex items-center justify-between text-xs" style={{ fontFamily: "monospace" }}><span style={{ color: S.muted }}>二维码状态</span><b style={{ color: isStock ? S.muted : S.text }}>{isStock ? "待上传" : "已同步 · 3 天前"}</b></div>
-          <button type="button" className="mt-2 w-full py-2 text-xs font-semibold" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(isStock ? `${account.wechatId} 已进入二维码上传流程` : `${account.wechatId} 的群二维码同步任务已创建`)}>{isStock ? "上传二维码" : "重新同步二维码"}</button>
-        </div>}
+        {detailTab === "profile" && <div className="space-y-2"><button type="button" className="w-full py-2 text-xs font-semibold" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(isStock ? `${account.wechatId} 已进入二维码上传流程` : `${account.wechatId} 的群二维码同步任务已创建`)}>{isStock ? <><QrCode size={12} className="inline mr-1" />上传微信号二维码</> : <><RefreshCw size={12} className="inline mr-1" />重新同步微信号二维码</>}</button></div>}
 
         {detailTab === "binding" && <div className="space-y-3">
-          <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}><div className="grid grid-cols-2 gap-2">{[["归属项目", account.project], ["归属员工", account.opsManager], ["账号类型", account.accountType], ["归属大区", account.region], ["归属部门", account.department], ["服务官", account.serviceOfficer]].map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div></div>)}</div></div>
-          <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between mb-2"><div className="text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }}>微信群绑定与二维码</div><span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{account.groupCount} 个已使用 / {Math.max(20, account.groupQrNames.length)} 个群位</span></div><div className="grid grid-cols-2 gap-2">{Array.from({ length: Math.max(20, account.groupQrNames.length) }, (_, index) => { const bound = index < account.groupCount; const qrName = account.groupQrNames[index]; return <button key={index} type="button" className="p-2 text-left" style={{ background: bound ? S.accentLight : S.bg, border: `1px ${bound ? "solid" : "dashed"} ${bound ? S.accentMid : S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => onAction(bound ? `${account.wechatId} 的第 ${index + 1} 个群绑定编辑入口已打开` : `${account.wechatId} 的第 ${index + 1} 个群位可绑定`)}><div className="flex items-center gap-1.5"><QrCode size={12} /><span className="text-[10px] font-bold" style={{ color: bound ? S.text : S.muted, fontFamily: "monospace" }}>{bound ? `${account.city}运营群${String(index + 1).padStart(2, "0")}` : `空群位 ${String(index + 1).padStart(2, "0")}`}</span></div><div className="text-[9px] mt-1 truncate" title={qrName} style={{ color: S.muted, fontFamily: "monospace" }}>{bound ? (qrName || "待补充群二维码") : "点击绑定群二维码"}</div></button>; })}</div></div>
+          <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between mb-2"><div className="text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }}>微信群绑定与二维码</div><div className="flex items-center gap-2"><span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{account.groupCount} 个已使用 / {Math.max(20, account.groupQrNames.length)} 个群位</span><button type="button" className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 的绑定配置入口已打开`)}>打开绑定配置</button></div></div><div className="grid grid-cols-2 gap-2">{Array.from({ length: Math.max(20, account.groupQrNames.length) }, (_, index) => { const bound = index < account.groupCount; const qrName = account.groupQrNames[index]; return <button key={index} type="button" className="p-2 text-left" style={{ background: bound ? S.accentLight : S.bg, border: `1px ${bound ? "solid" : "dashed"} ${bound ? S.accentMid : S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => onAction(bound ? `${account.wechatId} 的第 ${index + 1} 个群绑定编辑入口已打开` : `${account.wechatId} 的第 ${index + 1} 个群位可绑定`)}><div className="flex items-center gap-1.5"><QrCode size={12} /><span className="text-[10px] font-bold" style={{ color: bound ? S.text : S.muted, fontFamily: "monospace" }}>{bound ? `${account.city}运营群${String(index + 1).padStart(2, "0")}` : `空群位 ${String(index + 1).padStart(2, "0")}`}</span></div><div className="text-[9px] mt-1 truncate" title={qrName} style={{ color: S.muted, fontFamily: "monospace" }}>{bound ? (qrName || "待补充群二维码") : "点击绑定群二维码"}</div></button>; })}</div></div>
         </div>}
 
         {detailTab === "operations" && <div className="space-y-3">
@@ -891,6 +980,7 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
       <div className="p-3 grid grid-cols-2 gap-2 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
         {detailTab === "security" ? <><button type="button" className="py-2 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setSecurityDraft({ loginAlert: true, twoFactor: true, recoveryEmail: account.boundEmail === "—" ? "" : account.boundEmail })}>重置</button><button type="button" className="py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={saveSecurity}>保存安全设置</button></> : detailTab === "binding" ? <><button type="button" className="py-2 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 的绑定校验已通过`)}>校验绑定</button><button type="button" className="py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 的群绑定配置已保存`)}>保存绑定</button></> : detailTab === "operations" ? <><button type="button" className="py-2 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 的运营数据导出任务已创建`)}>导出数据</button><button type="button" className="py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 的交接单已创建`)}>发起交接</button></> : editing ? <><button type="button" className="py-2 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={cancelEdit}>取消</button><button type="button" className="py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={saveEdit}>保存修改</button></> : <><button type="button" className="py-2 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setEditing(true)}><Edit3 size={13} className="inline mr-1" />编辑</button><button type="button" className="py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wechatId} 的交接单已创建`)}>发起交接</button></>}
       </div>
+      </div>{/* flex-1 wrapper div 闭合 */}
     </aside>
   );
 }
@@ -992,10 +1082,60 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
   const memberRate = account.members / account.memberCapacity;
   const groupRate = account.groups.length / account.groupCapacity;
   const hasRisk = account.status === "异常" || account.syncStatus === "同步失败" || memberRate >= 0.85 || groupRate >= 0.8;
+  // P2-② 企微详情宽度可拖拽（范围 300–620，默认 360）
+  const [wwidth, setWwidth] = useState<number>(() => {
+    try { const v = Number(localStorage.getItem("ww_detail_w") || "360"); return Number.isFinite(v) && v >= 300 ? Math.min(620, v) : 360; } catch { return 360; }
+  });
+  const wwDragRef = useRef<{ x: number; start: number } | null>(null);
+  const persistWw = (next: number) => {
+    const clamped = Math.max(300, Math.min(620, next));
+    setWwidth(clamped);
+    try { localStorage.setItem("ww_detail_w", String(clamped)); } catch {}
+  };
+  const wwEd: EventListenerOrEventListenerObject = useCallback((e) => {
+    const ev = e as MouseEvent;
+    if (!wwDragRef.current) return;
+    persistWw(wwDragRef.current.start + (ev.clientX - wwDragRef.current.x));
+  }, []);
+  const wwEu: EventListenerOrEventListenerObject = useCallback(() => {
+    wwDragRef.current = null;
+    window.removeEventListener("mousemove", wwEd);
+    window.removeEventListener("mouseup", wwEu);
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  }, [wwEd]);
+  const onWwDragStart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    wwDragRef.current = { x: e.clientX, start: wwidth };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    window.addEventListener("mousemove", wwEd);
+    window.addEventListener("mouseup", wwEu);
+  };
   const [editing, setEditing] = useState(false);
+  const [wecomDetailTab, setWecomDetailTab] = useState<"profile" | "binding" | "operations">("profile");
   const [saved, setSaved] = useState({ linkedPersonal: account.linkedPersonal, dept: account.dept, admin: account.admin, city: account.city, note: account.note || "" });
   const [draft, setDraft] = useState(saved);
   const [editError, setEditError] = useState("");
+  const [qrMenuOpen, setQrMenuOpen] = useState(false);
+  const qrMenuRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (!qrMenuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (qrMenuRef.current && !(e.target instanceof Node && qrMenuRef.current.contains(e.target))) setQrMenuOpen(false);
+    };
+    window.addEventListener("mousedown", onClick);
+    return () => window.removeEventListener("mousedown", onClick);
+  }, [qrMenuOpen]);
+  const lastSync = timeAgo(account.lastSync);
+  const attributionInfo: Array<[string, string]> = [
+    ["归属项目", account.project || "—"],
+    ["归属员工", saved.admin],
+    ["账号类型", "企业微信"],
+    ["归属大区", account.region || "—"],
+    ["归属部门", saved.dept],
+  ];
+  const slotTotal = Math.max(account.groupCapacity, account.groups.length);
   const updateDraft = (key: keyof typeof draft, value: string) => setDraft(current => ({ ...current, [key]: value }));
   const cancelEdit = () => { setDraft(saved); setEditError(""); setEditing(false); };
   const saveEdit = () => {
@@ -1010,7 +1150,10 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
   };
 
   return (
-    <aside className="w-[310px] flex-shrink-0 flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="企业微信详情">
+    <aside className="flex-shrink-0 flex flex-row overflow-hidden" style={{ width: wwidth, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="企业微信详情">
+      {/* P2-② 企微详情左边缘拖拽手柄（5px，悬停主题色） */}
+      <div onMouseDown={onWwDragStart} title="左右拖动调整详情宽度（300–620）" style={{ width: 5, cursor: "col-resize", flexShrink: 0, background: S.border, borderRight: `1px solid ${S.borderMed}`, borderRadius: `${S.radiusLg} 0 0 ${S.radiusLg}` }} onMouseEnter={e => (e.currentTarget.style.background = S.accent)} onMouseLeave={e => (e.currentTarget.style.background = S.border)} />
+      <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
         <div>
           <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>账号详情</div>
@@ -1018,35 +1161,46 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
         </div>
         <button type="button" title="关闭详情" aria-label="关闭详情" className="w-7 h-7 grid place-items-center" style={{ border: `1px solid ${S.border}`, background: S.surface, borderRadius: S.radiusSm }} onClick={onClose}><X size={14} /></button>
       </div>
+      <div className="px-4 pt-3 flex gap-1 flex-shrink-0" role="tablist" aria-label="企业微信详情标签">
+        {[["profile", "账号资料", Building2], ["binding", "绑定分配", Link], ["operations", "运营数据", History]].map(([key, label, Ic]) => (
+          <button key={key} type="button" role="tab" aria-selected={wecomDetailTab === key} onClick={() => setWecomDetailTab(key as "profile" | "binding" | "operations")} className="flex items-center gap-1 px-2.5 py-2 text-[11px] font-bold" style={{ background: wecomDetailTab === key ? "#0d0d0d" : "#f5f5f5", color: wecomDetailTab === key ? S.accent : S.muted, border: `1px solid ${wecomDetailTab === key ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+            <Ic size={12} />{label as string}
+          </button>
+        ))}
+      </div>
       <div className="flex-1 overflow-auto p-4 space-y-4">
         <div className="flex items-start gap-3">
           <img src={getAvatar(account.id - 1)} alt={account.admin} style={{ width: 48, height: 48, borderRadius: S.radiusSm, objectFit: "cover" }} />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap"><b className="text-sm truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.wecomId}</b><span className="px-1.5 py-0.5 text-xs" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{account.status}</span></div>
             <div className="mt-1 text-xs" style={{ color: S.textSec, fontFamily: "monospace" }}>{account.corpId}</div>
-            <div className="mt-0.5 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{saved.city} · {saved.admin}</div>
+            {/* 企微：城市/服务官/admin 手机 一行不换行（后续若有 admin 手机字段直接补上） */}
+            <div className="mt-0.5 text-xs truncate whitespace-nowrap" style={{ color: S.muted, fontFamily: "monospace", letterSpacing: "-0.01em" }}>{saved.city} · 服务官 {saved.admin}{account.phone ? ` · ${account.phone}` : ""}{account.adminPhone ? ` · ${account.adminPhone}` : ""}</div>
           </div>
-          <button type="button" title="查看二维码" aria-label="查看二维码" className="w-9 h-9 grid place-items-center" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => onAction(`${account.wecomId} 的二维码查看入口已打开`)}><QrCode size={17} /></button>
+          <div className="flex flex-col items-end gap-1">
+            {/* 同步正常文字去掉，只留色点小圆点 */}
+            <div className="flex items-center gap-1 flex-wrap justify-end"><span title={`同步状态：${account.syncStatus}`} className="inline-flex items-center justify-center w-6 h-6" style={{ borderRadius: S.radiusSm, background: S.surface, border: `1px solid ${S.borderMed}` }}><span style={{ width: 6, height: 6, borderRadius: 99, background: sync.color }} /></span><button type="button" title="立即同步企业微信成员、群和客户数据" className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold transition-colors" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wecomId} 已发起企业微信同步任务，请等待系统完成更新`)}><RefreshCw size={11} />同步</button><button type="button" title="查看二维码" aria-label={`${account.wecomId} 查看二维码`} className="w-7 h-7 grid place-items-center" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => onAction(`${account.wecomId} 的二维码查看入口已打开`)}><QrCode size={13} /></button><div className="relative" ref={qrMenuRef}><button type="button" title="二维码操作" aria-haspopup="menu" aria-expanded={qrMenuOpen} className="w-7 h-7 grid place-items-center" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.textSec }} onClick={() => setQrMenuOpen(o => !o)}><MoreHorizontal size={13} /></button>{qrMenuOpen && createPortal(<div role="menu" className="absolute z-50 w-40 p-1 shadow-lg" style={{ right: 0, top: 32, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}>{[{ label: "查看企业成员二维码", icon: QrCode, msg: `${account.wecomId} 的成员二维码查看入口已打开` }, { label: "重新同步群二维码", icon: RefreshCw, msg: `${account.wecomId} 的群二维码同步任务已创建` }, { label: "下载企业联系我二维码", icon: Download, msg: `${account.wecomId} 的联系我二维码下载已开始` }].map(item => <button key={item.label} role="menuitem" type="button" className="w-full flex items-center gap-2 px-2 py-1.5 text-[11px] text-left hover:brightness-[0.98]" style={{ background: "transparent", color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => { setQrMenuOpen(false); onAction(item.msg); }}><item.icon size={12} />{item.label}</button>)}</div>, qrMenuRef.current || document.body)}</div></div>
+            <div className="text-[10px]" title={`绝对时间：${lastSync.abs}（今日 2026-08-30 10:00 计）`} style={{ color: S.muted, fontFamily: "monospace" }}>最近同步：{lastSync.rel}</div>
+          </div>
         </div>
 
-        {hasRisk && (
+
+        {wecomDetailTab === "profile" && false && hasRisk && (
           <div className="flex gap-2 p-3" style={{ background: "#fffaf0", border: "1px solid #fed7aa", borderRadius: S.radius }}>
             <AlertTriangle size={15} style={{ color: "#c2410c", flexShrink: 0, marginTop: 1 }} />
             <div className="text-xs leading-relaxed" style={{ color: "#9a3412", fontFamily: "monospace" }}>
-              {account.status === "异常" || account.syncStatus === "同步失败" ? "企业微信同步异常，请核查登录状态与个人微信绑定。" : memberRate >= 0.85 ? "成员容量接近上限，建议优先停止分配新用户。" : "管理群位接近上限，建议提前准备备用群。"}
+              {account.status === "异常" || account.syncStatus === "同步失败" ? "企业微信同步异常，请核查登录状态与个人微信绑定。" : memberRate >= 0.85 ? "成员数接近上限，建议优先停止分配新用户。" : "群数接近上限，建议提前准备备用群。"}
             </div>
           </div>
         )}
 
-        <div className="space-y-2.5 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <CapacitySummary primaryLabel="成员容量" primaryValue={account.members} primaryMax={account.memberCapacity} primaryWarning={memberRate >= 0.85} groupValue={account.groups.length} groupMax={account.groupCapacity} groupWarning={groupRate >= 0.8} />
-          <div className="flex items-center justify-between pt-1 text-xs" style={{ borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}>
-            <span style={{ color: S.muted }}>同步状态</span>
-            <div className="flex items-center gap-1.5"><span className="px-1.5 py-0.5" style={{ background: sync.bg, color: sync.color, borderRadius: S.radiusSm }}>{account.syncStatus}</span><button type="button" title="立即同步企业微信成员、群和客户数据" className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-semibold transition-colors" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wecomId} 已发起企业微信同步任务，请等待系统完成更新`)}><RefreshCw size={11} />同步</button></div>
-          </div>
-        </div>
+        {wecomDetailTab === "profile" && <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}><div className="grid grid-cols-3 gap-2">{attributionInfo.map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}</div></div>}
 
-        {editing ? (
+        {wecomDetailTab === "profile" && <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+          <CapacitySummary primaryLabel="成员数" groupLabel="群数" primaryValue={account.members} primaryMax={account.memberCapacity} primaryWarning={memberRate >= 0.85} groupValue={account.groups.length} groupMax={account.groupCapacity} groupWarning={groupRate >= 0.8} />
+        </div>}
+
+        {wecomDetailTab === "profile" && (editing ? (
           <div className="space-y-3 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
             <div className="text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>编辑配置资料</div>
             <DetailInput label="绑定个微" value={draft.linkedPersonal} onChange={value => updateDraft("linkedPersonal", value)} />
@@ -1056,17 +1210,17 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
             {editError && <div className="text-xs" role="alert" style={{ color: "#c2410c", fontFamily: "monospace" }}>{editError}</div>}
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-            {[["绑定个微", saved.linkedPersonal], ["运营部门", saved.dept], ["服务负责人", saved.admin], ["城市", saved.city], ["最近同步", account.lastSync], ["企业 ID", account.corpId]].map(([label, value]) => (
+          <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">{/* 已移除重复字段：运营部门↔归属部门、服务负责人↔归属员工、城市↔归属大区/城市（统一在绑定分配Tab查看）。保留非重复字段 */}
+            {[["绑定个微", saved.linkedPersonal], ["企业 ID", account.corpId], ["成员总数", `${account.members}/${account.memberCapacity}`], ["开通时间", account.createdAt], ["认证状态", account.verified ? "已认证" : "未认证"], ["联系电话", account.phone || "未填写"]].map(([label, value]) => (
               <div key={label} className="min-w-0">
-                <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div>
-                <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div>
+                <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{label as string}</div>
+                <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{(value as string) || "未配置"}</div>
               </div>
             ))}
           </div>
-        )}
+        ))}
 
-        <div>
+        {wecomDetailTab === "profile" && <div>
           <div className="text-xs mb-2" style={{ color: S.muted, fontFamily: "monospace" }}>企微群组</div>
           <div className="space-y-1.5">
             {account.groups.map(group => (
@@ -1076,12 +1230,23 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
               </div>
             ))}
           </div>
-        </div>
-        {saved.note && <div className="p-3 text-xs" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.muted, lineHeight: 1.6, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{saved.note}</div>}
+        </div>}
+
+        {wecomDetailTab === "profile" && saved.note && <div className="p-3 text-xs" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.muted, lineHeight: 1.6, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{saved.note}</div>}
+
+        {wecomDetailTab === "binding" && <div className="space-y-3">
+          <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between mb-2"><div className="text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }}>企微群绑定与二维码</div><div className="flex items-center gap-2"><span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{account.groups.length} 个已使用 / {slotTotal} 个群位</span><button type="button" className="inline-flex items-center gap-1 px-2 py-1 text-[10px] font-semibold" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wecomId} 的绑定配置入口已打开`)}>打开绑定配置</button></div></div><div className="grid grid-cols-2 gap-2">{Array.from({ length: slotTotal }, (_, index) => { const bound = index < account.groups.length; const name = bound ? account.groups[index] : null; return <button key={index} type="button" className="p-2 text-left" style={{ background: bound ? S.accentLight : S.bg, border: `1px ${bound ? "solid" : "dashed"} ${bound ? S.accentMid : S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => onAction(bound ? `${account.wecomId} 的群【${name}】绑定编辑入口已打开` : `${account.wecomId} 的第 ${index + 1} 个空群位可绑定`)}><div className="flex items-center gap-1.5"><QrCode size={12} /><span className="text-[10px] font-bold" style={{ color: bound ? S.text : S.muted, fontFamily: "monospace" }}>{bound ? name : `空群位 ${String(index + 1).padStart(2, "0")}`}</span></div><div className="text-[9px] mt-1 truncate" style={{ color: S.muted, fontFamily: "monospace" }}>{bound ? "点击编辑群二维码" : "点击绑定群二维码"}</div></button>; })}</div></div>
+        </div>}
+
+        {wecomDetailTab === "operations" && <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-2">{[["企业成员数", account.members], ["外部客户数", account.customers], ["已建群数", account.groups.length], ["客户联系率", `${Math.round((account.customers / Math.max(1, account.members)) * 100)}%`], ["群容量使用", `${Math.round(groupRate * 100)}%`], ["成员容量使用", `${Math.round(memberRate * 100)}%`]].map(([label, value]) => <div key={label} className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-1 text-lg font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{value}</div></div>)}</div>
+          <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2" style={{ color: S.text, fontFamily: "monospace" }}>运营状态</div>{[["同步状态", account.syncStatus, account.syncStatus === "同步失败" ? "#c2410c" : "#276749"], ["最近活跃", account.lastSync, S.textSec], ["企业认证", account.corpId.includes("未") ? "未认证" : "已认证", account.corpId.includes("未") ? "#c2410c" : "#276749"]].map(([k, v, c]) => <div key={k as string} className="flex items-center justify-between text-xs py-2" style={{ borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}><span style={{ color: S.muted }}>{k as string}</span><span style={{ color: c as string }}>{v as string}</span></div>)}</div>
+        </div>}
       </div>
       <div className="p-3 grid grid-cols-2 gap-2 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
         {editing ? <><button type="button" className="py-2 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={cancelEdit}>取消</button><button type="button" className="py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={saveEdit}>保存修改</button></> : <><button type="button" className="py-2 text-xs font-semibold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setEditing(true)}><Edit3 size={13} className="inline mr-1" />编辑</button><button type="button" className="py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => onAction(`${account.wecomId} 的交接单已创建`)}>发起交接</button></>}
       </div>
+      </div>{/* flex-1 wrapper 闭合 */}
     </aside>
   );
 }
@@ -1218,8 +1383,9 @@ function WecomTab({ viewMode, onViewModeChange }: { viewMode: BrowseMode; onView
             const st = wecomStatusCfg[w.status] || { bg: "#f5f5f5", color: "#888" };
             const sy = syncCfg[w.syncStatus] || { bg: "#f5f5f5", color: "#888" };
             const isSelected = selected === w.id;
+            const selBgCard = st.bg === "#f0fff4" ? "#dcfce7" : st.bg === "#fff0f0" ? "#fee2e2" : st.bg === "#fffbeb" ? "#fef3c7" : st.bg === "#f5f5f5" ? "#e9e9e9" : S.accentLight;
             return (
-              <div key={w.id} className="p-4 cursor-pointer transition-all" style={{ background: isSelected ? S.accentLight : S.surface, border: isSelected ? `1px solid ${S.borderMed}` : `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }} onClick={() => setSelected(isSelected ? null : w.id)}>
+              <div key={w.id} className="p-4 cursor-pointer transition-all" style={{ background: isSelected ? selBgCard : S.surface, border: isSelected ? `2px solid ${S.accent}` : `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: isSelected ? "0 4px 16px rgba(13,13,13,0.08)" : "0 1px 4px rgba(0,0,0,0.05)", fontWeight: isSelected ? 600 : 500 }} onClick={() => setSelected(isSelected ? null : w.id)}>
                 <div className="flex items-start gap-3 mb-3">
                   <img src={getAvatar(w.id - 1)} alt={w.admin} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover", flexShrink: 0 }} />
                   <div className="flex-1 min-w-0">
@@ -1347,11 +1513,11 @@ const cols = [
   { key: "department", label: "归属部门", w: 86 },
   { key: "region", label: "省份 / 大区", w: 70 },
   { key: "city", label: "地区", w: 70 },
-  { key: "friendCount", label: "微信号人数", w: 78 },
+  { key: "friendCount", label: "好友数", w: 70 },
   { key: "blocked", label: "拉黑人数", w: 52 },
   { key: "deleted", label: "删除人数", w: 52 },
   { key: "normalFans", label: "正常活粉", w: 60 },
-  { key: "groups", label: "归属群数", w: 66 },
+  { key: "groups", label: "群数", w: 50 },
   { key: "sync", label: "同步状态", w: 66 },
   { key: "updated", label: "最近同步", w: 64 },
   { key: "action", label: "操作", w: 168 },
@@ -1425,11 +1591,23 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
   const mainTab = controlledMainTab ?? internalMainTab;
   const setMainTab = (next: "personal" | "wecom") => { setInternalMainTab(next); onMainTabChange?.(next); setSelectedRow(null); setDetailMode("view"); };
   // 个人微信与企业微信共用浏览模式，切换账号类型时保持用户当前选择。
-  const [wechatBrowseMode, setWechatBrowseMode] = useState<BrowseMode>("list");
+  const [wechatBrowseMode, setWechatBrowseModeState] = useState<BrowseMode>("list");
+  // P2-④ 切换浏览方式（列表/卡片）或切换三维度时自动清空详情，避免个微详情在企微视角错位
+  const setWechatBrowseMode = (next: BrowseMode) => { setWechatBrowseModeState(next); setSelectedRow(null); setDetailMode("view"); };
+  const setViewDimension = (next: WeChatViewDimension) => { setInternalViewDimension(next); setSelectedRow(null); setDetailMode("view"); };
   const [createdAccounts, setCreatedAccounts] = useState<PersonalAccount[]>([]);
   const [accountOverrides, setAccountOverrides] = useState<Record<string, Partial<PersonalAccount>>>({});
   const [allocationAccount, setAllocationAccount] = useState<PersonalAccount | null>(null);
   const [previewAccount, setPreviewAccount] = useState<PersonalAccount | null>(null);
+  // ── 列宽拖拽（表头分隔线拖动） ──
+  // 防御：cols 在 Vite HMR 场景下偶发 undefined，先用硬编码默认宽度兜底，后续 effect 再同步一次
+  const defaultColWidths: Record<string, number> = Object.fromEntries((cols || []).map(c => [c.key, c.w]));
+  const [colWidths, setColWidths] = useState<Record<string, number>>(() => {
+    if (defaultColWidths && Object.keys(defaultColWidths).length) return { ...defaultColWidths };
+    return { select: 24, no: 36, lifecycle: 62, status: 54, avatar: 40, nickname: 88, wechatId: 94, project: 82, type: 56, owner: 70, department: 86, region: 70, city: 70, friendCount: 78, blocked: 52, deleted: 52, normalFans: 60, groups: 66, sync: 66, updated: 64, action: 168 };
+  });
+  const [draggingCol, setDraggingCol] = useState<string | null>(null);
+  const dragStartRef = useRef<{ x: number; w: number } | null>(null);
   const { generatedGroups } = useCommunityData();
 
   // 给"新建微信号"出来的账号也补齐 lifecycle 相关字段，保证 createdAccounts 形态与 accountsWithLifecycle 一致
@@ -1544,8 +1722,36 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
   const activeFilterCount = Number(lifecycleFilter !== "全部") + Number(cityFilter !== "全部城市") + Number(projectFilter !== "全部项目") + Number(departmentFilter !== "全部部门") + Number(accountTypeFilter !== "全部类型") + Number(serviceFilter !== "全部服务官") + Number(capacityFilter !== "全部");
   const clearAdvancedFilters = () => { setLifecycleFilter("全部"); setCityFilter("全部城市"); setProjectFilter("全部项目"); setDepartmentFilter("全部部门"); setAccountTypeFilter("全部类型"); setServiceFilter("全部服务官"); setCapacityFilter("全部"); setPage(1); };
   const isColumnVisible = (key: string) => visibleColumns.includes(key);
-  const columnStyle = (key: string, style: Record<string, string | number>) => ({ ...style, display: isColumnVisible(key) ? undefined : "none" });
-  const visibleTableWidth = cols.filter(column => isColumnVisible(column.key)).reduce((total, column) => total + column.w, 0);
+  const columnStyle = (key: string, style: Record<string, string | number>) => ({ ...style, width: colWidths[key] ?? style.width, display: isColumnVisible(key) ? undefined : "none" });
+  const visibleTableWidth = cols.filter(column => isColumnVisible(column.key)).reduce((total, column) => total + (colWidths[column.key] ?? column.w), 0);
+  // 列宽拖拽：在表头分隔线按下鼠标时注册全局 move/up 监听器
+  // 关键：起始宽度必须在 mousedown 此刻用局部变量捕获，不能在 setState 回调里读 ref
+  // （否则 React StrictMode 双调用 / 异步调度时 ref 已被 onUp 清空 → reading 'w' of null）
+  const handleColDragStart = (e: React.MouseEvent, key: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.clientX;
+    const startW = Number(colWidths?.[key] ?? (cols.find(c => c.key === key)?.w) ?? 60);
+    setDraggingCol(key);
+    dragStartRef.current = { x: startX, w: startW };
+    const onMove = (ev: MouseEvent) => {
+      const delta = ev.clientX - startX;
+      const nextW = Math.max(24, startW + delta);
+      setColWidths(prev => {
+        if (!prev) return { [key]: nextW };
+        if (prev[key] === nextW) return prev;
+        return { ...prev, [key]: nextW };
+      });
+    };
+    const onUp = () => {
+      setDraggingCol(null);
+      dragStartRef.current = null;
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onUp);
+    };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onUp);
+  };
   const toggleRow = (no: string) => setSelectedRows(current => current.includes(no) ? current.filter(item => item !== no) : [...current, no]);
   const runBulkAction = (action: string) => { if (!selectedRows.length) return; runAccountAction(`已对 ${selectedRows.length} 个微信号执行${action}`); setSelectedRows([]); };
   const runAccountAction = (message: string) => {
@@ -1772,7 +1978,7 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
                 const Icon = tab.icon;
                 const on = viewDimension === tab.key;
                 return (
-                  <button key={tab.key} type="button" title={tab.hint} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap" style={{ background: on ? "#0d0d0d" : "transparent", color: on ? S.accent : S.muted, fontFamily: "monospace", borderRadius: S.radiusSm }} onClick={() => { setInternalViewDimension(tab.key); setPage(1); }}>
+                  <button key={tab.key} type="button" title={tab.hint} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap" style={{ background: on ? "#0d0d0d" : "transparent", color: on ? S.accent : S.muted, fontFamily: "monospace", borderRadius: S.radiusSm }} onClick={() => { setViewDimension(tab.key); setPage(1); }}>
                     <Icon size={13} /> {tab.label}
                   </button>
                 );
@@ -1875,11 +2081,11 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
 
       {/* ── 三视角主体渲染 ── */}
       <div className="flex-1 min-h-0 flex flex-col gap-4">
+        <div className="flex gap-4 flex-1 min-h-0">
 
-        {/* ① 按账号类型视图 */}
-        {viewDimension === "type" && (
-          <>
-          <div className="flex gap-4 flex-1 min-h-0">
+          {/* ① 按账号类型视图 */}
+          {viewDimension === "type" && (
+            <>
                 {wechatBrowseMode === "cards" ? (
                   <div className="flex-1 min-w-0 min-h-0 flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
                     <PersonalWechatCards accounts={paged} selectedRow={selectedRow} onSelect={id => { setSelectedRow(id); setDetailMode("view"); setDetailVersion(version => version + 1); }} />
@@ -1888,9 +2094,29 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
                 ) : (
                   <div className="flex-1 min-w-0 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
                     <div className="flex-1 overflow-auto">
-                      <div style={{ minWidth: Math.max(680, visibleTableWidth) }}>
-                        <div className="flex items-center px-2.5 py-1.5 sticky top-0 z-10" style={{ background: "#f3f4f6", borderBottom: `1px solid ${S.border}` }}>
-                          {cols.map(c => <div key={c.key} className="flex-shrink-0 text-[11px] font-semibold tracking-tight" style={columnStyle(c.key, { width: c.w, color: "#4b5563", fontFamily: "monospace" })}>{c.key === "select" ? <input type="checkbox" aria-label="选择当前页账号" checked={paged.length > 0 && paged.every(item => selectedRows.includes(item.no))} onChange={event => setSelectedRows(event.target.checked ? Array.from(new Set([...selectedRows, ...paged.map(item => item.no)])) : selectedRows.filter(item => !paged.some(row => row.no === item)))} /> : c.label}</div>)}
+                      <div style={{ minWidth: Math.max(680, visibleTableWidth), cursor: draggingCol ? "col-resize" : undefined, userSelect: draggingCol ? "none" : undefined }}>
+                        <div className="flex items-center px-4 py-2.5 sticky top-0 z-10" style={{ background: "#f3f4f6", borderBottom: `1px solid ${S.border}` }}>
+                          {cols.map(c => {
+                            const isDragTarget = draggingCol === c.key;
+                            const showHandle = c.key !== "select" && c.key !== "action";
+                            return (
+                              <div key={c.key} className="relative flex-shrink-0 flex items-center text-[11px] font-semibold tracking-tight" style={columnStyle(c.key, { width: c.w, color: isDragTarget ? S.accent : "#4b5563", fontFamily: "monospace", background: isDragTarget ? "rgba(204,255,0,0.12)" : undefined, boxShadow: isDragTarget ? `inset -1px 0 0 ${S.accent}` : undefined })}>
+                                {c.key === "select" ? <input type="checkbox" aria-label="选择当前页账号" checked={paged.length > 0 && paged.every(item => selectedRows.includes(item.no))} onChange={event => setSelectedRows(event.target.checked ? Array.from(new Set([...selectedRows, ...paged.map(item => item.no)])) : selectedRows.filter(item => !paged.some(row => row.no === item)))} /> : <span className="truncate pr-2">{c.label}</span>}
+                                {showHandle && (
+                                  <span
+                                    role="separator"
+                                    aria-label={`拖动调整 ${c.label} 列宽`}
+                                    title="拖动调整列宽"
+                                    className="absolute right-0 top-0 bottom-0 grid place-items-center"
+                                    style={{ width: 8, cursor: "col-resize", color: draggingCol === c.key ? S.accent : S.mutedLight, opacity: draggingCol === c.key ? 1 : 0.6, transform: "translateX(50%)" }}
+                                    onMouseDown={e => handleColDragStart(e, c.key)}
+                                  >
+                                    <GripVertical size={12} strokeWidth={2} />
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
                         {paged.map(w => <AccountRowForGroups key={w.no} a={w} isSelected={selectedRow === w.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(w)} cols={cols}
                           onToggleSelect={() => toggleRow(w.no)} checked={selectedRows.includes(w.no)}
@@ -1908,21 +2134,12 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
                     <BrowsePager page={page} totalPages={totalPages} total={filtered.length} onPageChange={setPage} />
                   </div>
                 )}
-                {selectedAccount && <PersonalWechatDetail
-                  key={`${selectedAccount.no}-${detailVersion}`}
-                  account={selectedAccount}
-                  startEditing={detailMode === "edit"}
-                  onClose={() => { setSelectedRow(null); setDetailMode("view"); }}
-                  onAction={runAccountAction}
-                  onUpdate={mainTab === "personal" ? updateAccount : undefined}
-                />}
-              </div>
-          </>
-        )}
+            </>
+          )}
 
-        {/* ② 按项目视图：项目分组卡片 + 空闲号池独立分区 */}
-        {viewDimension === "project" && (
-          <div className="flex-1 min-h-0 overflow-auto space-y-4 pr-1">
+          {/* ② 按项目视图：项目分组卡片 + 空闲号池独立分区 */}
+          {viewDimension === "project" && (
+            <div className="flex-1 min-h-0 overflow-auto space-y-4 pr-1">
             {Object.entries(groupedByProject).map(([projectName, list]) => {
               const isIdlePool = projectName === "空闲号池";
               const open = expandedProjects[projectName] ?? true;
@@ -1973,10 +2190,10 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
               );
             })}
           </div>
-        )}
+          )}
 
-        {/* ③ 按人视图：分组头（账号资产中心人员卡片）+ 展开工具 */}
-        {viewDimension === "person" && (
+          {/* ③ 按人视图：分组头（账号资产中心人员卡片）+ 展开工具 */}
+          {viewDimension === "person" && (
           <div className="flex-1 min-h-0 overflow-auto space-y-4 pr-1">
             {Object.entries(groupedByPeople).map(([uidOrIdle, list]) => {
               const person = getPerson(uidOrIdle);
@@ -2030,7 +2247,61 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
               );
             })}
           </div>
-        )}
+          )}
+
+          {/* 详情抽屉（三视角共用） */}
+          {selectedAccount && (mainTab === "wecom" ? (
+            (() => {
+              // 从 wecomAccounts 原始企业台账反查：按 no = 9 + wecomId 对应关系（wechatId/nickname === enterprise.wecomId）
+              const raw = wecomAccounts.find(e => e.wecomId === selectedAccount.wechatId || String(e.id) === selectedAccount.no.slice(1).replace(/^0+/, ""));
+              if (raw) {
+                return (
+                  <WecomDetail
+                    key={`${selectedAccount.no}-${detailVersion}`}
+                    account={raw}
+                    onClose={() => { setSelectedRow(null); setDetailMode("view"); }}
+                    onAction={runAccountAction}
+                  />
+                );
+              }
+              // 兜底：用 PersonalAccount 适配成 wecomAccounts 形状避免白屏
+              const fallback = {
+                id: Number(selectedAccount.no) || 0,
+                wecomId: selectedAccount.wechatId,
+                corpId: "—",
+                linkedPersonal: "—",
+                admin: selectedAccount.opsManager || "—",
+                dept: selectedAccount.department || "—",
+                members: selectedAccount.friendCount || 0,
+                memberCapacity: 2000,
+                groupCapacity: 20,
+                groups: Array.isArray(selectedAccount.groupQrNames) ? selectedAccount.groupQrNames : [],
+                status: selectedAccount.status,
+                syncStatus: selectedAccount.lastLogin ? (selectedAccount.status === "异常" ? "同步失败" : "已同步") : "未启用",
+                lastSync: selectedAccount.lastLogin || "—",
+                city: selectedAccount.city || "—",
+                note: "",
+              } as typeof wecomAccounts[number];
+              return (
+                <WecomDetail
+                  key={`${selectedAccount.no}-${detailVersion}`}
+                  account={fallback}
+                  onClose={() => { setSelectedRow(null); setDetailMode("view"); }}
+                  onAction={runAccountAction}
+                />
+              );
+            })()
+          ) : (
+            <PersonalWechatDetail
+              key={`${selectedAccount.no}-${detailVersion}`}
+              account={selectedAccount}
+              startEditing={detailMode === "edit"}
+              onClose={() => { setSelectedRow(null); setDetailMode("view"); }}
+              onAction={runAccountAction}
+              onUpdate={updateAccount}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -2069,9 +2340,11 @@ function AccountRowForGroups({
   const syncLabel = risk.isSyncRisk ? "需核查" : a.status === "未使用" ? "未启用" : "正常";
   const syncColor = risk.isSyncRisk ? "#c2410c" : a.status === "未使用" ? S.muted : "#276749";
   const tint = rowTintByStatus[a.status] || rowTintByStatus["未使用"];
-  const rowBg = isSelected ? S.accentLight : tint.bg;
+  const selBg = tint.bg === "#f0fff4" ? "#dcfce7" : tint.bg === "#fff0f0" ? "#fee2e2" : tint.bg === "#fffbeb" ? "#fef3c7" : tint.bg === "#f5f5f5" ? "#e9e9e9" : S.accentLight;
+  const rowBg = isSelected ? selBg : tint.bg;
+  const rowFontWeight = isSelected ? 700 : 500;
   return (
-    <div role="button" tabIndex={0} className="flex items-center w-full text-left cursor-pointer transition-all" style={{ background: rowBg, borderBottom: `1px solid ${S.border}`, borderLeft: isSelected ? `3px solid ${S.accent}` : `3px solid ${tint.dot}`, paddingTop: 5, paddingBottom: 5, paddingLeft: 12, paddingRight: 12 }} onClick={onClickRow} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClickRow(); } }}>
+    <div role="button" tabIndex={0} className="flex items-center w-full text-left cursor-pointer transition-all" style={{ background: rowBg, borderBottom: `1px solid ${isSelected ? S.accent : S.border}`, borderLeft: isSelected ? `3px solid ${S.accent}` : `3px solid ${tint.dot}`, paddingTop: 15, paddingBottom: 15, paddingLeft: 16, paddingRight: 16, fontWeight: rowFontWeight as any }} onClick={onClickRow} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClickRow(); } }}>
       <div style={{ minWidth: Math.max(680, visibleTableWidth) }} className="w-full flex items-center">
         <div className="flex-shrink-0 flex items-center justify-center" style={columnStyle("select", { width: 24 })}><input type="checkbox" aria-label={`选择 ${a.wechatId}`} checked={checked} onClick={e => e.stopPropagation()} onChange={onToggleSelect} /></div>
         <div className="flex-shrink-0 text-[10px]" style={columnStyle("no", { width: 36, color: S.muted, fontFamily: "monospace" })}>{a.no}</div>
