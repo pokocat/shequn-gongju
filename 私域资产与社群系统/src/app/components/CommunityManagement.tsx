@@ -24,18 +24,18 @@ const S = {
 
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const mockGroups = [
-  { no: "00001", name: "蜂乐玛体验官1群", city: "北京/吉林", wechat: "FLM001", groupNo: "000001", type: "体验官群", ownerStatus: "正常", pushCount: 100, scanCount: 100, memberCount: 100, max: 200 },
-  { no: "00002", name: "蜂乐玛体验官2群", city: "北京/吉林", wechat: "FLM001", groupNo: "000002", type: "体验官群", ownerStatus: "正常", pushCount: 786, scanCount: 864, memberCount: 786, max: 1000 },
-  { no: "00003", name: "蜂乐玛体验官3群", city: "北京/吉林", wechat: "FLM001", groupNo: "000003", type: "体验官群", ownerStatus: "正常", pushCount: 491, scanCount: 765, memberCount: 491, max: 500 },
-  { no: "00004", name: "蜂乐玛尊享群1", city: "上海", wechat: "FLM002", groupNo: "000004", type: "尊享群", ownerStatus: "正常", pushCount: 774, scanCount: 220, memberCount: 200, max: 200 },
-  { no: "00005", name: "蜂乐玛游客群1", city: "广州", wechat: "FLM003", groupNo: "000005", type: "游客群", ownerStatus: "正常", pushCount: 204, scanCount: 164, memberCount: 204, max: 500 },
-  { no: "00006", name: "蜂乐玛家族群1", city: "深圳", wechat: "FLM004", groupNo: "000006", type: "家族群", ownerStatus: "正常", pushCount: 589, scanCount: 538, memberCount: 500, max: 500 },
-  { no: "00007", name: "蜂乐玛体验官4群", city: "成都", wechat: "FLM005", groupNo: "000007", type: "体验官群", ownerStatus: "正常", pushCount: 780, scanCount: 967, memberCount: 380, max: 500 },
-  { no: "00008", name: "蜂乐玛游客群2", city: "杭州", wechat: "FLM006", groupNo: "000008", type: "游客群", ownerStatus: "正常", pushCount: 401, scanCount: 805, memberCount: 401, max: 500 },
-  { no: "00009", name: "蜂乐玛游客群3", city: "武汉", wechat: "FLM007", groupNo: "000009", type: "游客群", ownerStatus: "正常", pushCount: 308, scanCount: 453, memberCount: 308, max: 500 },
-  { no: "00010", name: "蜂乐玛分站管理群", city: "南京", wechat: "FLM008", groupNo: "000010", type: "分站管理群", ownerStatus: "待交接", pushCount: 308, scanCount: 453, memberCount: 88, max: 200 },
-  { no: "00011", name: "蜂乐玛PRO会员群1", city: "北京", wechat: "FLM001", groupNo: "000011", type: "PRO会员群", ownerStatus: "正常", pushCount: 0, scanCount: 0, memberCount: 312, max: 500 },
-  { no: "00012", name: "蜂乐玛PRO会员群2", city: "上海", wechat: "FLM002", groupNo: "000012", type: "PRO会员群", ownerStatus: "正常", pushCount: 0, scanCount: 0, memberCount: 278, max: 500 },
+  { no: "00001", name: "体验官1群", city: "北京/吉林", wechat: "FLM001", groupNo: "000001", type: "体验官群", ownerStatus: "正常", pushCount: 100, scanCount: 100, memberCount: 100, max: 200 },
+  { no: "00002", name: "体验官2群", city: "北京/吉林", wechat: "FLM001", groupNo: "000002", type: "体验官群", ownerStatus: "正常", pushCount: 786, scanCount: 864, memberCount: 786, max: 1000 },
+  { no: "00003", name: "体验官3群", city: "北京/吉林", wechat: "FLM001", groupNo: "000003", type: "体验官群", ownerStatus: "正常", pushCount: 491, scanCount: 765, memberCount: 491, max: 500 },
+  { no: "00004", name: "尊享群1", city: "上海", wechat: "FLM002", groupNo: "000004", type: "尊享群", ownerStatus: "正常", pushCount: 774, scanCount: 220, memberCount: 200, max: 200 },
+  { no: "00005", name: "游客群1", city: "广州", wechat: "FLM003", groupNo: "000005", type: "游客群", ownerStatus: "正常", pushCount: 204, scanCount: 164, memberCount: 204, max: 500 },
+  { no: "00006", name: "家族群1", city: "深圳", wechat: "FLM004", groupNo: "000006", type: "家族群", ownerStatus: "正常", pushCount: 589, scanCount: 538, memberCount: 500, max: 500 },
+  { no: "00007", name: "体验官4群", city: "成都", wechat: "FLM005", groupNo: "000007", type: "体验官群", ownerStatus: "正常", pushCount: 780, scanCount: 967, memberCount: 380, max: 500 },
+  { no: "00008", name: "游客群2", city: "杭州", wechat: "FLM006", groupNo: "000008", type: "游客群", ownerStatus: "正常", pushCount: 401, scanCount: 805, memberCount: 401, max: 500 },
+  { no: "00009", name: "游客群3", city: "武汉", wechat: "FLM007", groupNo: "000009", type: "游客群", ownerStatus: "正常", pushCount: 308, scanCount: 453, memberCount: 308, max: 500 },
+  { no: "00010", name: "分站管理群", city: "南京", wechat: "FLM008", groupNo: "000010", type: "分站管理群", ownerStatus: "待交接", pushCount: 308, scanCount: 453, memberCount: 88, max: 200 },
+  { no: "00011", name: "PRO会员群1", city: "北京", wechat: "FLM001", groupNo: "000011", type: "PRO会员群", ownerStatus: "正常", pushCount: 0, scanCount: 0, memberCount: 312, max: 500 },
+  { no: "00012", name: "PRO会员群2", city: "上海", wechat: "FLM002", groupNo: "000012", type: "PRO会员群", ownerStatus: "正常", pushCount: 0, scanCount: 0, memberCount: 278, max: 500 },
 ];
 
 const mockMembers = [
@@ -73,7 +73,7 @@ type GroupForm = {
 function NewGroupModal({ onClose, group, onSave, rulesByProject }: { onClose: () => void; group?: typeof mockGroups[0] & Partial<GroupForm>; onSave?: (form: GroupForm) => void; rulesByProject: Record<string, GroupTypeRule[]> }) {
   const editing = Boolean(group);
   const projectOptions = Object.keys(rulesByProject);
-  const initialProject = group?.project || projectOptions[0] || "蜂乐码";
+  const initialProject = group?.project || projectOptions[0] || "体验官";
   const initialRules = rulesByProject[initialProject] || [];
   const initialRule = initialRules.find(rule => `${rule.name}群` === group?.type) || initialRules[0] || defaultGroupTypeRules[0];
   const [form, setForm] = useState<GroupForm>({ project: initialProject, type: initialRule.name, typeCode: group?.typeCode || initialRule.code, city: group?.city || initialRule.cities[0], cities: group?.city?.split("/") || initialRule.cities.slice(0, 2), wechat: group?.wechat || "", groupNo: group?.groupNo || "系统生成", name: group?.name || buildGroupName(initialProject, initialRule.name, initialRule.cities[0], 1), note: group?.note || "", manager: group?.manager || "系统分配", service: group?.service || "系统继承", pushCount: String(group?.pushCount ?? 0), scanCount: String(group?.scanCount ?? 0), memberCount: String(group?.memberCount ?? 0), allocationMode: group?.allocationMode || initialRule.allocationMode, allocationMax: String(group?.allocationMax ?? group?.max ?? initialRule.capacity), quantity: "1" });

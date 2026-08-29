@@ -120,7 +120,7 @@ const EARN_RULES = [
 ];
 
 const REDEEM_ITEMS = [
-  { item: "蜂乐玛周边礼盒",     points: 2000, stock: "50件库存" },
+  { item: "会员周边礼盒",     points: 2000, stock: "50件库存" },
   { item: "专属一对一咨询",     points: 5000, stock: "每月10次" },
   { item: "活动优先报名资格",   points: 1000, stock: "不限"     },
 ];

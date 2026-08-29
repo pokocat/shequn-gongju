@@ -1,0 +1,217 @@
+<h2>融合模块 · 业务逻辑全梳理</h2>
+<p class="subtitle">围绕你提出的「账号生命周期」和「三个查看维度」，先把 <b>做什么（What）</b> 和 <b>怎么流转（Flow）</b> 讲清楚，再反推页面结构。</p>
+
+<div class="section">
+  <h3>① 核心业务流程：一个工具/账号的一生（生命周期 5 阶段）</h3>
+  <p class="subtitle">下面用"个人微信号"举例，企微/手机/媒体号使用同一套阶段，阶段名完全一致（仅"养号期"内的具体动作不同）。</p>
+
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px">
+    <div style="padding:12px;border:2px solid #888;border-radius:10px;background:#fff">
+      <div style="font-size:10px;color:#888;font-weight:700">STAGE · 01</div>
+      <div style="font-size:16px;font-weight:800;margin:6px 0">📥 注册入库</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">采购一批手机卡/微信号/企微席位，批量或单条导入系统。</div>
+      <div style="background:#fafafa;border-radius:6px;padding:6px;font-size:10px;color:#555">
+        <b>此时：</b><br>• 类型=wechat<br>• 标识符=wx_0001<br>• 状态=未启用<br>• 归属人=空<br>• 项目=空<br>• 仅录入"号码/卡号/账号ID"等最少字段
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#c53030;font-weight:700">💡 尚未进入可使用池</div>
+    </div>
+
+    <div style="position:relative;padding:12px;border:2px solid #b45309;border-radius:10px;background:#fffbeb">
+      <div style="position:absolute;left:-14px;top:50%;transform:translateY(-50%);font-size:18px;color:#b45309">→</div>
+      <div style="font-size:10px;color:#b45309;font-weight:700">STAGE · 02</div>
+      <div style="font-size:16px;font-weight:800;margin:6px 0;color:#b45309">🌱 养号期</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">
+        微信号：每天挂设备、加少量好友、读公众号<br>
+        企微：每日登录活跃、完善员工资料<br>
+        媒体号：发几条日常内容养权重
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:6px;font-size:10px;color:#555">
+        <b>此时：</b><br>• 状态=养号中(新增枚举)<br>• 归属人=空 或 养号专员<br>• 项目=空<br>• 运营台账开始记录<br>&nbsp;&nbsp;(登录设备/好友数增长/认证)
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#b45309;font-weight:700">📊 养号≥7天 且 风控=正常 → 方可进入下一阶段</div>
+    </div>
+
+    <div style="position:relative;padding:12px;border:2px solid #2563eb;border-radius:10px;background:#eff6ff">
+      <div style="position:absolute;left:-14px;top:50%;transform:translateY(-50%);font-size:18px;color:#2563eb">→</div>
+      <div style="font-size:10px;color:#2563eb;font-weight:700">STAGE · 03</div>
+      <div style="font-size:16px;font-weight:800;margin:6px 0;color:#2563eb">🏢 分配到项目</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">根据新项目的人员编制计划，从可用号池里抽号分配给某项目。</div>
+      <div style="background:#fff;border-radius:6px;padding:6px;font-size:10px;color:#555">
+        <b>此时：</b><br>• 状态=空闲(可领)<br>• 项目=北京PRO会员<br>• 归属人=空<br>• 工具池显示:"可用 · 北京PRO · N个"
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#2563eb;font-weight:700">🏷 一次可以抽 1 个或批量 N 个</div>
+    </div>
+
+    <div style="position:relative;padding:12px;border:2px solid #111;border-radius:10px;background:#f0fff4">
+      <div style="position:absolute;left:-14px;top:50%;transform:translateY(-50%);font-size:18px;color:#111">→</div>
+      <div style="font-size:10px;color:#111;font-weight:700">STAGE · 04</div>
+      <div style="font-size:16px;font-weight:800;margin:6px 0;color:#111">👤 发放到人</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">把项目里的空闲号绑定给具体的 SystemAccount（人），此人从此可登录、可加粉、可运营。</div>
+      <div style="background:#fff;border-radius:6px;padding:6px;font-size:10px;color:#555">
+        <b>此时：</b><br>• 状态=使用中<br>• 项目=北京PRO会员<br>• 归属人=吴思远(acc-0001)<br>• 人.assignedTools 增加 1 条
+      </div>
+      <div style="margin-top:8px;font-size:10px;color:#111;font-weight:700">🔐 离职/调岗 → 走 工具交接审批 → 回到阶段3或2</div>
+    </div>
+
+    <div style="position:relative;padding:12px;border:2px solid #666;border-radius:10px;background:#f5f5f5">
+      <div style="position:absolute;left:-14px;top:50%;transform:translateY(-50%);font-size:18px;color:#666">→</div>
+      <div style="font-size:10px;color:#666;font-weight:700">STAGE · END</div>
+      <div style="font-size:16px;font-weight:800;margin:6px 0;color:#666">🗄 归档/停用</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">号被封禁、手机卡注销、媒体号废弃 → 软删除，日志永存。</div>
+      <div style="background:#fff;border-radius:6px;padding:6px;font-size:10px;color:#555">
+        <b>此时：</b><br>• 状态=已停用 / 已归档<br>• 项目=保留历史<br>• 归属人=保留历史（用于审计）<br>• 从所有可用池筛选中默认排除
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:10px;padding:10px;background:#f0fff4;border-radius:8px;font-size:12px;color:#276749">
+    ✅ <b>这就是为什么"三个模块合并"的根本理由：</b> 上面这个生命周期，从注册到归档是一条连续事件链。原先拆开的三个页面只是这条链上的不同切面（人的切面/工具的切面/微信的切面），本质上应该是同一个模块的不同查看维度。
+  </div>
+</div>
+
+<div class="section">
+  <h3>② 三个查看维度（你提的，完整对应以下三套列表首屏）</h3>
+  <p class="subtitle">无论从哪个维度进入，点击最终都能定位到同一"工具详情"实体，且操作入口完全一致（交接/停用/改项目/改归属人）。</p>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px">
+    <div class="card" style="border:2px solid #111;background:#fff;border-radius:10px;padding:12px">
+      <div style="font-size:11px;font-weight:700;color:#888">维度 ① · 查看按钮 / Tab</div>
+      <div style="font-size:17px;font-weight:800;margin:4px 0">🎯 按账号类型</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">筛选器（不分页时等于Tab）：全部 / 企业微信 / 个人微信 / 手机号 / 媒体号</div>
+      <div style="background:#fafafa;padding:8px;border-radius:6px;font-size:11px">
+        <b>首行显示列:</b><br>类型 · 标识符 · 昵称/名称 · 当前所属阶段 · 项目 · 归属人 · 风控 · 操作<br>
+        <hr style="margin:6px 0;border-color:#eee">
+        <b>适用场景：</b><br>"我想看全部微信号的养号进度"<br>"我想看哪些企微席位还是空的"
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:#b45309;font-weight:700">💡 选中"个人微信"后，"养号进度/好友数"等微信专属列自动展开，其他类型自动隐藏专属列</div>
+    </div>
+
+    <div class="card" style="border:2px solid #111;background:#fff;border-radius:10px;padding:12px">
+      <div style="font-size:11px;font-weight:700;color:#888">维度 ② · 查看按钮 / Tab</div>
+      <div style="font-size:17px;font-weight:800;margin:4px 0">🏬 按项目</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">顶部先选项目（可多选），再看这个项目下的账号编排</div>
+      <div style="background:#fafafa;padding:8px;border-radius:6px;font-size:11px">
+        <b>显示层级（按项目分组）:</b><br>
+        ┌ 北京PRO会员服务（可用号 8 / 使用中 35 / 养号中 2 / 异常 1）<br>
+        │&nbsp;&nbsp;├ 吴思远 名下工具 4 个<br>
+        │&nbsp;&nbsp;├ 林小燕 名下工具 2 个<br>
+        │&nbsp;&nbsp;└ 空闲号池 23 个（未分配到人）<br>
+        └ 成都分站...<br>
+        <hr style="margin:6px 0;border-color:#eee">
+        <b>适用场景：</b>"北京PRO还差5个号，从号池批拨过去"<br>"这个项目里的异常号我要一次性看到"
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:#2563eb;font-weight:700">💡 空闲号池的批量分配是本维度的特色按钮</div>
+    </div>
+
+    <div class="card" style="border:2px solid #111;background:#fff;border-radius:10px;padding:12px">
+      <div style="font-size:11px;font-weight:700;color:#888">维度 ③ · 查看按钮 / Tab</div>
+      <div style="font-size:17px;font-weight:800;margin:4px 0">👥 按人</div>
+      <div style="font-size:11px;color:#444;margin-bottom:8px">首列是 SystemAccount 人，点击行展开他名下的全部工具+身份+权限</div>
+      <div style="background:#fafafa;padding:8px;border-radius:6px;font-size:11px">
+        <b>显示列:</b><br>人 · 身份标签(COO/运营/客服) · 所属项目 · 名下工具数 · 异常工具数 · 入职/最近操作<br>
+        <div style="height:4px"></div>
+        展开 吴思远 → 企微1 / 微信1 / 手机1 / 媒体1 四行（同方案A三级嵌套）<br>
+        <hr style="margin:6px 0;border-color:#eee">
+        <b>适用场景：</b>"新员工入职 → 分配一批号"<br>"这个人离职 → 他手上所有工具批量走交接审批"
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:#111;font-weight:700">💡 原"账号资产中心"的所有功能（邀请/停用/操作日志/身份权限）= 本维度的 Tab ②</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>③ 合并后：实体 & 字段如何去重（消除之前的"三份状态"）</h3>
+  <p class="subtitle">合并前三个模块各有一套 status/归属人，现在统一为：<b>以 CommunicationTool（改名 ResourceTool）实体为状态唯一真源</b>，SystemAccount 只保留引用 ID 列表。</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="padding:12px;border:2px solid #111;border-radius:10px;background:#fff">
+      <div style="font-size:12px;font-weight:800;color:#111">🏢 实体A · 人 SystemAccount<br><span style="color:#888;font-size:11px;font-weight:400">—— 不变，只是 status/归属 字段被剥离</span></div>
+      <hr style="margin:8px 0;border-color:#eee">
+      <div style="font-size:11px">
+        ✅ <b>保留：</b><br>
+        uid / name / email / phone / status(活跃/停用)<br>
+        identities[]（身份 + 作用域 + 权限摘要）<br>
+        createdAt / operationLogs[] / 邀请审核信息<br>
+        <hr style="margin:8px 0;border-color:#eee">
+        ❌ <b>之前重复的字段 → 删除：</b><br>
+        <s>wecomBindings[]（带详情的那种）</s><br>
+        <s>wxIds[]（带详情的那种）</s><br>
+        <s>字段里的"已绑定/未绑定"等衍生状态</s><br>
+        <hr style="margin:8px 0;border-color:#eee">
+        ➕ <b>替换为：</b><br>
+        <code>toolIds: string[]</code> —— 只存工具/资源的ID数组<br>
+        <i style="color:#555">（工具/项目状态通过ID实时join推导，绝不另存）</i>
+      </div>
+    </div>
+
+    <div style="padding:12px;border:2px solid #111;border-radius:10px;background:#fff">
+      <div style="font-size:12px;font-weight:800;color:#111">📱 实体B · 工具 ResourceTool<br><span style="color:#888;font-size:11px;font-weight:400">—— 原 CommunicationTool + 微信台账中"非重复字段"的合并体</span></div>
+      <hr style="margin:8px 0;border-color:#eee">
+      <div style="font-size:11px">
+        ✅ <b>通用字段（4类型都有）：</b><br>
+        id / type（wecom/wechat/phone/media）<br>
+        identifier / name / nickname<br>
+        <b style="color:#c53030">★ status（唯一真源）:</b> 未启用 / 养号中 / 空闲 / 使用中 / 待交接 / 异常 / 已停用 / 已归档<br>
+        riskLevel（正常/关注/高危） · riskDetail（JSON）<br>
+        boundAccountId（=归属人 SystemAccount.uid，可空）<br>
+        projectId（=分配到哪个项目，可空）<br>
+        lastCheckAt · lastLoginAt · createdAt · updatedAt<br>
+        <hr style="margin:8px 0;border-color:#eee">
+        ✅ <b>type=wechat 专属字段（类型驱动展示）：</b><br>
+        微信号详情：昵称/认证/QQ号/绑定邮箱/密码密保/紧急联系人/好友数/已删除人数/群数/加粉趋势/微信号二维码
+        <hr style="margin:8px 0;border-color:#eee">
+        ✅ <b>type=wecom 专属：</b><br>企业名称/部门/会话存档是否开启/分公司
+        <hr style="margin:8px 0;border-color:#eee">
+        ✅ <b>type=phone 专属：</b><br>运营商/实名信息/实名日期/套餐/通话限制
+        <hr style="margin:8px 0;border-color:#eee">
+        ✅ <b>type=media 专属：</b><br>平台名（抖音/小红书）/粉丝数/内容量级/创作者中心
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px;padding:10px;background:#fffbeb;border-radius:8px;border:1px solid #ffd600;font-size:12px;color:#78350f">
+    ⚠️ <b>一个非常重要的衍生规则：</b> 以后再也不会出现"wx_gz_01 在通讯工具中心显示异常、但在微信账号管理里显示使用中、但在人员列表里又没标红"这种三个地方不一致的情况——因为三个视图都是 JOIN 到同一张 ResourceTool 表读同一个 status 字段。
+  </div>
+</div>
+
+<div class="section">
+  <h3>④ 合并后，侧边栏导航怎么变？（对应之前的"入口重叠"问题）</h3>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+    <div style="padding:12px;border:2px solid #c53030;border-radius:10px;background:#fff0f0">
+      <div style="font-size:12px;font-weight:800;color:#c53030">❌ 改前（你现在看到的 → 重叠感来源）</div>
+      <hr style="margin:8px 0;border-color:#fca5a5">
+      <div style="font-size:12px;line-height:1.9;color:#444;padding-left:4px">
+        配置中心<br>
+        ├─ <b>账号资产中心 ← 入口1 · 人</b><br>
+        ├─ <b style="color:#c53030">通讯工具中心 ← 入口2 · 工具(重复)</b><br>
+        ├─ <b style="color:#c53030">微信账号管理 ← 入口3 · 微信(重复×2)</b><br>
+        ├─ 微信群管理<br>
+        └─ ...
+      </div>
+    </div>
+    <div style="padding:12px;border:2px solid #276749;border-radius:10px;background:#f0fff4">
+      <div style="font-size:12px;font-weight:800;color:#276749">✅ 改后（单一入口）</div>
+      <hr style="margin:8px 0;border-color:#86efac">
+      <div style="font-size:12px;line-height:1.9;color:#444;padding-left:4px">
+        配置中心<br>
+        ├─ <b style="color:#276749">📦 账号与资源中心 ← 唯一入口</b><br>
+        │&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#555">└ 进去后顶部切换: ①按账号类型 / ②按项目 / ③按人</span><br>
+        ├─ 👥 微信群管理（<i>跟这个模块没关系，保留独立</i>）<br>
+        ├─ 🎧 客服与服务资源<br>
+        └─ ...
+      </div>
+      <div style="margin-top:4px;font-size:10px;color:#276749;font-weight:700">原侧边栏2个入口被删除，但所有功能都在"账号与资源中心"里通过切换维度找到。</div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:24px;padding:16px;border:2px dashed #111;border-radius:12px;background:#fafafa">
+  <h3 style="margin:0 0 8px 0">👉 现在请你确认这4段业务逻辑对不对：</h3>
+  <ol style="margin:0 0 0 22px;font-size:13px;line-height:2">
+    <li>生命周期 5 阶段（注册→养号→分配项目→发放到人→归档）是否覆盖了你实际要走的流程？缺不缺阶段？</li>
+    <li>三个查看维度（按类型/按项目/按人）是不是就是你说的那三个，查看按钮放 Tab 还是放在顶部筛选器里更顺？</li>
+    <li>字段去重规则（工具存唯一状态，人只存ID引用）有没有业务上走不通的地方？</li>
+    <li>侧边栏只留一个"📦 账号与资源中心"入口够不够？还是想把"微信群管理"也合并进来？</li>
+  </ol>
+</div>

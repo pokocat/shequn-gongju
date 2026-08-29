@@ -1,0 +1,234 @@
+<h2>三模块融合方案 · 信息架构对比</h2>
+<p class="subtitle">把「账号资产中心（人）」 + 「通讯工具中心（4类资源池）」 + 「微信账号管理（微信号运营台账）」合并为单一入口的三种结构。点击选项即可标记偏好。</p>
+
+<div class="options">
+
+  <!-- ============ 方案 A ============ -->
+  <div class="option" data-choice="A" onclick="toggleSelect(this)">
+    <div class="letter" style="background:#ccff00;color:#000">A</div>
+    <div class="content">
+      <h3>以人为中心（统一资产中心）· 推荐</h3>
+      <p class="subtitle">左侧栏只有一个「资产与工具中心」入口；列表先展示人，点击人后展开其绑定工具，再点工具弹出微信运营细节</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">资产与工具中心（Single Page）</div>
+        <div class="mockup-body" style="padding:14px">
+          <!-- Tabs -->
+          <div style="display:flex;gap:6px;margin-bottom:12px">
+            <div style="padding:6px 12px;font-size:12px;background:#111;color:#ccff00;border-radius:6px;font-weight:700">① 资产视图 · 按人看</div>
+            <div style="padding:6px 12px;font-size:12px;background:#f0f0f0;color:#555;border-radius:6px;font-weight:700">② 资源池视图 · 按工具看</div>
+            <div style="padding:6px 12px;font-size:12px;background:#f0f0f0;color:#555;border-radius:6px;font-weight:700">③ 邀请与审批</div>
+            <div style="padding:6px 12px;font-size:12px;background:#f0f0f0;color:#555;border-radius:6px;font-weight:700">④ 导出 / 批量</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:10px">
+            <!-- L3 左:人员列表 -->
+            <div style="border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px">
+              <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:6px">▶ 人员（SystemAccount）</div>
+              <div style="font-size:12px;font-weight:700;padding:4px 6px;background:rgba(204,255,0,.12);border-left:2px solid #ccff00;border-radius:4px">👤 吴思远 · 4 个工具</div>
+              <div style="font-size:12px;color:#444;padding:4px 6px;border-radius:4px;margin-top:2px">👤 林小燕 · 2 个工具</div>
+              <div style="font-size:12px;color:#444;padding:4px 6px;border-radius:4px;margin-top:2px">👤 刘 刚 · 1 个工具</div>
+              <div style="font-size:12px;color:#444;padding:4px 6px;border-radius:4px;margin-top:2px">👤 赵志远 · 1 个工具(异常)</div>
+              <div style="height:4px"></div>
+              <div style="font-size:11px;color:#888">—— 身份标签 ——</div>
+              <div style="font-size:11px;color:#555;padding:2px 0">生态COO · 北京分站</div>
+            </div>
+            <!-- L3 中:吴思远绑定的工具列表 -->
+            <div style="border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px;background:#fafafa">
+              <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:6px">吴思远名下工具 → 点击展开运营详情</div>
+              <div style="display:flex;align-items:center;gap:6px;padding:5px 6px;background:#fff;border-radius:5px;border:1px solid #eee;margin-top:3px">
+                <span style="padding:1px 4px;font-size:10px;background:#07c160;color:#fff;border-radius:3px">微信</span>
+                <span style="font-size:11px;font-weight:700">wx_bj_01 思远</span>
+                <span style="margin-left:auto;padding:1px 4px;font-size:10px;background:#ccff00;color:#000;border-radius:3px">使用中</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;padding:5px 6px;background:#fff;border-radius:5px;border:1px solid #111;margin-top:4px;box-shadow:0 0 0 2px rgba(204,255,0,.3)">
+                <span style="padding:1px 4px;font-size:10px;background:#111;color:#fff;border-radius:3px">企微</span>
+                <span style="font-size:11px;font-weight:700">wecom_bsy01 生态招商</span>
+                <span style="margin-left:auto;padding:1px 4px;font-size:10px;background:#ccff00;color:#000;border-radius:3px">使用中</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;padding:5px 6px;background:#fff;border-radius:5px;border:1px solid #eee;margin-top:4px">
+                <span style="padding:1px 4px;font-size:10px;background:#4a90e2;color:#fff;border-radius:3px">手机</span>
+                <span style="font-size:11px;font-weight:700">138-0012-3456</span>
+                <span style="margin-left:auto;padding:1px 4px;font-size:10px;background:#f0f0f0;color:#555;border-radius:3px">空闲</span>
+              </div>
+              <div style="display:flex;align-items:center;gap:6px;padding:5px 6px;background:#fff;border-radius:5px;border:1px solid #eee;margin-top:4px">
+                <span style="padding:1px 4px;font-size:10px;background:#ff6b35;color:#fff;border-radius:3px">媒体</span>
+                <span style="font-size:11px;font-weight:700">douyin_beijing_01</span>
+                <span style="margin-left:auto;padding:1px 4px;font-size:10px;background:#ccff00;color:#000;border-radius:3px">使用中</span>
+              </div>
+            </div>
+            <!-- L3 右:工具专属运营详情(微信tab) -->
+            <div style="border:1px solid #111;border-radius:8px;padding:8px;background:#fff">
+              <div style="font-size:11px;font-weight:700;color:#111;margin-bottom:4px">🧭 wecom_bsy01 · 详情 · 4 Tabs</div>
+              <div style="display:flex;gap:4px;margin:6px 0">
+                <div style="padding:3px 8px;font-size:10px;background:#111;color:#ccff00;border-radius:4px;font-weight:700">通用</div>
+                <div style="padding:3px 8px;font-size:10px;background:#f5f5f5;color:#555;border-radius:4px;font-weight:700">企业微信</div>
+                <div style="padding:3px 8px;font-size:10px;background:#f5f5f5;color:#555;border-radius:4px;font-weight:700">风控</div>
+                <div style="padding:3px 8px;font-size:10px;background:#f5f5f5;color:#555;border-radius:4px;font-weight:700">操作日志</div>
+              </div>
+              <div style="font-size:10px;color:#888;margin-top:4px">类型:企业微信 状态:使用中 绑定人:吴思远</div>
+              <div style="height:1px;background:rgba(0,0,0,.07);margin:6px 0"></div>
+              <div style="font-size:10px;color:#888">📌 企业微信专属</div>
+              <div style="font-size:11px;color:#444">客服/外呼部门:生态招商部</div>
+              <div style="font-size:11px;color:#444">企业名称:北京生态伙伴科技</div>
+              <div style="font-size:11px;color:#444">已加入会话存档:是</div>
+              <div style="font-size:11px;color:#444">所属分公司/项目:北京PRO</div>
+              <div style="height:1px;background:rgba(0,0,0,.07);margin:6px 0"></div>
+              <div style="font-size:10px;color:#888">🛡 风控 · 登录设备:Mac Chrome · 最后登录:今天 09:12</div>
+              <div style="height:4px"></div>
+              <div style="display:flex;gap:4px;flex-wrap:wrap">
+                <div style="padding:3px 8px;font-size:10px;background:#ccff00;color:#000;border-radius:4px;font-weight:700">交接</div>
+                <div style="padding:3px 8px;font-size:10px;background:#eee;color:#444;border-radius:4px;font-weight:700">停用</div>
+                <div style="padding:3px 8px;font-size:10px;background:#eee;color:#444;border-radius:4px;font-weight:700">刷新状态</div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:11px;color:#888;padding:6px;background:#fffbeb;border-radius:5px;border:1px solid #ffd600">
+            💡 要点：① 所有信息在同一页嵌套展开，人→工具→详情 唯一路径；② 顶部Tab 2 切换到"按工具看"就等于原通讯工具中心（反向展开：工具→归属人）；③ 原侧边栏"通讯工具中心/微信账号管理"两个入口直接删除。
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>优势</h4><ul>
+          <li>单一入口、层级递进：先有人再谈用什么工具，业务心智最顺</li>
+          <li>消除数据重复：归属/状态/风控只在工具层存一份，人员页只读</li>
+          <li>原三个功能完整保留，只是搬到不同Tab/抽屉</li>
+        </ul></div>
+        <div class="cons"><h4>权衡</h4><ul>
+          <li>需要重写较多组件组合逻辑（非破坏性改造，逻辑量中等）</li>
+          <li>如果某运营要"只看所有微信号"，需切换到 Tab ② 或用筛选器</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 方案 B ============ -->
+  <div class="option" data-choice="B" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>以工具为中心（原通讯工具中心扩权）</h3>
+      <p class="subtitle">入口重命名为「私域资源池」，列表先展示工具 → 工具Tab里"归属人"是其中一列；点击归属人弹出轻量抽屉显示人员身份权限</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">私域资源池（Single Page）</div>
+        <div class="mockup-body" style="padding:14px">
+          <!-- Tabs -->
+          <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+            <div style="padding:6px 12px;font-size:12px;background:#f0f0f0;color:#555;border-radius:6px;font-weight:700">资产统计</div>
+            <div style="padding:6px 12px;font-size:12px;background:#111;color:#ccff00;border-radius:6px;font-weight:700">① 工具列表(类型过滤)</div>
+            <div style="padding:6px 12px;font-size:12px;background:#f0f0f0;color:#555;border-radius:6px;font-weight:700">个人微信·运营台账</div>
+            <div style="padding:6px 12px;font-size:12px;background:#f0f0f0;color:#555;border-radius:6px;font-weight:700">企业微信</div>
+            <div style="padding:6px 12px;font-size:12px;background:#f0f0f0;color:#555;border-radius:6px;font-weight:700">人员(原账号资产中心)</div>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr;gap:10px">
+            <!-- 工具大列表 -->
+            <div style="border:1px solid rgba(0,0,0,.08);border-radius:8px;padding:8px;max-height:240px;overflow:auto">
+              <div style="font-size:10px;font-weight:700;color:#888;display:grid;grid-template-columns:32px 60px 1fr 80px 80px 60px;padding:4px;background:#f5f5f5;border-radius:4px;margin-bottom:4px">
+                <span>ID</span><span>类型</span><span>名称 / 昵称 · 归属人</span><span>状态</span><span>风控</span><span>操作</span>
+              </div>
+              <div style="display:grid;grid-template-columns:32px 60px 1fr 80px 80px 60px;align-items:center;padding:4px;font-size:11px;background:#fff;border-bottom:1px solid #f0f0f0;border-radius:4px">
+                <span>#01</span><span style="padding:1px 4px;background:#07c160;color:#fff;border-radius:3px;font-size:9px;text-align:center">微信</span><span><b>wx_bj_01 思远</b> · <u style="color:#2563eb">吴思远</u></span><span style="color:#276749;font-weight:700">使用中</span><span style="color:#07c160">正常</span><span>...</span>
+              </div>
+              <div style="display:grid;grid-template-columns:32px 60px 1fr 80px 80px 60px;align-items:center;padding:4px;font-size:11px;background:#fff;border-bottom:1px solid #f0f0f0;border-radius:4px">
+                <span>#02</span><span style="padding:1px 4px;background:#111;color:#fff;border-radius:3px;font-size:9px;text-align:center">企微</span><span><b>wecom_bsy01 生态招商</b> · <u style="color:#2563eb">吴思远</u></span><span style="color:#276749;font-weight:700">使用中</span><span style="color:#07c160">正常</span><span>...</span>
+              </div>
+              <div style="display:grid;grid-template-columns:32px 60px 1fr 80px 80px 60px;align-items:center;padding:4px;font-size:11px;background:#fff;border-bottom:1px solid #f0f0f0;border-radius:4px">
+                <span>#03</span><span style="padding:1px 4px;background:#07c160;color:#fff;border-radius:3px;font-size:9px;text-align:center">微信</span><span><b>wx_gz_01 刘刚</b> · <u style="color:#2563eb">刘刚</u></span><span style="color:#c53030;font-weight:700">异常</span><span style="color:#ff3b30;font-weight:700">高危</span><span>...</span>
+              </div>
+              <div style="display:grid;grid-template-columns:32px 60px 1fr 80px 80px 60px;align-items:center;padding:4px;font-size:11px;background:#fff;border-bottom:1px solid #f0f0f0;border-radius:4px">
+                <span>#04</span><span style="padding:1px 4px;background:#4a90e2;color:#fff;border-radius:3px;font-size:9px;text-align:center">手机</span><span><b>138-0012-3456</b> · <u style="color:#2563eb">吴思远</u></span><span style="color:#555">空闲</span><span style="color:#07c160">正常</span><span>...</span>
+              </div>
+              <div style="display:grid;grid-template-columns:32px 60px 1fr 80px 80px 60px;align-items:center;padding:4px;font-size:11px;background:#fff;border-bottom:1px solid #f0f0f0;border-radius:4px">
+                <span>#05</span><span style="padding:1px 4px;background:#07c160;color:#fff;border-radius:3px;font-size:9px;text-align:center">微信</span><span><b>wx_sh_01 小燕</b> · <u style="color:#2563eb">林小燕</u></span><span style="color:#b45309;font-weight:700">待交接</span><span style="color:#ff9500">关注</span><span>...</span>
+              </div>
+              <div style="display:grid;grid-template-columns:32px 60px 1fr 80px 80px 60px;align-items:center;padding:4px;font-size:11px;background:#fff;border-radius:4px">
+                <span>#06</span><span style="padding:1px 4px;background:#ff6b35;color:#fff;border-radius:3px;font-size:9px;text-align:center">媒体</span><span><b>dy_beijing_01</b> · <u style="color:#2563eb">吴思远</u></span><span style="color:#276749;font-weight:700">使用中</span><span style="color:#07c160">正常</span><span>...</span>
+              </div>
+            </div>
+            <!-- 右：工具详情 -->
+            <div style="border:1px solid #111;border-radius:8px;padding:8px;background:#fff">
+              <div style="font-size:11px;font-weight:700;color:#888;margin-bottom:4px">📌 点击列名中的归属人 → 弹出人员抽屉</div>
+              <div style="border:2px dashed #ddd;border-radius:6px;padding:10px">
+                <div style="font-size:11px;font-weight:700">👤 吴思远 · 人员卡片</div>
+                <div style="height:1px;background:rgba(0,0,0,.07);margin:6px 0"></div>
+                <div style="font-size:10px;color:#555">身份:生态COO / SaaS运营 / 客服</div>
+                <div style="font-size:10px;color:#555">项目:北京PRO服务 / 生态招商</div>
+                <div style="font-size:10px;color:#555">UID:acc-0001 · 绑定工具:4 个</div>
+                <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px">
+                  <div style="padding:3px 6px;font-size:9px;background:#eee;border-radius:4px;font-weight:700">全身份权限</div>
+                  <div style="padding:3px 6px;font-size:9px;background:#eee;border-radius:4px;font-weight:700">操作日志</div>
+                </div>
+              </div>
+              <div style="height:8px"></div>
+              <div style="font-size:10px;color:#888">🧾 微信号专属运营台账 Tab → 和"工具列表"平级，直接过滤 type=wechat，展示好友/加粉/密码/紧急联系人</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>优势</h4><ul>
+          <li>最贴近"私域工具管理"的实际工作流——运营日常就是盯着某批微信号</li>
+          <li>改造量最小：原通讯工具中心做扩展，新增人员Tab+微信Tab</li>
+        </ul></div>
+        <div class="cons"><h4>权衡</h4><ul>
+          <li>人员身份、权限、邀请等强管控功能"退居二级抽屉"，审计合规角色可能不满</li>
+          <li>工具与人员的主次关系逆转，可能不符合管理层"管人先管权"的心智</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 方案 C ============ -->
+  <div class="option" data-choice="C" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>双首页 · 视图分离</h3>
+      <p class="subtitle">侧边栏入口保留「账号与工具中心」一个；进入后首屏让你选"资产视角（人）/ 资源视角（工具）"两个 Landing，二者之间用筛选器联动</p>
+      <div class="mockup" style="margin-top:12px">
+        <div class="mockup-header">账号与工具中心 · 双 Landing 架构</div>
+        <div class="mockup-body" style="padding:14px">
+          <!-- Segmented control -->
+          <div style="display:flex;gap:10px;margin-bottom:12px">
+            <div style="flex:1;padding:14px;border-radius:10px;background:#111;color:#fff;position:relative;text-align:center">
+              <div style="font-size:11px;color:#ccff00;font-weight:700">RECOMMENDED · 管理层</div>
+              <div style="font-size:18px;font-weight:800;margin:6px 0">🏢 资产视角</div>
+              <div style="font-size:11px;color:#aaa">管人 · 管权限 · 管审批 · 审计</div>
+              <div style="font-size:10px;color:#888;margin-top:6px">1,247 人 · 11 种身份 · 3 待审核</div>
+            </div>
+            <div style="flex:1;padding:14px;border-radius:10px;background:#f5f5f5;color:#111;border:2px dashed #ddd;position:relative;text-align:center">
+              <div style="font-size:11px;color:#888;font-weight:700">RECOMMENDED · 运营层</div>
+              <div style="font-size:18px;font-weight:800;margin:6px 0">📱 资源视角</div>
+              <div style="font-size:11px;color:#555">管微信号 · 管企微 · 工具池 · 风控</div>
+              <div style="font-size:10px;color:#888;margin-top:6px">68 个工具 · 4 类 · 2 异常 · 8 待交接</div>
+            </div>
+          </div>
+          <div style="font-size:11px;color:#888;padding:8px;background:#f5f5f5;border-radius:6px">
+            🔗 两视角数据同源：在「资产视角」给张三分配 wx_gz_01，「资源视角」里 wx_gz_01 的归属人立刻变成张三。<br>
+            💡 可通过 URL 参数永久直达某视角（&view=asset 或 &view=resource），方便钉钉飞书深链。
+          </div>
+          <div style="margin-top:10px">
+            <div style="font-size:11px;font-weight:700;color:#111;margin-bottom:6px">进入「🏢 资产视角」后：—— → 方案A的 Tab ①②③④ 全部收纳在这个视角下</div>
+            <div style="font-size:11px;font-weight:700;color:#111;margin-top:4px">进入「📱 资源视角」后：—— → 方案B的工具表格+微信专属Tab收纳在此，人员信息仅通过抽屉查看</div>
+          </div>
+        </div>
+      </div>
+      <div class="pros-cons" style="margin-top:12px">
+        <div class="pros"><h4>优势</h4><ul>
+          <li>最强的角色分离：管理层和一线运营各走各的门，互不干扰</li>
+          <li>两视角都是"独立主流程"，未来各自扩展新功能时不会互相打架</li>
+        </ul></div>
+        <div class="cons"><h4>权衡</h4><ul>
+          <li>入口仍是一个，但内部实际上仍是两套结构——你可能又会感觉"好像还是两个页面？"</li>
+          <li>Landing选择页对高频用户是一次额外点击（可以通过记住上次选择 + 深链直达缓解）</li>
+        </ul></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top:24px;padding:12px;border:1px solid rgba(0,0,0,.08);border-radius:10px;background:#fafafa">
+  <div class="label">下一步会展示的内容（等你选好方案后）</div>
+  <ul style="margin:6px 0 0 20px;font-size:13px;color:#444">
+    <li>选中方案的 <b>内部细节 mockup</b>（字段去重对照表、侧边栏导航新结构、URL路由映射）</li>
+    <li><b>数据合并规则</b>（哪些字段保留在哪个实体，从SystemAccount/WeChatManagement/CommunicationTool里具体删哪些冗余字段）</li>
+    <li><b>迁移对现有功能的影响</b>（审批、工具交接、邀请审核等接口点是否需要改造）</li>
+  </ul>
+</div>

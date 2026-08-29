@@ -85,14 +85,14 @@ const TEMPLATES = [
 ];
 
 const LOGS = [
-  { time: "07-06 14:23", task: "7月PRO会员月度活动推送", account: "fengle_bj_01", target: "张明远", channel: "个人微信", status: "成功" },
-  { time: "07-06 14:23", task: "7月PRO会员月度活动推送", account: "fengle_sh_02", target: "李晓燕", channel: "企业微信", status: "成功" },
-  { time: "07-06 14:22", task: "7月PRO会员月度活动推送", account: "fengle_gz_01", target: "孙雨晴", channel: "个人微信", status: "失败" },
-  { time: "07-06 10:15", task: "抖音引流用户欢迎推送", account: "fengle_bj_01", target: "陈美玲", channel: "个人微信", status: "成功" },
-  { time: "07-06 09:48", task: "抖音引流用户欢迎推送", account: "fengle_sh_02", target: "王建国", channel: "个人微信", status: "成功" },
-  { time: "07-05 16:30", task: "抖音引流用户欢迎推送", account: "fengle_bj_01", target: "周国强", channel: "个人微信", status: "成功" },
-  { time: "07-05 15:12", task: "体验官升级PRO邀请", account: "fengle_gz_01", target: "刘志远", channel: "企业微信", status: "失败" },
-  { time: "07-05 11:05", task: "代理商月度培训提醒", account: "fengle_sh_02", target: "赵丽华", channel: "企业微信", status: "成功" },
+  { time: "07-06 14:23", task: "7月PRO会员月度活动推送", account: "wx_bj_01", target: "张明远", channel: "个人微信", status: "成功" },
+  { time: "07-06 14:23", task: "7月PRO会员月度活动推送", account: "wx_sh_02", target: "李晓燕", channel: "企业微信", status: "成功" },
+  { time: "07-06 14:22", task: "7月PRO会员月度活动推送", account: "wx_gz_01", target: "孙雨晴", channel: "个人微信", status: "失败" },
+  { time: "07-06 10:15", task: "抖音引流用户欢迎推送", account: "wx_bj_01", target: "陈美玲", channel: "个人微信", status: "成功" },
+  { time: "07-06 09:48", task: "抖音引流用户欢迎推送", account: "wx_sh_02", target: "王建国", channel: "个人微信", status: "成功" },
+  { time: "07-05 16:30", task: "抖音引流用户欢迎推送", account: "wx_bj_01", target: "周国强", channel: "个人微信", status: "成功" },
+  { time: "07-05 15:12", task: "体验官升级PRO邀请", account: "wx_gz_01", target: "刘志远", channel: "企业微信", status: "失败" },
+  { time: "07-05 11:05", task: "代理商月度培训提醒", account: "wx_sh_02", target: "赵丽华", channel: "企业微信", status: "成功" },
 ];
 
 const STATUS_FILTER = ["全部", "已完成", "进行中", "待发送", "草稿", "已暂停"];

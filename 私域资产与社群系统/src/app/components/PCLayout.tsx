@@ -1,8 +1,8 @@
 import { ReactNode, useState } from "react";
 import {
-  LayoutDashboard, Database, MessageCircle, Users2,
+  LayoutDashboard, Users2,
   User, CreditCard, FileText, Shield, MapPin,
-  Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Radio,
+  Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
   BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
 
@@ -30,13 +30,12 @@ const navGroups = [
     { id: "ecosystem",  label: "项目与生态",     icon: Layers,          badge: null },
   ]},
   { label: "配置中心", items: [
-    { id: "accounts",   label: "账号资产中心",   icon: Database,        badge: null },
-    { id: "wechat",     label: "微信账号管理",   icon: MessageCircle,   badge: "2"  },
-    { id: "community",  label: "微信群管理",     icon: Users2,          badge: "8"  },
-    { id: "cs",         label: "客服与服务资源", icon: Headphones,      badge: null },
-    { id: "channel",    label: "渠道流量绑定",   icon: Radio,            badge: null },
-    { id: "cities",     label: "城市分站",       icon: MapPin,          badge: null },
-    { id: "permissions",label: "员工权限",       icon: Shield,          badge: null },
+    { id: "wechat",     label: "账号资产中心",    icon: CreditCard,      badge: "2"  },
+    { id: "community",  label: "微信群管理",      icon: Users2,          badge: "8"  },
+    { id: "cs",         label: "客服与服务资源",  icon: Headphones,      badge: null },
+    { id: "channel",    label: "渠道流量绑定",    icon: Share2,          badge: null },
+    { id: "cities",     label: "城市分站",        icon: MapPin,          badge: null },
+    { id: "permissions",label: "员工权限",        icon: Shield,          badge: null },
   ]},
   { label: "日常运营", items: [
     { id: "users",      label: "会员运营工作台", icon: User,            badge: null },

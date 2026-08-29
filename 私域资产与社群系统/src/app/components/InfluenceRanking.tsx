@@ -84,7 +84,7 @@ const initialMemberTags: Record<number, MemberTag[]> = {
 };
 
 const taskSideList = [
-  { title: "蜂乐玛产品下午3点代发",  time: "2026-07-05 14:30", status: "进行中", unread: 3 },
+  { title: "会员产品下午3点代发",  time: "2026-07-05 14:30", status: "进行中", unread: 3 },
   { title: "晒单截图任务-7月第二周",  time: "2026-07-04 10:00", status: "待处理", unread: 1 },
   { title: "朋友圈转发活动邀请",      time: "2026-07-03 09:00", status: "进行中", unread: 0 },
   { title: "评论互动任务-体验官群",   time: "2026-07-02 16:00", status: "已完成", unread: 0 },
@@ -161,11 +161,11 @@ const relationTree = {
   name: "皮卡丘", level: 1,
   children: [
     {
-      name: "蜂乐玛产品下午3...", level: 2,
+      name: "会员产品下午3...", level: 2,
       children: [
-        { name: "蜂乐玛产品下午3...", level: 3, children: [
-          { name: "蜂乐玛产品(0人)", level: 4, children: [] },
-          { name: "蜂乐玛体验(0人)", level: 4, children: [] },
+        { name: "会员产品下午3...", level: 3, children: [
+          { name: "会员产品(0人)", level: 4, children: [] },
+          { name: "会员体验(0人)", level: 4, children: [] },
         ] },
         { name: "梓几", level: 3, children: [
           { name: "梓几(0人)", level: 4, children: [] },

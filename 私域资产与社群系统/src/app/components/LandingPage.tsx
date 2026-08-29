@@ -100,7 +100,7 @@ const aiCapabilities = [
       { text: "// 实时账号健康扫描", type: "comment" },
       { text: 'scanning accounts... [68/68]', type: "code" },
       { text: "", type: "blank" },
-      { text: "⚠ fengle_gz_01", type: "warn" },
+      { text: "⚠ wx_gz_01", type: "warn" },
       { text: "  last_login: 30天前", type: "warn" },
       { text: "  risk_level: HIGH", type: "warn" },
       { text: "", type: "blank" },
@@ -213,7 +213,7 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
 
   const floatingDecisions = [
     "AI → 上海VIP群02 ✓",
-    "AI → 风险预警 #fengle ✓",
+    "AI → 风险预警 #eco ✓",
     "AI → 唤醒计划 推送 ✓",
     "AI → RFM 重算完成 ✓",
   ];

@@ -1,0 +1,316 @@
+<h2>📦 账号与资源中心 · 页面结构设计稿</h2>
+<p class="subtitle">单一入口 · 三视角切换 · 同一份数据源。请确认每一个区块的结构对不对，然后我写 spec 并进入实现。</p>
+
+<!-- ============= 侧边栏对比 =========== -->
+<div class="section">
+  <h3>① 全局导航变化（侧边栏）</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="padding:14px;border:2px solid #c53030;border-radius:10px;background:#fff0f0">
+      <div style="font-size:11px;font-weight:800;color:#c53030;margin-bottom:4px">❌ 改前</div>
+      <div style="font-size:12px;line-height:2;font-family:monospace">
+        配置中心<br>
+        ├─ 🗄️ 账号资产中心<br>
+        ├─ 📡 通讯工具中心 <span style="color:#c53030">×</span><br>
+        ├─ 💬 微信账号管理 <span style="color:#c53030">×</span><br>
+        ├─ 👥 微信群管理<br>
+        ├─ 🎧 客服与服务资源<br>
+        ├─ 📢 渠道流量绑定<br>
+        ├─ 🗺️ 城市分站<br>
+        └─ 🛡 员工权限
+      </div>
+    </div>
+    <div style="padding:14px;border:2px solid #276749;border-radius:10px;background:#f0fff4">
+      <div style="font-size:11px;font-weight:800;color:#276749;margin-bottom:4px">✅ 改后</div>
+      <div style="font-size:12px;line-height:2;font-family:monospace">
+        配置中心<br>
+        ├─ <b style="color:#276749;background:rgba(204,255,0,.18);padding:0 4px;border-radius:4px">📦 账号与资源中心</b><br>
+        │&nbsp;&nbsp;<span style="color:#555">&nbsp;&nbsp;内部视角: ①按类型 / ②按项目 / ③按人</span><br>
+        ├─ 👥 微信群管理 <i style="color:#555">(独立，不合并)</i><br>
+        ├─ 🎧 客服与服务资源<br>
+        ├─ 📢 渠道流量绑定<br>
+        ├─ 🗺️ 城市分站<br>
+        └─ 🛡 员工权限
+      </div>
+      <div style="margin-top:6px;font-size:10px;color:#276749;font-weight:700;padding:4px 6px;background:#1665340f;border-radius:4px">
+        URL: ?view=pc&amp;module=accounts <span style="color:#555">（复用原 accounts，commtools/wechat 路由重定向到这里）</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 页面主结构 ============ -->
+<div class="section" style="margin-top:16px">
+  <h3>② 页面主结构全景（以"③按人"视角为默认首屏）</h3>
+  <p class="subtitle">顶部：视角切换 + 批量动作；中部：统计看板（点击可筛选）；下部：列表 + 右侧详情抽屉</p>
+
+  <div class="mockup" style="margin-top:10px">
+    <div class="mockup-header">📦 账号与资源中心 — module=accounts</div>
+    <div class="mockup-body" style="padding:10px;background:#fafafa">
+
+      <!-- Row A: 视角切换 Segmented + 阶段筛选 + 搜索 + 批量按钮 -->
+      <div style="display:flex;align-items:center;gap:8px;padding:8px;background:#fff;border-radius:8px;border:1px solid #eee">
+        <!-- A-1 视角切换（最大、最醒目 → 以前的3个模块就是这个） -->
+        <div style="padding:4px;display:flex;gap:2px;background:#f0f0ec;border-radius:8px;font-weight:800">
+          <div style="padding:6px 12px;font-size:11px;background:#fff;border:1px solid #e5e5e5;color:#555;border-radius:6px">① 按类型</div>
+          <div style="padding:6px 12px;font-size:11px;background:#fff;border:1px solid #e5e5e5;color:#555;border-radius:6px">② 按项目</div>
+          <div style="padding:6px 12px;font-size:11px;background:#111;color:#ccff00;border-radius:6px">③ 按人 ✅</div>
+        </div>
+        <!-- A-2 生命周期阶段筛选（Tab+badge）-->
+        <div style="display:flex;gap:4px;margin-left:8px;flex:1">
+          <div style="padding:5px 10px;font-size:11px;background:#ccff00;color:#000;border-radius:6px;font-weight:700">全部(68)</div>
+          <div style="padding:5px 10px;font-size:11px;background:#fffbeb;color:#b45309;border-radius:6px;font-weight:700;border:1px solid #ffd600">养号(5)</div>
+          <div style="padding:5px 10px;font-size:11px;background:#eff6ff;color:#2563eb;border-radius:6px;font-weight:700;border:1px solid #bfdbfe">空闲(17)</div>
+          <div style="padding:5px 10px;font-size:11px;background:#f0fff4;color:#166534;border-radius:6px;font-weight:700;border:1px solid #86efac">使用中(42)</div>
+          <div style="padding:5px 10px;font-size:11px;background:#111;color:#fff;border-radius:6px;font-weight:700">异常(2)</div>
+          <div style="padding:5px 10px;font-size:11px;color:#888;border-radius:6px">待交接/已停用(2)</div>
+        </div>
+        <!-- A-3 搜索 -->
+        <div style="display:flex;align-items:center;gap:4px;padding:4px 8px;background:#fafafa;border:1px solid #ddd;border-radius:6px;min-width:180px">
+          <span style="color:#888">🔍</span>
+          <span style="font-size:11px;color:#888">搜：ID/姓名/昵称/项目</span>
+        </div>
+        <!-- A-4 批量动作 -->
+        <div style="display:flex;gap:4px">
+          <button class="mock-button" style="background:#111;color:#ccff00;font-size:11px">+ 注册入库</button>
+          <button class="mock-button" style="background:#f7f7f7;font-size:11px">批量导入</button>
+          <button class="mock-button" style="background:#f7f7f7;font-size:11px">导出CSV</button>
+        </div>
+      </div>
+
+      <!-- Row B: 8 张KPI统计卡（点击即筛选） -->
+      <div style="display:grid;grid-template-columns:repeat(8,1fr);gap:6px;margin-top:8px">
+        <div class="card" style="padding:8px;background:#fff;border-radius:8px;border:1px solid #eee">
+          <div style="font-size:9px;color:#888;font-weight:700">工具总数</div>
+          <div style="font-size:18px;font-weight:800">68</div>
+        </div>
+        <div class="card" style="padding:8px;background:#fff;border-radius:8px;border:1px solid #eee">
+          <div style="font-size:9px;color:#888;font-weight:700">企业微信</div>
+          <div style="font-size:18px;font-weight:800;color:#111">9</div>
+        </div>
+        <div class="card" style="padding:8px;background:#fff;border-radius:8px;border:1px solid #eee">
+          <div style="font-size:9px;color:#888;font-weight:700">个人微信</div>
+          <div style="font-size:18px;font-weight:800;color:#07c160">38</div>
+        </div>
+        <div class="card" style="padding:8px;background:#fff;border-radius:8px;border:1px solid #eee">
+          <div style="font-size:9px;color:#888;font-weight:700">手机号</div>
+          <div style="font-size:18px;font-weight:800;color:#4a90e2">12</div>
+        </div>
+        <div class="card" style="padding:8px;background:#fff;border-radius:8px;border:1px solid #eee">
+          <div style="font-size:9px;color:#888;font-weight:700">媒体号</div>
+          <div style="font-size:18px;font-weight:800;color:#ff6b35">9</div>
+        </div>
+        <div class="card" style="padding:8px;background:#fffbeb;border-radius:8px;border:1px solid #ffd600">
+          <div style="font-size:9px;color:#b45309;font-weight:700">养号中</div>
+          <div style="font-size:18px;font-weight:800;color:#b45309">5</div>
+        </div>
+        <div class="card" style="padding:8px;background:#fff0f0;border-radius:8px;border:1px solid #fecaca">
+          <div style="font-size:9px;color:#c53030;font-weight:700">异常/高危</div>
+          <div style="font-size:18px;font-weight:800;color:#c53030">2</div>
+        </div>
+        <div class="card" style="padding:8px;background:#f0fff4;border-radius:8px;border:1px solid #86efac">
+          <div style="font-size:9px;color:#276749;font-weight:700">空闲可分配</div>
+          <div style="font-size:18px;font-weight:800;color:#166534">17</div>
+        </div>
+      </div>
+
+      <!-- Row C: 列表主区 + 详情抽屉（视角 ③按人）-->
+      <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:8px;margin-top:8px;min-height:300px">
+
+        <!-- C-L 列表：按人视角 -->
+        <div style="background:#fff;border-radius:8px;border:1px solid #eee;overflow:hidden">
+          <div style="font-size:10px;font-weight:700;color:#555;padding:6px 8px;background:#f5f5f5;display:grid;grid-template-columns:32px 1fr 1.2fr 1fr 70px 60px 100px">
+            <span>#</span><span>人员 · 身份</span><span>项目分配</span><span>名下工具（点击展开/收起）</span><span>阶段</span><span>风控</span><span>操作</span>
+          </div>
+          <!-- 第1行 展开状态 -->
+          <div style="padding:4px 8px;background:rgba(204,255,0,.08);border-left:3px solid #ccff00">
+            <div style="display:grid;grid-template-columns:32px 1fr 1.2fr 1fr 70px 60px 100px;align-items:center;font-size:11px">
+              <span style="font-weight:700;color:#888">01</span>
+              <div>
+                <div style="font-weight:700">👤 吴思远</div>
+                <div style="font-size:9px;color:#555">生态COO · 北京PRO负责人</div>
+              </div>
+              <div>
+                <span style="padding:1px 4px;background:#eff6ff;color:#2563eb;border-radius:3px;font-size:9px">北京PRO</span>
+                <span style="padding:1px 4px;background:#ccff00;color:#000;border-radius:3px;font-size:9px">生态招商</span>
+              </div>
+              <div style="font-weight:700;color:#111">▼ 4 个工具（点击行可收起）</div>
+              <span style="padding:1px 4px;background:#f0fff4;color:#166534;border-radius:3px;font-size:9px;font-weight:700">正常</span>
+              <span style="padding:1px 4px;background:#07c160;color:#fff;border-radius:3px;font-size:9px;font-weight:700">正常</span>
+              <div style="display:flex;gap:2px">
+                <button class="mock-button" style="font-size:9px;padding:2px 4px">工具</button>
+                <button class="mock-button" style="font-size:9px;padding:2px 4px">项目</button>
+                <button class="mock-button" style="font-size:9px;padding:2px 4px">...</button>
+              </div>
+            </div>
+            <!-- 展开的工具嵌套行 -->
+            <div style="margin:4px 0 4px 32px;padding:6px 8px;background:#fafafa;border-radius:6px;border:1px solid #eee;display:grid;grid-template-columns:70px 1fr 90px 70px 120px;gap:4px;font-size:10px">
+              <div style="font-weight:700;color:#555">类型</div><div style="font-weight:700;color:#555">名称 · 标识符</div><div style="font-weight:700;color:#555">项目归属</div><div style="font-weight:700;color:#555">状态</div><div style="font-weight:700;color:#555">最近动作</div>
+
+              <span style="padding:1px 4px;background:#111;color:#fff;border-radius:3px;align-self:center">企微</span>
+              <div><b>生态招商号</b><span style="color:#888"> · wecom_bsy01</span></div>
+              <span style="color:#2563eb;font-weight:700;align-self:center">生态招商</span>
+              <span style="padding:1px 4px;background:#ccff00;color:#000;border-radius:3px;font-weight:700;align-self:center">使用中</span>
+              <span style="color:#555;align-self:center">07-05 登录 · 会话38条</span>
+
+              <span style="padding:1px 4px;background:#07c160;color:#fff;border-radius:3px;align-self:center">微信</span>
+              <div><b>思远</b><span style="color:#888"> · wx_bj_01</span></div>
+              <span style="color:#2563eb;font-weight:700;align-self:center">北京PRO</span>
+              <span style="padding:1px 4px;background:#ccff00;color:#000;border-radius:3px;font-weight:700;align-self:center">使用中</span>
+              <span style="color:#555;align-self:center">07-05 加粉18 · 群16个</span>
+
+              <span style="padding:1px 4px;background:#4a90e2;color:#fff;border-radius:3px;align-self:center">手机</span>
+              <div><b>北京移动</b><span style="color:#888"> · 138-0012-3456</span></div>
+              <span style="color:#888;font-style:italic;align-self:center">— 未分配项目 —</span>
+              <span style="padding:1px 4px;background:#f0f0f0;color:#555;border-radius:3px;font-weight:700;align-self:center">空闲</span>
+              <span style="color:#555;align-self:center">06-28 最后通话</span>
+
+              <span style="padding:1px 4px;background:#ff6b35;color:#fff;border-radius:3px;align-self:center">媒体</span>
+              <div style="position:relative;padding:2px 4px;border:1px solid #111;border-radius:4px;background:#111;color:#fff;box-shadow:0 0 0 2px rgba(255,107,53,.25)"><b>抖音·北京</b><span style="color:#ccc"> · dy_bj_01</span><div style="position:absolute;right:-2px;top:-6px;padding:0 3px;background:#ff6b35;color:#fff;border-radius:3px;font-size:8px;font-weight:700">▼ 已选中</div></div>
+              <span style="color:#2563eb;font-weight:700;align-self:center">北京PRO</span>
+              <span style="padding:1px 4px;background:#ccff00;color:#000;border-radius:3px;font-weight:700;align-self:center">使用中</span>
+              <span style="color:#555;align-self:center">📈 粉丝 4.2w · 近7天涨粉 +1.1k</span>
+            </div>
+          </div>
+
+          <!-- 第2行 收起状态 -->
+          <div style="padding:4px 8px;border-left:3px solid transparent;display:grid;grid-template-columns:32px 1fr 1.2fr 1fr 70px 60px 100px;align-items:center;font-size:11px">
+            <span style="font-weight:700;color:#888">02</span>
+            <div>
+              <div style="font-weight:700">👤 林小燕</div>
+              <div style="font-size:9px;color:#555">SaaS运营 · 上海体验官</div>
+            </div>
+            <div><span style="padding:1px 4px;background:#eff6ff;color:#2563eb;border-radius:3px;font-size:9px">上海体验官</span></div>
+            <div style="font-weight:700">▶ 2 个工具</div>
+            <span style="padding:1px 4px;background:#f0fff4;color:#166534;border-radius:3px;font-size:9px;font-weight:700">正常</span>
+            <span style="padding:1px 4px;background:#07c160;color:#fff;border-radius:3px;font-size:9px;font-weight:700">正常</span>
+            <div style="display:flex;gap:2px">
+              <button class="mock-button" style="font-size:9px;padding:2px 4px">工具</button>
+              <button class="mock-button" style="font-size:9px;padding:2px 4px">项目</button>
+              <button class="mock-button" style="font-size:9px;padding:2px 4px">...</button>
+            </div>
+          </div>
+          <!-- 第3行 收起状态 异常标红 -->
+          <div style="padding:4px 8px;border-left:3px solid #ff6b6b;background:#fff0f0;display:grid;grid-template-columns:32px 1fr 1.2fr 1fr 70px 60px 100px;align-items:center;font-size:11px">
+            <span style="font-weight:700;color:#888">03</span>
+            <div>
+              <div style="font-weight:700">👤 赵志远</div>
+              <div style="font-size:9px;color:#555">成都分站负责人</div>
+            </div>
+            <span style="padding:1px 4px;background:#eff6ff;color:#2563eb;border-radius:3px;font-size:9px">成都分站</span>
+            <div style="font-weight:700;color:#c53030">▶ 1 个工具 <span style="font-size:9px">(wx_gz_01 异常)</span></div>
+            <span style="padding:1px 4px;background:#fff0f0;color:#c53030;border:1px solid #fecaca;border-radius:3px;font-size:9px;font-weight:700">异常</span>
+            <span style="padding:1px 4px;background:#ff3b30;color:#fff;border-radius:3px;font-size:9px;font-weight:700">高危</span>
+            <div style="display:flex;gap:2px">
+              <button class="mock-button" style="font-size:9px;padding:2px 4px;background:#cc0000;color:#fff">处理</button>
+              <button class="mock-button" style="font-size:9px;padding:2px 4px">...</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- C-R 详情抽屉：当前选中 = dy_bj_01（抖音·北京 媒体号）● 展示媒体专属展开 -->
+        <div style="background:#fff;border-radius:8px;border:2px solid #111;padding:10px;font-size:11px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:6px;border-bottom:1px solid #eee">
+            <div>
+              <div style="font-weight:800;font-size:13px">📺 dy_bj_01 · 抖音·北京</div>
+              <div style="font-size:10px;color:#888">type=<b style="color:#ff6b35">媒体/抖音</b> · owner=吴思远 · 项目=北京PRO</div>
+            </div>
+            <span style="padding:1px 4px;background:#ccff00;color:#000;border-radius:3px;font-size:10px;font-weight:700">使用中</span>
+          </div>
+          <!-- 详情 Tabs：媒体模式下Tab名不同 -->
+          <div style="display:flex;gap:2px;margin:6px 0 6px 0;font-weight:700">
+            <div style="padding:3px 8px;background:#f5f5f5;color:#555;border-radius:4px;font-size:10px">通用</div>
+            <div style="padding:3px 8px;background:#ff6b35;color:#fff;border-radius:4px;font-size:10px">✨ 运营专属(媒体)</div>
+            <div style="padding:3px 8px;background:#f5f5f5;color:#555;border-radius:4px;font-size:10px">🛡 风控</div>
+            <div style="padding:3px 8px;background:#f5f5f5;color:#555;border-radius:4px;font-size:10px">📜 操作日志</div>
+          </div>
+          <!-- Tab=媒体运营专属内容（展开！） -->
+          <div style="font-size:10px;color:#111;line-height:1.8">
+            <!-- 上半：基础运营指标 3 个大数卡 -->
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:6px">
+              <div style="padding:6px;background:#fff5ed;border-radius:5px;border:1px solid #ffd4bf">
+                <div style="font-size:9px;color:#c05621;font-weight:700">粉丝总数</div>
+                <div style="font-size:16px;font-weight:800;color:#9c4221">42,180</div>
+                <div style="font-size:9px;color:#16a34a;font-weight:700">▲ 近7日 +1,108</div>
+              </div>
+              <div style="padding:6px;background:#f7fee7;border-radius:5px;border:1px solid #bef264">
+                <div style="font-size:9px;color:#4d7c0f;font-weight:700">近30日发布</div>
+                <div style="font-size:16px;font-weight:800;color:#365314">18 条</div>
+                <div style="font-size:9px;color:#555;font-weight:700">视频12 · 图文6</div>
+              </div>
+              <div style="padding:6px;background:#eff6ff;border-radius:5px;border:1px solid #bfdbfe">
+                <div style="font-size:9px;color:#1d4ed8;font-weight:700">预估播放(30天)</div>
+                <div style="font-size:16px;font-weight:800;color:#1e3a8a">98.6w</div>
+                <div style="font-size:9px;color:#555;font-weight:700">平均 5.4w/条</div>
+              </div>
+            </div>
+
+            <div style="height:1px;background:#eee;margin:4px 0"></div>
+            <!-- 中：媒体核心档案字段（分2列）-->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px">
+              <div><b style="color:#555">平台认证:</b> <span style="background:#ccff00;color:#000;padding:0 3px;border-radius:3px;font-size:9px;font-weight:700">企业蓝V</span> 社群·私域咨询</div>
+              <div><b style="color:#555">创作者中心:</b> ✅ 已绑定 · 等级L4</div>
+              <div><b style="color:#555">内容定位标签:</b> <span style="background:#f3f4f6;padding:0 3px;border-radius:3px">私域运营</span> <span style="background:#f3f4f6;padding:0 3px;border-radius:3px">社群操盘</span> <span style="background:#f3f4f6;padding:0 3px;border-radius:3px">门店增长</span></div>
+              <div><b style="color:#555">所属矩阵:</b> 北京生态·账号矩阵（主号）</div>
+              <div><b style="color:#555">MCN签约状态:</b> <span style="color:#c05621;font-weight:700">自营·未签约</span> <span style="font-size:9px;color:#888">可接商单</span></div>
+              <div><b style="color:#555">挂车/店铺权限:</b> ✅ 小黄车 · 抖音小店 · 团购券</div>
+              <div><b style="color:#555">粉丝画像Top1:</b> 女 25-34岁 · 北京占38%</div>
+              <div><b style="color:#555">账号创建:</b> 2025-11-08 · 入驻养号完成日 2026-02-10</div>
+              <div><b style="color:#555">归属人岗位:</b> 吴思远(内容运营) · <span style="color:#555">协同:林小燕(剪辑)</span></div>
+              <div><b style="color:#555">商单机会(本月):</b> <span style="color:#b45309;font-weight:700">3个待对接</span> / 总佣金预估 ¥9,400</div>
+            </div>
+
+            <div style="height:1px;background:#eee;margin:6px 0"></div>
+            <!-- 下半：近7天内容发布小时间线（媒体专属）-->
+            <div style="font-size:10px;font-weight:700;color:#555">📅 近7天内容发布 · 时间线</div>
+            <div style="display:grid;grid-template-columns:60px 1fr 60px;gap:2px;margin-top:2px;font-size:10px;color:#444">
+              <div style="color:#888">07-04</div><div>📹 短视频《从0到1搭建一个高转化社群》</div><div style="text-align:right;color:#16a34a">▲ 12.4w</div>
+              <div style="color:#888">07-03</div><div>📝 图文合集《私域社群话术模板》</div><div style="text-align:right;color:#16a34a">▲ 1.8w</div>
+              <div style="color:#888">07-01</div><div>📹 短视频《3个常见社群运营坑》</div><div style="text-align:right;color:#16a34a">▲ 8.6w</div>
+              <div style="color:#888">06-29</div><div>🎬 直播回放「北京分站首月复盘」</div><div style="text-align:right;color:#16a34a">▲ 2.3w人</div>
+              <div style="color:#888">06-28</div><div>📹 短视频《城市分站和总店怎么分工》</div><div style="text-align:right;color:#16a34a">▲ 6.1w</div>
+            </div>
+          </div>
+          <hr style="border:0;border-top:1px dashed #ddd;margin:8px 0">
+          <div style="font-size:10px;font-weight:700;color:#555">🚀 动作按钮（媒体专属多 2 个：拉矩阵 / 申请商单）</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px">
+            <button class="mock-button" style="background:#111;color:#ccff00;font-size:10px">工具交接审批</button>
+            <button class="mock-button" style="background:#fff0f0;color:#c53030;font-size:10px;border:1px solid #fecaca">停用</button>
+            <button class="mock-button" style="background:#eff6ff;color:#2563eb;font-size:10px;border:1px solid #bfdbfe">改项目</button>
+            <button class="mock-button" style="background:#f5f5f5;font-size:10px">改归属人</button>
+            <button class="mock-button" style="background:#fffbeb;color:#b45309;font-size:10px;border:1px solid #ffd600">送回养号</button>
+            <button class="mock-button" style="background:#ff6b35;color:#fff;font-size:10px">➕ 加入矩阵</button>
+            <button class="mock-button" style="background:#ccff00;color:#000;font-size:10px">💼 申请商单</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 切换视角提示 -->
+      <div style="margin-top:8px;padding:8px 10px;background:#eff6ff;border-radius:6px;border:1px solid #bfdbfe;font-size:11px;color:#1e40af">
+        💡 <b>以上为视角③按人的首屏。</b> 点顶部的①按类型 / ②按项目 → 列表第一层分别变成"工具表格 / 项目分组"，其它（统计卡/筛选/详情抽屉/动作按钮）全部复用，不做二开。
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 路由与重定向 -->
+<div class="section" style="margin-top:16px;padding:12px;border:1px solid #e5e5e5;border-radius:10px;background:#fafafa">
+  <h3 style="margin:0 0 8px 0">③ URL路由 & 旧链接兼容（防书签失效）</h3>
+  <div style="font-family:monospace;font-size:11px;line-height:2">
+    ✅ <b>主入口:</b> ?view=pc&amp;module=accounts&nbsp;&nbsp;&nbsp;<i style="color:#555">— 记住上次视角，默认③按人</i><br>
+    ✅ <b>视角直链:</b> &amp;perspective=type / project / person&nbsp;&nbsp;<i style="color:#555">— 飞书深链用</i><br>
+    ✅ <b>阶段筛选:</b> &amp;stage=nurture / idle / inuse / abnormal<br>
+    🔁 <b>重定向兼容(不破坏旧书签):</b><br>
+    &nbsp;&nbsp;&nbsp;module=commtools → 301 跳到 module=accounts&amp;perspective=type<br>
+    &nbsp;&nbsp;&nbsp;module=wechat&nbsp;&nbsp;&nbsp;→ 301 跳到 module=accounts&amp;perspective=type&amp;toolType=wechat
+  </div>
+</div>
+
+<div class="section" style="margin-top:16px;padding:16px;border:2px dashed #111;border-radius:12px;background:#fafafa">
+  <h3 style="margin:0 0 8px 0">👉 请确认这页结构（4 个 Yes/No）：</h3>
+  <ol style="margin:0 0 0 22px;font-size:13px;line-height:2">
+    <li>视角切换 Segmented 放在顶部最左侧 + 阶段筛选 + 搜索 + 批量导入导出，布局对吗？</li>
+    <li>8 张 KPI 卡的字段（68/9/38/12/9/养号5/异常2/空闲17）是否是你最想第一眼看到的？</li>
+    <li>"按人"视角下 人员→嵌套工具 的两级展开（吴思远→企微/微信/手机/媒体四行），还是偏好"点人员后右侧工具列表变"？</li>
+    <li>详情抽屉的4个Tab（通用/运营专属/风控/操作日志）+ 6 个工具动作按钮（交接/停用/改项目/改归属/送回养号/导出）够不够？</li>
+  </ol>
+</div>

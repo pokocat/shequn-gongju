@@ -54,7 +54,7 @@ function HomeTab() {
                 <Star size={13} style={{ color: M.primary }} />
                 <span className="text-xs font-bold tracking-widest" style={{ color: M.primary, fontFamily: "monospace" }}>PRO 会员</span>
               </div>
-              <div className="font-bold" style={{ fontSize: "18px", color: M.text, fontFamily: "monospace" }}>蜂乐玛私域会员</div>
+              <div className="font-bold" style={{ fontSize: "18px", color: M.text, fontFamily: "monospace" }}>会员中心</div>
             </div>
             <div className="w-11 h-11 flex items-center justify-center text-lg font-bold" style={{ background: M.primaryFill, color: "#000", borderRadius: "8px" }}>李</div>
           </div>

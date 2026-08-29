@@ -27,9 +27,8 @@ const cloneRules = (rules: GroupTypeRule[]) => rules.map(rule => ({ ...rule, mem
 
 const seedState: CommunityState = {
   rulesByProject: {
-    "蜂乐码": cloneRules(defaultGroupTypeRules),
-    "蜂乐玛PRO会员": cloneRules(defaultGroupTypeRules),
-    "蜂乐玛体验官": cloneRules(defaultGroupTypeRules),
+    "体验官": cloneRules(defaultGroupTypeRules),
+    "PRO会员": cloneRules(defaultGroupTypeRules),
   },
   generatedGroups: [],
 };

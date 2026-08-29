@@ -28,7 +28,7 @@ export const regionCodes: Record<string, string> = {
 };
 
 export const projectGroupRules: Record<string, GroupTypeRule[]> = {
-  "蜂乐码": [
+  "体验官": [
     { id: "visitor", name: "游客", code: "FLM01", memberRoles: ["游客"], capacity: 500, cities: ["北京", "吉林", "上海", "广州"], allocationMode: "轮巡分配", nameTemplate: "{project}{type}{city}{seq}群", enabled: true },
     { id: "experience", name: "体验官", code: "FLM02", memberRoles: ["体验官"], capacity: 500, cities: ["北京", "吉林", "上海", "广州"], allocationMode: "轮巡分配", nameTemplate: "{project}{type}{city}{seq}群", enabled: true },
     { id: "vip", name: "VIP", code: "FLM03", memberRoles: ["VIP0", "VIP1", "VIP2", "VIP3", "VIP4"], capacity: 500, cities: ["北京", "吉林", "上海"], allocationMode: "统一分配", nameTemplate: "{project}{type}{city}{seq}群", enabled: true },
@@ -37,17 +37,17 @@ export const projectGroupRules: Record<string, GroupTypeRule[]> = {
 };
 
 export const wechatAccounts: WechatAccount[] = [
-  { id: "FLM001", project: "蜂乐码", wechat: "FLM001", city: "北京", createdAt: "2026-01-08", service: "吴思远", enabled: true, groupCapacity: 20 },
-  { id: "FLM002", project: "蜂乐码", wechat: "FLM002", city: "吉林", createdAt: "2026-02-14", service: "林小燕", enabled: true, groupCapacity: 20 },
-  { id: "FLM003", project: "蜂乐码", wechat: "FLM003", city: "上海", createdAt: "2026-03-02", service: "刘刚", enabled: true, groupCapacity: 20 },
-  { id: "FLM004", project: "蜂乐码", wechat: "FLM004", city: "广州", createdAt: "2026-03-18", service: "陈明", enabled: true, groupCapacity: 20 },
-  { id: "FLP001", project: "蜂乐玛PRO会员", wechat: "FLP001", city: "北京", createdAt: "2026-01-06", service: "吴思远", enabled: true, groupCapacity: 20 },
-  { id: "FLP002", project: "蜂乐玛PRO会员", wechat: "FLP002", city: "上海", createdAt: "2026-02-10", service: "林小燕", enabled: true, groupCapacity: 20 },
-  { id: "FLE001", project: "蜂乐玛体验官", wechat: "FLE001", city: "广州", createdAt: "2026-01-21", service: "刘刚", enabled: true, groupCapacity: 20 },
-  { id: "FLE002", project: "蜂乐玛体验官", wechat: "FLE002", city: "成都", createdAt: "2026-02-06", service: "陈明", enabled: true, groupCapacity: 20 },
+  { id: "FLM001", project: "体验官", wechat: "FLM001", city: "北京", createdAt: "2026-01-08", service: "吴思远", enabled: true, groupCapacity: 20 },
+  { id: "FLM002", project: "体验官", wechat: "FLM002", city: "吉林", createdAt: "2026-02-14", service: "林小燕", enabled: true, groupCapacity: 20 },
+  { id: "FLM003", project: "体验官", wechat: "FLM003", city: "上海", createdAt: "2026-03-02", service: "刘刚", enabled: true, groupCapacity: 20 },
+  { id: "FLM004", project: "体验官", wechat: "FLM004", city: "广州", createdAt: "2026-03-18", service: "陈明", enabled: true, groupCapacity: 20 },
+  { id: "FLP001", project: "PRO会员", wechat: "FLP001", city: "北京", createdAt: "2026-01-06", service: "吴思远", enabled: true, groupCapacity: 20 },
+  { id: "FLP002", project: "PRO会员", wechat: "FLP002", city: "上海", createdAt: "2026-02-10", service: "林小燕", enabled: true, groupCapacity: 20 },
+  { id: "FLE001", project: "体验官", wechat: "FLE001", city: "广州", createdAt: "2026-01-21", service: "刘刚", enabled: true, groupCapacity: 20 },
+  { id: "FLE002", project: "体验官", wechat: "FLE002", city: "成都", createdAt: "2026-02-06", service: "陈明", enabled: true, groupCapacity: 20 },
 ];
 
-export const defaultGroupTypeRules: GroupTypeRule[] = projectGroupRules["蜂乐码"];
+export const defaultGroupTypeRules: GroupTypeRule[] = projectGroupRules["体验官"];
 
 export function buildGroupCode(typeCode: string, city: string, sequence: number) {
   const region = regionCodes[city] || "X";
