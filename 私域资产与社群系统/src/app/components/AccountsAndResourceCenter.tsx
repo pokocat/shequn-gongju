@@ -13,33 +13,33 @@ import { createApproval } from "../data/approvalTypes";
 import { getAvatar } from "./Avatar";
 
 // ────────────────────────────────────────────────────────────────
-// 色板：沿用微信账号管理的黑底 + 荧光绿交互语言，统一账号资产台账体验。
+// 色板：软蓝灰 SaaS 极简风（无黑框、无荧光黄），与微信账号管理统一。
 // ────────────────────────────────────────────────────────────────
 const S = {
   bg: "#f8fafc",
   surface: "#ffffff",
   border: "rgba(15,23,42,0.06)",
   borderMed: "rgba(15,23,42,0.12)",
-  borderStrong: "rgba(15,23,42,0.18)",
-  primary: "#ccff00",
-  primaryLight: "rgba(204,255,0,0.08)",
-  primaryMid: "rgba(204,255,0,0.18)",
-  primaryDark: "#9dcc00",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
+  borderStrong: "rgba(59,130,246,0.30)",
+  primary: "#3b82f6",
+  primaryLight: "rgba(59,130,246,0.08)",
+  primaryMid: "rgba(59,130,246,0.18)",
+  primaryDark: "#2563eb",
+  accent: "#bfdbfe",
+  accentLight: "rgba(59,130,246,0.10)",
+  accentMid: "rgba(59,130,246,0.20)",
   success: "#16a34a",
   successBg: "#f0fdf4",
   warning: "#d97706",
   warningBg: "#fffbeb",
   danger: "#dc2626",
   dangerBg: "#fef2f2",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
-  hoverBg: "#fafafa",
-  ink: "#0d0d0d",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
+  hoverBg: "#f1f5f9",
+  ink: "#1d4ed8",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -184,6 +184,47 @@ function getSyncMeta(t: Tool, risk: ReturnType<typeof getToolCapacity>) {
   return { label: "正常", bg: "#f0fdf4", color: "#276749" };
 }
 
+// ─── 列表"主指标 / 次指标"列按类型语义化 ─────────────────────
+// 表头标题：根据当前选中的账号类型，动态切换"好友数/群数"列的语义。
+function metricMeta(type: TopTabKey): { primaryLabel: string; groupLabel: string } {
+  switch (type) {
+    case "wecom": return { primaryLabel: "外部联系人", groupLabel: "群数" };
+    case "phone": return { primaryLabel: "绑定微信", groupLabel: "通话" };
+    case "email": return { primaryLabel: "验证", groupLabel: "恢复邮箱" };
+    case "media": return { primaryLabel: "粉丝", groupLabel: "7日涨粉" };
+    case "workspace": return { primaryLabel: "席位", groupLabel: "用量" };
+    case "developer": return { primaryLabel: "实例", groupLabel: "账单" };
+    case "business": return { primaryLabel: "客户", groupLabel: "席位" };
+    default: return { primaryLabel: "好友数", groupLabel: "群数" }; // wechat / all
+  }
+}
+
+// 行内容：按类型取对应字段，返回主指标（数值+进度）与次指标（文本）。
+type RowMetric = {
+  primaryValue: number; primaryMax: number; primaryRate: number; primaryRisk: boolean;
+  groupText: string;
+};
+function getRowMetric(t: Tool, type: TopTabKey, cap: ReturnType<typeof getToolCapacity>): RowMetric {
+  switch (type) {
+    case "phone": {
+      const c = t.boundWechatCount ?? 0;
+      return { primaryValue: c, primaryMax: 5, primaryRate: Math.min(c / 5, 1), primaryRisk: c >= 5, groupText: t.callRestriction || "—" };
+    }
+    case "email":
+      return { primaryValue: t.emailVerified ? 1 : 0, primaryMax: 1, primaryRate: t.emailVerified ? 1 : 0, primaryRisk: false, groupText: t.recoveryEmail || "未配" };
+    case "media":
+      return { primaryValue: cap.friendCount, primaryMax: cap.friendMax, primaryRate: cap.friendRate, primaryRisk: cap.isFriendRisk, groupText: `+${t.fansGrowth7d ?? 0}` };
+    case "workspace":
+      return { primaryValue: t.friendCount, primaryMax: 20, primaryRate: Math.min(t.friendCount / 20, 1), primaryRisk: t.friendCount >= 20, groupText: `${t.todayAdded ?? 0} 次` };
+    case "developer":
+      return { primaryValue: t.friendCount, primaryMax: 10, primaryRate: Math.min(t.friendCount / 10, 1), primaryRisk: t.friendCount >= 10, groupText: t.planName ? "已出账" : "—" };
+    case "business":
+      return { primaryValue: t.friendCount, primaryMax: 200, primaryRate: Math.min(t.friendCount / 200, 1), primaryRisk: t.friendCount >= 200, groupText: `${t.groupCount ?? 0} 席` };
+    default: // wechat / wecom / all —— 复用容量计算
+      return { primaryValue: cap.friendCount, primaryMax: cap.friendMax, primaryRate: cap.friendRate, primaryRisk: cap.isFriendRisk, groupText: cap.groupMax > 0 ? `${cap.groupCount} / ${cap.groupMax}` : `${cap.groupCount}` };
+  }
+}
+
 // ────────────────────────────────────────────────────────────────
 // 通用 UI 子组件
 // ────────────────────────────────────────────────────────────────
@@ -215,7 +256,7 @@ function CapacityMeter({ label, value, max, warning }: { label: string; value: n
         <b style={{ color: warning ? "#c2410c" : S.text }}>{value.toLocaleString()} / {max.toLocaleString()}</b>
       </div>
       <div className="mt-1.5 h-1.5 overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}>
-        <div style={{ width: `${Math.max(rate * 100, value ? 4 : 0)}%`, height: "100%", background: warning ? "#f59e0b" : S.accent, borderRadius: 99 }} />
+        <div style={{ width: `${Math.max(rate * 100, value ? 4 : 0)}%`, height: "100%", background: warning ? "#f59e0b" : S.primary, borderRadius: 99 }} />
       </div>
     </div>
   );
@@ -290,6 +331,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
 
   // ── 顶部 Tab / 状态筛选 / 搜索 / 浏览模式 ──────────────────
   const [topTab, setTopTab] = useState<TopTabKey>(initialTopTab);
+  const metricType: TopTabKey = toolTypes && toolTypes.length === 1 ? toolTypes[0] : topTab;
   const lifecycleStages = lifecycleStagesForType(topTab);
   const [statusFilter, setStatusFilter] = useState<StatusTabKey>("全部");
   const [search, setSearch] = useState("");
@@ -447,6 +489,13 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
   const totalPages = Math.max(1, Math.ceil(filteredTools.length / PAGE_SIZE));
   const safePage = Math.min(page, totalPages);
   const pagedTools = filteredTools.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
+  // 最稳健：根据"实际显示给用户看的列表"推导指标语义类型
+  // 优先级：① filteredTools/当前页全为同类型 → 取该类型；② metricType（由 toolTypes[0] 或 topTab 推断）
+  const viewMetricType: TopTabKey = useMemo(() => {
+    const pool = filteredTools.length > 0 ? filteredTools : pagedTools;
+    if (pool.length > 0 && pool.every(t => t.type === pool[0].type)) return pool[0].type as TopTabKey;
+    return metricType;
+  }, [filteredTools, pagedTools, metricType]);
 
   // 默认选中一个工具给详情抽屉
   useEffect(() => {
@@ -1042,7 +1091,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                         <input type="checkbox" aria-label="选择当前页"
                           checked={pagedTools.length > 0 && pagedTools.every(t => selectedRows.includes(t.id))}
                           onChange={e => setSelectedRows(e.target.checked ? Array.from(new Set([...selectedRows, ...pagedTools.map(t => t.id)])) : selectedRows.filter(id => !pagedTools.some(t => t.id === id)))} />
-                      ) : c.label}
+                      ) : c.key === "friendCount" ? metricMeta(viewMetricType).primaryLabel : c.key === "groups" ? metricMeta(viewMetricType).groupLabel : c.label}
                     </div>
                   ))}
                 </div>
@@ -1051,6 +1100,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                 {pagedTools.map(t => {
                   const isSelected = selectedToolId === t.id;
                   const cap = getToolCapacity(t);
+                  const metric = getRowMetric(t, viewMetricType, cap);
                   const syncMeta = getSyncMeta(t, cap);
                   const sm = statusMeta[t.status];
                   const rm = riskMeta[t.riskLevel];
@@ -1062,7 +1112,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                       style={{
                         background: isSelected ? S.accentLight : S.surface,
                         borderBottom: `1px solid ${S.border}`,
-                        borderLeft: isSelected ? `3px solid ${S.accent}` : "3px solid transparent",
+                        borderLeft: isSelected ? `3px solid ${S.primary}` : "3px solid transparent",
                         paddingTop: 10, paddingBottom: 10,
                       }}
                       onClick={() => { setSelectedToolId(t.id); setDetailTab("ops"); }}
@@ -1093,14 +1143,14 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                         {t.boundAccountId ? accountNameById(t.boundAccountId) : <span style={{ color: S.muted }}>空闲</span>}
                       </div>
                       <div className="flex-shrink-0" style={columnStyle("friendCount", { width: 140 })}>
-                        <b className="text-xs" style={{ color: cap.isFriendRisk ? "#c2410c" : S.text, fontFamily: "monospace" }}>{cap.friendCount.toLocaleString()}</b>
-                        <span className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}> / {cap.friendMax.toLocaleString()}</span>
+                        <b className="text-xs" style={{ color: metric.primaryRisk ? "#c2410c" : S.text, fontFamily: "monospace" }}>{metric.primaryValue.toLocaleString()}</b>
+                        <span className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}> / {metric.primaryMax.toLocaleString()}</span>
                         <div className="mt-1 h-1 overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}>
-                          <div style={{ width: `${Math.max(cap.friendRate * 100, cap.friendCount ? 4 : 0)}%`, height: "100%", background: cap.isFriendRisk ? "#f59e0b" : S.accent }} />
+                          <div style={{ width: `${Math.max(metric.primaryRate * 100, metric.primaryValue ? 4 : 0)}%`, height: "100%", background: metric.primaryRisk ? "#f59e0b" : S.primary }} />
                         </div>
                       </div>
                       <div className="flex-shrink-0 text-xs" style={columnStyle("groups", { width: 96, color: S.textSec, fontFamily: "monospace" })}>
-                        {t.groupCount}{cap.groupMax > 0 ? ` / ${cap.groupMax}` : ""}
+                        {metric.groupText}
                       </div>
                       <div className="flex-shrink-0" style={columnStyle("sync", { width: 104 })}>
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs" style={{ background: syncMeta.bg, color: syncMeta.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
@@ -1217,7 +1267,7 @@ function ResourceCards({
               className="p-4 text-left transition-all"
               style={{
                 background: isSelected ? S.accentLight : S.surface,
-                border: isSelected ? `1px solid ${S.accent}` : `1px solid ${S.border}`,
+                border: isSelected ? `1px solid ${S.primary}` : `1px solid ${S.border}`,
                 borderRadius: S.radius,
                 boxShadow: "0 1px 4px rgba(15,23,42,.05)",
               }}>
@@ -1406,6 +1456,21 @@ function DetailPanel({
           </div>
         )}
 
+        {/* 归属信息（上移至容量摘要上方，与微信账号管理对齐） */}
+        <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}>
+          <div className="flex items-center gap-2 text-xs font-bold mb-2" style={{ color: S.text, fontFamily: "monospace" }}>
+            <Link2 size={13} />归属信息
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            {[["归属项目", projectName(tool.boundProjectIds)], ["归属人", accountName], ["账号类型", tm.label], ["归属岗位", tool.accountPosition || "—"], ["归属部门", tool.department || "—"], ["入库日期", tool.onboardDate || "—"]].map(([l, v]) => (
+              <div key={l} className="min-w-0">
+                <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{l}</div>
+                <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{v}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* 容量 + 同步状态卡 */}
         <div className="space-y-3 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
           <CapacityMeter label="好友/客户容量" value={cap.friendCount} max={cap.friendMax} warning={cap.isFriendRisk} />
@@ -1440,19 +1505,6 @@ function DetailPanel({
                   const reached = index <= current;
                   return <div key={stage.key} className="flex items-center gap-1 flex-shrink-0"><span className="flex items-center gap-1 px-1.5 py-1 text-[10px]" style={{ background: index === current ? S.ink : reached ? S.accentLight : S.bg, color: index === current ? S.accent : reached ? S.text : S.muted, border: `1px solid ${index === current ? S.ink : reached ? S.accentMid : S.border}`, borderRadius: 999, fontFamily: "monospace" }}><span className="w-1.5 h-1.5" style={{ background: index === current ? S.accent : reached ? S.primaryDark : S.mutedLight, borderRadius: 99 }} />{stage.label}</span>{index < lifecycleStages.length - 1 && <ChevronRight size={10} style={{ color: S.mutedLight }} />}</div>;
                 })}
-              </div>
-            </div>
-            <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-              <div className="flex items-center gap-2 text-xs font-bold mb-2" style={{ color: S.text, fontFamily: "monospace" }}>
-                <Link2 size={13} />绑定关系总览
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                {[["归属项目", projectName(tool.boundProjectIds)], ["归属人", accountName], ["唯一标识", tool.identifier], ["入库日期", tool.onboardDate || "—"]].map(([l, v]) => (
-                  <div key={l} className="min-w-0">
-                    <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{l}</div>
-                    <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{v}</div>
-                  </div>
-                ))}
               </div>
             </div>
             {tool.notes && (
@@ -1637,7 +1689,7 @@ function OpsWechat({ tool }: { tool: Tool }) {
     <div className="space-y-3 text-xs" style={{ lineHeight: 1.8 }}>
       <CardGrid>
         <KCard title="好友数" value={tool.friendCount} sub={tool.last7dFriendsGrowth ? `▲7日 +${tool.last7dFriendsGrowth}` : undefined} color="#07c160" />
-        <KCard title="近30天邀请新" value={tool.invitedNew30d ?? 0} sub={(tool.scanCount || 0) + " 次扫码"} color="#ccff00" />
+        <KCard title="近30天邀请新" value={tool.invitedNew30d ?? 0} sub={(tool.scanCount || 0) + " 次扫码"} color={S.success} />
         <KCard title="绑定群数" value={tool.groupCount} sub={tool.qrCodeBound ? "二维码已绑定" : "未绑定群码"} />
       </CardGrid>
       <div className="grid grid-cols-2 gap-2">
@@ -1670,8 +1722,8 @@ function OpsWecom({ tool }: { tool: Tool }) {
   return (
     <div className="space-y-3 text-xs" style={{ lineHeight: 1.8 }}>
       <CardGrid>
-        <KCard title="外部联系人" value={tool.externalContactCount ?? tool.friendCount} sub={(tool.last7dMessageCount || 0) + " 消息/7日"} color="#111" />
-        <KCard title="会话存档" value={tool.chatArchiveEnabled ? "开通" : "未开通"} sub={tool.chatArchiveEnabled ? "合规监控中" : "建议开通"} color={tool.chatArchiveEnabled ? "#ccff00" : "#ffd600"} />
+        <KCard title="外部联系人" value={tool.externalContactCount ?? tool.friendCount} sub={(tool.last7dMessageCount || 0) + " 消息/7日"} color={S.textSec} />
+        <KCard title="会话存档" value={tool.chatArchiveEnabled ? "开通" : "未开通"} sub={tool.chatArchiveEnabled ? "合规监控中" : "建议开通"} color={tool.chatArchiveEnabled ? S.success : S.warning} />
         <KCard title="所属群数" value={tool.groupCount} sub="含会话群/客户群" />
       </CardGrid>
       <div className="grid grid-cols-2 gap-2">
