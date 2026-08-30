@@ -247,8 +247,17 @@ function BrowseModeToggle({ value, onChange, label }: { value: BrowseMode; onCha
   );
 }
 
+// 容量进度条四色分级：绿(0-60%) → 琥珀(60-80%) → 橙(80-95%) → 红(95-100%)
+function tierColor(rate: number): string {
+  if (rate >= 0.95) return "#dc2626"; // 红
+  if (rate >= 0.80) return "#ea580c"; // 橙
+  if (rate >= 0.60) return "#d97706"; // 琥珀
+  return "#16a34a"; // 绿
+}
+
 function CapacityMeter({ label, value, max, warning }: { label: string; value: number; max: number; warning: boolean }) {
   const rate = Math.min(value / max, 1);
+  const barColor = tierColor(rate);
   return (
     <div>
       <div className="flex items-center justify-between gap-3 text-xs" style={{ fontFamily: "monospace" }}>
@@ -256,7 +265,7 @@ function CapacityMeter({ label, value, max, warning }: { label: string; value: n
         <b style={{ color: warning ? "#c2410c" : S.text }}>{value.toLocaleString()} / {max.toLocaleString()}</b>
       </div>
       <div className="mt-1.5 h-1.5 overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}>
-        <div style={{ width: `${Math.max(rate * 100, value ? 4 : 0)}%`, height: "100%", background: warning ? "#f59e0b" : S.primary, borderRadius: 99 }} />
+        <div style={{ width: `${Math.max(rate * 100, value ? 4 : 0)}%`, height: "100%", background: barColor, borderRadius: 99, transition: "width 0.3s ease" }} />
       </div>
     </div>
   );
@@ -1293,7 +1302,7 @@ function ResourceCards({
               {/* 容量进度条 */}
               {!isStock && (
                 <div className="mt-3">
-                  <CapacityMeter label="好友/客户容量" value={cap.friendCount} max={cap.friendMax} warning={cap.isFriendRisk} />
+                  <CapacityMeter label={metricMeta(t.type).primaryLabel} value={cap.friendCount} max={cap.friendMax} warning={cap.isFriendRisk} />
                 </div>
               )}
 
@@ -1450,8 +1459,8 @@ function DetailPanel({
               {tool.status === "pending_transfer" ? "资源待交接，请先指定接手服务人员。" :
                 tool.status === "abnormal" ? "资源存在异常，请核查登录与同步状态。" :
                 cap.isSyncRisk ? "资源近期未同步，请核查登录与企微绑定。" :
-                cap.isFriendRisk ? "好友/客户容量接近上限，建议停止分配新用户。" :
-                "管理群位接近上限，建议提前准备备用群。"}
+                cap.isFriendRisk ? `${metricMeta(tool.type).primaryLabel}接近上限，建议停止分配新用户。` :
+                `${metricMeta(tool.type).groupLabel}接近上限，建议提前准备备用资源。`}
             </div>
           </div>
         )}
@@ -1473,8 +1482,8 @@ function DetailPanel({
 
         {/* 容量 + 同步状态卡 */}
         <div className="space-y-3 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <CapacityMeter label="好友/客户容量" value={cap.friendCount} max={cap.friendMax} warning={cap.isFriendRisk} />
-          {cap.groupMax > 0 && <CapacityMeter label="管理群位" value={cap.groupCount} max={cap.groupMax} warning={cap.isGroupRisk} />}
+          <CapacityMeter label={metricMeta(tool.type).primaryLabel} value={cap.friendCount} max={cap.friendMax} warning={cap.isFriendRisk} />
+          {cap.groupMax > 0 && <CapacityMeter label={metricMeta(tool.type).groupLabel} value={cap.groupCount} max={cap.groupMax} warning={cap.isGroupRisk} />}
           <div className="flex items-center justify-between pt-1 text-xs" style={{ borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}>
             <span style={{ color: S.muted }}>同步状态</span>
             <span className="px-1.5 py-0.5" style={{ background: syncMeta.bg, color: syncMeta.color, borderRadius: S.radiusSm }}>{syncMeta.label}</span>
