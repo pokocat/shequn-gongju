@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext, useContext, type ReactNode } from "react";
-import { Monitor, Smartphone, Globe, Star, Palette } from "lucide-react";
+import { Monitor, Smartphone, Globe, Star } from "lucide-react";
 import PCLayout from "./components/PCLayout";
 import Overview from "./components/Overview";
 import UnifiedAccountManagement from "./components/UnifiedAccountManagement";
@@ -24,7 +24,7 @@ import { CommunicationTool, initialTools } from "./data/communicationTools";
 import { SystemAccount, mockAccounts } from "./data/accountTypes";
 import { InviteRecord, mockInvites } from "./data/inviteRecords";
 import { Approval, mockApprovals } from "./data/approvalTypes";
-import { ThemeProvider, useTheme, type ThemeId } from "./theme";
+import { ThemeProvider, useTheme, S, resolvePalette } from "./theme";
 
 const moduleMap: Record<string, React.ComponentType> = {
   overview:   Overview,
@@ -188,20 +188,19 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
   selectModule: (m: string) => void;
   ActiveComponent: React.ComponentType;
 }) {
-  const { palette, themeId, setThemeId, themes } = useTheme();
-  const S = palette.S;
+  const { palette } = useTheme();
   return (
     <ToolsProvider value={toolsValue}>
       <AccountsProvider value={accountsValue}>
       <InvitesProvider value={invitesValue}>
       <ApprovalsProvider value={approvalsValue}>
       <div className="size-full relative" style={{ background: S.bg }}>
-        {view !== "zhuliren" && (
+        {/* PC 视图：视图切换胶囊移入 PCLayout Header（见 HeaderThemeControls），这里不渲染避免遮挡
+            Mobile/Landing/Zhuliren 视图：仍然右上角悬浮 */}
+        {view !== "zhuliren" && view !== "pc" && (
           <div className="fixed top-3 right-3 z-50 flex gap-2 items-start">
-            {/* 主题切换胶囊（潮系·玻璃态渐变） */}
-            <ThemeSwitcher themeId={themeId} setThemeId={setThemeId} themes={themes} palette={palette} />
             {/* 视图切换 */}
-            <div className="flex gap-0 p-1 rounded-xl" style={{ background: palette.glass, backdropFilter: "blur(10px)", border: `1px solid ${palette.glassBorder}`, boxShadow: S.shadow }}>
+            <div className="flex gap-0 p-1 rounded-xl" style={{ background: S.glass, backdropFilter: "blur(10px)", border: `1px solid ${S.glassBorder}`, boxShadow: S.shadow }}>
               {([
                 { id: "landing", label: "WEB", icon: Globe },
                 { id: "pc", label: "PC", icon: Monitor },
@@ -225,7 +224,7 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
         )}
 
         {view === "pc" ? (
-          <PCLayout activeModule={activeModule} onModuleChange={selectModule}>
+          <PCLayout view={view} selectView={selectView} activeModule={activeModule} onModuleChange={selectModule}>
             {activeModule === "overview" ? <Overview onNavigate={selectModule} /> : <ActiveComponent />}
           </PCLayout>
         ) : view === "mobile" ? (
@@ -242,53 +241,5 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
       </InvitesProvider>
       </AccountsProvider>
     </ToolsProvider>
-  );
-}
-
-function ThemeSwitcher({ themeId, setThemeId, themes, palette }: {
-  themeId: ThemeId;
-  setThemeId: (id: ThemeId) => void;
-  themes: ReturnType<typeof useTheme>["themes"];
-  palette: ReturnType<typeof useTheme>["palette"];
-}) {
-  return (
-    <div className="flex items-center gap-1.5 p-1 rounded-2xl"
-      style={{
-        background: palette.glass,
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        border: `1px solid ${palette.glassBorder}`,
-        boxShadow: palette.S.shadow,
-      }}>
-      <div className="pl-2 pr-1 flex items-center gap-1 text-[10px] font-bold"
-        style={{ color: palette.S.textSec, fontFamily: "monospace", letterSpacing: "0.1em" }}>
-        <Palette size={11} style={{ color: palette.S.primary }} />
-        <span className="hidden md:inline">VIBE</span>
-      </div>
-      {themes.map(t => {
-        const active = t.id === themeId;
-        return (
-          <button key={t.id}
-            type="button"
-            onClick={() => setThemeId(t.id)}
-            title={`${t.name} · ${t.tagline}`}
-            className="relative group flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300"
-            style={{
-              background: active ? t.gradient : "transparent",
-              color: active ? t.S.onPrimary : palette.S.textSec,
-              borderRadius: 999,
-              fontSize: 11,
-              fontWeight: active ? 800 : 500,
-              boxShadow: active ? "0 2px 10px rgba(0,0,0,0.15)" : "none",
-              fontFamily: "monospace",
-              transform: active ? "translateY(-1px)" : "none",
-            }}>
-            <span style={{ lineHeight: 1 }}>{t.emoji}</span>
-            <span>{t.name}</span>
-            <span className="sr-only">{t.tagline}</span>
-          </button>
-        );
-      })}
-    </div>
   );
 }

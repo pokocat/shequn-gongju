@@ -3,9 +3,12 @@ import {
   LayoutDashboard, Users2,
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
-  BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen
+  BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
+  Globe, Monitor, Smartphone
 } from "lucide-react";
-import { S, useThemeSingleton } from "../theme";
+import { S, useThemeSingleton, ThemeControls } from "../theme";
+
+type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
 
 // ─── 软圆角赛博朋克 · 柔和边框 ────────────────────────────────
 const navGroups = [
@@ -40,11 +43,13 @@ const navItems = navGroups.flatMap(g => g.items);
 interface PCLayoutProps {
   activeModule: string;
   onModuleChange: (id: string) => void;
+  view: ViewMode;
+  selectView: (v: ViewMode) => void;
   children: ReactNode;
 }
 
 export default function PCLayout({
- activeModule, onModuleChange, children }: PCLayoutProps) {
+ view, selectView, activeModule, onModuleChange, children }: PCLayoutProps) {
   useThemeSingleton();
 const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const activeItem = navItems.find(i => i.id === activeModule);
@@ -136,6 +141,28 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <div className="h-14 flex items-center px-6 gap-4 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
+          {/* 视图切换胶囊（WEB/PC/APP/主理人） */}
+          <div className="flex gap-0 p-0.5 flex-shrink-0" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+            {([
+              { id: "landing", label: "WEB", icon: Globe },
+              { id: "pc", label: "PC", icon: Monitor },
+              { id: "mobile", label: "APP", icon: Smartphone },
+              { id: "zhuliren", label: "主理人", icon: Star },
+            ] as const).map(v => (
+              <button key={v.id} onClick={() => selectView(v.id)} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] transition-all font-bold"
+                style={{
+                  background: view === v.id ? (v.id === "zhuliren" ? "#1e293b" : S.accent) : "transparent",
+                  color: view === v.id ? "#ffffff" : S.textSec,
+                  borderRadius: "6px",
+                  fontFamily: "monospace",
+                  letterSpacing: "0.02em",
+                  border: view === v.id ? "none" : "1px solid transparent",
+                }}>
+                <v.icon size={11} /> {v.label}
+              </button>
+            ))}
+          </div>
+
           {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-xs flex-shrink-0" style={{ fontFamily: "monospace" }}>
             {["SUPER", "ECO", "SAAS", activeItem?.label?.toUpperCase()].map((seg, i, arr) => (
@@ -162,6 +189,8 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
           </div>
 
           <div className="ml-auto flex items-center gap-3">
+            {/* ── 右上角主题 + 暗黑模式 ────────────────────────────────── */}
+            <ThemeControls />
             <div className="relative cursor-pointer">
               <Bell size={15} style={{ color: S.muted }} />
               <div className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: "#ffffff", fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>3</div>
