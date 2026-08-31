@@ -876,7 +876,6 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
         <div>
           <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>账号详情</div>
-          <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>点击列表账号后查看与调度</div>
         </div>
         <button type="button" title="关闭详情" className="w-7 h-7 grid place-items-center" style={{ border: `1px solid ${S.border}`, background: S.surface, borderRadius: S.radiusSm }} onClick={onClose}><X size={14} /></button>
       </div>
@@ -1201,7 +1200,6 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
         <div>
           <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>账号详情</div>
-          <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>点击列表账号后查看与调度</div>
         </div>
         <button type="button" title="关闭详情" aria-label="关闭详情" className="w-7 h-7 grid place-items-center" style={{ border: `1px solid ${S.border}`, background: S.surface, borderRadius: S.radiusSm }} onClick={onClose}><X size={14} /></button>
       </div>
