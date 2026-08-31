@@ -1,577 +1,1289 @@
 import { useState, useEffect } from "react";
-import { ArrowRight, CheckCircle, Zap, Users, MessageCircle, Database, Shield, BarChart2, Radio, Star, Play, TrendingUp, Menu, X, Brain, Cpu, GitBranch, AlertTriangle, Target, Layers, ChevronRight, Activity } from "lucide-react";
+import { S, useThemeSingleton } from "../theme";
+import { ArrowRight, CheckCircle, Zap, Users, MessageCircle, Database, Shield, BarChart2, Radio, Star, Play, TrendingUp, Menu, X, Brain, Cpu, GitBranch, AlertTriangle, Target, Layers, ChevronRight, Activity, FileCheck, FolderKanban, Palette, Settings, Receipt, Wrench, LineChart, Home, Sparkles, Rocket, Coins, MapPin, RefreshCw, FileSpreadsheet, Scale } from "lucide-react";
 
-// ─── 产品信息 ─────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// 平台功能 & 内容（贴合系统实际落地模块）
+// ══════════════════════════════════════════════════════════════════════════════
+
 const PRODUCT = {
   name: "聚域",
   nameEn: "JuYu",
-  tagline: "AI驱动 · 私域资产 · 社群运营",
-  desc: "新一代 AI 驱动的私域智能运营平台。从账号资产到智能分群，从风险预警到自动推送，让 AI 替你做决策、做运营。",
+  tagline: "私域资产 · 账号全生命周期 · 社群运营中枢",
+  desc: "一套系统打通账号注册入库、养号风控、分配到项目、发放到人、审批交接、归档停用，同时整合社群、订单、工具、数据、主理人公社与会员小程序，AI 让运营从 2 小时变 5 分钟。",
 };
 
+const NAV_ITEMS = ["产品模块", "AI 能力", "客户痛点", "行业方案", "关于我们"];
+
 const stats = [
-  { value: "2,800+", label: "服务企业客户" },
-  { value: "1,200万", label: "私域用户管理" },
-  { value: "98.6%", label: "客户续约率" },
-  { value: "47个", label: "城市分站落地" },
+  { value: "3,200+", label: "管理私域账号" },
+  { value: "680 万", label: "私域好友 & 群成员" },
+  { value: "5 阶段", label: "账号生命周期闭环" },
+  { value: "8 大模块", label: "覆盖私域运营全景" },
+  { value: "4 色分级", label: "容量 / 风控自动预警" },
+  { value: "5 套潮系主题", label: "明暗双模式随心切换" },
 ];
 
 const painPoints = [
-  { icon: "📱", title: "账号太多，难以管理", desc: "手机号、微信号、邮箱、公众号、抖音、小红书分散管理，时间久了不知道谁注册了什么" },
-  { icon: "🔀", title: "微信号领用混乱", desc: "不同微信号用于不同项目，没有记录谁在用、用于什么、离职后如何交接" },
-  { icon: "👥", title: "群和人员关系不清", desc: "一个微信管多个群，群服务谁、群容量多少、群码是否过期，一片混乱" },
-  { icon: "🤖", title: "新用户分群靠人工", desc: "用户进来后按城市、身份、群容量手动分配，效率低且容易出错、重复" },
-  { icon: "📊", title: "用户服务记录分散", desc: "手机号、微信、订单、工单、群信息各自独立，客服无法快速了解用户全貌" },
-  { icon: "⚠️", title: "人员交接风险高", desc: "账号和群跟某个人绑定，人员离职时如没有交接流程，容易导致客户流失" },
+  { icon: "📱", title: "账号散落多平台，根本管不住", desc: "个微、企微、手机号、邮箱、公众号、媒体账号各管各的，时间久了谁在用、用在什么项目、有没有过期，一片混乱" },
+  { icon: "🚦", title: "没有养号与风控，被封才后悔", desc: "刚注册就猛加好友，完全没有 7 天养号期 / 风控门槛 / 异常预警，账号挂掉造成一批客户失联" },
+  { icon: "🔀", title: "发放到项目和人，领用全靠口头", desc: "项目要拿号就问管理员要，没有领用记录；人员离职时交接一塌糊涂，客户和群也跟着一起带走" },
+  { icon: "👥", title: "群容量 / 群码 / 群归属混乱", desc: "一个微信管 20 个群，满群没人补、群码过期没人换、谁负责哪个群不清楚；进群靠人工分配效率极低" },
+  { icon: "📋", title: "审批与交接全靠企业微信私聊", desc: "账号申领、回收、工具权限、提现、高风险操作全部在聊天里流转，没有审计，出问题追溯不到责任人" },
+  { icon: "🎨", title: "后台长得都一样，员工不爱用", desc: "千篇一律蓝灰后台，切换主题还得改 CSS；年轻人不喜欢，培训成本高" },
 ];
 
-const coreFeatures = [
-  { icon: Database,      bg: "#3b82f6", title: "账号资产中心",           desc: "统一管理手机号、微信号、邮箱及各平台媒体账号，支持身份证绑定、分配记录、证件上传" },
-  { icon: MessageCircle, bg: "#3b82f6", title: "企业微信 + 个人微信双轨", desc: "个人微信负责私域加人，企业微信负责服务管理，双账号同步添加用户" },
-  { icon: Users,         bg: "#3b82f6", title: "微信群智能管理",          desc: "群码刷新、满群预警、备用群管理、群活跃度监控，一览掌握所有群组状态" },
-  { icon: Zap,           bg: "#3b82f6", title: "AI 群分配引擎",           desc: "根据用户城市、身份、推荐关系、群容量自动推荐最优群组，支持人工调整" },
-  { icon: Radio,         bg: "#3b82f6", title: "全渠道流量绑定",          desc: "绑定抖音、小红书、微信小店、公众号等渠道，配置自动分配规则，追踪流量来源" },
-  { icon: BarChart2,     bg: "#3b82f6", title: "数据报表中心",            desc: "多维度数据看板，城市分析、渠道来源、项目报表、RFM用户分层，一目了然" },
-  { icon: Shield,        bg: "#3b82f6", title: "权限与交接管理",          desc: "角色权限矩阵、高风险操作审批、审计日志，人员变动时有序完成账号交接" },
-  { icon: TrendingUp,    bg: "#3b82f6", title: "影响力与分销",            desc: "用户影响力排行、分销佣金自动计算、多级代理管理、提现审批一站完成" },
+/**
+ * 8 大核心功能 —— 对应系统左侧导航实际存在的 8 个模块
+ * （账号资产中心 / 订单管理 / 社群管理 / 审批中心 / 工具中心 / 数据中心 / 主理人公社 / 会员小程序）
+ * 每一项描述都真实对应代码里已落地的能力。
+ */
+const coreFeatures: { icon: any; title: string; desc: string; tags: string[] }[] = [
+  {
+    icon: Database,
+    title: "账号资产中心（微信/企微双体系）",
+    desc: "5 阶段生命周期：注册入库 → 养号期（7天/风控门槛）→ 分配到项目 → 发放到人（可走交接审批回收）→ 归档停用。支持按账号类型 / 按项目（带分组+空闲号池） / 按人（带工具展开）三个维度查看；容量进度条四色分级（绿/琥珀/橙/红），详情宽度可拖拽持久化。",
+    tags: ["个微详情 / 企微详情", "5 张账号卡片化", "四色容量分级", "列宽拖拽 & 持久化", "7 天养号风控"],
+  },
+  {
+    icon: Receipt,
+    title: "订单管理中心",
+    desc: "订单全生命周期：创建 → 支付 → 发货 → 完成/退款/售后。多条件筛选、状态胶囊、订单 360 视图（用户、项目、明细、流水、售后记录），支持批量导出与财务对账。",
+    tags: ["订单 360 视图", "售后工单", "财务对账", "状态胶囊化", "批量导出"],
+  },
+  {
+    icon: Users,
+    title: "社群管理中心",
+    desc: "群码刷新、满群预警、备用群自动切换、群活跃度看板、成员名单、新建微信群/企业微信群。AI 根据城市/身份/群容量自动分配最优群组，减少人工排队等待。",
+    tags: ["群码 & 满群预警", "备用群池", "AI 群分配", "活跃度看板", "归属与项目映射"],
+  },
+  {
+    icon: FileCheck,
+    title: "审批中心",
+    desc: "多级审批流程：账号申领 / 回收 / 工具权限 / 提现 / 高风险操作。条件路由（金额阈值、项目分级自动升级审批人）、审批记录审计、可撤回、催办，与账号资产中心 & 工具中心无缝联动。",
+    tags: ["多级流程", "条件路由", "审计日志", "催办 / 撤回", "与申领联动"],
+  },
+  {
+    icon: Wrench,
+    title: "工具中心",
+    desc: "人货场工具池：推送口令、拉群助手、群发触达、SOP 任务、内容素材库、标签清洗、手机号校验。每台人领到的工具可独立开关、可收回、可审批。",
+    tags: ["群发 & SOP", "推送口令", "素材库", "标签清洗", "到人可回收"],
+  },
+  {
+    icon: LineChart,
+    title: "数据中心 & AI 报表",
+    desc: "多维度 KPI 看板：城市分析、渠道来源、项目报表、RFM 用户分层、账号健康度、群活分布。AI 运营建议（今日要做什么）、风险提醒、可自定义图表导出。",
+    tags: ["城市 / 渠道 / 项目", "RFM 分层", "账号健康度", "AI 运营建议", "导出图表"],
+  },
+  {
+    icon: Sparkles,
+    title: "主理人公社",
+    desc: "城市合伙人 / 主理人独立工作台：自己的项目、账号池、工具池、群池、分销数据、影响力排行、多级代理管理。支持提现审批、业绩归属、佣金自动计算。",
+    tags: ["城市合伙人", "独立工作台", "影响力排行", "佣金计算", "提现审批"],
+  },
+  {
+    icon: Home,
+    title: "会员小程序（私域用户端）",
+    desc: "会员端小程序：我的账户 / 我的群 / 订单 / 积分 / 内容 / 服务申请。与后台账号资产/社群/订单/审批深度打通，用户换群、升级、申请服务、发起工单小程序一键搞定。",
+    tags: ["我的群 & 服务", "订单 / 积分", "申请换群", "工单系统", "与后台全打通"],
+  },
 ];
 
+/** 4 级业务架构（更贴合系统真实层级） */
 const tiers = [
-  { level: 1, label: "超级生态", bg: "rgba(204,255,0,0.12)", desc: "统管所有生态与资源" },
-  { level: 2, label: "生态",     bg: "rgba(59,130,246,0.08)", desc: "垂直领域闭环体系" },
-  { level: 3, label: "SaaS平台", bg: "rgba(204,255,0,0.05)", desc: "私域工具能力层" },
-  { level: 4, label: "平台项目", bg: "rgba(204,255,0,0.03)", desc: "具体运营项目单元" },
+  { level: 1, label: "超级生态", desc: "统管所有主理人 / 城市 / 项目 / 账号池" },
+  { level: 2, label: "主理人 / 城市", desc: "城市合伙人独立工作台与结算" },
+  { level: 3, label: "平台项目", desc: "具体业务单元 = 项目 + 分配到它的账号 / 工具 / 群" },
+  { level: 4, label: "私域运营人", desc: "领到账号与工具 → 服务用户 → 产生订单 → 审批交接" },
 ];
 
-const modules = [
-  { name: "后台总览", items: ["KPI指标", "AI运营建议", "今日待办", "风险提醒"] },
-  { name: "账号资产", items: ["手机号管理", "微信号领用", "媒体账号", "身份证上传"] },
-  { name: "社群管理", items: ["群容量监控", "群码管理", "成员名单", "新建微信群"] },
-  { name: "用户操作台", items: ["360度用户视图", "订单/工单", "群组分配", "服务记录"] },
-  { name: "渠道流量", items: ["渠道绑定", "分配规则", "流量日志", "转化漏斗"] },
-  { name: "数据报表", items: ["营收趋势", "城市分析", "渠道来源", "用户分层"] },
-];
+/** 模块矩阵 —— 8 大模块 × 典型功能点（替换原来 6 个） */
+const modules = coreFeatures.map((f) => ({ name: f.title.split("（")[0].split("中心")[0] + "中心", items: f.tags }));
 
-const clients = ["教育行业", "健康产业", "电商品牌", "代理分销", "知识付费", "城市合伙人"];
+const industries = ["教培机构", "健康产康", "新消费品牌", "城市合伙人", "代理分销", "知识付费", "社群团购", "私域电商"];
 
 const testimonials = [
-  { name: "王总", role: "某教育科技公司 · CEO", avatar: "王", content: "用聚域之前，我们的微信号、群和客服是三套系统，人员交接一次就要损失几十个客户。现在全部打通，离职交接30分钟搞定。" },
-  { name: "林总监", role: "健康品牌 · 私域运营总监", avatar: "林", content: "AI智能分群功能帮我们把人工分配时间从每天2小时降到了5分钟。现在8个城市、34个群，一个人管得过来。" },
-  { name: "赵经理", role: "连锁代理商 · 区域负责人", avatar: "赵", content: "AI风险预警太实用了，系统自动识别账号异常，比人工巡查还快，再也不怕账号出问题被动。" },
+  { name: "王总", role: "某教育科技公司 · CEO", avatar: "王", content: "用聚域之前，个微、企微、群和客服是三套系统，运营人员离职交接一次就要丢掉几十个客户。现在 5 阶段生命周期+审批回收，30 分钟走完。" },
+  { name: "林总监", role: "健康品牌 · 私域运营总监", avatar: "林", content: "AI 智能分群 + 四色容量预警太实用了，之前每天人工分群 2 小时，现在 5 分钟搞定；满群 80% 系统自动调备用群码，不用盯着群容量。" },
+  { name: "赵经理", role: "连锁代理商 · 区域负责人", avatar: "赵", content: "主理人公社独立工作台，每个城市合伙人自己拿号、自己领工具、自己看数据，总公司只做审批和风控，管理成本降了 70%。" },
 ];
 
-// ─── AI能力场景数据 ───────────────────────────────────────────
+/** AI 能力矩阵 —— 4 个真实场景 */
 const aiCapabilities = [
   {
     id: "assign",
     icon: GitBranch,
     label: "AI 群分配引擎",
     badge: "ROUTING ENGINE",
-    before: "每天人工分配2小时",
-    after: "5分钟全部搞定",
+    before: "每天人工分群 2 小时",
+    after: "5 分钟全部搞定",
     improvement: "效率提升 96%",
-    color: "#3b82f6",
     terminalLines: [
       { text: "// 新用户入库", type: "comment" },
-      { text: 'user.city = "上海"', type: "code" },
-      { text: 'user.identity = "VIP会员"', type: "code" },
-      { text: 'user.source = "抖音-张老师"', type: "code" },
+      { text: 'user.city    = "上海"', type: "code" },
+      { text: 'user.identity = "年度会员"', type: "code" },
+      { text: 'user.source   = "抖音-张老师"', type: "code" },
       { text: "", type: "blank" },
-      { text: "// AI 分析最优群组", type: "comment" },
-      { text: 'groups.filter(g => g.city === "上海")', type: "code" },
-      { text: "  .filter(g => g.capacity < 480)", type: "code" },
-      { text: "  .sort(by: matchScore desc)", type: "code" },
+      { text: "// AI 读取所有群容量与归属", type: "comment" },
+      { text: "pool = 容量<70% 城市=上海 的群 × 12", type: "code" },
+      { text: "score(pool, city, identity, source, capacity)", type: "code" },
       { text: "", type: "blank" },
-      { text: "✓ 推荐群：上海VIP服务群02", type: "success" },
-      { text: "✓ 备选群：上海体验官群03", type: "success" },
-      { text: "✓ 已自动通知：小红负责跟进", type: "success" },
+      { text: "→ 推荐 上海·VIP·抖音来源群#3", type: "success" },
+      { text: "→ 备用群：上海·VIP·通用群#7", type: "success" },
     ],
   },
   {
     id: "risk",
     icon: AlertTriangle,
-    label: "AI 风险预警",
-    badge: "RISK DETECTION",
-    before: "风险靠人工发现",
-    after: "7×24小时自动监控",
-    improvement: "预警响应提升 10×",
-    color: "#3b82f6",
+    label: "AI 账号风控 & 养号引擎",
+    badge: "RISK ENGINE",
+    before: "被封了才发现",
+    after: "事前预警 92%",
+    improvement: "异常识别 ↑ 12x",
     terminalLines: [
-      { text: "// 实时账号健康扫描", type: "comment" },
-      { text: 'scanning accounts... [68/68]', type: "code" },
+      { text: "// 监测账号 WX_88423 近 7 天", type: "comment" },
+      { text: "7d_add_friends    = 427 （阈值 150）", type: "warn" },
+      { text: "new_ip_signins    = 3 个", type: "warn" },
+      { text: "mass_send_count   = 18", type: "warn" },
       { text: "", type: "blank" },
-      { text: "⚠ wx_gz_01", type: "warn" },
-      { text: "  last_login: 30天前", type: "warn" },
-      { text: "  risk_level: HIGH", type: "warn" },
+      { text: "! 养号期 7 天未过，高风险行为", type: "warn" },
       { text: "", type: "blank" },
-      { text: "⚠ 北京PRO群01", type: "warn" },
-      { text: "  capacity: 487/500 (97.4%)", type: "warn" },
-      { text: "  建议：立即建立备用群", type: "warn" },
-      { text: "", type: "blank" },
-      { text: "✓ 已发送预警给：运营负责人", type: "success" },
-      { text: "✓ 工单已自动创建 #TK-2847", type: "success" },
+      { text: "→ 自动暂停群发任务", type: "success" },
+      { text: "→ 推送至审批：暂停该号 48h", type: "success" },
+      { text: "→ 建议：切换备用号 WX_77512", type: "success" },
     ],
   },
   {
-    id: "rfm",
-    icon: Target,
-    label: "RFM 智能分层",
-    badge: "USER SEGMENTATION",
-    before: "用户标签靠人工打",
-    after: "AI自动分层更新",
-    improvement: "转化率提升 34%",
-    color: "#3b82f6",
+    id: "approval",
+    icon: Scale,
+    label: "AI 审批路由",
+    badge: "APPROVAL ROUTER",
+    before: "私聊流转找不到人",
+    after: "自动 30 秒到审批人",
+    improvement: "审批时效 ↑ 85%",
     terminalLines: [
-      { text: "// RFM 模型计算", type: "comment" },
-      { text: "recency   × 0.35", type: "code" },
-      { text: "frequency × 0.35", type: "code" },
-      { text: "monetary  × 0.30", type: "code" },
+      { text: "// 运营申请：申领 3 个个微号", type: "comment" },
+      { text: "operator = 李运营", type: "code" },
+      { text: "items    = [WX_331, WX_332, WX_333]", type: "code" },
+      { text: "project  = 上海·教培·英语营", type: "code" },
       { text: "", type: "blank" },
-      { text: "// 用户分层结果", type: "comment" },
-      { text: '高价值客户    → "王牌会员" [284人]', type: "success" },
-      { text: '潜力客户      → "成长之星" [612人]', type: "success" },
-      { text: '流失风险客户  → "唤醒计划" [138人]', type: "warn" },
+      { text: "AI 路由规则计算", type: "comment" },
+      { text: "申领数量 3 ≤ 5 → 项目主管审批即可", type: "code" },
+      { text: "金额阈值   0 → 不用升级到财务", type: "code" },
+      { text: "高风险操作 否 → 不用升级到总监", type: "code" },
       { text: "", type: "blank" },
-      { text: "// 自动触发推送任务", type: "comment" },
-      { text: "PushTask.create({ segment: '唤醒计划' })", type: "code" },
-      { text: "✓ 任务已创建，预计触达138人", type: "success" },
+      { text: "→ 通知 项目主管 · 王主管", type: "success" },
+      { text: "→ SLA 2h，超时自动催办", type: "success" },
     ],
   },
   {
-    id: "push",
-    icon: Activity,
-    label: "AI 智能推送",
-    badge: "SMART PUSH",
-    before: "群发靠手动逐个操作",
-    after: "条件触发自动推送",
-    improvement: "消息到达率 +62%",
-    color: "#3b82f6",
+    id: "insight",
+    icon: Brain,
+    label: "AI 运营洞察",
+    badge: "INSIGHT ENGINE",
+    before: "看数据靠直觉",
+    after: "每日 AI 运营建议",
+    improvement: "决策效率 ↑ 6x",
     terminalLines: [
-      { text: "// 推送任务配置", type: "comment" },
-      { text: 'task.name = "7日未购唤醒"', type: "code" },
-      { text: 'task.trigger = "last_order > 7d"', type: "code" },
-      { text: 'task.channel = ["微信群", "私聊"]', type: "code" },
+      { text: "// 今日 AI 运营建议（2026-09-01）", type: "comment" },
       { text: "", type: "blank" },
-      { text: "// AI 个性化生成", type: "comment" },
-      { text: "message.personalize(user.name, user.city)", type: "code" },
-      { text: "message.insert(coupon = '8折券')", type: "code" },
+      { text: "1. 上海·VIP 群 13 号容量 95% 🔴", type: "warn" },
+      { text: "   → 建议：启动备用群·VIP-14", type: "success" },
       { text: "", type: "blank" },
-      { text: "// 执行报告", type: "comment" },
-      { text: "✓ 发送：234人", type: "success" },
-      { text: "✓ 阅读率：71.3%", type: "success" },
-      { text: "✓ 转化：38单 / ¥26,400", type: "success" },
+      { text: "2. 个微 WX_5523 近 3 天加好友 0", type: "warn" },
+      { text: "   → 建议：检查手机在线 / 工具状态", type: "success" },
+      { text: "", type: "blank" },
+      { text: "3. 杭州渠道 ROI ↓ 18% 连续 3 周", type: "warn" },
+      { text: "   → 建议：缩减投放 20% + 转抖音达人", type: "success" },
     ],
   },
 ];
 
-const aiMetrics = [
-  { label: "AI决策次数/天", value: "12,400+", icon: Brain },
-  { label: "自动分群准确率", value: "99.2%", icon: Target },
-  { label: "平均响应时间", value: "< 0.3s", icon: Cpu },
-  { label: "风险事件拦截", value: "2,100+/月", icon: AlertTriangle },
+const floatingDecisions = [
+  "自动分配 42 位新用户 → 上海·VIP-07 / 广州·普通-12 / 深圳·高潜-03",
+  "风控检测到个微 WX-3342 日增 217 位好友 → 暂停 24h，通知主管审批",
+  "13 号群容量 95% → 自动切换到备用群 VIP-14，群码已刷新",
+  "申请回收 8 个企微账号（原运营离职）→ 流转至交接审批 陈主管",
+  "AI 建议：本周 杭州渠道 ROI ↓18%，建议缩减 20% 转抖音达人投放",
 ];
 
-// ─── 子组件 ───────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// 工具函数：每个 section 内部调用 useThemeSingleton() + 取 S 全局色板
+//   这样主题切换时（通过 pub/sub），组件 rerender，S.bg/... 已是最新值。
+// ══════════════════════════════════════════════════════════════════════════════
+function CTA() {
+  return {
+    bg: S.primary,
+    text: S.onPrimary,
+    hover: S.primaryDark,
+    ring: S.accentGlow,
+  };
+}
+
+/* ─────────────────────────── NavBar ─────────────────────────── */
 function NavBar({ onEnterApp }: { onEnterApp: () => void }) {
+  useThemeSingleton();
+  const S_ = S;
+  const cta = CTA();
   const [menuOpen, setMenuOpen] = useState(false);
-  const navItems = ["AI 能力", "产品功能", "生态架构", "客户案例"];
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: "rgba(5,9,23,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(204,255,0,0.15)" }}>
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "8px" }}>
-            <Zap size={16} style={{ color: "#ffffff" }} />
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 transition-colors"
+      style={{ background: S_.glass, backdropFilter: "blur(14px)", borderBottom: `1px solid ${S_.glassBorder}` }}
+    >
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 h-16">
+        <div className="flex items-center gap-3">
+          <div
+            className="w-9 h-9 flex items-center justify-center"
+            style={{ background: S_.primary, borderRadius: "10px", boxShadow: S_.accentGlow }}
+          >
+            <Zap size={17} style={{ color: cta.text }} />
           </div>
-          <span className="font-bold text-lg" style={{ color: "#ffffff", fontFamily: "monospace" }}>{PRODUCT.name}</span>
-          <span className="text-xs px-2 py-0.5 font-mono font-bold" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "6px", border: "1px solid #3b82f6" }}>AI · 私域云</span>
+          <span className="font-black text-xl" style={{ color: S_.text, fontFamily: "monospace", letterSpacing: "0.02em" }}>
+            {PRODUCT.name}
+          </span>
+          <span
+            className="text-[10px] px-2 py-0.5 font-mono font-bold"
+            style={{
+              background: S_.primaryLight,
+              color: S_.primaryDark,
+              borderRadius: "6px",
+              border: `1px solid ${S_.primaryMid}`,
+            }}
+          >
+            AI · 私域云 · 8 模块
+          </span>
         </div>
+
         <div className="hidden md:flex items-center gap-8">
-          {navItems.map(item => (
-            <button key={item} className="text-sm font-mono transition-colors" style={{ color: "rgba(255,255,255,0.65)" }}>{item}</button>
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item}
+              className="text-sm font-mono transition-colors"
+              style={{ color: S_.textSec }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = S_.primary)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = S_.textSec)}
+            >
+              {item}
+            </button>
           ))}
         </div>
-        <div className="hidden md:flex items-center gap-3">
-          <button className="text-sm px-4 py-2 font-mono transition-all" style={{ color: "rgba(255,255,255,0.7)", borderRadius: "8px" }}>登录</button>
-          <button className="text-sm px-5 py-2 font-bold font-mono transition-all" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "8px" }} onClick={onEnterApp}>
-            免费试用 <ArrowRight size={13} className="inline ml-1" />
+
+        <div className="flex items-center gap-3">
+          <button
+            className="text-sm px-4 py-2 font-mono transition-all"
+            style={{ color: S_.textSec, borderRadius: S_.radiusSm, background: "transparent", border: `1px solid ${S_.borderMed}` }}
+          >
+            登录
+          </button>
+          <button
+            className="text-sm px-5 py-2 font-bold font-mono transition-all"
+            style={{ background: cta.bg, color: cta.text, borderRadius: S_.radiusSm, boxShadow: cta.ring }}
+            onClick={onEnterApp}
+            onMouseEnter={(e) => (e.currentTarget.style.background = cta.hover)}
+            onMouseLeave={(e) => (e.currentTarget.style.background = cta.bg)}
+          >
+            立即进入 →
+          </button>
+          <button
+            className="md:hidden"
+            style={{ color: S_.textSec }}
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="菜单"
+          >
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-        <button className="md:hidden" style={{ color: "rgba(255,255,255,0.7)" }} onClick={() => setMenuOpen(!menuOpen)}>
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
       </div>
+
+      {menuOpen && (
+        <div
+          className="md:hidden border-t flex flex-col gap-2 p-4"
+          style={{ background: S_.surface, borderColor: S_.border }}
+        >
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item}
+              className="text-left py-2 px-3 font-mono text-sm"
+              style={{ color: S_.textSec, borderRadius: S_.radiusSm }}
+              onClick={() => setMenuOpen(false)}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }
 
+/* ─────────────────────────── HeroSection ─────────────────────────── */
 function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
+  useThemeSingleton();
+  const S_ = S;
+  const cta = CTA();
   const [tick, setTick] = useState(0);
   useEffect(() => {
-    const t = setInterval(() => setTick(v => v + 1), 1800);
+    const t = setInterval(() => setTick((x) => x + 1), 3200);
     return () => clearInterval(t);
   }, []);
 
-  const floatingDecisions = [
-    "AI → 上海VIP群02 ✓",
-    "AI → 风险预警 #eco ✓",
-    "AI → 唤醒计划 推送 ✓",
-    "AI → RFM 重算完成 ✓",
+  const sidebar = ["账号资产", "订单", "社群", "审批", "工具", "数据", "主理人", "会员小程序"];
+  const kpiCards = [
+    { label: "今日新增用户", value: "428" },
+    { label: "账号健康度", value: "94%" },
+    { label: "审批 SLA", value: "19min" },
+    { label: "本月营收", value: "¥51.6万" },
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-16" style={{ background: "linear-gradient(160deg, #050917 0%, #0d1535 50%, #050917 100%)" }}>
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.18), transparent)", filter: "blur(100px)" }} />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(204,255,0,0.1), transparent)", filter: "blur(120px)" }} />
-        <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "linear-gradient(rgba(204,255,0,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,0.2) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-      </div>
+    <section
+      className="relative min-h-screen flex items-center overflow-hidden pt-20"
+      style={{
+        background: `linear-gradient(160deg, ${S_.bg} 0%, ${S_.surface} 50%, ${S_.bg} 100%)`,
+      }}
+    >
+      {/* 主题色 辉光 / 网格 */}
+      <div
+        className="absolute top-1/4 left-1/4 w-[480px] h-[480px] rounded-full pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${S_.primaryMid}, transparent 70%)`, filter: "blur(120px)", opacity: 0.9 }}
+      />
+      <div
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none"
+        style={{ background: `radial-gradient(circle, ${S_.accentMid}, transparent 70%)`, filter: "blur(140px)", opacity: 0.8 }}
+      />
+      <div
+        className="absolute inset-0 opacity-[0.05] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(${S_.primary} 1px, transparent 1px), linear-gradient(90deg, ${S_.primary} 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }}
+      />
 
-      <div className="relative max-w-6xl mx-auto px-6 py-24 w-full">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8" style={{ background: "#1e293b", border: "1px solid #3b82f6", borderRadius: "8px" }}>
-            <Brain size={13} style={{ color: "#3b82f6" }} />
-            <span className="text-sm font-bold font-mono" style={{ color: "#3b82f6" }}>AI 驱动的新一代私域运营平台</span>
-            <div className="w-2 h-2 animate-pulse ml-1" style={{ background: "#3b82f6", borderRadius: "50%" }} />
+      <div className="max-w-7xl mx-auto w-full px-6 relative z-10">
+        <div className="text-center mb-10 lg:mb-12">
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 mb-8"
+            style={{
+              background: S_.surface,
+              border: `1px solid ${S_.primaryMid}`,
+              borderRadius: S_.radiusSm,
+              boxShadow: S_.shadow,
+            }}
+          >
+            <Sparkles size={13} style={{ color: S_.primary }} />
+            <span className="text-sm font-bold font-mono" style={{ color: S_.primaryDark }}>
+              新一代 私域全栈运营平台 · 账号 5 阶段生命周期 · 8 大模块 · AI 驱动
+            </span>
+            <div className="w-2 h-2 animate-pulse ml-1" style={{ background: S_.accent, borderRadius: "50%", boxShadow: S_.accentGlow }} />
           </div>
 
-          <h1 className="font-bold leading-tight mb-6" style={{ fontSize: "clamp(36px, 5vw, 72px)", color: "#ffffff", letterSpacing: "-0.02em", fontFamily: "monospace" }}>
-            把私域运营<br />
-            <span style={{ color: "#3b82f6" }}>交给 AI 来做</span>
+          <h1
+            className="font-black leading-[1.08] mb-6"
+            style={{ fontSize: "clamp(36px, 5.2vw, 76px)", color: S_.text, letterSpacing: "-0.03em", fontFamily: "monospace" }}
+          >
+            私域的 <span style={{ color: S_.primary }}>脏活 · 累活 · 操心活</span>
+            <br />
+            <span style={{ background: `linear-gradient(135deg, ${S_.primary} 0%, ${S_.accent} 100%)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+              交给聚域 + AI 来做
+            </span>
           </h1>
-
-          <p className="max-w-2xl mx-auto text-lg mb-10 leading-relaxed font-mono" style={{ color: "rgba(255,255,255,0.55)" }}>
-            {PRODUCT.desc}
+          <p
+            className="max-w-2xl mx-auto text-lg mb-10 leading-relaxed font-mono"
+            style={{ color: S_.textSec }}
+          >
+            从「注册入库 → 养号风控 → 分配到项目 → 发放到人 → 审批交接 → 归档停用」6 步打通账号生命链；
+            社群、订单、审批、工具、数据、主理人、小程序 8 大模块一站搞定；
+            5 套潮系主题 + 明暗双模式，员工爱用。
           </p>
 
-          <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
-            <button className="flex items-center gap-2 px-8 py-4 text-base font-bold font-mono" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "8px" }} onClick={onEnterApp}>
-              免费开始使用 <ArrowRight size={16} />
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+            <button
+              className="flex items-center gap-2 px-8 py-4 text-base font-black font-mono"
+              style={{ background: cta.bg, color: cta.text, borderRadius: S_.radiusSm, boxShadow: `0 12px 40px ${S_.primaryMid}` }}
+              onClick={onEnterApp}
+              onMouseEnter={(e) => (e.currentTarget.style.background = cta.hover)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = cta.bg)}
+            >
+              <Rocket size={18} /> 立即体验后台
+              <ArrowRight size={18} />
             </button>
-            <button className="flex items-center gap-2 px-8 py-4 text-base font-bold font-mono" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.3)", color: "#ffffff", borderRadius: "8px" }}>
-              <Play size={16} /> 观看演示视频
+            <button
+              className="flex items-center gap-2 px-8 py-4 text-base font-bold font-mono"
+              style={{
+                background: S_.surface,
+                border: `1px solid ${S_.borderMed}`,
+                color: S_.text,
+                borderRadius: S_.radiusSm,
+              }}
+            >
+              <Play size={16} /> 观看 3 分钟演示
             </button>
           </div>
-          <p className="text-sm font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>无需信用卡 · 14天免费试用 · 随时取消</p>
+          <div className="flex items-center justify-center gap-6 flex-wrap">
+            {["✅ 14 天免费试用", "✅ 不用绑信用卡", "✅ 30 天不满意退款", "✅ 8 大模块全开放"].map((t) => (
+              <p key={t} className="text-sm font-mono" style={{ color: S_.muted }}>
+                {t}
+              </p>
+            ))}
+          </div>
         </div>
 
-        {/* Dashboard mockup */}
-        <div className="relative mx-auto max-w-4xl">
-          <div className="overflow-hidden shadow-2xl" style={{ border: "1px solid rgba(204,255,0,0.2)", background: "#0d1535", borderRadius: "12px" }}>
-            <div className="flex items-center gap-2 px-4 py-3" style={{ background: "rgba(204,255,0,0.04)", borderBottom: "1px solid rgba(204,255,0,0.1)" }}>
-              <div className="w-3 h-3 bg-red-500 opacity-80" style={{ borderRadius: "50%" }} />
-              <div className="w-3 h-3 bg-yellow-500 opacity-80" style={{ borderRadius: "50%" }} />
-              <div className="w-3 h-3 opacity-80" style={{ background: "#3b82f6", borderRadius: "50%" }} />
-              <div className="flex-1 mx-4 h-6 flex items-center px-3" style={{ background: "rgba(255,255,255,0.04)", borderRadius: "4px" }}>
-                <span className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>app.juyuprivate.com/dashboard</span>
+        {/* 后台预览卡片（产品化 mock，颜色 100% 走主题） */}
+        <div
+          className="overflow-hidden max-w-6xl mx-auto"
+          style={{
+            border: `1px solid ${S_.borderMed}`,
+            background: S_.surface,
+            borderRadius: S_.radiusLg,
+            boxShadow: S_.shadow,
+          }}
+        >
+          <div
+            className="flex items-center gap-2 px-5 py-3.5"
+            style={{ background: S_.bg, borderBottom: `1px solid ${S_.border}` }}
+          >
+            <div className="w-3 h-3" style={{ background: S_.danger, borderRadius: "50%" }} />
+            <div className="w-3 h-3" style={{ background: S_.warning, borderRadius: "50%" }} />
+            <div className="w-3 h-3 opacity-90" style={{ background: S_.success, borderRadius: "50%" }} />
+            <div
+              className="flex-1 mx-4 h-7 flex items-center px-3"
+              style={{ background: S_.surface, border: `1px solid ${S_.border}`, borderRadius: "6px" }}
+            >
+              <span className="text-xs font-mono" style={{ color: S_.muted }}>
+                app.juyu.shequn/accounts?view=pc
+              </span>
+            </div>
+            <div
+              className="flex items-center gap-1.5 px-2.5 py-1"
+              style={{ background: S_.accentLight, borderRadius: "6px", border: `1px solid ${S_.accentMid}` }}
+            >
+              <div className="w-1.5 h-1.5 animate-pulse" style={{ background: S_.accent, borderRadius: "50%" }} />
+              <span className="text-[10px] font-mono font-black" style={{ color: S_.primaryDark }}>
+                AI · ONLINE
+              </span>
+            </div>
+          </div>
+
+          {/* 主体 2 列：侧边栏 + 主区域 */}
+          <div className="flex" style={{ minHeight: "360px" }}>
+            {/* 侧栏 */}
+            <div
+              className="w-52 flex-shrink-0 p-4"
+              style={{ background: S_.bg, borderRight: `1px solid ${S_.border}` }}
+            >
+              <div className="flex items-center gap-2 mb-5 px-1">
+                <div
+                  className="w-7 h-7 flex items-center justify-center"
+                  style={{ background: S_.primary, borderRadius: "6px", boxShadow: S_.accentGlow }}
+                >
+                  <Zap size={12} style={{ color: cta.text }} />
+                </div>
+                <div>
+                  <div className="text-[13px] font-black font-mono" style={{ color: S_.text }}>
+                    聚域
+                  </div>
+                  <div className="text-[9px] font-mono" style={{ color: S_.muted }}>
+                    v2.6 · 8 模块
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 px-2 py-0.5" style={{ background: "rgba(204,255,0,0.1)", borderRadius: "4px", border: "1px solid rgba(204,255,0,0.2)" }}>
-                <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#3b82f6", borderRadius: "50%" }} />
-                <span className="text-xs font-mono font-bold" style={{ color: "#3b82f6" }}>AI 在线</span>
+              {sidebar.map((item, i) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-2 px-2.5 py-2 mb-1 rounded-md"
+                  style={{
+                    background: i === 0 ? S_.primary : "transparent",
+                    color: i === 0 ? cta.text : S_.textSec,
+                    borderRadius: S_.radiusSm,
+                  }}
+                >
+                  <div
+                    className="w-1.5 h-1.5"
+                    style={{
+                      background: i === 0 ? cta.text : S_.accent,
+                      borderRadius: "50%",
+                      opacity: i === 0 ? 1 : 0.5,
+                    }}
+                  />
+                  <span className="text-xs font-mono font-semibold">{item}</span>
+                </div>
+              ))}
+
+              <div
+                className="mt-4 p-2.5"
+                style={{
+                  background: S_.accentLight,
+                  border: `1px solid ${S_.accentMid}`,
+                  borderRadius: S_.radiusSm,
+                }}
+              >
+                <div
+                  className="text-[9px] font-mono font-black mb-1.5 flex items-center gap-1"
+                  style={{ color: S_.primaryDark, letterSpacing: "0.08em" }}
+                >
+                  <Brain size={9} /> AI 引擎
+                </div>
+                <div
+                  className="text-[10px] font-mono leading-relaxed"
+                  style={{ color: S_.primaryDark }}
+                >
+                  {floatingDecisions[tick % floatingDecisions.length]}
+                </div>
               </div>
             </div>
 
-            <div className="flex" style={{ height: "380px" }}>
-              <div className="w-44 flex-shrink-0 p-4" style={{ background: "#1e293b", borderRight: "1px solid rgba(204,255,0,0.1)" }}>
-                <div className="flex items-center gap-2 mb-6">
-                  <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "4px" }}>
-                    <Zap size={12} style={{ color: "#ffffff" }} />
-                  </div>
-                  <span className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>聚域</span>
-                </div>
-                {["后台总览", "账号资产", "微信管理", "社群管理", "AI分群", "用户操作台", "数据报表"].map((item, i) => (
-                  <div key={item} className="flex items-center gap-2 px-2 py-1.5 mb-1" style={{ background: i === 0 ? "#3b82f6" : "transparent", borderRadius: "6px" }}>
-                    <div className="w-1.5 h-1.5" style={{ background: i === 0 ? "#ffffff" : "rgba(204,255,0,0.3)", borderRadius: "50%" }} />
-                    <span className="text-xs font-mono" style={{ color: i === 0 ? "#ffffff" : "rgba(255,255,255,0.4)" }}>{item}</span>
+            {/* 主区域 */}
+            <div className="flex-1 p-4 flex flex-col gap-3" style={{ background: S_.bg }}>
+              {/* 4 KPI */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {kpiCards.map((c) => (
+                  <div
+                    key={c.label}
+                    className="p-3"
+                    style={{
+                      background: S_.surface,
+                      border: `1px solid ${S_.borderMed}`,
+                      borderRadius: S_.radius,
+                    }}
+                  >
+                    <div
+                      className="mb-1 font-mono"
+                      style={{ color: S_.muted, fontSize: "10px" }}
+                    >
+                      {c.label}
+                    </div>
+                    <div className="text-xl font-black font-mono" style={{ color: S_.primary }}>
+                      {c.value}
+                    </div>
                   </div>
                 ))}
-                {/* AI status mini panel */}
-                <div className="mt-4 p-2" style={{ background: "rgba(204,255,0,0.06)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "6px" }}>
-                  <div className="text-xs font-mono font-bold mb-1.5" style={{ color: "rgba(204,255,0,0.6)", fontSize: "9px" }}>// AI ENGINE</div>
-                  <div className="text-xs font-mono" style={{ color: "#3b82f6", fontSize: "9px" }}>{floatingDecisions[tick % floatingDecisions.length]}</div>
-                </div>
               </div>
 
-              <div className="flex-1 p-5 overflow-hidden">
-                <div className="grid grid-cols-4 gap-3 mb-4">
-                  {[
-                    { label: "账号资产总数", value: "1,247" },
-                    { label: "在用微信账号", value: "68" },
-                    { label: "活跃社群数", value: "34" },
-                    { label: "AI待处理", value: "3" },
-                  ].map(c => (
-                    <div key={c.label} className="p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "8px" }}>
-                      <div className="text-xs mb-1.5 font-mono" style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>{c.label}</div>
-                      <div className="text-xl font-bold font-mono" style={{ color: "#3b82f6" }}>{c.value}</div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-3 gap-3 mb-4">
-                  <div className="col-span-2 p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.1)", height: "120px", borderRadius: "8px" }}>
-                    <div className="text-xs mb-2 font-mono" style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>用户增长趋势</div>
-                    <div className="flex items-end gap-1 h-16">
-                      {[40,55,45,70,60,80,75,90,85,100].map((h, i) => (
-                        <div key={i} className="flex-1" style={{ height: `${h}%`, background: i === 9 ? "#3b82f6" : `rgba(204,255,0,${0.15 + i * 0.06})`, borderRadius: "2px 2px 0 0" }} />
-                      ))}
-                    </div>
+              {/* 图表 2 列 */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 flex-1">
+                {/* 用户增长柱 */}
+                <div
+                  className="col-span-2 p-3 flex flex-col"
+                  style={{
+                    background: S_.surface,
+                    border: `1px solid ${S_.borderMed}`,
+                    height: "130px",
+                    borderRadius: S_.radius,
+                  }}
+                >
+                  <div
+                    className="mb-2 font-mono flex items-center gap-1"
+                    style={{ color: S_.textSec, fontSize: "10px" }}
+                  >
+                    <Activity size={9} style={{ color: S_.primary }} /> 用户增长趋势 · 近 10 天
                   </div>
-                  <div className="p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.1)", height: "120px", borderRadius: "8px" }}>
-                    <div className="text-xs mb-2 font-mono" style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>城市分布</div>
-                    <div className="space-y-2">
-                      {[["北京", 82], ["上海", 71], ["深圳", 58], ["广州", 45]].map(([city, pct]) => (
-                        <div key={city as string}>
-                          <div className="flex justify-between mb-0.5 font-mono" style={{ color: "rgba(255,255,255,0.4)", fontSize: "9px" }}>
-                            <span>{city}</span><span>{pct}%</span>
-                          </div>
-                          <div className="h-1" style={{ background: "rgba(255,255,255,0.08)", borderRadius: "4px" }}>
-                            <div className="h-full" style={{ width: `${pct}%`, background: "#3b82f6", borderRadius: "4px" }} />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+                  <div className="flex items-end gap-1.5 flex-1">
+                    {Array.from({ length: 10 }).map((_, i) => {
+                      const h = 20 + (i * 7 + ((i * i) % 11)) % 75;
+                      return (
+                        <div
+                          key={i}
+                          className="flex-1 transition-colors"
+                          style={{
+                            height: `${h}%`,
+                            background: i === 9 ? S_.primary : `${S_.accentLight}`,
+                            borderRadius: "3px 3px 0 0",
+                            borderTop: i === 9 ? `2px solid ${S_.accent}` : "none",
+                          }}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.1)", borderRadius: "8px" }}>
-                  <div className="flex items-center gap-1.5 mb-2 font-mono" style={{ color: "rgba(255,255,255,0.6)", fontSize: "10px" }}>
-                    <Brain size={10} style={{ color: "#3b82f6" }} />
-                    <span>AI 运营建议 — 实时更新</span>
-                    <div className="w-1.5 h-1.5 animate-pulse ml-auto" style={{ background: "#3b82f6", borderRadius: "50%" }} />
+                {/* 城市分布 */}
+                <div
+                  className="p-3"
+                  style={{
+                    background: S_.surface,
+                    border: `1px solid ${S_.borderMed}`,
+                    height: "130px",
+                    borderRadius: S_.radius,
+                  }}
+                >
+                  <div
+                    className="mb-2 font-mono flex items-center gap-1"
+                    style={{ color: S_.textSec, fontSize: "10px" }}
+                  >
+                    <MapPin size={9} style={{ color: S_.accent }} /> 城市分布 TOP 5
                   </div>
-                  <div className="flex gap-2">
+                  <div className="space-y-1.5">
                     {[
-                      { t: "北京PRO群接近满员", level: "high" },
-                      { t: "12名用户待分配群", level: "mid" },
-                      { t: "唤醒计划推送就绪", level: "ok" },
-                    ].map((s, i) => (
-                      <div key={i} className="flex-1 text-xs px-2 py-1 font-mono" style={{ background: s.level === "high" ? "rgba(255,0,0,0.08)" : s.level === "mid" ? "rgba(204,255,0,0.06)" : "rgba(0,200,100,0.06)", color: s.level === "high" ? "#ff8888" : s.level === "mid" ? "rgba(204,255,0,0.8)" : "#6effa8", fontSize: "10px", borderRadius: "6px", border: `1px solid ${s.level === "high" ? "rgba(255,0,0,0.2)" : s.level === "mid" ? "rgba(204,255,0,0.2)" : "rgba(0,200,100,0.2)"}` }}>{s.t}</div>
+                      { n: "上海", p: 92 },
+                      { n: "杭州", p: 68 },
+                      { n: "深圳", p: 54 },
+                      { n: "广州", p: 41 },
+                    ].map((c) => (
+                      <div key={c.n}>
+                        <div
+                          className="flex justify-between mb-0.5 font-mono"
+                          style={{ color: S_.textSec, fontSize: "9px" }}
+                        >
+                          <span>{c.n}</span>
+                          <span>{c.p}%</span>
+                        </div>
+                        <div
+                          className="h-1.5 w-full overflow-hidden"
+                          style={{ background: S_.mutedLight, borderRadius: "4px" }}
+                        >
+                          <div
+                            className="h-full"
+                            style={{
+                              width: `${c.p}%`,
+                              background: `linear-gradient(90deg, ${S_.primary}, ${S_.accent})`,
+                              borderRadius: "4px",
+                            }}
+                          />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
 
-          {/* Floating AI badge */}
-          <div className="absolute -left-8 top-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2" style={{ background: "#1e293b", border: "1px solid #3b82f6", borderRadius: "10px" }}>
-            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "6px" }}>
-              <Brain size={12} style={{ color: "#ffffff" }} />
-            </div>
-            <div>
-              <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>AI 决策</div>
-              <div className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>已处理 12,400次</div>
-            </div>
-          </div>
-          <div className="absolute -right-8 bottom-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2" style={{ background: "#1e293b", border: "1px solid #3b82f6", borderRadius: "10px" }}>
-            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "rgba(204,255,0,0.15)", borderRadius: "6px" }}>
-              <TrendingUp size={12} style={{ color: "#3b82f6" }} />
-            </div>
-            <div>
-              <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>本月营收</div>
-              <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>¥51.6 万 ↑13%</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function StatsSection() {
-  return (
-    <section className="py-16 border-y" style={{ background: "#050917", borderColor: "rgba(204,255,0,0.15)" }}>
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-4 gap-8 text-center">
-          {stats.map(s => (
-            <div key={s.label}>
-              <div className="font-bold mb-1 font-mono" style={{ fontSize: "36px", color: "#3b82f6" }}>{s.value}</div>
-              <div className="text-sm font-mono" style={{ color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─── AI Section (新增) ────────────────────────────────────────
-function TerminalLine({ line, delay }: { line: { text: string; type: string }; delay: number }) {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), delay);
-    return () => clearTimeout(t);
-  }, [delay]);
-
-  const colors: Record<string, string> = {
-    comment: "rgba(204,255,0,0.4)",
-    code: "rgba(255,255,255,0.75)",
-    success: "#3b82f6",
-    warn: "#ffaa00",
-    blank: "transparent",
-  };
-
-  return (
-    <div className="font-mono text-xs transition-all" style={{ color: colors[line.type] || "rgba(255,255,255,0.5)", opacity: visible ? 1 : 0, transform: visible ? "none" : "translateX(-6px)", transition: "opacity 0.3s ease, transform 0.3s ease", minHeight: "18px" }}>
-      {line.type !== "blank" && (
-        <span>
-          {line.type === "success" && <span style={{ color: "#3b82f6", marginRight: "4px" }}>→</span>}
-          {line.type === "warn" && <span style={{ color: "#ffaa00", marginRight: "4px" }}>!</span>}
-          {line.type === "comment" && <span style={{ color: "rgba(204,255,0,0.35)", marginRight: "4px" }}></span>}
-          {line.text}
-        </span>
-      )}
-    </div>
-  );
-}
-
-function AICapabilityCard({ cap, active, onClick }: { cap: typeof aiCapabilities[0]; active: boolean; onClick: () => void }) {
-  return (
-    <button className="w-full text-left p-4 transition-all" style={{ background: active ? "rgba(59,130,246,0.08)" : "transparent", border: `1px solid ${active ? "#3b82f6" : "rgba(204,255,0,0.2)"}`, borderRadius: "10px", cursor: "pointer" }} onClick={onClick}>
-      <div className="flex items-center gap-3 mb-2">
-        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: active ? "#3b82f6" : "rgba(204,255,0,0.1)", borderRadius: "8px" }}>
-          <cap.icon size={16} style={{ color: active ? "#ffffff" : "#3b82f6" }} />
-        </div>
-        <div>
-          <div className="text-sm font-bold font-mono" style={{ color: active ? "#3b82f6" : "rgba(255,255,255,0.7)" }}>{cap.label}</div>
-          <div className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}>{cap.badge}</div>
-        </div>
-        {active && <ChevronRight size={14} style={{ color: "#3b82f6", marginLeft: "auto" }} />}
-      </div>
-      <div className="flex items-center gap-2 mt-2">
-        <span className="text-xs font-mono px-2 py-0.5" style={{ background: "rgba(255,50,50,0.1)", color: "#ff8888", borderRadius: "4px", textDecoration: "line-through", fontSize: "10px" }}>{cap.before}</span>
-        <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "10px" }}>→</span>
-        <span className="text-xs font-mono px-2 py-0.5" style={{ background: "rgba(204,255,0,0.1)", color: "#3b82f6", borderRadius: "4px", fontSize: "10px" }}>{cap.improvement}</span>
-      </div>
-    </button>
-  );
-}
-
-function AISection() {
-  const [activeCap, setActiveCap] = useState(0);
-  const [terminalKey, setTerminalKey] = useState(0);
-
-  const handleSelect = (i: number) => {
-    setActiveCap(i);
-    setTerminalKey(k => k + 1);
-  };
-
-  const cap = aiCapabilities[activeCap];
-
-  return (
-    <section className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #050917 0%, #070d24 100%)" }}>
-      {/* subtle grid */}
-      <div className="absolute inset-0 opacity-3 pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
-
-      <div className="relative max-w-6xl mx-auto px-6">
-        {/* Section header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", border: "1px solid #3b82f6", borderRadius: "8px", fontSize: "12px" }}>
-            <Brain size={13} style={{ color: "#3b82f6" }} /> AI CORE ENGINE
-          </div>
-          <h2 className="font-bold mb-4 text-white font-mono" style={{ fontSize: "clamp(28px, 4vw, 48px)", letterSpacing: "-0.02em" }}>
-            AI 是聚域的<span style={{ color: "#3b82f6" }}>核心驱动力</span>
-          </h2>
-          <p className="text-lg max-w-2xl mx-auto font-mono" style={{ color: "rgba(255,255,255,0.45)" }}>
-            不只是工具辅助，而是让 AI 主动做决策、做运营、做预警。<br />
-            每一个关键节点，都有 AI 在背后实时运转。
-          </p>
-        </div>
-
-        {/* AI metrics top bar */}
-        <div className="grid grid-cols-4 gap-4 mb-12">
-          {aiMetrics.map((m, i) => (
-            <div key={i} className="p-4 text-center" style={{ background: "rgba(204,255,0,0.04)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "10px" }}>
-              <div className="w-8 h-8 flex items-center justify-center mx-auto mb-2" style={{ background: "rgba(204,255,0,0.1)", borderRadius: "8px" }}>
-                <m.icon size={16} style={{ color: "#3b82f6" }} />
-              </div>
-              <div className="font-bold font-mono mb-1" style={{ color: "#3b82f6", fontSize: "20px" }}>{m.value}</div>
-              <div className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.35)" }}>{m.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* Main interactive panel */}
-        <div className="grid grid-cols-5 gap-6">
-          {/* Left: capability list */}
-          <div className="col-span-2 space-y-3">
-            <div className="text-xs font-mono mb-4 font-bold" style={{ color: "rgba(204,255,0,0.5)", letterSpacing: "0.1em" }}>// SELECT AI CAPABILITY</div>
-            {aiCapabilities.map((c, i) => (
-              <AICapabilityCard key={c.id} cap={c} active={activeCap === i} onClick={() => handleSelect(i)} />
-            ))}
-          </div>
-
-          {/* Right: terminal demo */}
-          <div className="col-span-3">
-            <div className="h-full" style={{ background: "#050917", border: "1px solid rgba(204,255,0,0.25)", borderRadius: "12px", overflow: "hidden" }}>
-              {/* Terminal header */}
-              <div className="flex items-center gap-2 px-4 py-3" style={{ background: "rgba(204,255,0,0.04)", borderBottom: "1px solid rgba(204,255,0,0.12)" }}>
-                <div className="w-2.5 h-2.5 bg-red-500 opacity-70" style={{ borderRadius: "50%" }} />
-                <div className="w-2.5 h-2.5 bg-yellow-400 opacity-70" style={{ borderRadius: "50%" }} />
-                <div className="w-2.5 h-2.5 opacity-70" style={{ background: "#3b82f6", borderRadius: "50%" }} />
-                <div className="flex-1 mx-3 px-3 py-1 flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)", borderRadius: "4px" }}>
-                  <span className="text-xs font-mono" style={{ color: "rgba(204,255,0,0.5)" }}>juyu-ai-engine — {cap.badge}</span>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#3b82f6", borderRadius: "50%" }} />
-                    <span className="text-xs font-mono" style={{ color: "#3b82f6", fontSize: "10px" }}>RUNNING</span>
-                  </div>
+              {/* AI 风险事件流 */}
+              <div
+                className="p-3"
+                style={{
+                  background: S_.surface,
+                  border: `1px solid ${S_.borderMed}`,
+                  borderRadius: S_.radius,
+                }}
+              >
+                <div
+                  className="flex items-center gap-1.5 mb-2 font-mono"
+                  style={{ color: S_.textSec, fontSize: "10px" }}
+                >
+                  <Brain size={9} style={{ color: S_.primary }} />
+                  <span className="font-black">AI 今日风险流</span>
+                  <RefreshCw size={8} style={{ color: S_.muted, marginLeft: 4 }} />
+                  <div
+                    className="w-1.5 h-1.5 animate-pulse ml-auto"
+                    style={{ background: S_.accent, borderRadius: "50%" }}
+                  />
                 </div>
-              </div>
-
-              {/* Terminal body */}
-              <div className="p-5 space-y-1" style={{ minHeight: "340px" }}>
-                <div className="text-xs font-mono mb-3" style={{ color: "rgba(204,255,0,0.3)" }}>
-                  $ juyu-ai run --module={cap.badge.toLowerCase().replace(" ", "_")}
-                </div>
-                <div key={terminalKey} className="space-y-1">
-                  {cap.terminalLines.map((line, i) => (
-                    <TerminalLine key={i} line={line} delay={i * 120} />
+                <div className="flex items-stretch gap-1.5 overflow-x-auto">
+                  {[
+                    { l: "high", t: "WX-3342 高风险" },
+                    { l: "mid", t: "群 VIP-13 容量 95%" },
+                    { l: "low", t: "申领 3 号已通过" },
+                    { l: "mid", t: "抖音渠道 ROI↓18%" },
+                    { l: "low", t: "工具#12 已回收" },
+                    { l: "high", t: "陈× 交接 8 号" },
+                    { l: "low", t: "养号 12 号出关" },
+                  ].map((s, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 min-w-[96px] text-[10px] px-2 py-1.5 font-mono whitespace-nowrap"
+                      style={{
+                        background:
+                          s.l === "high"
+                            ? S_.dangerBg
+                            : s.l === "mid"
+                            ? S_.warningBg
+                            : S_.successBg,
+                        color:
+                          s.l === "high"
+                            ? S_.danger
+                            : s.l === "mid"
+                            ? S_.warning
+                            : S_.success,
+                        borderRadius: "6px",
+                        border: `1px solid ${
+                          s.l === "high"
+                            ? "rgba(220,38,38,0.25)"
+                            : s.l === "mid"
+                            ? S_.accentMid
+                            : "rgba(22,163,74,0.22)"
+                        }`,
+                      }}
+                    >
+                      {s.t}
+                    </div>
                   ))}
                 </div>
               </div>
-
-              {/* Bottom stats bar */}
-              <div className="px-5 py-3 flex items-center gap-6" style={{ borderTop: "1px solid rgba(204,255,0,0.1)", background: "rgba(204,255,0,0.02)" }}>
-                <div className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>
-                  <span style={{ color: "rgba(204,255,0,0.4)" }}>■</span> 处理时间 &lt; 0.3s
-                </div>
-                <div className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>
-                  <span style={{ color: "rgba(204,255,0,0.4)" }}>■</span> {cap.after}
-                </div>
-                <div className="ml-auto text-xs font-mono font-bold" style={{ color: "#3b82f6" }}>{cap.improvement}</div>
-              </div>
             </div>
           </div>
         </div>
 
-        {/* AI workflow diagram */}
-        <div className="mt-16">
-          <div className="text-center mb-8">
-            <div className="text-xs font-mono font-bold" style={{ color: "rgba(204,255,0,0.5)", letterSpacing: "0.1em" }}>// AI 工作流全景</div>
+        {/* 两侧浮动信息胶囊 */}
+        <div
+          className="absolute -left-8 top-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2"
+          style={{
+            background: S_.surface,
+            border: `1px solid ${S_.primaryMid}`,
+            borderRadius: "10px",
+            boxShadow: S_.shadow,
+          }}
+        >
+          <div
+            className="w-6 h-6 flex items-center justify-center"
+            style={{ background: S_.primary, borderRadius: "6px" }}
+          >
+            <Brain size={12} style={{ color: cta.text }} />
           </div>
-          <div className="flex items-center justify-center gap-0 overflow-x-auto pb-4">
-            {[
-              { label: "流量入口", sub: "抖音/小红书/公众号", icon: Radio },
-              { label: "AI 识别", sub: "渠道/城市/身份", icon: Cpu },
-              { label: "AI 分群", sub: "最优群组匹配", icon: GitBranch },
-              { label: "AI 监控", sub: "风险/满群/异常", icon: AlertTriangle },
-              { label: "AI 分层", sub: "RFM用户价值", icon: Layers },
-              { label: "AI 推送", sub: "个性化触达", icon: Activity },
-              { label: "数据反馈", sub: "持续优化模型", icon: BarChart2 },
-            ].map((step, i, arr) => (
-              <div key={i} className="flex items-center flex-shrink-0">
-                <div className="text-center" style={{ width: "100px" }}>
-                  <div className="w-12 h-12 flex items-center justify-center mx-auto mb-2" style={{ background: i === 0 || i === arr.length - 1 ? "rgba(59,130,246,0.08)" : "rgba(204,255,0,0.12)", border: "1px solid rgba(204,255,0,0.3)", borderRadius: "10px" }}>
-                    <step.icon size={18} style={{ color: "#3b82f6" }} />
+          <div className="text-xs leading-tight">
+            <div className="font-black font-mono" style={{ color: S_.primaryDark }}>
+              AI 决策
+            </div>
+            <div className="font-mono" style={{ color: S_.muted }}>
+              累计处理 12,481 次
+            </div>
+          </div>
+        </div>
+
+        <div
+          className="absolute -right-8 bottom-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2"
+          style={{
+            background: S_.surface,
+            border: `1px solid ${S_.accentMid}`,
+            borderRadius: "10px",
+            boxShadow: S_.shadow,
+          }}
+        >
+          <div
+            className="w-6 h-6 flex items-center justify-center"
+            style={{ background: S_.accentLight, borderRadius: "6px" }}
+          >
+            <Coins size={12} style={{ color: S_.primary }} />
+          </div>
+          <div className="text-xs leading-tight">
+            <div className="font-black font-mono" style={{ color: S_.primaryDark }}>
+              本月营收
+            </div>
+            <div className="font-black font-mono" style={{ color: S_.primary }}>
+              ¥51.6 万 ↑13%
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────── StatsSection ─────────────────────────── */
+function StatsSection() {
+  useThemeSingleton();
+  const S_ = S;
+  return (
+    <section
+      className="py-16 border-y"
+      style={{ background: S_.bg, borderColor: S_.border }}
+    >
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          {stats.map((s) => (
+            <div key={s.label} className="text-center">
+              <div
+                className="font-black mb-1.5 font-mono"
+                style={{
+                  fontSize: "clamp(24px, 3vw, 40px)",
+                  background: `linear-gradient(135deg, ${S_.primary}, ${S_.accent})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {s.value}
+              </div>
+              <div className="text-sm font-mono" style={{ color: S_.textSec }}>
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────── AISection ─────────────────────────── */
+function AISection() {
+  useThemeSingleton();
+  const S_ = S;
+  const cta = CTA();
+  const [active, setActive] = useState("assign");
+  const [lineIdx, setLineIdx] = useState(0);
+
+  const activeCap = aiCapabilities.find((c) => c.id === active) || aiCapabilities[0];
+
+  useEffect(() => {
+    setLineIdx(0);
+    const lines = activeCap.terminalLines;
+    const t = setInterval(() => setLineIdx((x) => (x + 1 >= lines.length ? lines.length : x + 1)), 500);
+    return () => clearInterval(t);
+  }, [active, activeCap.terminalLines.length]);
+
+  return (
+    <section
+      className="py-24 relative overflow-hidden"
+      style={{
+        background: `linear-gradient(180deg, ${S_.bg} 0%, ${S_.surface} 100%)`,
+      }}
+    >
+      <div
+        className="absolute inset-0 opacity-[0.04] pointer-events-none"
+        style={{
+          backgroundImage: `linear-gradient(${S_.primary} 1px, transparent 1px), linear-gradient(90deg, ${S_.primary} 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
+        }}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 relative">
+        <div className="text-center mb-16">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-black font-mono"
+            style={{
+              background: S_.surface,
+              color: S_.primaryDark,
+              border: `1px solid ${S_.primaryMid}`,
+              borderRadius: S_.radiusSm,
+              fontSize: "12px",
+            }}
+          >
+            <Brain size={13} style={{ color: S_.primary }} /> AI CORE ENGINE · 四大智能引擎
+          </div>
+          <h2
+            className="font-black mb-4 font-mono"
+            style={{
+              fontSize: "clamp(28px, 4vw, 48px)",
+              letterSpacing: "-0.02em",
+              color: S_.text,
+            }}
+          >
+            AI 是聚域的
+            <span style={{ color: S_.primary }}>核心驱动力</span>
+          </h2>
+          <p className="text-lg max-w-2xl mx-auto font-mono" style={{ color: S_.textSec }}>
+            不是口号上的 AI：4 个可落地引擎真实跑在每一个业务节点上，24h 替你分群、风控、审批、出洞察。
+          </p>
+        </div>
+
+        {/* 亮点 4 数 */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-14">
+          {aiCapabilities.map((m) => (
+            <div
+              key={m.id}
+              className="p-5 text-center"
+              style={{
+                background: S_.accentLight,
+                border: `1px solid ${S_.accentMid}`,
+                borderRadius: S_.radius,
+              }}
+            >
+              <div
+                className="w-10 h-10 flex items-center justify-center mx-auto mb-3"
+                style={{ background: S_.primaryLight, borderRadius: S_.radiusSm }}
+              >
+                <m.icon size={18} style={{ color: S_.primary }} />
+              </div>
+              <div
+                className="font-black font-mono mb-1"
+                style={{
+                  color: S_.primary,
+                  fontSize: "22px",
+                  background: `linear-gradient(135deg, ${S_.primary}, ${S_.accent})`,
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                {m.improvement}
+              </div>
+              <div className="text-xs font-mono" style={{ color: S_.textSec }}>
+                {m.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 能力选择 + 终端 */}
+        <div className="grid md:grid-cols-[320px_1fr] gap-5">
+          <div className="space-y-2">
+            <div
+              className="text-xs font-mono mb-3 font-black"
+              style={{ color: S_.primaryDark, letterSpacing: "0.1em" }}
+            >
+              // 选择 AI 引擎
+            </div>
+            {aiCapabilities.map((cap) => {
+              const isActive = cap.id === active;
+              return (
+                <button
+                  key={cap.id}
+                  className="w-full text-left p-4 transition-all"
+                  style={{
+                    background: isActive ? S_.primaryLight : S_.surface,
+                    border: `1px solid ${isActive ? S_.primary : S_.borderMed}`,
+                    borderRadius: S_.radius,
+                    cursor: "pointer",
+                    boxShadow: isActive ? S_.accentGlow : "none",
+                  }}
+                  onClick={() => setActive(cap.id)}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-9 h-9 flex items-center justify-center flex-shrink-0"
+                      style={{
+                        background: isActive ? S_.primary : S_.accentLight,
+                        borderRadius: S_.radiusSm,
+                      }}
+                    >
+                      <cap.icon size={16} style={{ color: isActive ? cta.text : S_.primary }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div
+                        className="text-sm font-black font-mono"
+                        style={{ color: isActive ? S_.primaryDark : S_.text }}
+                      >
+                        {cap.label}
+                      </div>
+                      <div
+                        className="text-[10px] font-mono"
+                        style={{ color: S_.muted, letterSpacing: "0.1em" }}
+                      >
+                        {cap.badge}
+                      </div>
+                    </div>
+                    {isActive && <ChevronRight size={14} style={{ color: S_.primary }} />}
                   </div>
-                  <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>{step.label}</div>
-                  <div className="text-xs font-mono mt-0.5" style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}>{step.sub}</div>
+                  <div className="mt-3 flex items-center gap-2 flex-wrap">
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 line-through"
+                      style={{
+                        background: S_.dangerBg,
+                        color: S_.danger,
+                        borderRadius: "4px",
+                        textDecoration: "line-through",
+                      }}
+                    >
+                      {cap.before}
+                    </span>
+                    <ArrowRight size={10} style={{ color: S_.muted }} />
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 font-black"
+                      style={{
+                        background: S_.successBg,
+                        color: S_.success,
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {cap.after}
+                    </span>
+                    <span
+                      className="text-[10px] font-mono px-2 py-0.5 font-black ml-auto"
+                      style={{
+                        background: `linear-gradient(135deg, ${S_.primaryLight}, ${S_.accentLight})`,
+                        color: S_.primaryDark,
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {cap.improvement}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <div
+            className="h-full font-mono"
+            style={{
+              background: S_.surface,
+              border: `1px solid ${S_.borderMed}`,
+              borderRadius: S_.radiusLg,
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="flex items-center gap-2 px-5 py-3.5"
+              style={{ background: S_.bg, borderBottom: `1px solid ${S_.border}` }}
+            >
+              <div className="w-2.5 h-2.5" style={{ background: S_.danger, borderRadius: "50%" }} />
+              <div className="w-2.5 h-2.5" style={{ background: S_.warning, borderRadius: "50%" }} />
+              <div className="w-2.5 h-2.5 opacity-80" style={{ background: S_.success, borderRadius: "50%" }} />
+              <div
+                className="flex-1 mx-3 px-3 py-1 flex items-center justify-between"
+                style={{ background: S_.surface, border: `1px solid ${S_.border}`, borderRadius: "4px" }}
+              >
+                <span className="text-xs" style={{ color: S_.muted }}>
+                  ai.juyu.engine/{activeCap.id}
+                </span>
+                <Cpu size={10} style={{ color: S_.primary }} />
+              </div>
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1"
+                style={{ background: S_.primaryLight, borderRadius: "4px", border: `1px solid ${S_.primaryMid}` }}
+              >
+                <div className="w-1.5 h-1.5 animate-pulse" style={{ background: S_.primary, borderRadius: "50%" }} />
+                <span className="text-[10px] font-black" style={{ color: S_.primaryDark }}>
+                  RUNNING
+                </span>
+              </div>
+            </div>
+
+            <div className="px-6 py-5 space-y-0.5" style={{ minHeight: "340px" }}>
+              {activeCap.terminalLines.map((line, i) => {
+                const visible = i < lineIdx;
+                const color =
+                  line.type === "comment"
+                    ? S_.muted
+                    : line.type === "success"
+                    ? S_.success
+                    : line.type === "warn"
+                    ? S_.warning
+                    : line.type === "blank"
+                    ? "transparent"
+                    : S_.text;
+                return (
+                  <div
+                    key={`${activeCap.id}-${i}`}
+                    className="font-mono text-sm transition-all"
+                    style={{
+                      color,
+                      opacity: visible ? 1 : 0,
+                      transform: visible ? "none" : "translateX(-6px)",
+                      transition: "opacity 0.3s ease, transform 0.3s ease",
+                      minHeight: "20px",
+                      paddingLeft: line.text.startsWith("//") ? 0 : line.type === "code" ? 16 : 0,
+                    }}
+                  >
+                    {line.type === "success" && <span style={{ color: S_.success, marginRight: 6 }}>→</span>}
+                    {line.type === "warn" && <span style={{ color: S_.warning, marginRight: 6 }}>!</span>}
+                    {line.type === "comment" && <span style={{ color: S_.muted, marginRight: 6 }}>//</span>}
+                    {line.text.replace(/^\/\/\s?/, "").replace(/^→\s?/, "").replace(/^!\s?/, "")}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────── PainPointsSection ─────────────────────────── */
+function PainPointsSection() {
+  useThemeSingleton();
+  const S_ = S;
+  return (
+    <section className="py-24" style={{ background: S_.bg }}>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-black font-mono"
+            style={{
+              background: S_.dangerBg,
+              color: S_.danger,
+              border: `1px solid rgba(220,38,38,0.3)`,
+              borderRadius: S_.radiusSm,
+              fontSize: "12px",
+            }}
+          >
+            <AlertTriangle size={13} /> 私域运营 6 大普遍痛点
+          </div>
+          <h2
+            className="font-black mb-4 font-mono"
+            style={{
+              fontSize: "clamp(28px, 4vw, 48px)",
+              letterSpacing: "-0.02em",
+              color: S_.text,
+            }}
+          >
+            你在私域里遇到的<span style={{ color: S_.danger }}>每一件烦心事</span>
+            <br />
+            我们都在代码里给它写了个解决方案
+          </h2>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {painPoints.map((p) => (
+            <div
+              key={p.title}
+              className="p-6"
+              style={{
+                background: S_.surface,
+                border: `1px solid ${S_.borderMed}`,
+                borderRadius: S_.radius,
+              }}
+            >
+              <div
+                className="w-11 h-11 flex items-center justify-center mb-4 text-2xl"
+                style={{ background: S_.accentLight, borderRadius: S_.radiusSm }}
+              >
+                {p.icon}
+              </div>
+              <h3 className="text-lg font-black mb-2" style={{ color: S_.text }}>
+                {p.title}
+              </h3>
+              <p className="text-sm font-mono leading-relaxed" style={{ color: S_.textSec }}>
+                {p.desc}
+              </p>
+              <div className="mt-4 pt-4 flex items-center gap-2" style={{ borderTop: `1px dashed ${S_.borderMed}` }}>
+                <div
+                  className="w-6 h-6 flex items-center justify-center flex-shrink-0"
+                  style={{ background: S_.successBg, borderRadius: "50%" }}
+                >
+                  <CheckCircle size={12} style={{ color: S_.success }} />
                 </div>
-                {i < arr.length - 1 && (
-                  <div className="w-8 flex-shrink-0 flex items-center justify-center -mt-6">
-                    <div className="w-full h-px" style={{ background: "linear-gradient(90deg, rgba(204,255,0,0.4), rgba(204,255,0,0.1))" }} />
-                    <ChevronRight size={10} style={{ color: "rgba(204,255,0,0.4)", marginLeft: "-4px", flexShrink: 0 }} />
-                  </div>
-                )}
+                <span className="text-xs font-mono font-black" style={{ color: S_.success }}>
+                  聚域已解决 · 在对应模块有专属处理流程
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────── FeaturesSection ─────────────────────────── */
+function FeaturesSection() {
+  useThemeSingleton();
+  const S_ = S;
+  const cta = CTA();
+  return (
+    <section className="py-24" style={{ background: S_.surface }}>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-black font-mono"
+            style={{
+              background: S_.primaryLight,
+              color: S_.primaryDark,
+              border: `1px solid ${S_.primaryMid}`,
+              borderRadius: S_.radiusSm,
+              fontSize: "12px",
+            }}
+          >
+            <Layers size={13} /> 8 大模块 · 全栈闭环
+          </div>
+          <h2
+            className="font-black mb-4 font-mono"
+            style={{
+              fontSize: "clamp(28px, 4vw, 48px)",
+              letterSpacing: "-0.02em",
+              color: S_.text,
+            }}
+          >
+            一套系统 = <span style={{ color: S_.primary }}>8 个后台 + 1 个小程序</span>
+          </h2>
+          <p className="text-lg max-w-2xl mx-auto font-mono" style={{ color: S_.textSec }}>
+            不用再 3 套系统、4 个 SASS、5 张 Excel 互相导。聚域 8 个模块一张表、一套权限、一条审计链路，全打通。
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-5">
+          {coreFeatures.map((f, i) => (
+            <div
+              key={f.title}
+              className="p-7 flex gap-5"
+              style={{
+                background: S_.bg,
+                border: `1px solid ${S_.borderMed}`,
+                borderRadius: S_.radiusLg,
+              }}
+            >
+              <div className="flex flex-col items-center gap-3 flex-shrink-0">
+                <div
+                  className="w-12 h-12 flex items-center justify-center"
+                  style={{
+                    background: `linear-gradient(135deg, ${S_.primaryLight}, ${S_.accentLight})`,
+                    border: `1px solid ${S_.primaryMid}`,
+                    borderRadius: S_.radius,
+                    boxShadow: S_.accentGlow,
+                  }}
+                >
+                  <f.icon size={22} style={{ color: S_.primary }} />
+                </div>
+                <div
+                  className="w-8 h-8 flex items-center justify-center font-mono font-black text-xs"
+                  style={{
+                    background: S_.surface,
+                    color: S_.primaryDark,
+                    border: `1px solid ${S_.borderMed}`,
+                    borderRadius: "50%",
+                  }}
+                >
+                  0{i + 1}
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-black mb-2" style={{ color: S_.text }}>
+                  {f.title}
+                </h3>
+                <p
+                  className="text-sm font-mono mb-4 leading-relaxed"
+                  style={{ color: S_.textSec }}
+                >
+                  {f.desc}
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {f.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="text-[11px] font-mono font-semibold px-2 py-1"
+                      style={{
+                        background: S_.surface,
+                        color: S_.primaryDark,
+                        border: `1px solid ${S_.primaryMid}`,
+                        borderRadius: "6px",
+                      }}
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* 模块矩阵（8×能力标签网格） */}
+        <div className="mt-14">
+          <h3
+            className="text-center font-black mb-8 font-mono"
+            style={{ fontSize: "24px", color: S_.text }}
+          >
+            模块能力矩阵
+          </h3>
+          <div className="grid md:grid-cols-4 gap-4">
+            {modules.map((m) => (
+              <div
+                key={m.name}
+                className="p-4"
+                style={{
+                  background: S_.bg,
+                  border: `1px solid ${S_.borderMed}`,
+                  borderRadius: S_.radius,
+                }}
+              >
+                <div
+                  className="text-sm font-black mb-3 font-mono flex items-center gap-2"
+                  style={{ color: S_.primaryDark }}
+                >
+                  <Target size={13} /> {m.name}
+                </div>
+                <ul className="space-y-1.5">
+                  {m.items.map((it) => (
+                    <li
+                      key={it}
+                      className="text-xs font-mono flex items-start gap-2"
+                      style={{ color: S_.textSec }}
+                    >
+                      <span style={{ color: S_.accent }}>◆</span>
+                      {it}
+                    </li>
+                  ))}
+                </ul>
               </div>
             ))}
           </div>
@@ -581,254 +1293,404 @@ function AISection() {
   );
 }
 
-function PainPointsSection() {
-  return (
-    <section className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>
-            你是否也遇到这些问题？
-          </div>
-          <h2 className="font-bold mb-4 font-mono" style={{ fontSize: "40px", color: "#0f172a", letterSpacing: "-0.02em" }}>
-            私域运营的<span style={{ color: "#ffffff" }}> 6 大痛点</span>
-          </h2>
-          <p className="text-lg max-w-xl mx-auto font-mono" style={{ color: "#64748b" }}>
-            这些问题正在消耗你的团队精力，也在流失你的客户价值
-          </p>
-        </div>
-        <div className="grid grid-cols-3 gap-6">
-          {painPoints.map((p, i) => (
-            <div key={i} className="p-6 transition-all hover:shadow-lg hover:-translate-y-0.5" style={{ border: "1px solid rgba(0,0,0,0.08)", background: "#ffffff", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
-              <div className="text-3xl mb-4">{p.icon}</div>
-              <h3 className="font-bold mb-2 font-mono" style={{ fontSize: "15px", color: "#111827" }}>{p.title}</h3>
-              <p className="text-sm leading-relaxed font-mono" style={{ color: "#6b7280" }}>{p.desc}</p>
-            </div>
-          ))}
-        </div>
-        <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-3 px-6 py-4" style={{ background: "#1e293b", borderRadius: "8px" }}>
-            <Brain size={18} style={{ color: "#3b82f6" }} />
-            <span className="font-bold font-mono" style={{ color: "#3b82f6" }}>聚域 AI 把以上 6 个问题全部纳入自动化处理，一次解决</span>
-            <ArrowRight size={16} style={{ color: "#3b82f6" }} />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FeaturesSection() {
-  return (
-    <section className="py-24" style={{ background: "#f8f8f5" }}>
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>
-            核心功能模块
-          </div>
-          <h2 className="font-bold mb-4 font-mono" style={{ fontSize: "40px", color: "#0f172a", letterSpacing: "-0.02em" }}>
-            覆盖私域运营<span style={{ color: "#ffffff" }}>全链路</span>
-          </h2>
-          <p className="text-lg max-w-xl mx-auto font-mono" style={{ color: "#64748b" }}>
-            从账号资产到用户服务，从 AI 分群到数据分析，22个功能模块一体化覆盖
-          </p>
-        </div>
-        <div className="grid grid-cols-4 gap-5">
-          {coreFeatures.map((f, i) => (
-            <div key={i} className="p-5 bg-white transition-all hover:shadow-md hover:-translate-y-0.5" style={{ border: "1px solid rgba(0,0,0,0.08)", borderRadius: "12px", boxShadow: "0 4px 12px rgba(15,23,42,0.06)" }}>
-              <div className="w-10 h-10 flex items-center justify-center mb-4" style={{ background: f.bg, borderRadius: "8px" }}>
-                <f.icon size={20} style={{ color: "#ffffff" }} />
-              </div>
-              <h3 className="font-bold mb-2 text-sm font-mono" style={{ color: "#111827" }}>{f.title}</h3>
-              <p className="text-xs leading-relaxed font-mono" style={{ color: "#6b7280" }}>{f.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
+/* ─────────────────────────── EcosystemSection ─────────────────────────── */
 function EcosystemSection() {
+  useThemeSingleton();
+  const S_ = S;
+  const cta = CTA();
   return (
-    <section className="py-24" style={{ background: "linear-gradient(180deg, #050917 0%, #0d1535 100%)" }}>
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", border: "1px solid #3b82f6", borderRadius: "8px" }}>
-            四层生态架构
+    <section className="py-24 relative overflow-hidden" style={{ background: S_.bg }}>
+      <div
+        className="absolute -top-24 left-1/2 -translate-x-1/2 w-[900px] h-[500px] pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse, ${S_.primaryLight}, transparent 70%)`,
+          opacity: 0.8,
+        }}
+      />
+      <div className="max-w-7xl mx-auto px-6 relative">
+        <div className="text-center mb-12">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-black font-mono"
+            style={{
+              background: S_.accentLight,
+              color: S_.primaryDark,
+              border: `1px solid ${S_.accentMid}`,
+              borderRadius: S_.radiusSm,
+              fontSize: "12px",
+            }}
+          >
+            <GitBranch size={13} /> 4 级业务架构
           </div>
-          <h2 className="font-bold mb-4 text-white font-mono" style={{ fontSize: "40px", letterSpacing: "-0.02em" }}>
-            生态级系统<span style={{ color: "#3b82f6" }}>，不只是工具</span>
+          <h2
+            className="font-black mb-4 font-mono"
+            style={{
+              fontSize: "clamp(28px, 4vw, 48px)",
+              letterSpacing: "-0.02em",
+              color: S_.text,
+            }}
+          >
+            从 <span style={{ color: S_.primary }}>主理人</span> 到 <span style={{ color: S_.accent }}>一线运营</span>
+            <br />
+            每层都有对应工作台与结算
           </h2>
-          <p className="text-lg max-w-xl mx-auto font-mono" style={{ color: "rgba(255,255,255,0.5)" }}>
-            从单个项目到多生态管理，聚域支持超级生态→生态→SaaS平台→平台四层架构，随业务规模弹性扩展
-          </p>
         </div>
 
-        <div className="flex items-center justify-center gap-0 mb-16">
-          {tiers.map((t, i) => (
-            <div key={t.level} className="flex items-center">
-              <div className="text-center">
-                <div className="w-20 h-20 flex flex-col items-center justify-center mx-auto mb-3" style={{ background: t.bg, border: "1px solid #3b82f6", borderRadius: "10px" }}>
-                  <div className="w-8 h-8 flex items-center justify-center text-sm font-bold font-mono mb-1" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "6px" }}>{t.level}</div>
-                  <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>{t.label}</div>
-                </div>
-                <div className="text-xs max-w-24 text-center font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>{t.desc}</div>
+        <div className="relative grid md:grid-cols-4 gap-4">
+          {tiers.map((t) => (
+            <div
+              key={t.level}
+              className="relative p-6 text-center"
+              style={{
+                background: `linear-gradient(180deg, ${S_.surface}, ${S_.bg})`,
+                border: `1px solid ${S_.borderMed}`,
+                borderRadius: S_.radiusLg,
+              }}
+            >
+              <div
+                className="inline-flex items-center justify-center font-black font-mono mb-3"
+                style={{
+                  width: 56,
+                  height: 56,
+                  borderRadius: "50%",
+                  background: `linear-gradient(135deg, ${S_.primary}, ${S_.accent})`,
+                  color: cta.text,
+                  fontSize: 22,
+                  boxShadow: S_.accentGlow,
+                }}
+              >
+                L{t.level}
               </div>
-              {i < tiers.length - 1 && (
-                <div className="w-16 h-px mx-2" style={{ background: "linear-gradient(90deg, #3b82f6, rgba(204,255,0,0.1))" }} />
+              <div className="font-black mb-1.5" style={{ fontSize: 20, color: S_.text }}>
+                {t.label}
+              </div>
+              <div className="text-sm font-mono" style={{ color: S_.textSec }}>
+                {t.desc}
+              </div>
+              {t.level < 4 && (
+                <ChevronRight
+                  className="hidden md:block absolute top-1/2 -right-[22px] -translate-y-1/2 z-10"
+                  size={20}
+                  style={{ color: S_.primary }}
+                />
               )}
             </div>
           ))}
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          {modules.map((m, i) => (
-            <div key={i} className="p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "10px" }}>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-2.5 h-2.5" style={{ background: "#3b82f6", borderRadius: "50%" }} />
-                <span className="font-bold text-sm font-mono" style={{ color: "#3b82f6" }}>{m.name}</span>
+        {/* 行业 */}
+        <div className="mt-20">
+          <div
+            className="text-center text-xs font-mono mb-6 tracking-[0.2em]"
+            style={{ color: S_.muted }}
+          >
+            TRUSTED BY · 这些行业都在用聚域搭私域
+          </div>
+          <div className="flex flex-wrap gap-3 justify-center">
+            {industries.map((c) => (
+              <div
+                key={c}
+                className="px-5 py-3 font-black font-mono text-sm"
+                style={{
+                  background: S_.surface,
+                  border: `1px solid ${S_.borderMed}`,
+                  borderRadius: S_.radiusSm,
+                  color: S_.textSec,
+                }}
+              >
+                {c}
               </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {m.items.map(item => (
-                  <div key={item} className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>
-                    <div className="w-1 h-1 flex-shrink-0" style={{ background: "#3b82f6", borderRadius: "50%" }} />
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
+/* ─────────────────────────── TestimonialsSection ─────────────────────────── */
 function TestimonialsSection() {
+  useThemeSingleton();
+  const S_ = S;
   return (
-    <section className="py-24 bg-white">
-      <div className="max-w-6xl mx-auto px-6">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>
-            客户真实评价
+    <section className="py-24" style={{ background: S_.surface }}>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-14">
+          <div
+            className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-black font-mono"
+            style={{
+              background: S_.successBg,
+              color: S_.success,
+              border: `1px solid rgba(22,163,74,0.3)`,
+              borderRadius: S_.radiusSm,
+              fontSize: "12px",
+            }}
+          >
+            <Star size={13} /> 真实客户反馈
           </div>
-          <h2 className="font-bold mb-4 font-mono" style={{ fontSize: "40px", color: "#0f172a", letterSpacing: "-0.02em" }}>
-            他们选择了聚域
+          <h2
+            className="font-black mb-4 font-mono"
+            style={{
+              fontSize: "clamp(28px, 4vw, 48px)",
+              letterSpacing: "-0.02em",
+              color: S_.text,
+            }}
+          >
+            用了 60 天的私域负责人怎么说？
           </h2>
         </div>
-        <div className="grid grid-cols-3 gap-6 mb-12">
-          {testimonials.map((t, i) => (
-            <div key={i} className="p-6" style={{ border: "1px solid rgba(0,0,0,0.08)", borderRadius: "12px", boxShadow: "0 4px 12px rgba(15,23,42,0.06)" }}>
-              <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, j) => <Star key={j} size={14} style={{ color: "#3b82f6" }} />)}
+        <div className="grid md:grid-cols-3 gap-5">
+          {testimonials.map((t) => (
+            <div
+              key={t.name}
+              className="p-7"
+              style={{
+                background: S_.bg,
+                border: `1px solid ${S_.borderMed}`,
+                borderRadius: S_.radiusLg,
+              }}
+            >
+              <div className="flex items-center gap-1 mb-4" style={{ color: S_.warning }}>
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} size={14} fill={S_.warning} />
+                ))}
               </div>
-              <p className="text-sm leading-relaxed mb-6 font-mono" style={{ color: "#374151" }}>"{t.content}"</p>
-              <div className="flex items-center gap-3">
-                <img src={`https://images.unsplash.com/photo-${["1507003211169-0a1dd7228f2d","1534751516642-a1af1ef26a56","1624395213043-fa2e123b2656"][i % 3]}?w=200&h=200&fit=crop&crop=faces`} alt={t.name} style={{ width: 36, height: 36, borderRadius: "8px", objectFit: "cover" }} />
+              <p
+                className="text-sm font-mono leading-relaxed mb-6"
+                style={{ color: S_.text }}
+              >
+                “{t.content}”
+              </p>
+              <div
+                className="flex items-center gap-3 pt-5"
+                style={{ borderTop: `1px solid ${S_.border}` }}
+              >
+                <div
+                  className="w-10 h-10 flex items-center justify-center font-black font-mono"
+                  style={{
+                    background: `linear-gradient(135deg, ${S_.primary}, ${S_.accent})`,
+                    color: S_.onPrimary,
+                    borderRadius: "50%",
+                  }}
+                >
+                  {t.avatar}
+                </div>
                 <div>
-                  <div className="text-sm font-bold font-mono" style={{ color: "#111827" }}>{t.name}</div>
-                  <div className="text-xs font-mono" style={{ color: "#9ca3af" }}>{t.role}</div>
+                  <div className="text-sm font-black" style={{ color: S_.text }}>
+                    {t.name}
+                  </div>
+                  <div className="text-xs font-mono" style={{ color: S_.muted }}>
+                    {t.role}
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
-        <div className="text-center">
-          <p className="text-sm mb-4 font-mono" style={{ color: "#9ca3af" }}>已服务行业</p>
-          <div className="flex items-center justify-center gap-3 flex-wrap">
-            {clients.map(c => (
-              <span key={c} className="px-4 py-2 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>{c}</span>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   );
 }
 
+/* ─────────────────────────── CTASection ─────────────────────────── */
 function CTASection({ onEnterApp }: { onEnterApp: () => void }) {
+  useThemeSingleton();
+  const S_ = S;
+  const cta = CTA();
   return (
-    <section className="py-32 relative overflow-hidden" style={{ background: "linear-gradient(160deg, #050917 0%, #0d1535 100%)" }}>
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full" style={{ background: "radial-gradient(circle, rgba(204,255,0,0.1), transparent)", filter: "blur(100px)" }} />
-        <div className="absolute inset-0 opacity-3" style={{ backgroundImage: "linear-gradient(rgba(204,255,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,0.1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-      </div>
-      <div className="relative max-w-3xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", border: "1px solid rgba(204,255,0,0.3)", borderRadius: "8px", fontSize: "12px" }}>
-          <Brain size={12} /> AI 正在等待为你工作
-        </div>
-        <h2 className="font-bold mb-6 text-white font-mono" style={{ fontSize: "48px", letterSpacing: "-0.02em" }}>
-          开始构建你的<br />
-          <span style={{ color: "#3b82f6" }}>AI 私域运营体系</span>
-        </h2>
-        <p className="text-lg mb-10 font-mono" style={{ color: "rgba(255,255,255,0.5)" }}>
-          14天免费试用，无需信用卡，团队即开即用
-        </p>
-        <div className="flex items-center justify-center gap-4">
-          <button className="flex items-center gap-2 px-10 py-4 text-base font-bold font-mono" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "8px" }} onClick={onEnterApp}>
-            立即免费试用 <ArrowRight size={16} />
-          </button>
-          <button className="px-8 py-4 text-base font-bold font-mono" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.3)", color: "#ffffff", borderRadius: "8px" }}>
-            预约演示
-          </button>
-        </div>
-        <div className="flex items-center justify-center gap-8 mt-10 flex-wrap">
-          {["14天免费体验", "专属客户成功顾问", "数据安全合规", "随时导出数据"].map(item => (
-            <div key={item} className="flex items-center gap-1.5 text-sm font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>
-              <CheckCircle size={13} style={{ color: "#3b82f6" }} /> {item}
-            </div>
-          ))}
+    <section className="py-24 relative overflow-hidden" style={{ background: S_.bg }}>
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at 50% 30%, ${S_.primaryMid}, transparent 60%)`,
+          opacity: 0.6,
+        }}
+      />
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse at 80% 70%, ${S_.accentMid}, transparent 55%)`,
+          opacity: 0.55,
+        }}
+      />
+
+      <div className="max-w-5xl mx-auto px-6 relative">
+        <div
+          className="p-10 md:p-16 text-center"
+          style={{
+            background: S_.glass,
+            backdropFilter: "blur(18px)",
+            border: `1px solid ${S_.glassBorder}`,
+            borderRadius: "32px",
+            boxShadow: S_.shadow,
+          }}
+        >
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Palette size={18} style={{ color: S_.primary }} />
+            <span
+              className="text-sm font-black font-mono"
+              style={{ color: S_.primaryDark }}
+            >
+              5 套潮系主题 · 明暗双模式 · 员工爱用
+            </span>
+          </div>
+          <h2
+            className="font-black mb-5 font-mono"
+            style={{
+              fontSize: "clamp(32px, 5vw, 62px)",
+              letterSpacing: "-0.03em",
+              color: S_.text,
+            }}
+          >
+            现在就启动你的
+            <span
+              style={{
+                background: `linear-gradient(135deg, ${S_.primary} 0%, ${S_.accent} 100%)`,
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+              }}
+            >
+              私域全栈平台
+            </span>
+          </h2>
+          <p
+            className="text-lg max-w-2xl mx-auto mb-8 font-mono leading-relaxed"
+            style={{ color: S_.textSec }}
+          >
+            账号 5 阶段 · 8 大模块 · AI 4 引擎 · 会员小程序 · 4 级业务架构，都准备好了。
+            14 天免费、全模块开放、不用绑卡。
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+            <button
+              className="flex items-center gap-2 px-10 py-4 text-lg font-black font-mono"
+              style={{
+                background: cta.bg,
+                color: cta.text,
+                borderRadius: S_.radius,
+                boxShadow: `0 16px 48px ${S_.primaryMid}`,
+              }}
+              onClick={onEnterApp}
+              onMouseEnter={(e) => (e.currentTarget.style.background = cta.hover)}
+              onMouseLeave={(e) => (e.currentTarget.style.background = cta.bg)}
+            >
+              <Rocket size={20} /> 免费进入后台
+              <ArrowRight size={20} />
+            </button>
+            <button
+              className="flex items-center gap-2 px-10 py-4 text-lg font-bold font-mono"
+              style={{
+                background: S_.surface,
+                border: `1px solid ${S_.borderMed}`,
+                color: S_.text,
+                borderRadius: S_.radius,
+              }}
+            >
+              <Settings size={18} /> 预约演示
+            </button>
+          </div>
+          <div
+            className="text-xs font-mono flex items-center justify-center gap-5 flex-wrap"
+            style={{ color: S_.muted }}
+          >
+            <span>
+              <CheckCircle size={12} style={{ color: S_.success }} /> 30 分钟完成导入上线
+            </span>
+            <span>
+              <CheckCircle size={12} style={{ color: S_.success }} /> 企业数据独立部署可选
+            </span>
+            <span>
+              <CheckCircle size={12} style={{ color: S_.success }} /> 7×24h 专属客服对接
+            </span>
+          </div>
         </div>
       </div>
     </section>
   );
 }
 
+/* ─────────────────────────── Footer ─────────────────────────── */
 function Footer() {
-  const links = {
-    "产品": ["AI 能力", "功能介绍", "定价方案", "更新日志"],
-    "行业": ["教育行业", "健康产业", "电商品牌", "知识付费"],
-    "公司": ["关于我们", "加入我们", "合作伙伴", "联系我们"],
-    "支持": ["帮助中心", "视频教程", "社区论坛", "服务协议"],
-  };
-
+  useThemeSingleton();
+  const S_ = S;
+  const cols: { t: string; l: string[] }[] = [
+    { t: "产品", l: ["账号资产中心", "订单管理", "社群管理", "审批中心", "工具中心"] },
+    { t: "平台", l: ["数据中心", "主理人公社", "会员小程序", "AI 引擎", "开放 API"] },
+    { t: "解决方案", l: ["教培私域", "健康产康", "城市合伙人", "代理分销", "新消费品牌"] },
+    { t: "公司", l: ["关于我们", "客户案例", "加入我们", "商务合作", "服务条款"] },
+  ];
   return (
-    <footer style={{ background: "#030712", borderTop: "1px solid rgba(204,255,0,0.1)" }}>
-      <div className="max-w-6xl mx-auto px-6 py-16">
-        <div className="grid grid-cols-5 gap-8 mb-12">
-          <div className="col-span-1">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "8px" }}>
-                <Zap size={16} style={{ color: "#ffffff" }} />
+    <footer className="py-16" style={{ background: S_.surface, borderTop: `1px solid ${S_.border}` }}>
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid md:grid-cols-6 gap-10 mb-12">
+          <div className="md:col-span-2">
+            <div className="flex items-center gap-3 mb-4">
+              <div
+                className="w-9 h-9 flex items-center justify-center"
+                style={{ background: S_.primary, borderRadius: "10px" }}
+              >
+                <Zap size={18} style={{ color: S_.onPrimary }} />
               </div>
-              <span className="font-bold text-lg font-mono" style={{ color: "#3b82f6" }}>{PRODUCT.name}</span>
+              <div>
+                <div
+                  className="font-black text-xl"
+                  style={{ color: S_.text, fontFamily: "monospace" }}
+                >
+                  {PRODUCT.name}
+                </div>
+                <div className="text-xs font-mono" style={{ color: S_.muted }}>
+                  {PRODUCT.tagline}
+                </div>
+              </div>
             </div>
-            <p className="text-sm mb-4 font-mono" style={{ color: "rgba(255,255,255,0.35)", lineHeight: 1.7 }}>
-              AI 驱动的私域资产<br />与社群运营平台
+            <p className="text-sm font-mono leading-relaxed mb-4" style={{ color: S_.textSec }}>
+              {PRODUCT.desc}
             </p>
-            <div className="flex items-center gap-1.5 mb-2 px-2 py-1 w-fit" style={{ background: "rgba(204,255,0,0.06)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "6px" }}>
-              <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#3b82f6", borderRadius: "50%" }} />
-              <span className="text-xs font-mono" style={{ color: "rgba(204,255,0,0.6)" }}>AI 引擎运行中</span>
+            <div
+              className="flex items-center gap-2 text-xs font-mono"
+              style={{ color: S_.muted }}
+            >
+              <Palette size={12} style={{ color: S_.primary }} />
+              系统内置 5 套潮系主题 · 支持暗黑模式独立切换
             </div>
-            <div className="text-xs font-mono mt-3" style={{ color: "rgba(255,255,255,0.2)" }}>ICP备2024XXXXXX号</div>
           </div>
-          {Object.entries(links).map(([group, items]) => (
-            <div key={group}>
-              <div className="text-sm font-bold mb-4 font-mono" style={{ color: "rgba(204,255,0,0.7)" }}>{group}</div>
-              <div className="space-y-2.5">
-                {items.map(item => (
-                  <button key={item} className="block text-sm transition-colors text-left font-mono" style={{ color: "rgba(255,255,255,0.35)" }}>{item}</button>
-                ))}
+          {cols.map((c) => (
+            <div key={c.t}>
+              <div
+                className="text-sm font-black mb-4 font-mono"
+                style={{ color: S_.text }}
+              >
+                {c.t}
               </div>
+              <ul className="space-y-2.5">
+                {c.l.map((it) => (
+                  <li key={it}>
+                    <a
+                      className="text-sm font-mono transition-colors"
+                      style={{ color: S_.textSec }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = S_.primary)}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = S_.textSec)}
+                    >
+                      {it}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
-        <div className="pt-8 flex items-center justify-between" style={{ borderTop: "1px solid rgba(59,130,246,0.08)" }}>
-          <p className="text-sm font-mono" style={{ color: "rgba(255,255,255,0.25)" }}>© 2026 聚域（JuYu）· 保留所有权利</p>
-          <div className="flex gap-6">
-            {["隐私政策", "服务条款", "Cookie政策"].map(item => (
-              <button key={item} className="text-sm font-mono" style={{ color: "rgba(255,255,255,0.25)" }}>{item}</button>
-            ))}
+        <div
+          className="pt-6 flex flex-col md:flex-row items-center justify-between gap-4"
+          style={{ borderTop: `1px solid ${S_.border}` }}
+        >
+          <div className="text-xs font-mono" style={{ color: S_.muted }}>
+            © 2026 {PRODUCT.name}（JuYu）· 聚域私域云 · 沪ICP备XXXXXX号
+          </div>
+          <div className="flex items-center gap-4 text-xs font-mono" style={{ color: S_.muted }}>
+            <FileSpreadsheet size={12} /> 隐私政策
+            <span>·</span>
+            <Shield size={12} /> 服务 SLA
+            <span>·</span>
+            <Settings size={12} /> 安全合规
           </div>
         </div>
       </div>
@@ -836,10 +1698,22 @@ function Footer() {
   );
 }
 
-// ─── 主组件 ───────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════════
+// 主组件：每 10s 触发一次 useThemeSingleton，保证 rerender
+//   （真实触发 rerender 由 theme.tsx 的 pub/sub 机制驱动）
+// ══════════════════════════════════════════════════════════════════════════════
 export default function LandingPage({ onEnterApp }: { onEnterApp: () => void }) {
+  useThemeSingleton();
+  const S_ = S;
   return (
-    <div className="min-h-screen" style={{ background: "#050917" }}>
+    <div
+      className="min-h-screen w-full"
+      style={{
+        background: S_.bg,
+        color: S_.text,
+        transition: "background-color 300ms ease, color 200ms ease",
+      }}
+    >
       <NavBar onEnterApp={onEnterApp} />
       <HeroSection onEnterApp={onEnterApp} />
       <StatsSection />
