@@ -1,14 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, Monitor } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   4 套潮系主题 × 2 种明暗模式 = 8 种外观
+   5 套潮系主题 × 3 种明暗模式 = 10+ 种外观
    主题：NEON 霓虹 · SUNSET 日落 · MINT 薄荷 · OBSIDIAN 曜石 · ACID 酸柠（经典黄绿荧光UI）
-   模式：LIGHT（明亮）· DARK（暗黑）—— 独立开关
+   模式：LIGHT（强制明亮）· DARK（强制暗黑）· AUTO（跟随系统 prefers-color-scheme）
    ═══════════════════════════════════════════════════════════════════════════ */
 
 export type ThemeId = "neon" | "sunset" | "mint" | "obsidian" | "acid";
-export type DarkMode = "light" | "dark";
+export type DarkMode = "light" | "dark" | "auto";
+export type ResolvedMode = "light" | "dark";
 
 export interface SPalette {
   bg: string; surface: string; border: string; borderMed: string;
@@ -229,6 +230,22 @@ export function getTheme(id: ThemeId): ThemePalette {
   return THEMES.find(t => t.id === id) ?? SUNSET;
 }
 
+/** 读取系统 prefers-color-scheme，SSR / 不可用时返回 light */
+function getSystemScheme(): ResolvedMode {
+  try {
+    if (typeof window !== "undefined" && window.matchMedia) {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+  } catch {}
+  return "light";
+}
+
+/** 把用户模式（light/dark/auto）解析成最终的亮 / 暗色板 */
+export function resolveUserMode(mode: DarkMode): ResolvedMode {
+  if (mode === "auto") return getSystemScheme();
+  return mode;
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    MODULE-LEVEL S SINGLETON + pub/sub
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -238,7 +255,8 @@ export let S: SPalette = { ...SUNSET.light };
 
 // Current state
 let currentId: ThemeId = "sunset";
-let currentMode: DarkMode = "light";
+let currentUserMode: DarkMode = "light";
+let currentResolved: ResolvedMode = "light";
 export let currentTheme: ThemePalette = SUNSET;
 export let isDark: boolean = false;
 
@@ -246,25 +264,28 @@ type Listener = (tid: ThemeId) => void;
 const listeners = new Set<Listener>();
 function emit(tid: ThemeId) { listeners.forEach(l => l(tid)); }
 
-/** Compute SPalette by combining theme id + dark mode */
-export function resolvePalette(id: ThemeId, mode: DarkMode): SPalette {
+/** Compute SPalette by combining theme id + resolved light/dark mode */
+export function resolvePalette(id: ThemeId, resolved: ResolvedMode): SPalette {
   const t = getTheme(id);
-  return mode === "dark" ? t.dark : t.light;
+  return resolved === "dark" ? t.dark : t.light;
 }
 
-/** Public mutator — applies theme id AND dark mode together. */
-function applyAppearance(id: ThemeId, mode: DarkMode) {
+/** Public mutator — applies theme id AND user mode (auto → resolve by system) together. */
+function applyAppearance(id: ThemeId, userMode: DarkMode) {
+  const resolved = resolveUserMode(userMode);
   const t = getTheme(id);
   currentId = id;
-  currentMode = mode;
+  currentUserMode = userMode;
+  currentResolved = resolved;
   currentTheme = t;
-  isDark = mode === "dark";
-  Object.assign(S, resolvePalette(id, mode));
+  isDark = resolved === "dark";
+  Object.assign(S, resolvePalette(id, resolved));
   emit(id);
   try {
     document.documentElement.setAttribute("data-theme", id);
-    document.documentElement.setAttribute("data-dark", mode);
-    document.documentElement.classList.toggle("dark", mode === "dark");
+    document.documentElement.setAttribute("data-dark-mode", userMode);
+    document.documentElement.setAttribute("data-dark", resolved);
+    document.documentElement.classList.toggle("dark", resolved === "dark");
   } catch {}
 }
 
@@ -281,14 +302,9 @@ function readStoredId(): ThemeId {
 function readStoredMode(): DarkMode {
   try {
     const v = localStorage.getItem(MODE_KEY);
-    if (v === "light" || v === "dark") return v;
-    // 自动跟随系统：如果系统偏好 dark 则默认 dark
-    if (typeof window !== "undefined" && window.matchMedia) {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      return prefersDark ? "dark" : "light";
-    }
+    if (v === "light" || v === "dark" || v === "auto") return v;
   } catch {}
-  return "light";
+  return "auto"; // 默认跟随系统：新用户首次进 / 无 localStorage → auto
 }
 
 /* ── React hook ──────────────────────────────────────────────────────── */
@@ -306,9 +322,12 @@ export function useThemeSingleton(): ThemePalette {
 interface ThemeCtx {
   themeId: ThemeId;
   setThemeId: (id: ThemeId) => void;
-  darkMode: DarkMode;
+  darkMode: DarkMode;                 // 用户选择：light / dark / auto
   setDarkMode: (m: DarkMode) => void;
-  toggleDarkMode: () => void;
+  toggleDarkMode: () => void;         // 3 态循环：light → auto → dark → light
+  cycleDarkMode: () => void;          // 同 toggleDarkMode（别名更清晰）
+  resolvedMode: ResolvedMode;         // 实际解析的亮/暗
+  resolvedDark: boolean;              // 等价于 resolvedMode === "dark"（UI 判定用）
   palette: ThemePalette;
   themes: ThemePalette[];
   isDark: boolean;
@@ -316,45 +335,77 @@ interface ThemeCtx {
 
 const ThemeContext = createContext<ThemeCtx>({
   themeId: "sunset", setThemeId: () => {},
-  darkMode: "light", setDarkMode: () => {}, toggleDarkMode: () => {},
+  darkMode: "auto", setDarkMode: () => {}, toggleDarkMode: () => {}, cycleDarkMode: () => {},
+  resolvedMode: "light", resolvedDark: false,
   palette: SUNSET, themes: THEMES, isDark: false,
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [themeId, setId] = useState<ThemeId>(() => {
-    const id = readStoredId();
-    return id;
-  });
+  const [themeId, setId] = useState<ThemeId>(() => readStoredId());
   const [darkMode, setMode] = useState<DarkMode>(() => {
     const m = readStoredMode();
-    // 同步初始化 module-level S + currentTheme + DOM 属性
-    // 让 React 首帧渲染前 S 值就正确，避免 bg 颜色滞后 1 帧
+    // 首帧同步：module-level S + currentTheme + DOM 属性
     applyAppearance(readStoredId(), m);
     return m;
   });
+  // 记录当前解析出的 resolvedMode，随系统变化更新，供 UI 判断颜色风格
+  const [resolvedMode, setResolvedMode] = useState<ResolvedMode>(() => resolveUserMode(readStoredMode()));
+
+  // ═══ 系统明暗变化监听（auto 模式时实时跟随）═══
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = () => {
+      // 无论当前用户在哪个模式，都同步解析一下：
+      // - 若用户选 auto：立即重新应用 S + listeners rerender
+      // - 若用户选 light/dark：resolved 不变，也重算一下避免状态机漂移
+      const nextResolved = resolveUserMode(darkMode);
+      if (nextResolved !== currentResolved) {
+        applyAppearance(themeId, darkMode);
+        setResolvedMode(nextResolved);
+      }
+    };
+    // 兼容 Safari 13 旧 API
+    if (mql.addEventListener) mql.addEventListener("change", handler);
+    else (mql as any).addListener(handler);
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener("change", handler);
+      else (mql as any).removeListener(handler);
+    };
+  }, [themeId, darkMode]);
 
   // 每次 themeId/darkMode 变化：同步持久化 + 同步应用到 S + listeners + <html>
-  // 不用 useEffect：effect 是异步的，会让 S 滞后 1 个 render tick（主 bg 是旧色）
   const setThemeId = (id: ThemeId) => {
     if (id === themeId) return;
     applyAppearance(id, darkMode);
     try { localStorage.setItem(ID_KEY, id); } catch {}
     setId(id);
+    setResolvedMode(resolveUserMode(darkMode));
   };
   const setDarkMode = (m: DarkMode) => {
     if (m === darkMode) return;
     applyAppearance(themeId, m);
     try { localStorage.setItem(MODE_KEY, m); } catch {}
     setMode(m);
+    setResolvedMode(resolveUserMode(m));
   };
-  const toggleDarkMode = () => setDarkMode(darkMode === "dark" ? "light" : "dark");
+  // 3 态循环：明亮(☀️) → 自动(🖥️) → 暗黑(🌙) → 明亮
+  const cycleDarkMode = () => {
+    const order: DarkMode[] = ["light", "auto", "dark"];
+    const idx = order.indexOf(darkMode);
+    const next = order[(idx + 1) % order.length];
+    setDarkMode(next);
+  };
+  // 向后兼容：保留 toggleDarkMode 名字指向 3 态循环
+  const toggleDarkMode = cycleDarkMode;
 
   return (
     <ThemeContext.Provider value={{
       themeId, setThemeId,
-      darkMode, setDarkMode, toggleDarkMode,
+      darkMode, setDarkMode, toggleDarkMode, cycleDarkMode,
+      resolvedMode, resolvedDark: resolvedMode === "dark",
       palette: currentTheme, themes: THEMES,
-      isDark: isDark,
+      isDark,
     }}>
       {children}
     </ThemeContext.Provider>
@@ -365,34 +416,90 @@ export function useTheme(): ThemeCtx {
   return useContext(ThemeContext);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   ThemeControls —— PC 视图 Header 右上角使用
+   暗黑按钮：☀️明亮 → 🖥️自动 → 🌙暗黑 三态循环
+   ═══════════════════════════════════════════════════════════════════════════ */
 export function ThemeControls() {
   useThemeSingleton();
   const ctx = useTheme();
-  const { themeId, setThemeId, darkMode, toggleDarkMode } = ctx;
-  const dark = darkMode === "dark";
-  const activePalette = resolvePalette(themeId, darkMode);
+  const { themeId, setThemeId, darkMode, cycleDarkMode, resolvedDark } = ctx;
+  const activePalette = resolvePalette(themeId, resolvedDark ? "dark" : "light");
+
+  // 每态对应：图标、tooltip、背景渲染、颜色渲染
+  const buttonState = (() => {
+    switch (darkMode) {
+      case "light":
+        return {
+          Icon: Sun,
+          aria: "当前为明亮模式 · 点击切换为自动跟随系统",
+          title: "明亮模式（强制）· 点击切换为「自动跟随系统」",
+          bg: S.surface,
+          color: S.muted,
+          border: `1px solid ${S.borderMed}`,
+          shadow: "none",
+          badge: false,
+        };
+      case "auto":
+        return {
+          Icon: Monitor,
+          aria: `当前为自动跟随系统（实际：${resolvedDark ? "暗黑" : "明亮"}）· 点击切换为暗黑模式`,
+          title: `自动跟随系统 · 实际显示${resolvedDark ? "暗黑" : "明亮"} · 点击切换为「强制暗黑」`,
+          bg: `linear-gradient(135deg, ${S.borderMed} 0%, ${S.accentMid} 50%, ${S.border} 100%)`,
+          color: S.text,
+          border: `1px solid ${S.primaryMid}`,
+          shadow: S.accentGlow,
+          badge: true, // AUTO 显示左下角 A 徽标
+        };
+      case "dark":
+      default:
+        return {
+          Icon: Moon,
+          aria: "当前为暗黑模式 · 点击切换为明亮模式",
+          title: "暗黑模式（强制）· 点击切换为「强制明亮」",
+          bg: getTheme(themeId).gradient,
+          color: activePalette.onPrimary,
+          border: "1px solid transparent",
+          shadow: S.shadow,
+          badge: false,
+        };
+    }
+  })();
+  const { Icon } = buttonState;
 
   return (
     <div className="flex items-center gap-2 flex-shrink-0">
-      {/* ── 暗黑模式开关 ─────────────────────────────────────────────── */}
+      {/* ── 暗黑模式开关（3 态：明亮 ⇄ 自动 ⇄ 暗黑） ──────────────── */}
       <button
         type="button"
-        aria-label={dark ? "切换为明亮模式" : "切换为暗黑模式"}
-        title={dark ? "暗黑模式 · 点击切换为明亮" : "明亮模式 · 点击切换为暗黑"}
-        onClick={toggleDarkMode}
-        className="w-9 h-9 flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:-translate-y-0.5"
+        aria-label={buttonState.aria}
+        title={buttonState.title}
+        onClick={cycleDarkMode}
+        className="w-9 h-9 flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:-translate-y-0.5 relative"
         style={{
-          background: dark
-            ? getTheme(themeId).gradient
-            : S.surface,
-          color: dark ? activePalette.onPrimary : S.muted,
-          border: `1px solid ${dark ? "transparent" : S.borderMed}`,
+          background: buttonState.bg,
+          color: buttonState.color,
+          border: buttonState.border,
           borderRadius: S.radiusSm,
-          boxShadow: dark ? S.shadow : "none",
+          boxShadow: buttonState.shadow,
           backdropFilter: "blur(10px)",
         }}
       >
-        {dark ? <Moon size={15} /> : <Sun size={15} />}
+        <Icon size={15} />
+        {buttonState.badge && (
+          <span
+            className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 flex items-center justify-center font-black"
+            style={{
+              background: S.primary,
+              color: activePalette.onPrimary,
+              fontSize: 9,
+              lineHeight: 1,
+              borderRadius: 999,
+              border: `1.5px solid ${S.surface}`,
+              fontFamily: "monospace",
+            }}
+          >A</span>
+        )}
       </button>
 
       {/* ── 主题切换胶囊 ─────────────────────────────────────────────── */}
