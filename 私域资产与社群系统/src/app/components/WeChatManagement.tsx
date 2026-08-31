@@ -893,8 +893,7 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap"><b className="text-sm truncate" style={{ color: S.text, fontFamily: "monospace" }}>{isStock ? "备用微信号" : account.nickname}</b><span className="px-1.5 py-0.5 text-xs" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{account.status}</span></div>
             <div className="mt-1 text-xs" style={{ color: S.textSec, fontFamily: "monospace" }}>{account.wechatId}</div>
-            {/* 序号 + 手机号 / 微信号 一行完整显示（不换行） */}
-            <div className="mt-0.5 text-xs truncate whitespace-nowrap" style={{ color: S.muted, fontFamily: "monospace", letterSpacing: "-0.01em" }}>{account.no} · {account.phone} · {account.wechatId}</div>
+            <div className="mt-0.5 text-xs truncate whitespace-nowrap" style={{ color: S.muted, fontFamily: "monospace", letterSpacing: "-0.01em" }}>编号 {account.no}</div>
           </div>
           <div className="flex flex-col items-end gap-1">
             {/* 同步正常/同步异常文字不要，仅显示 6px 状态色小圆点 + 同步按钮 + QrCode + 更多 */}
@@ -914,7 +913,7 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
         )}
 
         {/* 归属与调度卡：浅灰底，6项3列，去掉accentLight蓝底 */}
-        {detailTab === "profile" && <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center gap-1.5 mb-2"><Briefcase size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>归属与调度</div></div><div className="grid grid-cols-3 gap-2">{[["归属项目", saved.project], ["归属员工", saved.opsManager], ["账号类型", saved.accountType], ["归属大区", saved.region || "—"], ["归属部门", saved.department || "—"], ["服务官", saved.serviceOfficer]].map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}</div></div>}
+        {detailTab === "profile" && <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center gap-1.5 mb-2"><Briefcase size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>归属与调度</div></div><div className="grid grid-cols-3 gap-2">{[["归属项目", saved.project], ["归属员工", saved.opsManager], ["归属大区", saved.region || "—"], ["归属部门", saved.department || "—"], ["服务官", saved.serviceOfficer]].map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}</div></div>}
 
         {/* 容量与活跃卡：四色进度条 + 下方补充活跃数据 */}
         {detailTab === "profile" && <div className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
@@ -945,7 +944,7 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
             <div className="flex items-start gap-3">
               <button type="button" title={account.wechatQrName || "查看二维码"} className="w-12 h-12 grid place-items-center flex-shrink-0" style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm, color: S.muted }} onClick={() => onAction(isStock ? `${account.wechatId} 已进入二维码上传流程` : `${account.wechatId} 的二维码查看入口已打开`)}><QrCode size={20} /></button>
               <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 flex-1 min-w-0">
-                {[["微信昵称", saved.nickname], ["性别", saved.gender], ["认证状态", account.certified ? "已认证" : "未认证"], ["微信二维码", account.wechatQrName || "待上传"]].map(([label, value]) => (
+                {[["微信号", account.wechatId], ["性别", saved.gender], ["账号类型", saved.accountType], ["认证状态", account.certified ? "已认证" : "未认证"], ["微信二维码", account.wechatQrName || "待上传"]].map(([label, value]) => (
                   <div key={label} className="min-w-0">
                     <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div>
                     <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div>
@@ -1217,7 +1216,7 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
             <div className="flex items-center gap-1.5 flex-wrap"><b className="text-sm truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.wecomId}</b><span className="px-1.5 py-0.5 text-xs" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{account.status}</span></div>
             <div className="mt-1 text-xs" style={{ color: S.textSec, fontFamily: "monospace" }}>{account.corpId}</div>
             {/* 企微：城市/服务官/admin 手机 一行不换行（后续若有 admin 手机字段直接补上） */}
-            <div className="mt-0.5 text-xs truncate whitespace-nowrap" style={{ color: S.muted, fontFamily: "monospace", letterSpacing: "-0.01em" }}>{saved.city} · 服务官 {saved.admin}{account.phone ? ` · ${account.phone}` : ""}{account.adminPhone ? ` · ${account.adminPhone}` : ""}</div>
+            <div className="mt-0.5 text-xs truncate whitespace-nowrap" style={{ color: S.muted, fontFamily: "monospace", letterSpacing: "-0.01em" }}>城市 {saved.city || "—"}</div>
           </div>
           <div className="flex flex-col items-end gap-1">
             {/* 同步正常文字去掉，只留色点小圆点 */}
