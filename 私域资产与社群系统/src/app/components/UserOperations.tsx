@@ -3,17 +3,17 @@ import { getAvatar } from "./Avatar";
 import { Search, Phone, MessageCircle, ShoppingCart, Users, FileText, Star, Clock, CheckCircle, AlertTriangle, Plus } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -29,10 +29,10 @@ const users = [
 const tabItems = ["基本信息", "订单记录", "群组信息", "工单记录", "操作日志"];
 
 const statusBadge: Record<string, { bg: string; color: string }> = {
-  "已完成": { bg: S.accent, color: "#000" },
-  "退款中": { bg: "#1a1a1a", color: S.accent },
-  "进行中": { bg: "#f0f0f0", color: "#333333" },
-  "已解决": { bg: S.accent, color: "#000" },
+  "已完成": { bg: S.accent, color: "#ffffff" },
+  "退款中": { bg: "#1e293b", color: S.accent },
+  "进行中": { bg: "#f1f5f9", color: "#475569" },
+  "已解决": { bg: S.accent, color: "#ffffff" },
 };
 
 export default function UserOperations() {
@@ -74,8 +74,8 @@ export default function UserOperations() {
                 </div>
               </div>
               <div className="flex items-center gap-1 mt-2 flex-wrap">
-                <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: selectedId === u.id ? "#1a1a1a" : "#f0f0ec", color: selectedId === u.id ? S.accent : S.textSec, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{u.identity}</span>
-                {u.tags.includes("退款风险") && <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f5f5f5", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>风险</span>}
+                <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: selectedId === u.id ? "#1e293b" : "#f1f5f9", color: selectedId === u.id ? S.accent : S.textSec, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{u.identity}</span>
+                {u.tags.includes("退款风险") && <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>风险</span>}
                 {u.tags.includes("待分配") && <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#fff8e1", color: "#b45309", fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>待分配</span>}
               </div>
             </div>
@@ -92,9 +92,9 @@ export default function UserOperations() {
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <span className="text-lg font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.name}</span>
-                <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{user.identity}</span>
+                <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{user.identity}</span>
                 {user.tags.includes("高价值") && <Star size={14} style={{ color: S.text }} />}
-                {user.tags.includes("退款风险") && <AlertTriangle size={14} style={{ color: "#1a1a1a" }} />}
+                {user.tags.includes("退款风险") && <AlertTriangle size={14} style={{ color: "#1e293b" }} />}
               </div>
               <div className="flex items-center gap-4 mt-1 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>
                 <span><Phone size={11} className="inline mr-1" />{user.phone}</span>
@@ -103,9 +103,9 @@ export default function UserOperations() {
               </div>
             </div>
             <div className="flex gap-2 flex-shrink-0">
-              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#f0f0ec", color: S.text, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, fontFamily: "monospace" }}>发提醒</button>
-              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#000", border: "none", borderRadius: S.radius, fontFamily: "monospace" }}>分配群</button>
-              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>
+              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.text, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, fontFamily: "monospace" }}>发提醒</button>
+              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", border: "none", borderRadius: S.radius, fontFamily: "monospace" }}>分配群</button>
+              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>
                 <Plus size={12} className="inline mr-1" />建工单
               </button>
             </div>
@@ -135,7 +135,7 @@ export default function UserOperations() {
               key={i}
               className="flex-1 py-2.5 text-xs transition-all font-bold"
               style={{
-                background: activeTab === i ? "#1a1a1a" : "transparent",
+                background: activeTab === i ? "#1e293b" : "transparent",
                 color: activeTab === i ? S.accent : S.muted,
                 borderBottom: activeTab === i ? `2px solid ${S.accent}` : `2px solid transparent`,
                 borderRadius: 0,
@@ -172,7 +172,7 @@ export default function UserOperations() {
                 <div className="text-xs font-bold mt-4 mb-2" style={{ color: S.text, fontFamily: "monospace" }}>用户标签</div>
                 <div className="flex flex-wrap gap-1.5">
                   {user.tags.map(t => (
-                    <span key={t} className="px-2 py-0.5 text-xs font-bold" style={{ background: "#f0f0ec", color: S.text, borderRadius: S.radiusSm, border: `1px solid ${S.border}`, fontFamily: "monospace" }}>{t}</span>
+                    <span key={t} className="px-2 py-0.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.text, borderRadius: S.radiusSm, border: `1px solid ${S.border}`, fontFamily: "monospace" }}>{t}</span>
                   ))}
                 </div>
               </div>
@@ -184,7 +184,7 @@ export default function UserOperations() {
               {user.orders.length === 0 ? (
                 <div className="text-center py-8 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>暂无订单记录</div>
               ) : user.orders.map(o => {
-                const badge = statusBadge[o.status] ?? { bg: "#f0f0ec", color: "#555" };
+                const badge = statusBadge[o.status] ?? { bg: "#f1f5f9", color: "#475569" };
                 return (
                   <div key={o.no} className="flex items-center gap-4 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                     <ShoppingCart size={16} style={{ color: S.text }} />
@@ -206,7 +206,7 @@ export default function UserOperations() {
                 <div className="text-center py-8">
                   <Users size={24} className="mx-auto mb-2" style={{ color: S.muted }} />
                   <div className="text-sm" style={{ color: S.muted, fontFamily: "monospace" }}>用户尚未分配群组</div>
-                  <button className="mt-3 px-4 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>立即分配群组</button>
+                  <button className="mt-3 px-4 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>立即分配群组</button>
                 </div>
               ) : (
                 <div className="p-4" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
@@ -216,7 +216,7 @@ export default function UserOperations() {
                       <div className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.group}</div>
                       <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>服务老师：{user.teacher}</div>
                     </div>
-                    <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>已入群</span>
+                    <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>已入群</span>
                   </div>
                 </div>
               )}
@@ -228,7 +228,7 @@ export default function UserOperations() {
               {user.tickets.length === 0 ? (
                 <div className="text-center py-8 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>暂无工单记录</div>
               ) : user.tickets.map(t => {
-                const badge = statusBadge[t.status] ?? { bg: "#f0f0ec", color: "#555" };
+                const badge = statusBadge[t.status] ?? { bg: "#f1f5f9", color: "#475569" };
                 return (
                   <div key={t.no} className="flex items-center gap-4 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                     <FileText size={16} style={{ color: S.text }} />
@@ -248,7 +248,7 @@ export default function UserOperations() {
               <div className="absolute left-2 top-0 bottom-0 w-0.5" style={{ background: S.border }} />
               {user.timeline.map((e, i) => (
                 <div key={i} className="relative flex items-start gap-3 mb-4">
-                  <div className="absolute -left-3 w-2.5 h-2.5 flex-shrink-0 mt-0.5" style={{ background: S.accent, borderRadius: "50%", border: "2px solid #1a1a1a" }} />
+                  <div className="absolute -left-3 w-2.5 h-2.5 flex-shrink-0 mt-0.5" style={{ background: S.accent, borderRadius: "50%", border: "2px solid #1e293b" }} />
                   <div className="ml-2">
                     <div className="text-xs font-bold" style={{ color: S.textSec, fontFamily: "monospace" }}>{e.action}</div>
                     <div className="text-xs mt-0.5 flex items-center gap-1" style={{ color: S.muted, fontFamily: "monospace" }}>

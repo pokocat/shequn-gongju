@@ -2,17 +2,17 @@ import { useState } from "react";
 import { Search, Plus, AlertTriangle, X, Phone, Mail, MessageCircle, Globe, ChevronDown, Filter, ExternalLink, Upload, CreditCard, Eye, EyeOff, CheckCircle, List, LayoutGrid } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -40,16 +40,16 @@ const wechats = [
 ];
 
 const mediaAccounts = [
-  { id: 1, group: "微信生态", platform: "公众号", emoji: "📢", color: "#000000", colorBg: "#f0f0f0", name: "官方公众号", verified: true, loginType: "邮箱登录", loginId: "admin@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "12,800", contentCount: "286篇文章", lastPost: "2026-07-04", engagement: "4.2%", manager: "内容运营团队", status: "使用中", risk: "normal", note: "主要内容发布渠道，绑定小程序和视频号同一主体", tags: ["认证账号", "已绑小程序", "已绑视频号"] },
-  { id: 2, group: "微信生态", platform: "视频号", emoji: "🎬", color: "#000000", colorBg: "#f0f0f0", name: "官方视频号", verified: true, loginType: "微信账号关联（无独立账号密码）", loginId: "关联公众号主体登录", pwdStore: "无需单独密码", followers: "4,200", contentCount: "68个视频", lastPost: "2026-07-03", engagement: "6.8%", manager: "内容运营团队", status: "使用中", risk: "normal", note: "与公众号同一主体，通过公众号后台管理，无需单独账号", tags: ["挂载公众号", "直播功能已开通"] },
-  { id: 3, group: "内容平台", platform: "抖音", emoji: "🎵", color: "#000000", colorBg: "#f0f0f0", name: "@eco_official", verified: true, loginType: "手机号登录", loginId: "139-0012-3459", pwdStore: "公司密码库 1Password", followers: "28,600", contentCount: "142个视频", lastPost: "2026-07-05", engagement: "8.3%", manager: "张晓红", status: "使用中", risk: "normal", note: "主推流量渠道，已开通企业号橱窗，每周3-5条更新", tags: ["企业蓝V", "橱窗已开通", "直播已开通"] },
-  { id: 4, group: "内容平台", platform: "小红书", emoji: "📕", color: "#000000", colorBg: "#f0f0f0", name: "eco_life", verified: false, loginType: "手机号登录（无需微信绑定）", loginId: "140-0012-3460", pwdStore: "公司密码库 1Password", followers: "9,300", contentCount: "234篇笔记", lastPost: "2026-07-04", engagement: "5.1%", manager: "王美丽", status: "使用中", risk: "normal", note: "生活方式内容为主，引流私域主账号", tags: ["个人号", "已申请专业号"] },
-  { id: 5, group: "内容平台", platform: "小红书", emoji: "📕", color: "#000000", colorBg: "#f0f0f0", name: "eco_pro", verified: true, loginType: "邮箱登录（独立账号，不绑手机）", loginId: "pro@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "3,100", contentCount: "87篇笔记", lastPost: "2026-06-28", engagement: "7.4%", manager: "王美丽", status: "使用中", risk: "normal", note: "PRO会员专属内容账号，主打深度干货，导流加入PRO", tags: ["专业号", "PRO专属"] },
-  { id: 6, group: "内容平台", platform: "微博", emoji: "🐦", color: "#000000", colorBg: "#f0f0f0", name: "@官方账号", verified: true, loginType: "手机号登录", loginId: "158-0012-3465", pwdStore: "公司密码库 1Password", followers: "5,700", contentCount: "1,240条微博", lastPost: "2026-07-02", engagement: "1.8%", manager: "内容运营团队", status: "使用中", risk: "normal", note: "品牌官微，更新频率低，主要用于品牌背书和官方声明", tags: ["蓝V认证", "低频更新"] },
-  { id: 7, group: "内容平台", platform: "B站", emoji: "📺", color: "#000000", colorBg: "#f0f0f0", name: "官方长视频", verified: false, loginType: "邮箱登录", loginId: "bili@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "2,100", contentCount: "23个投稿", lastPost: "2026-03-10", engagement: "3.2%", manager: "内容运营团队", status: "空闲", risk: "normal", note: "长视频内容账号，目前暂停更新，待规划内容方向后重启", tags: ["暂停更新", "待重启"] },
-  { id: 8, group: "内容平台", platform: "快手", emoji: "⚡", color: "#000000", colorBg: "#f0f0f0", name: "官方快手号", verified: false, loginType: "手机号登录", loginId: "186-0012-3470", pwdStore: "公司密码库 1Password", followers: "1,340", contentCount: "31个视频", lastPost: "2026-05-20", engagement: "2.9%", manager: "张晓红", status: "空闲", risk: "normal", note: "下沉市场测试账号，ROI不佳，暂停投入", tags: ["测试阶段", "暂停更新"] },
-  { id: 9, group: "内容平台", platform: "知乎", emoji: "🔵", color: "#000000", colorBg: "#f0f0f0", name: "创始人IP", verified: true, loginType: "手机号登录", loginId: "138-0012-3456", pwdStore: "创始人本人保管", followers: "4,680", contentCount: "56篇专栏", lastPost: "2026-06-30", engagement: "9.1%", manager: "创始人王总", status: "使用中", risk: "normal", note: "创始人个人IP，主写私域运营方法论，高质量引流", tags: ["创始人IP", "专栏已开通", "知乎认证"] },
-  { id: 10, group: "内容平台", platform: "领英", emoji: "💼", color: "#000000", colorBg: "#f0f0f0", name: "Eco SaaS 官方", verified: false, loginType: "邮箱登录（境外平台）", loginId: "admin@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "890", contentCount: "34篇动态", lastPost: "2026-06-15", engagement: "5.6%", manager: "内容运营团队", status: "空闲", risk: "normal", note: "面向B端和招募合伙人，更新频率低", tags: ["B端获客", "低频更新"] },
+  { id: 1, group: "微信生态", platform: "公众号", emoji: "📢", color: "#000000", colorBg: "#f1f5f9", name: "官方公众号", verified: true, loginType: "邮箱登录", loginId: "admin@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "12,800", contentCount: "286篇文章", lastPost: "2026-07-04", engagement: "4.2%", manager: "内容运营团队", status: "使用中", risk: "normal", note: "主要内容发布渠道，绑定小程序和视频号同一主体", tags: ["认证账号", "已绑小程序", "已绑视频号"] },
+  { id: 2, group: "微信生态", platform: "视频号", emoji: "🎬", color: "#000000", colorBg: "#f1f5f9", name: "官方视频号", verified: true, loginType: "微信账号关联（无独立账号密码）", loginId: "关联公众号主体登录", pwdStore: "无需单独密码", followers: "4,200", contentCount: "68个视频", lastPost: "2026-07-03", engagement: "6.8%", manager: "内容运营团队", status: "使用中", risk: "normal", note: "与公众号同一主体，通过公众号后台管理，无需单独账号", tags: ["挂载公众号", "直播功能已开通"] },
+  { id: 3, group: "内容平台", platform: "抖音", emoji: "🎵", color: "#000000", colorBg: "#f1f5f9", name: "@eco_official", verified: true, loginType: "手机号登录", loginId: "139-0012-3459", pwdStore: "公司密码库 1Password", followers: "28,600", contentCount: "142个视频", lastPost: "2026-07-05", engagement: "8.3%", manager: "张晓红", status: "使用中", risk: "normal", note: "主推流量渠道，已开通企业号橱窗，每周3-5条更新", tags: ["企业蓝V", "橱窗已开通", "直播已开通"] },
+  { id: 4, group: "内容平台", platform: "小红书", emoji: "📕", color: "#000000", colorBg: "#f1f5f9", name: "eco_life", verified: false, loginType: "手机号登录（无需微信绑定）", loginId: "140-0012-3460", pwdStore: "公司密码库 1Password", followers: "9,300", contentCount: "234篇笔记", lastPost: "2026-07-04", engagement: "5.1%", manager: "王美丽", status: "使用中", risk: "normal", note: "生活方式内容为主，引流私域主账号", tags: ["个人号", "已申请专业号"] },
+  { id: 5, group: "内容平台", platform: "小红书", emoji: "📕", color: "#000000", colorBg: "#f1f5f9", name: "eco_pro", verified: true, loginType: "邮箱登录（独立账号，不绑手机）", loginId: "pro@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "3,100", contentCount: "87篇笔记", lastPost: "2026-06-28", engagement: "7.4%", manager: "王美丽", status: "使用中", risk: "normal", note: "PRO会员专属内容账号，主打深度干货，导流加入PRO", tags: ["专业号", "PRO专属"] },
+  { id: 6, group: "内容平台", platform: "微博", emoji: "🐦", color: "#000000", colorBg: "#f1f5f9", name: "@官方账号", verified: true, loginType: "手机号登录", loginId: "158-0012-3465", pwdStore: "公司密码库 1Password", followers: "5,700", contentCount: "1,240条微博", lastPost: "2026-07-02", engagement: "1.8%", manager: "内容运营团队", status: "使用中", risk: "normal", note: "品牌官微，更新频率低，主要用于品牌背书和官方声明", tags: ["蓝V认证", "低频更新"] },
+  { id: 7, group: "内容平台", platform: "B站", emoji: "📺", color: "#000000", colorBg: "#f1f5f9", name: "官方长视频", verified: false, loginType: "邮箱登录", loginId: "bili@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "2,100", contentCount: "23个投稿", lastPost: "2026-03-10", engagement: "3.2%", manager: "内容运营团队", status: "空闲", risk: "normal", note: "长视频内容账号，目前暂停更新，待规划内容方向后重启", tags: ["暂停更新", "待重启"] },
+  { id: 8, group: "内容平台", platform: "快手", emoji: "⚡", color: "#000000", colorBg: "#f1f5f9", name: "官方快手号", verified: false, loginType: "手机号登录", loginId: "186-0012-3470", pwdStore: "公司密码库 1Password", followers: "1,340", contentCount: "31个视频", lastPost: "2026-05-20", engagement: "2.9%", manager: "张晓红", status: "空闲", risk: "normal", note: "下沉市场测试账号，ROI不佳，暂停投入", tags: ["测试阶段", "暂停更新"] },
+  { id: 9, group: "内容平台", platform: "知乎", emoji: "🔵", color: "#000000", colorBg: "#f1f5f9", name: "创始人IP", verified: true, loginType: "手机号登录", loginId: "138-0012-3456", pwdStore: "创始人本人保管", followers: "4,680", contentCount: "56篇专栏", lastPost: "2026-06-30", engagement: "9.1%", manager: "创始人王总", status: "使用中", risk: "normal", note: "创始人个人IP，主写私域运营方法论，高质量引流", tags: ["创始人IP", "专栏已开通", "知乎认证"] },
+  { id: 10, group: "内容平台", platform: "领英", emoji: "💼", color: "#000000", colorBg: "#f1f5f9", name: "Eco SaaS 官方", verified: false, loginType: "邮箱登录（境外平台）", loginId: "admin@eco-saas.com", pwdStore: "公司密码库 1Password", followers: "890", contentCount: "34篇动态", lastPost: "2026-06-15", engagement: "5.6%", manager: "内容运营团队", status: "空闲", risk: "normal", note: "面向B端和招募合伙人，更新频率低", tags: ["B端获客", "低频更新"] },
 ];
 
 const emailOthers = [
@@ -63,21 +63,21 @@ const emailOthers = [
 
 // ─── 工具 ────────────────────────────────────────────────────
 const statusStyle: Record<string, { bg: string; color: string; borderRadius: string }> = {
-  "使用中":  { bg: S.accent, color: "#000", borderRadius: S.radiusSm },
-  "正常":    { bg: S.accent, color: "#000", borderRadius: S.radiusSm },
-  "已完成":  { bg: S.accent, color: "#000", borderRadius: S.radiusSm },
-  "配置完成":{ bg: S.accent, color: "#000", borderRadius: S.radiusSm },
+  "使用中":  { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
+  "正常":    { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
+  "已完成":  { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
+  "配置完成":{ bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
   "异常":    { bg: "#fff0f0", color: "#c53030", borderRadius: S.radiusSm },
   "高风险":  { bg: "#fff0f0", color: "#c53030", borderRadius: S.radiusSm },
   "已拒绝":  { bg: "#fff0f0", color: "#c53030", borderRadius: S.radiusSm },
   "待处理":  { bg: "#fffbeb", color: "#b45309", borderRadius: S.radiusSm },
   "待交接":  { bg: "#fffbeb", color: "#b45309", borderRadius: S.radiusSm },
   "待发送":  { bg: "#fffbeb", color: "#b45309", borderRadius: S.radiusSm },
-  "空闲":    { bg: "#f0f0f0", color: "#333", borderRadius: S.radiusSm },
-  "库存":    { bg: "#f0f0f0", color: "#333", borderRadius: S.radiusSm },
-  "草稿":    { bg: "#f0f0f0", color: "#333", borderRadius: S.radiusSm },
-  "进行中":  { bg: "#f0f0f0", color: "#333", borderRadius: S.radiusSm },
-  "审核中":  { bg: "#f0f0f0", color: "#333", borderRadius: S.radiusSm },
+  "空闲":    { bg: "#f1f5f9", color: "#333", borderRadius: S.radiusSm },
+  "库存":    { bg: "#f1f5f9", color: "#333", borderRadius: S.radiusSm },
+  "草稿":    { bg: "#f1f5f9", color: "#333", borderRadius: S.radiusSm },
+  "进行中":  { bg: "#f1f5f9", color: "#333", borderRadius: S.radiusSm },
+  "审核中":  { bg: "#f1f5f9", color: "#333", borderRadius: S.radiusSm },
 };
 
 const platformIcon: Record<string, string> = {
@@ -85,7 +85,7 @@ const platformIcon: Record<string, string> = {
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const s = statusStyle[status] || { bg: S.accent, color: "#000", borderRadius: S.radiusSm };
+  const s = statusStyle[status] || { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm };
   return (
     <span className="flex items-center gap-1 px-2 py-0.5 text-xs w-fit font-medium" style={{ background: s.bg, color: s.color, borderRadius: s.borderRadius, fontFamily: "monospace" }}>
       {status}
@@ -94,7 +94,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function RiskIcon({ risk }: { risk: string }) {
-  if (risk === "high") return <AlertTriangle size={12} style={{ color: "#1a1a1a" }} />;
+  if (risk === "high") return <AlertTriangle size={12} style={{ color: "#1e293b" }} />;
   if (risk === "warning") return <AlertTriangle size={12} style={{ color: S.muted }} />;
   return null;
 }
@@ -102,10 +102,10 @@ function RiskIcon({ risk }: { risk: string }) {
 function BrowseModeToggle({ value, onChange, label }: { value: "list" | "cards"; onChange: (value: "list" | "cards") => void; label: string }) {
   return (
     <div className="flex items-center p-0.5" aria-label={label} style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-      <button type="button" title="列表浏览" aria-label="列表浏览" aria-pressed={value === "list"} className="w-8 h-7 flex items-center justify-center transition-all" style={{ background: value === "list" ? "#0d0d0d" : "transparent", color: value === "list" ? S.accent : S.muted, borderRadius: "4px" }} onClick={() => onChange("list")}>
+      <button type="button" title="列表浏览" aria-label="列表浏览" aria-pressed={value === "list"} className="w-8 h-7 flex items-center justify-center transition-all" style={{ background: value === "list" ? "#1e293b" : "transparent", color: value === "list" ? S.accent : S.muted, borderRadius: "4px" }} onClick={() => onChange("list")}>
         <List size={15} />
       </button>
-      <button type="button" title="卡片浏览" aria-label="卡片浏览" aria-pressed={value === "cards"} className="w-8 h-7 flex items-center justify-center transition-all" style={{ background: value === "cards" ? "#0d0d0d" : "transparent", color: value === "cards" ? S.accent : S.muted, borderRadius: "4px" }} onClick={() => onChange("cards")}>
+      <button type="button" title="卡片浏览" aria-label="卡片浏览" aria-pressed={value === "cards"} className="w-8 h-7 flex items-center justify-center transition-all" style={{ background: value === "cards" ? "#1e293b" : "transparent", color: value === "cards" ? S.accent : S.muted, borderRadius: "4px" }} onClick={() => onChange("cards")}>
         <LayoutGrid size={15} />
       </button>
     </div>
@@ -117,7 +117,7 @@ function Row({ children, selected, onClick }: { children: React.ReactNode; selec
     <div
       className="flex items-center px-4 py-2.5 cursor-pointer transition-all gap-4"
       style={{
-        background: selected ? "rgba(204,255,0,0.08)" : "transparent",
+        background: selected ? "rgba(59,130,246,0.08)" : "transparent",
         borderBottom: `1px solid ${S.border}`,
         borderLeft: selected ? `3px solid ${S.accent}` : "3px solid transparent",
         color: selected ? S.text : S.text,
@@ -130,7 +130,7 @@ function Row({ children, selected, onClick }: { children: React.ReactNode; selec
 }
 
 function ColHead({ children, width }: { children: React.ReactNode; width: string }) {
-  return <div className="flex-shrink-0 text-xs font-medium uppercase" style={{ color: "#555555", width, fontFamily: "monospace", letterSpacing: "0.05em" }}>{children}</div>;
+  return <div className="flex-shrink-0 text-xs font-medium uppercase" style={{ color: "#475569", width, fontFamily: "monospace", letterSpacing: "0.05em" }}>{children}</div>;
 }
 
 function Col({ children, width, highlight }: { children: React.ReactNode; width: string; highlight?: boolean }) {
@@ -146,16 +146,16 @@ const allAccounts = [
 ];
 
 const typeColors: Record<string, { bg: string; color: string }> = {
-  "手机号":   { bg: S.accent, color: "#000" },
-  "微信号":   { bg: S.accent, color: "#000" },
-  "公众号":   { bg: "#ffd600", color: "#000" },
-  "视频号":   { bg: "#f0f0ec", color: "#555" },
-  "抖音":     { bg: "#1a1a1a", color: S.accent },
-  "小红书":   { bg: "#1a1a1a", color: S.accent },
-  "邮箱":     { bg: "#f0f0ec", color: "#555" },
-  "苹果ID":   { bg: "#f0f0ec", color: "#555" },
-  "企业微信": { bg: S.accent, color: "#000" },
-  "云账号":   { bg: "#ffd600", color: "#000" },
+  "手机号":   { bg: S.accent, color: "#ffffff" },
+  "微信号":   { bg: S.accent, color: "#ffffff" },
+  "公众号":   { bg: "#3b82f6", color: "#ffffff" },
+  "视频号":   { bg: "#f1f5f9", color: "#475569" },
+  "抖音":     { bg: "#1e293b", color: S.accent },
+  "小红书":   { bg: "#1e293b", color: S.accent },
+  "邮箱":     { bg: "#f1f5f9", color: "#475569" },
+  "苹果ID":   { bg: "#f1f5f9", color: "#475569" },
+  "企业微信": { bg: S.accent, color: "#ffffff" },
+  "云账号":   { bg: "#3b82f6", color: "#ffffff" },
 };
 
 function OverviewTab({ search }: { search: string }) {
@@ -169,7 +169,7 @@ function OverviewTab({ search }: { search: string }) {
   return (
     <div className="flex gap-4 flex-1 min-h-0">
       <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-        <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+        <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
           <ColHead width="80px">类型</ColHead>
           <ColHead width="200px">账号标识</ColHead>
           <ColHead width="220px">详情</ColHead>
@@ -179,7 +179,7 @@ function OverviewTab({ search }: { search: string }) {
         </div>
         <div className="overflow-auto flex-1">
           {filtered.map(a => {
-            const tc = typeColors[a.type] || { bg: "#f0f0ec", color: "#555" };
+            const tc = typeColors[a.type] || { bg: "#f1f5f9", color: "#475569" };
             return (
               <Row key={a.id} selected={selected === a.id} onClick={() => setSelected(selected === a.id ? null : a.id)}>
                 <span className="flex-shrink-0 px-2 py-0.5 text-xs" style={{ background: tc.bg, color: tc.color, width: "80px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{a.type}</span>
@@ -213,7 +213,7 @@ function OverviewTab({ search }: { search: string }) {
             </div>
           ))}
           <div className="flex flex-col gap-2 mt-2">
-            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑</button>
+            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑</button>
             <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.bg, border: `1px solid rgba(0,0,0,0.10)`, color: S.text, borderRadius: S.radius, fontFamily: "monospace" }}>发起交接</button>
           </div>
         </div>
@@ -226,12 +226,12 @@ function OverviewTab({ search }: { search: string }) {
 function NewPhoneModal({ onClose }: { onClose: () => void }) {
   const [form, setForm] = useState({ number: "", carrier: "中国移动", region: "", idOwner: "", idNumber: "", assignedTo: "", assignedProject: "", note: "" });
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
-  const inp = { background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" };
+  const inp = { background: "#f1f5f9", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.5)" }}>
-      <div className="w-[560px] overflow-hidden" style={{ background: "#fff", border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radiusLg, boxShadow: "0 20px 60px rgba(0,0,0,0.10)" }}>
-        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid rgba(0,0,0,0.08)`, background: "#f7f7f7", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
+      <div className="w-[560px] overflow-hidden" style={{ background: "#ffffff", border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radiusLg, boxShadow: "0 20px 60px rgba(0,0,0,0.10)" }}>
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid rgba(0,0,0,0.08)`, background: "#f1f5f9", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
           <span className="font-semibold uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// 新增手机号</span>
           <button onClick={onClose}><X size={16} style={{ color: S.muted }} /></button>
         </div>
@@ -275,9 +275,9 @@ function NewPhoneModal({ onClose }: { onClose: () => void }) {
 
               <div>
                 <label className="block text-xs mb-1.5 uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>身份证正面（人像面）</label>
-                <div className="border-dashed cursor-pointer flex flex-col items-center justify-center gap-2 py-5" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f7f7f7", borderRadius: S.radiusSm }}>
+                <div className="border-dashed cursor-pointer flex flex-col items-center justify-center gap-2 py-5" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f1f5f9", borderRadius: S.radiusSm }}>
                   <div className="w-10 h-10 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-                    <CreditCard size={18} style={{ color: "#000" }} />
+                    <CreditCard size={18} style={{ color: "#ffffff" }} />
                   </div>
                   <div className="text-center">
                     <div className="text-xs uppercase" style={{ color: S.text, fontFamily: "monospace" }}>点击上传正面</div>
@@ -291,9 +291,9 @@ function NewPhoneModal({ onClose }: { onClose: () => void }) {
 
               <div>
                 <label className="block text-xs mb-1.5 uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>身份证反面（国徽面）</label>
-                <div className="border-dashed cursor-pointer flex flex-col items-center justify-center gap-2 py-5" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f7f7f7", borderRadius: S.radiusSm }}>
+                <div className="border-dashed cursor-pointer flex flex-col items-center justify-center gap-2 py-5" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f1f5f9", borderRadius: S.radiusSm }}>
                   <div className="w-10 h-10 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-                    <CreditCard size={18} style={{ color: "#000" }} />
+                    <CreditCard size={18} style={{ color: "#ffffff" }} />
                   </div>
                   <div className="text-center">
                     <div className="text-xs uppercase" style={{ color: S.text, fontFamily: "monospace" }}>点击上传反面</div>
@@ -330,7 +330,7 @@ function NewPhoneModal({ onClose }: { onClose: () => void }) {
 
         <div className="flex gap-3 px-6 py-4" style={{ borderTop: `1px solid rgba(0,0,0,0.08)` }}>
           <button onClick={onClose} className="flex-1 py-2.5 text-sm uppercase font-bold" style={{ background: S.bg, color: S.text, border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radius, fontFamily: "monospace" }}>取消</button>
-          <button className="flex-1 py-2.5 text-sm font-bold uppercase" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>保存</button>
+          <button className="flex-1 py-2.5 text-sm font-bold uppercase" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>保存</button>
         </div>
       </div>
     </div>
@@ -364,15 +364,15 @@ function PhoneTab({ search }: { search: string }) {
             <span style={{ color: S.text, fontWeight: "bold" }}>⚠ 身份证未完整：{phones.filter(p => !p.idFront || !p.idBack).length} 个</span>
             <span style={{ color: S.muted }}>○ 待分配：{phones.filter(p => p.assignedTo === "—").length} 个</span>
           </div>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => setShowNewModal(true)}>
+          <button className="flex items-center gap-1.5 px-3 py-1.5 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => setShowNewModal(true)}>
             <Plus size={13} /> 新增手机号
           </button>
         </div>
 
         <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <div className="flex items-center px-4 py-2.5 flex-shrink-0" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0`, minWidth: "fit-content" }}>
+          <div className="flex items-center px-4 py-2.5 flex-shrink-0" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0`, minWidth: "fit-content" }}>
             {([["手机号码",140],["运营商",80],["归属区域",120],["身份证人",90],["身份证号",150],["证件",64],["分配给",90],["归属项目",130],["已注册账号",200],["状态",80]] as [string,number][]).map(([l,w]) => (
-              <div key={l} className="flex-shrink-0 text-xs uppercase" style={{ width: w, color: "#555555", fontFamily: "monospace", letterSpacing: "0.05em" }}>{l}</div>
+              <div key={l} className="flex-shrink-0 text-xs uppercase" style={{ width: w, color: "#475569", fontFamily: "monospace", letterSpacing: "0.05em" }}>{l}</div>
             ))}
           </div>
 
@@ -384,7 +384,7 @@ function PhoneTab({ search }: { search: string }) {
                   key={p.id}
                   className="flex items-center px-4 py-2.5 cursor-pointer transition-all"
                   style={{
-                    background: isSelected ? "rgba(204,255,0,0.08)" : "transparent",
+                    background: isSelected ? "rgba(59,130,246,0.08)" : "transparent",
                     borderBottom: `1px solid ${S.border}`,
                     borderLeft: isSelected ? `3px solid ${S.accent}` : "3px solid transparent",
                     minWidth: "fit-content",
@@ -424,7 +424,7 @@ function PhoneTab({ search }: { search: string }) {
                     {p.registrations.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
                         {p.registrations.map((r, i) => (
-                          <span key={i} className="px-1.5 py-0.5" style={{ background: "#f0f0ec", color: S.textSec, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace", border: `1px solid ${S.border}` }}>{r}</span>
+                          <span key={i} className="px-1.5 py-0.5" style={{ background: "#f1f5f9", color: S.textSec, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace", border: `1px solid ${S.border}` }}>{r}</span>
                         ))}
                       </div>
                     ) : <span style={{ color: S.muted, fontSize: "11px", fontFamily: "monospace" }}>暂无</span>}
@@ -439,7 +439,7 @@ function PhoneTab({ search }: { search: string }) {
 
       {detail && (
         <div className="w-[300px] flex-shrink-0 flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
-          <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid rgba(0,0,0,0.08)`, background: "#f7f7f7", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
+          <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid rgba(0,0,0,0.08)`, background: "#f1f5f9", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
             <span className="text-sm font-medium uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// 手机号详情</span>
             <button onClick={() => setSelected(null)}><X size={13} style={{ color: S.muted }} /></button>
           </div>
@@ -493,7 +493,7 @@ function PhoneTab({ search }: { search: string }) {
                         <span className="text-xs" style={{ color: S.textSec, fontSize: "10px", fontFamily: "monospace" }}>点击查看</span>
                       </div>
                     ) : (
-                      <div className="h-20 border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f7f7f7", borderRadius: S.radiusSm }}>
+                      <div className="h-20 border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f1f5f9", borderRadius: S.radiusSm }}>
                         <Upload size={16} style={{ color: S.muted }} />
                         <span className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>未上传</span>
                         <span className="text-xs" style={{ color: S.muted, fontSize: "10px", fontFamily: "monospace" }}>点击上传</span>
@@ -512,7 +512,7 @@ function PhoneTab({ search }: { search: string }) {
                         <span className="text-xs" style={{ color: S.textSec, fontSize: "10px", fontFamily: "monospace" }}>点击查看</span>
                       </div>
                     ) : (
-                      <div className="h-20 border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f7f7f7", borderRadius: S.radiusSm }}>
+                      <div className="h-20 border-dashed flex flex-col items-center justify-center gap-1 cursor-pointer" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f1f5f9", borderRadius: S.radiusSm }}>
                         <Upload size={16} style={{ color: S.muted }} />
                         <span className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>未上传</span>
                         <span className="text-xs" style={{ color: S.muted, fontSize: "10px", fontFamily: "monospace" }}>点击上传</span>
@@ -551,18 +551,18 @@ function PhoneTab({ search }: { search: string }) {
                   <span className="text-xs" style={{ color: S.textSec, fontFamily: "monospace" }}>{r}</span>
                 </div>
               )) : (
-                <div className="text-xs px-2.5 py-2" style={{ background: "#f7f7f7", color: S.muted, fontFamily: "monospace", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>该手机号尚未注册任何平台账号</div>
+                <div className="text-xs px-2.5 py-2" style={{ background: "#f1f5f9", color: S.muted, fontFamily: "monospace", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>该手机号尚未注册任何平台账号</div>
               )}
             </div>
 
             {detail.note && (
-              <div className="p-3 text-xs" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.muted, lineHeight: 1.6, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+              <div className="p-3 text-xs" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.muted, lineHeight: 1.6, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                 {detail.note}
               </div>
             )}
 
             {detail.risk !== "normal" && (
-              <div className="flex items-start gap-2 p-3" style={{ background: "#f5f5f5", border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radiusSm }}>
+              <div className="flex items-start gap-2 p-3" style={{ background: "#f1f5f9", border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radiusSm }}>
                 <AlertTriangle size={12} style={{ color: S.accent, marginTop: 1, flexShrink: 0 }} />
                 <span className="text-xs uppercase" style={{ color: S.accent, fontFamily: "monospace" }}>
                   {detail.risk === "high" ? "账号存在异常，请尽快处理" : "存在交接风险，请及时处理"}
@@ -572,7 +572,7 @@ function PhoneTab({ search }: { search: string }) {
           </div>
 
           <div className="p-4 flex flex-col gap-2 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
-            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑信息</button>
+            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑信息</button>
             <div className="grid grid-cols-2 gap-2">
               <button className="py-2 text-xs uppercase font-bold" style={{ background: S.bg, color: S.text, border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radius, fontFamily: "monospace" }}>登记关联账号</button>
               <button className="py-2 text-xs uppercase font-bold" style={{ background: S.bg, color: S.text, border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radius, fontFamily: "monospace" }}>重新分配</button>
@@ -593,7 +593,7 @@ function WechatTab({ search }: { search: string }) {
   return (
     <div className="flex gap-4 flex-1 min-h-0">
       <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-        <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+        <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
           <ColHead width="160px">微信号</ColHead>
           <ColHead width="160px">绑定手机</ColHead>
           <ColHead width="70px">好友数</ColHead>
@@ -668,7 +668,7 @@ function WechatTab({ search }: { search: string }) {
             </div>
           ))}
           <div className="flex flex-col gap-2 mt-auto">
-            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑信息</button>
+            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑信息</button>
             <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.bg, border: `1px solid rgba(0,0,0,0.10)`, color: S.text, borderRadius: S.radius, fontFamily: "monospace" }}>发起交接</button>
           </div>
         </div>
@@ -707,7 +707,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-lg leading-none">{account.emoji}</span>
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5"><span className="text-xs font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.name}</span>{account.verified && <span className="text-xs px-1" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>✓</span>}</div>
+              <div className="flex items-center gap-1.5"><span className="text-xs font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.name}</span>{account.verified && <span className="text-xs px-1" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>✓</span>}</div>
               <div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted, fontFamily: "monospace" }}>{account.platform} · {account.manager}</div>
             </div>
           </div>
@@ -732,7 +732,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
     return (
       <div className="overflow-auto flex-1" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
         <div className="min-w-[920px]">
-          <div className="flex items-center gap-3 px-3 py-2.5 text-xs" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555", fontFamily: "monospace" }}>
+          <div className="flex items-center gap-3 px-3 py-2.5 text-xs" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", fontFamily: "monospace" }}>
             {[['账号 / 平台', 240], ['状态', 78], ['粉丝', 90], ['内容', 112], ['互动率', 82], ['登录方式', 180], ['负责人', 130], ['最近发布', 95]].map(([label, width]) => <div key={label as string} className="flex-shrink-0 font-semibold" style={{ width }}>{label}</div>)}
           </div>
           {accounts.map(account => {
@@ -741,7 +741,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
               <button key={account.id} type="button" className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all" style={{ background: isSelected ? S.accentLight : "transparent", borderBottom: `1px solid ${S.border}`, borderLeft: isSelected ? `3px solid ${S.accent}` : "3px solid transparent", fontFamily: "monospace" }} onClick={() => setSelected(isSelected ? null : account.id)}>
                 <div className="flex items-center gap-2 flex-shrink-0" style={{ width: 240 }}>
                   <span className="text-base">{account.emoji}</span>
-                  <div className="min-w-0"><div className="flex items-center gap-1 text-xs font-bold truncate" style={{ color: S.text }}>{account.name}{account.verified && <span className="px-1 text-[10px]" style={{ background: S.accent, color: "#000", borderRadius: 3 }}>✓</span>}</div><div className="text-[10px] truncate" style={{ color: S.muted }}>{account.platform} · {account.loginId}</div></div>
+                  <div className="min-w-0"><div className="flex items-center gap-1 text-xs font-bold truncate" style={{ color: S.text }}>{account.name}{account.verified && <span className="px-1 text-[10px]" style={{ background: S.accent, color: "#ffffff", borderRadius: 3 }}>✓</span>}</div><div className="text-[10px] truncate" style={{ color: S.muted }}>{account.platform} · {account.loginId}</div></div>
                 </div>
                 <div className="flex-shrink-0" style={{ width: 78 }}><StatusBadge status={account.status} /></div>
                 <div className="flex-shrink-0 text-xs font-semibold" style={{ width: 90, color: S.text }}>{account.followers}</div>
@@ -801,7 +801,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
             <div className="flex items-center justify-center gap-2 mt-2">
               <StatusBadge status={detail.status} />
               {detail.verified && (
-                <span className="px-1.5 py-0.5 text-xs uppercase" style={{ background: S.accent, color: "#000", fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>✓ 已认证</span>
+                <span className="px-1.5 py-0.5 text-xs uppercase" style={{ background: S.accent, color: "#ffffff", fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>✓ 已认证</span>
               )}
             </div>
           </div>
@@ -849,18 +849,18 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
           ))}
 
           {detail.note && (
-            <div className="p-3 text-xs" style={{ background: "#f7f7f7", color: S.muted, lineHeight: 1.6, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+            <div className="p-3 text-xs" style={{ background: "#f1f5f9", color: S.muted, lineHeight: 1.6, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
               {detail.note}
             </div>
           )}
 
           <div className="flex flex-col gap-2 mt-auto">
-            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑信息</button>
+            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑信息</button>
             <button className="w-full py-2 text-xs uppercase font-bold flex items-center justify-center gap-1" style={{ background: S.bg, border: `1px solid rgba(0,0,0,0.10)`, color: S.text, borderRadius: S.radius, fontFamily: "monospace" }}>
               <ExternalLink size={11} /> 打开平台后台
             </button>
             {detail.status === "空闲" && (
-              <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radius, fontFamily: "monospace" }}>重启账号运营</button>
+              <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace" }}>重启账号运营</button>
             )}
           </div>
         </div>
@@ -874,7 +874,7 @@ function EmailOtherTab({ search }: { search: string }) {
   const filtered = emailOthers.filter(e => e.identifier.includes(search) || e.manager.includes(search) || e.type.includes(search) || e.usedFor.includes(search));
   return (
     <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-      <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+      <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
         <ColHead width="90px">账号类型</ColHead>
         <ColHead width="230px">账号标识</ColHead>
         <ColHead width="280px">用于哪些平台/用途</ColHead>
@@ -883,7 +883,7 @@ function EmailOtherTab({ search }: { search: string }) {
       </div>
       <div className="overflow-auto flex-1">
         {filtered.map(e => {
-          const tc = typeColors[e.type] || { bg: "#f0f0ec", color: "#555" };
+          const tc = typeColors[e.type] || { bg: "#f1f5f9", color: "#475569" };
           return (
             <div key={e.id} className="flex items-center px-4 py-3 gap-4" style={{ borderBottom: `1px solid ${S.border}` }}>
               <span className="flex-shrink-0 px-2 py-0.5 text-xs" style={{ background: tc.bg, color: tc.color, width: "90px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{e.type}</span>
@@ -941,11 +941,11 @@ export default function AccountAssets() {
         </div>
         <div className="flex gap-2">
           {riskCount > 0 && (
-            <div className="flex items-center gap-1.5 px-3 py-2 text-xs uppercase" style={{ background: "#f5f5f5", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>
+            <div className="flex items-center gap-1.5 px-3 py-2 text-xs uppercase" style={{ background: "#f1f5f9", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>
               <AlertTriangle size={12} /> {riskCount} 个账号存在风险
             </div>
           )}
-          <button className="flex items-center gap-1.5 px-3 py-2 text-xs uppercase font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>
+          <button className="flex items-center gap-1.5 px-3 py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>
             <Plus size={13} /> 新增账号
           </button>
         </div>
@@ -972,18 +972,18 @@ export default function AccountAssets() {
             <button
               key={t.id}
               className="flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all uppercase"
-              style={{ background: activeTab === t.id ? "#0d0d0d" : "transparent", color: activeTab === t.id ? S.accent : S.muted, fontFamily: "monospace", borderRight: `1px solid ${S.border}` }}
+              style={{ background: activeTab === t.id ? "#1e293b" : "transparent", color: activeTab === t.id ? S.accent : S.muted, fontFamily: "monospace", borderRight: `1px solid ${S.border}` }}
               onClick={() => setActiveTab(t.id)}
             >
               {t.label}
-              <span className="px-1.5 py-0.5" style={{ background: activeTab === t.id ? S.accent : S.bg, color: activeTab === t.id ? "#000" : S.muted, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+              <span className="px-1.5 py-0.5" style={{ background: activeTab === t.id ? S.accent : S.bg, color: activeTab === t.id ? "#ffffff" : S.muted, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                 {t.count}
               </span>
             </button>
           ))}
           <button
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs transition-all uppercase"
-            style={{ background: activeTab === "media" ? "#0d0d0d" : "transparent", color: activeTab === "media" ? S.accent : S.muted, fontFamily: "monospace" }}
+            style={{ background: activeTab === "media" ? "#1e293b" : "transparent", color: activeTab === "media" ? S.accent : S.muted, fontFamily: "monospace" }}
             onClick={() => {
               setActiveTab("media");
               setMediaExpanded(expanded => activeTab === "media" ? !expanded : true);
@@ -991,7 +991,7 @@ export default function AccountAssets() {
             aria-expanded={mediaExpanded}
           >
             媒体账号
-            <span className="px-1.5 py-0.5" style={{ background: activeTab === "media" ? S.accent : S.bg, color: activeTab === "media" ? "#000" : S.muted, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+            <span className="px-1.5 py-0.5" style={{ background: activeTab === "media" ? S.accent : S.bg, color: activeTab === "media" ? "#ffffff" : S.muted, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
               {mediaAccounts.length}
             </span>
             <ChevronDown size={12} style={{ transform: mediaExpanded ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} />
@@ -1038,14 +1038,14 @@ export default function AccountAssets() {
               className="flex items-center gap-1.5 flex-shrink-0 px-2.5 py-1.5 text-xs transition-all"
               style={{
                 background: mediaPlatform === filter.platform ? S.accent : "transparent",
-                color: mediaPlatform === filter.platform ? "#000" : S.textSec,
+                color: mediaPlatform === filter.platform ? "#ffffff" : S.textSec,
                 border: `1px solid ${mediaPlatform === filter.platform ? S.accent : S.border}`,
                 borderRadius: S.radiusSm,
                 fontFamily: "monospace",
               }}
               onClick={() => setMediaPlatform(filter.platform)}
             >
-              <span>{filter.emoji}</span>{filter.platform}<span style={{ color: mediaPlatform === filter.platform ? "#000" : S.muted }}>{filter.count}</span>
+              <span>{filter.emoji}</span>{filter.platform}<span style={{ color: mediaPlatform === filter.platform ? "#ffffff" : S.muted }}>{filter.count}</span>
             </button>
           ))}
           <div className="ml-auto pl-2 flex-shrink-0" style={{ borderLeft: `1px solid ${S.border}` }}>

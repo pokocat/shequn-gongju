@@ -2,17 +2,17 @@ import { useState } from "react";
 import { Plus, X, ArrowRight, Zap, Settings, ChevronRight, Link, Search, Filter, RefreshCw } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -129,7 +129,7 @@ function ChannelsTab() {
                 {/* 平台 + 状态 */}
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2.5">
-                    <div style={{ width: 36, height: 36, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, background: "#f7f7f7" }}>
+                    <div style={{ width: 36, height: 36, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18, background: "#f1f5f9" }}>
                       {c.emoji}
                     </div>
                     <div>
@@ -138,8 +138,8 @@ function ChannelsTab() {
                         <span style={{
                           fontSize: 10, fontWeight: 700, fontFamily: "monospace",
                           padding: "1px 6px", borderRadius: S.radiusSm,
-                          background: isBound ? S.accent : "#ffd600",
-                          color: isBound ? "#000" : "#000",
+                          background: isBound ? S.accent : "#3b82f6",
+                          color: isBound ? "#ffffff" : "#ffffff",
                         }}>{c.status}</span>
                       </div>
                       <div style={{ fontSize: 12, marginTop: 2, fontWeight: 600, color: S.text, fontFamily: "monospace" }}>{c.name}</div>
@@ -149,11 +149,11 @@ function ChannelsTab() {
 
                 {/* 数据 */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, padding: "8px 10px", textAlign: "center" }}>
+                  <div style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, padding: "8px 10px", textAlign: "center" }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: S.text, fontFamily: "monospace" }}>{c.monthlyTraffic.toLocaleString()}</div>
                     <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>月流量</div>
                   </div>
-                  <div style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, padding: "8px 10px", textAlign: "center" }}>
+                  <div style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, padding: "8px 10px", textAlign: "center" }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: S.text, fontFamily: "monospace" }}>{c.conversionRate}</div>
                     <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>转化率</div>
                   </div>
@@ -176,7 +176,7 @@ function ChannelsTab() {
                 <div className="flex items-center justify-between mt-2.5">
                   <span style={{ fontSize: 10, color: S.mutedLight, fontFamily: "monospace" }}>同步 {c.lastSync}</span>
                   <button
-                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, padding: "4px 10px", borderRadius: S.radiusSm, border: `1px solid ${S.border}`, background: "#f7f7f7", color: S.text, fontFamily: "monospace", cursor: "pointer" }}
+                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 11, padding: "4px 10px", borderRadius: S.radiusSm, border: `1px solid ${S.border}`, background: "#f1f5f9", color: S.text, fontFamily: "monospace", cursor: "pointer" }}
                     onClick={e => e.stopPropagation()}
                   >
                     <Settings size={11} /> 配置规则
@@ -196,14 +196,14 @@ function ChannelsTab() {
             <button onClick={() => setSelected(null)} style={{ background: "none", border: "none", cursor: "pointer", padding: 2 }}><X size={14} style={{ color: S.muted }} /></button>
           </div>
           <div style={{ flex: 1, overflow: "auto", padding: 16, display: "flex", flexDirection: "column", gap: 16 }}>
-            <div style={{ textAlign: "center", padding: "16px 0", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f7f7f7" }}>
+            <div style={{ textAlign: "center", padding: "16px 0", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f1f5f9" }}>
               <div style={{ fontSize: 36, marginBottom: 8 }}>{detail.emoji}</div>
               <div style={{ fontSize: 13, fontWeight: 700, color: S.text, fontFamily: "monospace" }}>{detail.name}</div>
               <div style={{ fontSize: 11, color: S.muted, marginTop: 2, fontFamily: "monospace" }}>{detail.platform} · {detail.accountId}</div>
               <span style={{
                 marginTop: 8, display: "inline-block", padding: "2px 10px", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 700, fontFamily: "monospace",
-                background: detail.status === "已绑定" ? S.accent : "#ffd600",
-                color: "#000",
+                background: detail.status === "已绑定" ? S.accent : "#3b82f6",
+                color: "#ffffff",
               }}>{detail.status}</span>
             </div>
 
@@ -216,8 +216,8 @@ function ChannelsTab() {
                 { label: "绑定企业微信", value: detail.boundWecom },
               ].map((r, i, arr) => (
                 <div key={r.label}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f7f7f7" }}>
-                    <div style={{ width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", background: "#0d0d0d", color: S.accent, fontSize: 11, fontWeight: 700, flexShrink: 0, fontFamily: "monospace", borderRadius: S.radiusSm }}>{i + 1}</div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 12px", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f1f5f9" }}>
+                    <div style={{ width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", background: "#1e293b", color: S.accent, fontSize: 11, fontWeight: 700, flexShrink: 0, fontFamily: "monospace", borderRadius: S.radiusSm }}>{i + 1}</div>
                     <div>
                       <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>{r.label}</div>
                       <div style={{ fontSize: 11, fontWeight: 600, color: S.text, fontFamily: "monospace" }}>{r.value}</div>
@@ -243,12 +243,12 @@ function ChannelsTab() {
             ))}
           </div>
           <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 8, borderTop: `1px solid ${S.border}` }}>
-            <button style={{ width: "100%", padding: "8px 0", borderRadius: S.radiusSm, border: "none", background: "#0d0d0d", color: S.accent, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer" }}>编辑绑定配置</button>
+            <button style={{ width: "100%", padding: "8px 0", borderRadius: S.radiusSm, border: "none", background: "#1e293b", color: S.accent, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer" }}>编辑绑定配置</button>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
-              <button style={{ padding: "7px 0", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 600, border: `1px solid ${S.border}`, background: "#f7f7f7", color: S.text, fontFamily: "monospace", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
+              <button style={{ padding: "7px 0", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 600, border: `1px solid ${S.border}`, background: "#f1f5f9", color: S.text, fontFamily: "monospace", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                 <RefreshCw size={11} />手动同步
               </button>
-              <button style={{ padding: "7px 0", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 600, border: "none", background: S.accent, color: "#000", fontFamily: "monospace", cursor: "pointer" }}>查看流量</button>
+              <button style={{ padding: "7px 0", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 600, border: "none", background: S.accent, color: "#ffffff", fontFamily: "monospace", cursor: "pointer" }}>查看流量</button>
             </div>
           </div>
         </div>
@@ -265,7 +265,7 @@ function RulesTab() {
       <div className="flex items-center justify-between flex-shrink-0">
         <div style={{ fontSize: 11, color: S.muted, fontFamily: "monospace" }}>已配置 {assignRules.length} 条规则，按优先级顺序执行</div>
         <button
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: S.radiusSm, border: "none", background: "#0d0d0d", color: S.accent, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer" }}
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: S.radiusSm, border: "none", background: "#1e293b", color: S.accent, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer" }}
           onClick={() => setShowNew(!showNew)}
         >
           <Plus size={13} /> 新增规则
@@ -274,19 +274,19 @@ function RulesTab() {
 
       {/* New rule form */}
       {showNew && (
-        <div style={{ padding: 16, border: `2px dashed ${S.borderMed}`, borderRadius: S.radius, background: "#f7f7f7" }}>
+        <div style={{ padding: 16, border: `2px dashed ${S.borderMed}`, borderRadius: S.radius, background: "#f1f5f9" }}>
           <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 12, color: S.text, fontFamily: "monospace" }}>新增分配规则</div>
           <div className="grid grid-cols-2 gap-3">
             {[["规则名称","如：抖音体验营购买"],["触发条件","来源 + 标签/金额"],["绑定个人微信","选择微信号"],["分配到群组","选择群组"],["企业微信同步","同步/不同步"]].map(([l, p]) => (
               <div key={l}>
                 <label style={{ display: "block", fontSize: 11, marginBottom: 4, color: S.muted, fontFamily: "monospace" }}>{l}</label>
-                <input style={{ width: "100%", padding: "8px 10px", borderRadius: S.radiusSm, border: `1px solid rgba(0,0,0,0.12)`, background: "#fff", color: S.text, fontSize: 12, outline: "none", fontFamily: "monospace", boxSizing: "border-box" }} placeholder={p} />
+                <input style={{ width: "100%", padding: "8px 10px", borderRadius: S.radiusSm, border: `1px solid rgba(15,23,42,0.12)`, background: "#ffffff", color: S.text, fontSize: 12, outline: "none", fontFamily: "monospace", boxSizing: "border-box" }} placeholder={p} />
               </div>
             ))}
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 12 }}>
-            <button style={{ padding: "7px 14px", borderRadius: S.radiusSm, fontSize: 12, border: `1px solid ${S.border}`, background: "#fff", color: S.text, fontFamily: "monospace", cursor: "pointer" }} onClick={() => setShowNew(false)}>取消</button>
-            <button style={{ padding: "7px 16px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, border: "none", background: "#0d0d0d", color: S.accent, fontFamily: "monospace", cursor: "pointer" }}>保存规则</button>
+            <button style={{ padding: "7px 14px", borderRadius: S.radiusSm, fontSize: 12, border: `1px solid ${S.border}`, background: "#ffffff", color: S.text, fontFamily: "monospace", cursor: "pointer" }} onClick={() => setShowNew(false)}>取消</button>
+            <button style={{ padding: "7px 16px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, border: "none", background: "#1e293b", color: S.accent, fontFamily: "monospace", cursor: "pointer" }}>保存规则</button>
           </div>
         </div>
       )}
@@ -294,14 +294,14 @@ function RulesTab() {
       {assignRules.map((rule) => (
         <div key={rule.id} style={{ padding: 16, border: `1px solid ${S.border}`, borderRadius: S.radius, background: S.surface, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div className="flex items-start gap-4">
-            <div style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, fontFamily: "monospace", flexShrink: 0, marginTop: 2, background: rule.active ? "#0d0d0d" : "rgba(0,0,0,0.08)", color: rule.active ? S.accent : S.muted, borderRadius: S.radiusSm }}>
+            <div style={{ width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, fontFamily: "monospace", flexShrink: 0, marginTop: 2, background: rule.active ? "#1e293b" : "rgba(0,0,0,0.08)", color: rule.active ? S.accent : S.muted, borderRadius: S.radiusSm }}>
               {rule.priority}
             </div>
 
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-3">
                 <span style={{ fontSize: 13, fontWeight: 700, color: S.text, fontFamily: "monospace" }}>{rule.name}</span>
-                <span style={{ padding: "2px 8px", borderRadius: S.radiusSm, fontSize: 10, fontWeight: 700, fontFamily: "monospace", background: rule.active ? S.accent : "#f0f0ec", color: rule.active ? "#000" : "#555" }}>
+                <span style={{ padding: "2px 8px", borderRadius: S.radiusSm, fontSize: 10, fontWeight: 700, fontFamily: "monospace", background: rule.active ? S.accent : "#f1f5f9", color: rule.active ? "#ffffff" : "#475569" }}>
                   {rule.active ? "已启用" : "已停用"}
                 </span>
               </div>
@@ -309,10 +309,10 @@ function RulesTab() {
               {/* Flow */}
               <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                 {[
-                  { label: "触发条件", value: rule.trigger, bg: "#ffd600", tc: S.text },
+                  { label: "触发条件", value: rule.trigger, bg: "#3b82f6", tc: S.text },
                   { label: "→ 个人微信", value: rule.wechat, bg: S.accentLight, tc: S.text },
-                  { label: "→ 分配群组", value: rule.group, bg: "#f0f0ec", tc: "#333333" },
-                  { label: "→ 企业微信", value: rule.wecom, bg: rule.wecom === "同步企业微信" ? "#0d0d0d" : "#f0f0ec", tc: rule.wecom === "同步企业微信" ? S.accent : "#666666" },
+                  { label: "→ 分配群组", value: rule.group, bg: "#f1f5f9", tc: "#475569" },
+                  { label: "→ 企业微信", value: rule.wecom, bg: rule.wecom === "同步企业微信" ? "#1e293b" : "#f1f5f9", tc: rule.wecom === "同步企业微信" ? S.accent : "#666666" },
                 ].map(step => (
                   <div key={step.label} style={{ padding: "6px 10px", borderRadius: S.radiusSm, background: step.bg, border: `1px solid ${S.border}` }}>
                     <div style={{ color: step.tc, fontSize: 10, opacity: 0.7, fontFamily: "monospace" }}>{step.label}</div>
@@ -323,8 +323,8 @@ function RulesTab() {
             </div>
 
             <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
-              <button style={{ padding: "5px 10px", borderRadius: S.radiusSm, fontSize: 11, border: `1px solid ${S.border}`, background: "#f7f7f7", color: S.muted, fontFamily: "monospace", cursor: "pointer" }}>编辑</button>
-              <button style={{ padding: "5px 10px", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 700, border: "none", fontFamily: "monospace", cursor: "pointer", background: rule.active ? "#0d0d0d" : S.accent, color: rule.active ? S.accent : "#000" }}>
+              <button style={{ padding: "5px 10px", borderRadius: S.radiusSm, fontSize: 11, border: `1px solid ${S.border}`, background: "#f1f5f9", color: S.muted, fontFamily: "monospace", cursor: "pointer" }}>编辑</button>
+              <button style={{ padding: "5px 10px", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 700, border: "none", fontFamily: "monospace", cursor: "pointer", background: rule.active ? "#1e293b" : S.accent, color: rule.active ? S.accent : "#ffffff" }}>
                 {rule.active ? "停用" : "启用"}
               </button>
             </div>
@@ -341,24 +341,24 @@ function TrafficLogTab() {
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", flexShrink: 0, borderBottom: `1px solid ${S.border}`, background: "#f7f7f7", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 16px", flexShrink: 0, borderBottom: `1px solid ${S.border}`, background: "#f1f5f9", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           <Zap size={14} style={{ color: S.text }} />
           <span style={{ fontSize: 13, fontWeight: 700, color: S.text, fontFamily: "monospace" }}>实时流量分配日志</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", border: `1px solid rgba(0,0,0,0.12)`, borderRadius: S.radiusSm, background: "#fff" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", border: `1px solid rgba(15,23,42,0.12)`, borderRadius: S.radiusSm, background: "#ffffff" }}>
             <Search size={12} style={{ color: S.muted }} />
             <input style={{ background: "transparent", outline: "none", fontSize: 12, width: 128, color: S.text, fontFamily: "monospace" }} placeholder="搜索用户、渠道..." />
           </div>
-          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: S.radiusSm, fontSize: 12, border: `1px solid ${S.border}`, background: "#fff", color: S.muted, fontFamily: "monospace", cursor: "pointer" }}>
+          <button style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: S.radiusSm, fontSize: 12, border: `1px solid ${S.border}`, background: "#ffffff", color: S.muted, fontFamily: "monospace", cursor: "pointer" }}>
             <Filter size={12} /> 筛选
           </button>
         </div>
       </div>
 
       {/* Table header */}
-      <div style={{ display: "flex", alignItems: "center", padding: "10px 16px", fontSize: 11, fontWeight: 700, flexShrink: 0, background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555555", fontFamily: "monospace", textTransform: "uppercase" }}>
+      <div style={{ display: "flex", alignItems: "center", padding: "10px 16px", fontSize: 11, fontWeight: 700, flexShrink: 0, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", fontFamily: "monospace", textTransform: "uppercase" }}>
         {([["时间",80],["用户",90],["手机",110],["来源渠道",220],["分配个人微信",140],["分配群组",160],["企微同步",80],["命中规则",160]] as [string,number][]).map(([l,w]) => (
           <div key={l} style={{ flexShrink: 0, width: w }}>{l}</div>
         ))}
@@ -367,9 +367,9 @@ function TrafficLogTab() {
       <div style={{ flex: 1, overflow: "auto" }}>
         {trafficLog.map((log, idx) => (
           <div key={idx}
-            style={{ display: "flex", alignItems: "center", padding: "12px 16px", fontSize: 12, fontFamily: "monospace", borderBottom: `1px solid ${S.border}`, background: idx % 2 === 0 ? "#fff" : "#fafaf8", cursor: "default" }}
+            style={{ display: "flex", alignItems: "center", padding: "12px 16px", fontSize: 12, fontFamily: "monospace", borderBottom: `1px solid ${S.border}`, background: idx % 2 === 0 ? "#ffffff" : "#fafaf8", cursor: "default" }}
             onMouseEnter={e => (e.currentTarget.style.background = "rgba(204,255,0,0.06)")}
-            onMouseLeave={e => (e.currentTarget.style.background = idx % 2 === 0 ? "#fff" : "#fafaf8")}>
+            onMouseLeave={e => (e.currentTarget.style.background = idx % 2 === 0 ? "#ffffff" : "#fafaf8")}>
             <div style={{ flexShrink: 0, width: 80, color: S.muted }}>{log.time}</div>
             <div style={{ flexShrink: 0, width: 90, fontWeight: 600, color: S.text }}>{log.user}</div>
             <div style={{ flexShrink: 0, width: 110, color: S.muted }}>{log.phone}</div>
@@ -385,7 +385,7 @@ function TrafficLogTab() {
             <div style={{ flexShrink: 0, width: 140, color: S.text, fontWeight: 600 }}>{log.assignedWeChat}</div>
             <div style={{ flexShrink: 0, width: 160, color: S.textSec }}>{log.assignedGroup}</div>
             <div style={{ flexShrink: 0, width: 80 }}>
-              <span style={{ padding: "2px 6px", borderRadius: S.radiusSm, fontSize: 10, fontWeight: 700, fontFamily: "monospace", background: log.wecomSync ? "#0d0d0d" : "#f0f0ec", color: log.wecomSync ? S.accent : "#555" }}>
+              <span style={{ padding: "2px 6px", borderRadius: S.radiusSm, fontSize: 10, fontWeight: 700, fontFamily: "monospace", background: log.wecomSync ? "#1e293b" : "#f1f5f9", color: log.wecomSync ? S.accent : "#475569" }}>
                 {log.wecomSync ? "已同步" : "未同步"}
               </span>
             </div>
@@ -396,7 +396,7 @@ function TrafficLogTab() {
         ))}
       </div>
 
-      <div style={{ padding: "12px 16px", flexShrink: 0, borderTop: `1px solid ${S.border}`, background: "#f7f7f7", borderRadius: `0 0 ${S.radius} ${S.radius}` }}>
+      <div style={{ padding: "12px 16px", flexShrink: 0, borderTop: `1px solid ${S.border}`, background: "#f1f5f9", borderRadius: `0 0 ${S.radius} ${S.radius}` }}>
         <span style={{ fontSize: 11, color: S.muted, fontFamily: "monospace" }}>共 {trafficLog.length} 条记录（今日）</span>
       </div>
     </div>
@@ -433,7 +433,7 @@ export default function ChannelFlow() {
           <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap", fontSize: 11 }}>
             {["媒体账号发布内容", "用户点击/购买/关注", "系统识别来源渠道", "匹配分配规则", "分配到对应个人微信", "加入对应微信群", "同步企业微信（可选）"].map((s, i, arr) => (
               <div key={s} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ padding: "4px 8px", background: "#0d0d0d", color: S.accent, fontFamily: "monospace", fontSize: 10, fontWeight: 600, borderRadius: S.radiusSm }}>{s}</span>
+                <span style={{ padding: "4px 8px", background: "#1e293b", color: S.accent, fontFamily: "monospace", fontSize: 10, fontWeight: 600, borderRadius: S.radiusSm }}>{s}</span>
                 {i < arr.length - 1 && <ArrowRight size={12} style={{ color: S.muted }} />}
               </div>
             ))}
@@ -448,7 +448,7 @@ export default function ChannelFlow() {
             key={t}
             style={{
               padding: "8px 20px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer", border: "none",
-              background: activeTab === t ? "#0d0d0d" : "transparent",
+              background: activeTab === t ? "#1e293b" : "transparent",
               color: activeTab === t ? S.accent : S.muted,
             }}
             onClick={() => setActiveTab(t)}

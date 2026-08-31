@@ -7,17 +7,17 @@ import {
 } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -25,15 +25,15 @@ const S = {
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   "进行中":  { bg: S.accent,   color: S.text },
-  "即将开始": { bg: "#1a1a1a", color: "#ffffff" },
-  "已结束":  { bg: "#f0f0ec",  color: "#333333" },
+  "即将开始": { bg: "#1e293b", color: "#ffffff" },
+  "已结束":  { bg: "#f1f5f9",  color: "#475569" },
 };
 
 const TYPE_BADGE: Record<string, { bg: string; color: string }> = {
-  "限时活动": { bg: "#1a1a1a", color: S.accent },
-  "常规课程": { bg: "#ffd600", color: S.text },
+  "限时活动": { bg: "#1e293b", color: S.accent },
+  "常规课程": { bg: "#3b82f6", color: S.text },
   "线下沙龙": { bg: S.accent,  color: S.text },
-  "打卡挑战": { bg: "#f0f0ec", color: "#333333" },
+  "打卡挑战": { bg: "#f1f5f9", color: "#475569" },
 };
 
 const TYPE_ICON: Record<string, React.ReactNode> = {
@@ -44,17 +44,17 @@ const TYPE_ICON: Record<string, React.ReactNode> = {
 };
 
 const BANNER_BG: Record<string, string> = {
-  "限时活动": "#1a1a1a",
-  "常规课程": "#ffd600",
+  "限时活动": "#1e293b",
+  "常规课程": "#3b82f6",
   "线下沙龙": S.accent,
-  "打卡挑战": "#f0f0ec",
+  "打卡挑战": "#f1f5f9",
 };
 
 const BANNER_TC: Record<string, string> = {
   "限时活动": S.accent,
   "常规课程": S.text,
   "线下沙龙": S.text,
-  "打卡挑战": "#333333",
+  "打卡挑战": "#475569",
 };
 
 interface Activity {
@@ -102,8 +102,8 @@ const mockRegistrants: Registrant[] = [
 ];
 
 const REGISTRANT_STATUS: Record<string, { bg: string; color: string }> = {
-  "已报名": { bg: "#1a1a1a",  color: "#ffffff" },
-  "已取消": { bg: "#f0f0ec",  color: "#333333" },
+  "已报名": { bg: "#1e293b",  color: "#ffffff" },
+  "已取消": { bg: "#f1f5f9",  color: "#475569" },
   "已签到": { bg: S.accent,   color: S.text },
 };
 
@@ -137,9 +137,9 @@ export default function Activities() {
 
   const statCards = [
     { label: "进行中活动数", value: "3", sub: "本月新增1个", bg: S.accent,   tc: S.text },
-    { label: "本月参与人次", value: "557", sub: "较上月+23%", bg: "#1a1a1a",  tc: S.accent },
-    { label: "平均转化率",  value: "28.4%", sub: "较上月+5.2%", bg: "#ffd600", tc: S.text },
-    { label: "活动带来新会员", value: "89", sub: "本月累计", bg: "#f0f0ec",   tc: "#333333" },
+    { label: "本月参与人次", value: "557", sub: "较上月+23%", bg: "#1e293b",  tc: S.accent },
+    { label: "平均转化率",  value: "28.4%", sub: "较上月+5.2%", bg: "#3b82f6", tc: S.text },
+    { label: "活动带来新会员", value: "89", sub: "本月累计", bg: "#f1f5f9",   tc: "#475569" },
   ];
 
   function openModal() { setModal(DEFAULT_MODAL); setShowModal(true); }
@@ -213,14 +213,14 @@ export default function Activities() {
         <div style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, overflow: "hidden", flex: 1, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "monospace" }}>
             <thead>
-              <tr style={{ background: "#1a1a1a" }}>
+              <tr style={{ background: "#1e293b" }}>
                 <th style={{ padding: "12px 16px", textAlign: "left", width: 40 }}>
                   <input type="checkbox" style={{ accentColor: S.accent }}
                     onChange={e => setSelectedRegistrants(e.target.checked ? mockRegistrants.map(r => r.id) : [])}
                     checked={selectedRegistrants.length === mockRegistrants.length} />
                 </th>
                 {["编号", "姓名", "会员等级", "报名时间", "城市", "状态", "操作"].map(h => (
-                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontWeight: 700, fontSize: 11, color: "#555555", fontFamily: "monospace", textTransform: "uppercase" }}>{h}</th>
+                  <th key={h} style={{ padding: "12px 16px", textAlign: "left", fontWeight: 700, fontSize: 11, color: "#475569", fontFamily: "monospace", textTransform: "uppercase" }}>{h}</th>
                 ))}
               </tr>
             </thead>
@@ -270,7 +270,7 @@ export default function Activities() {
           <p style={{ margin: "4px 0 0", fontSize: 11, color: S.muted, fontFamily: "monospace" }}>管理活动、课程、线下沙龙与打卡挑战</p>
         </div>
         <button onClick={openModal}
-          style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: S.radius, fontSize: 13, fontWeight: 700, color: S.accent, background: "#0d0d0d", border: "none", cursor: "pointer", fontFamily: "monospace" }}>
+          style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", borderRadius: S.radius, fontSize: 13, fontWeight: 700, color: S.accent, background: "#1e293b", border: "none", cursor: "pointer", fontFamily: "monospace" }}>
           <Plus size={15} /> 新建活动
         </button>
       </div>
@@ -293,12 +293,12 @@ export default function Activities() {
             <button key={t} onClick={() => setTab(t)}
               style={{
                 padding: "8px 16px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer", border: "none",
-                background: tab === t ? "#0d0d0d" : "transparent",
+                background: tab === t ? "#1e293b" : "transparent",
                 color: tab === t ? S.accent : S.muted,
               }}>
               {t}
               {t !== "全部活动" && (
-                <span style={{ marginLeft: 6, fontSize: 10, padding: "1px 5px", fontFamily: "monospace", fontWeight: 700, borderRadius: S.radiusSm, background: tab === t ? S.accent : "rgba(0,0,0,0.06)", color: tab === t ? S.text : S.muted }}>
+                <span style={{ marginLeft: 6, fontSize: 10, padding: "1px 5px", fontFamily: "monospace", fontWeight: 700, borderRadius: S.radiusSm, background: tab === t ? S.accent : "rgba(15,23,42,0.06)", color: tab === t ? S.text : S.muted }}>
                   {mockActivities.filter(a => a.status === t).length}
                 </span>
               )}
@@ -354,7 +354,7 @@ export default function Activities() {
                       <span style={{ color: pct! >= 80 ? S.text : S.muted, fontWeight: 700 }}>{pct}%</span>
                     </div>
                     <div style={{ height: 4, borderRadius: "4px", overflow: "hidden", background: "rgba(0,0,0,0.08)" }}>
-                      <div style={{ width: `${pct}%`, height: "100%", background: pct! >= 80 ? "#0d0d0d" : S.accent, borderRadius: "4px" }} />
+                      <div style={{ width: `${pct}%`, height: "100%", background: pct! >= 80 ? "#1e293b" : S.accent, borderRadius: "4px" }} />
                     </div>
                   </div>
                 ) : (
@@ -395,7 +395,7 @@ export default function Activities() {
         <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.5)" }}>
           <div style={{ width: 560, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.10)" }}>
             {/* Modal header */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: `1px solid ${S.border}`, background: "#0d0d0d", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 24px", borderBottom: `1px solid ${S.border}`, background: "#1e293b", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
               <div>
                 <h3 style={{ margin: 0, fontWeight: 700, color: S.accent, fontFamily: "monospace" }}>新建活动</h3>
                 <p style={{ margin: "4px 0 0", fontSize: 11, color: S.mutedLight, fontFamily: "monospace" }}>步骤 {modal.step} / 3</p>
@@ -409,7 +409,7 @@ export default function Activities() {
             <div style={{ padding: "16px 24px 0", display: "flex", alignItems: "center", gap: 8 }}>
               {[1, 2, 3].map(s => (
                 <div key={s} style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, fontFamily: "monospace", borderRadius: S.radiusSm, background: s <= modal.step ? "#0d0d0d" : "rgba(0,0,0,0.06)", color: s <= modal.step ? S.accent : S.muted }}>
+                  <div style={{ width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, fontFamily: "monospace", borderRadius: S.radiusSm, background: s <= modal.step ? "#1e293b" : "rgba(15,23,42,0.06)", color: s <= modal.step ? S.accent : S.muted }}>
                     {s < modal.step ? <Check size={13} /> : s}
                   </div>
                   <span style={{ fontSize: 12, fontWeight: 700, fontFamily: "monospace", color: s === modal.step ? S.text : S.mutedLight }}>
@@ -426,13 +426,13 @@ export default function Activities() {
                 <>
                   <FieldRow label="活动名称">
                     <input value={modal.name} onChange={e => setModal(m => ({ ...m, name: e.target.value }))}
-                      placeholder="请输入活动名称" style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }} />
+                      placeholder="请输入活动名称" style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }} />
                   </FieldRow>
                   <FieldRow label="活动类型">
                     <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
                       {["限时活动", "常规课程", "线下沙龙", "打卡挑战"].map(t => (
                         <button key={t} onClick={() => setModal(m => ({ ...m, type: t }))}
-                          style={{ padding: "6px 14px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer", background: modal.type === t ? "#0d0d0d" : "#f8f8f5", color: modal.type === t ? S.accent : S.textSec, border: `1px solid ${modal.type === t ? "#0d0d0d" : S.border}` }}>
+                          style={{ padding: "6px 14px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, fontFamily: "monospace", cursor: "pointer", background: modal.type === t ? "#1e293b" : "#f8f8f5", color: modal.type === t ? S.accent : S.textSec, border: `1px solid ${modal.type === t ? "#1e293b" : S.border}` }}>
                           {t}
                         </button>
                       ))}
@@ -441,27 +441,27 @@ export default function Activities() {
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                     <FieldRow label="开始日期">
                       <input type="date" value={modal.dateStart} onChange={e => setModal(m => ({ ...m, dateStart: e.target.value }))}
-                        style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }} />
+                        style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }} />
                     </FieldRow>
                     <FieldRow label="结束日期">
                       <input type="date" value={modal.dateEnd} onChange={e => setModal(m => ({ ...m, dateEnd: e.target.value }))}
-                        style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }} />
+                        style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }} />
                     </FieldRow>
                   </div>
                   <FieldRow label="地点">
                     <input value={modal.location} onChange={e => setModal(m => ({ ...m, location: e.target.value }))}
-                      placeholder="线上 / 城市名称" style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }} />
+                      placeholder="线上 / 城市名称" style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }} />
                   </FieldRow>
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                     <FieldRow label="目标用户">
                       <select value={modal.targetUser} onChange={e => setModal(m => ({ ...m, targetUser: e.target.value }))}
-                        style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }}>
+                        style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }}>
                         {["全部", "PRO会员", "VIP", "体验官", "代理商", "VIP+PRO"].map(u => <option key={u}>{u}</option>)}
                       </select>
                     </FieldRow>
                     <FieldRow label="容量上限">
                       <input type="number" value={modal.capacity} onChange={e => setModal(m => ({ ...m, capacity: e.target.value }))}
-                        placeholder="留空表示不限" style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }} />
+                        placeholder="留空表示不限" style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }} />
                     </FieldRow>
                   </div>
                 </>
@@ -471,16 +471,16 @@ export default function Activities() {
                   <FieldRow label="活动介绍">
                     <textarea value={modal.intro} onChange={e => setModal(m => ({ ...m, intro: e.target.value }))}
                       rows={4} placeholder="详细介绍活动内容、亮点、收益…"
-                      style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", resize: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }} />
+                      style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", resize: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }} />
                   </FieldRow>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 12, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f7f7f7" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 12, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f1f5f9" }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: S.text, fontFamily: "monospace" }}>开启报名问卷</div>
                       <div style={{ fontSize: 11, marginTop: 2, color: S.muted, fontFamily: "monospace" }}>报名时收集用户信息</div>
                     </div>
                     <Toggle value={modal.questionnaire} onChange={v => setModal(m => ({ ...m, questionnaire: v }))} />
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 12, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f7f7f7" }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 12, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, background: "#f1f5f9" }}>
                     <div>
                       <div style={{ fontSize: 13, fontWeight: 600, color: S.text, fontFamily: "monospace" }}>收费活动</div>
                       <div style={{ fontSize: 11, marginTop: 2, color: S.muted, fontFamily: "monospace" }}>需要用户付费参与</div>
@@ -490,7 +490,7 @@ export default function Activities() {
                   <div style={{ border: `2px dashed ${S.borderMed}`, borderRadius: S.radiusSm, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "24px 0" }}>
                     <div style={{ fontSize: 13, color: S.muted, fontFamily: "monospace" }}>点击或拖拽上传活动海报</div>
                     <div style={{ fontSize: 11, color: S.mutedLight, fontFamily: "monospace" }}>支持 JPG / PNG，建议尺寸 1080×1920</div>
-                    <button style={{ marginTop: 4, padding: "6px 16px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, border: "none", color: "#000", background: S.accent, fontFamily: "monospace", cursor: "pointer" }}>选择文件</button>
+                    <button style={{ marginTop: 4, padding: "6px 16px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, border: "none", color: "#ffffff", background: S.accent, fontFamily: "monospace", cursor: "pointer" }}>选择文件</button>
                   </div>
                 </>
               )}
@@ -511,7 +511,7 @@ export default function Activities() {
                   </FieldRow>
                   <FieldRow label="定时发布">
                     <input type="datetime-local" value={modal.scheduledTime} onChange={e => setModal(m => ({ ...m, scheduledTime: e.target.value }))}
-                      style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", boxSizing: "border-box" }} />
+                      style={{ width: "100%", padding: "8px 12px", borderRadius: S.radiusSm, fontSize: 13, outline: "none", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", boxSizing: "border-box" }} />
                   </FieldRow>
                   <div style={{ padding: 12, borderRadius: S.radiusSm, border: `1px solid rgba(204,255,0,0.3)`, background: S.accentLight }}>
                     <div style={{ fontSize: 11, fontWeight: 700, color: S.text, fontFamily: "monospace", textTransform: "uppercase" }}>发布预览</div>
@@ -529,12 +529,12 @@ export default function Activities() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px", borderTop: `1px solid ${S.border}` }}>
               <button
                 onClick={() => modal.step > 1 ? setModal(m => ({ ...m, step: m.step - 1 })) : setShowModal(false)}
-                style={{ padding: "8px 16px", borderRadius: S.radiusSm, fontSize: 13, fontWeight: 700, border: `1px solid ${S.border}`, color: S.text, background: "#f7f7f7", fontFamily: "monospace", cursor: "pointer" }}>
+                style={{ padding: "8px 16px", borderRadius: S.radiusSm, fontSize: 13, fontWeight: 700, border: `1px solid ${S.border}`, color: S.text, background: "#f1f5f9", fontFamily: "monospace", cursor: "pointer" }}>
                 {modal.step > 1 ? "上一步" : "取消"}
               </button>
               <button
                 onClick={() => modal.step < 3 ? setModal(m => ({ ...m, step: m.step + 1 })) : setShowModal(false)}
-                style={{ padding: "8px 20px", borderRadius: S.radiusSm, fontSize: 13, fontWeight: 700, border: "none", background: "#0d0d0d", color: S.accent, fontFamily: "monospace", cursor: "pointer" }}>
+                style={{ padding: "8px 20px", borderRadius: S.radiusSm, fontSize: 13, fontWeight: 700, border: "none", background: "#1e293b", color: S.accent, fontFamily: "monospace", cursor: "pointer" }}>
                 {modal.step < 3 ? "下一步" : "发布活动"}
               </button>
             </div>
@@ -557,7 +557,7 @@ function FieldRow({ label, children }: { label: string; children: React.ReactNod
 function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   return (
     <button onClick={() => onChange(!value)}
-      style={{ width: 40, height: 22, borderRadius: "11px", border: `1px solid ${value ? "rgba(204,255,0,0.5)" : S.border}`, position: "relative", cursor: "pointer", background: value ? S.accentLight : "rgba(0,0,0,0.06)", transition: "all 0.2s" }}>
+      style={{ width: 40, height: 22, borderRadius: "11px", border: `1px solid ${value ? "rgba(204,255,0,0.5)" : S.border}`, position: "relative", cursor: "pointer", background: value ? S.accentLight : "rgba(15,23,42,0.06)", transition: "all 0.2s" }}>
       <div style={{
         position: "absolute", top: 3, width: 14, height: 14, background: value ? S.accent : S.mutedLight,
         transition: "left 0.15s", left: value ? "22px" : "2px", borderRadius: "50%",

@@ -3,17 +3,17 @@ import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, P
 import { getAvatar } from "./Avatar";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -207,9 +207,9 @@ function TreeNode({ node, depth = 0 }: { node: typeof relationTree; depth?: numb
 }
 
 const taskStatusStyle = (status: string) => {
-  if (status === "已完成") return { bg: S.accent, color: "#000" };
-  if (status === "进行中") return { bg: "#f0f0f0", color: "#333333" };
-  return { bg: "#ffd600", color: "#000" };
+  if (status === "已完成") return { bg: S.accent, color: "#ffffff" };
+  if (status === "进行中") return { bg: "#f1f5f9", color: "#475569" };
+  return { bg: "#3b82f6", color: "#ffffff" };
 };
 
 // ─── 主组件 ───────────────────────────────────────────────────
@@ -302,8 +302,8 @@ export default function InfluenceRanking() {
             }} onClick={() => { setActiveTaskCategory(c.label); setSelectedTaskIndex(0); if (c.label === "待处理的任务") { setActiveProfileTab("待处理"); setSelectedOrderNo(null); } }}>
               <span className="text-xs font-mono" style={{ color: activeTaskCategory === c.label ? S.text : S.muted }}>{c.label}</span>
               <span className="px-1.5 py-0.5 text-xs font-bold" style={{
-                background: activeTaskCategory === c.label ? S.accent : "rgba(0,0,0,0.06)",
-                color: activeTaskCategory === c.label ? "#000" : S.muted,
+                background: activeTaskCategory === c.label ? S.accent : "rgba(15,23,42,0.06)",
+                color: activeTaskCategory === c.label ? "#ffffff" : S.muted,
                 borderRadius: S.radiusSm,
               }}>{c.count}</span>
             </button>
@@ -340,9 +340,9 @@ export default function InfluenceRanking() {
         <div className="flex items-center gap-1 px-4 pt-4 flex-shrink-0 flex-wrap">
           {rankingTabs.map(t => (
             <button key={t} className="px-3 py-1.5 text-xs transition-all font-bold" style={{
-              background: activeTab === t ? "#0d0d0d" : S.surface,
+              background: activeTab === t ? "#1e293b" : S.surface,
               color: activeTab === t ? S.accent : S.muted,
-              border: `1px solid ${activeTab === t ? "#0d0d0d" : S.border}`,
+              border: `1px solid ${activeTab === t ? "#1e293b" : S.border}`,
               borderRadius: S.radiusSm,
             }} onClick={() => setActiveTab(t)}>{t}</button>
           ))}
@@ -371,7 +371,7 @@ export default function InfluenceRanking() {
             <option>6 月</option>
             <option>7 月</option>
           </select>
-          <button onClick={() => showProfileNotice("排行筛选已应用")} className="px-2.5 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>应用筛选</button>
+          <button onClick={() => showProfileNotice("排行筛选已应用")} className="px-2.5 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>应用筛选</button>
           <button onClick={() => showProfileNotice("排行筛选已重置")} className="px-2.5 py-1.5 text-xs" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>重置</button>
         </div>
 
@@ -388,7 +388,7 @@ export default function InfluenceRanking() {
                 className="px-2.5 py-1.5 text-xs font-bold whitespace-nowrap transition-all"
                 style={{
                   background: isActive ? S.accent : S.surface,
-                  color: isActive ? "#000" : S.muted,
+                  color: isActive ? "#ffffff" : S.muted,
                   border: `1px solid ${isActive ? S.accent : S.border}`,
                   borderRadius: "999px",
                 }}
@@ -408,7 +408,7 @@ export default function InfluenceRanking() {
           boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
           scrollbarWidth: "thin",
         }}>
-          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 900, background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555555", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 900, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
             {[["排名",44],["头像",44],["排名",44],["微信名",100],["性别",44],["城市",90],["职业",80],["进群",44],["待处理",64],["发布",54],["完成",54],["总用户",68],["影响力",68],["评分",64]].map(([l,w]) => (
               <div key={`h-${l}-${w}`} className="flex-shrink-0" style={{ width: w as number }}>{l}</div>
             ))}
@@ -421,7 +421,7 @@ export default function InfluenceRanking() {
               borderLeft: selectedUser.rank === u.rank ? `3px solid ${S.accent}` : "3px solid transparent",
             }} onClick={() => setSelectedUser(u)}>
               <div className="flex-shrink-0" style={{ width: 44 }}>
-                <div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: u.rank <= 3 ? "#0d0d0d" : "rgba(0,0,0,0.06)", color: u.rank <= 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{u.rank}</div>
+                <div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: u.rank <= 3 ? "#1e293b" : "rgba(15,23,42,0.06)", color: u.rank <= 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{u.rank}</div>
               </div>
               <div className="flex-shrink-0" style={{ width: 44 }}>
                 <img src={getAvatar(u.rank - 1)} alt={u.name} style={{ width: 28, height: 28, borderRadius: S.radiusSm, objectFit: "cover" }} />
@@ -462,7 +462,7 @@ export default function InfluenceRanking() {
               <TrendingUp size={14} style={{ color: S.text }} />
               <span className="text-sm font-bold" style={{ color: S.text }}>关系链</span>
               <span className="text-xs font-mono" style={{ color: S.muted, fontSize: "10px" }}>拖拽右下角调整宽度</span>
-              <div className="ml-auto flex items-center gap-2 px-2.5 py-1.5" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <div className="ml-auto flex items-center gap-2 px-2.5 py-1.5" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                 <Search size={11} style={{ color: S.muted }} />
                 <input className="bg-transparent outline-none text-xs w-20 font-mono" style={{ color: S.textSec }} placeholder="搜索..." />
               </div>
@@ -488,51 +488,51 @@ export default function InfluenceRanking() {
               {operationTabs.map(tab => {
                 const Icon = tab.icon;
                 const isActive = activeOperation === tab.id;
-                return <button key={tab.id} type="button" role="tab" aria-selected={isActive} onClick={() => setActiveOperation(tab.id)} className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: isActive ? "#0d0d0d" : "#f7f7f7", color: isActive ? S.accent : S.muted, border: `1px solid ${isActive ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}><Icon size={12} />{tab.label}</button>;
+                return <button key={tab.id} type="button" role="tab" aria-selected={isActive} onClick={() => setActiveOperation(tab.id)} className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: isActive ? "#1e293b" : "#f1f5f9", color: isActive ? S.accent : S.muted, border: `1px solid ${isActive ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><Icon size={12} />{tab.label}</button>;
               })}
             </div>
 
             {activeOperation === "issue" && <>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>问题分类</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="售后问题" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>售后问题</option><option>产品咨询</option><option>社群服务</option><option>投诉建议</option></select></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>处理部门</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员运营部" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员运营部</option><option>客服部</option><option>社群运营部</option><option>财务部</option></select></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>优先级</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="重要" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>普通</option><option>重要</option><option>紧急</option></select></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>指派处理人</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="吴思远" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>吴思远</option><option>林小燕</option><option>客服组</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>问题分类</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="售后问题" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>售后问题</option><option>产品咨询</option><option>社群服务</option><option>投诉建议</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>处理部门</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员运营部" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员运营部</option><option>客服部</option><option>社群运营部</option><option>财务部</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>优先级</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="重要" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>普通</option><option>重要</option><option>紧急</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>指派处理人</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="吴思远" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>吴思远</option><option>林小燕</option><option>客服组</option></select></div>
               </div>
-              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`登记 ${selectedUser.name} 的问题描述...`} />
-              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice(`已登记 ${selectedUser.name} 的问题并指派至会员运营部`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><ClipboardCheck size={11} className="inline mr-1" />登记并指派</button></div>
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`登记 ${selectedUser.name} 的问题描述...`} />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice(`已登记 ${selectedUser.name} 的问题并指派至会员运营部`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><ClipboardCheck size={11} className="inline mr-1" />登记并指派</button></div>
             </>}
 
             {activeOperation === "push" && <>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>任务类型</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员触达" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员触达</option><option>服务提醒</option><option>回访任务</option></select></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>任务类型</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员触达" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员触达</option><option>服务提醒</option><option>回访任务</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
               </div>
-              <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入任务标题..." />
-              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写推送内容或任务要求..." />
-              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建推送任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />创建推送任务</button></div>
+              <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入任务标题..." />
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写推送内容或任务要求..." />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建推送任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />创建推送任务</button></div>
             </>}
 
             {activeOperation === "activity" && <>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>活动类型</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="课程活动" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>课程活动</option><option>线下沙龙</option><option>打卡挑战</option><option>会员福利</option></select></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>参与对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>活动类型</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="课程活动" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>课程活动</option><option>线下沙龙</option><option>打卡挑战</option><option>会员福利</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>参与对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
               </div>
-              <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入活动名称..." />
-              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写活动说明、时间和报名要求..." />
-              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建活动运营任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><CalendarDays size={11} className="inline mr-1" />创建活动任务</button></div>
+              <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入活动名称..." />
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写活动说明、时间和报名要求..." />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建活动运营任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><CalendarDays size={11} className="inline mr-1" />创建活动任务</button></div>
             </>}
 
             {activeOperation === "moments" && <>
               <div className="grid grid-cols-2 gap-2">
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>发文字</label><input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入朋友圈文案..." /></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>推送平台</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="朋友圈" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>朋友圈</option><option>微信群</option><option>企业微信</option></select></div>
-                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>时间提醒</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="立即发布" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>立即发布</option><option>今天 18:00</option><option>明天 09:00</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>发文字</label><input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入朋友圈文案..." /></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>推送平台</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="朋友圈" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>朋友圈</option><option>微信群</option><option>企业微信</option></select></div>
+                <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>时间提醒</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="立即发布" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>立即发布</option><option>今天 18:00</option><option>明天 09:00</option></select></div>
               </div>
-              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="补充本次朋友圈运营动作说明..." />
-              <div className="flex items-center gap-2 px-2.5 py-2" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="w-20 h-12 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.04)", border: `1px dashed rgba(0,0,0,0.10)`, borderRadius: S.radiusSm }}><span className="text-2xl" style={{ color: S.mutedLight }}>+</span></div><span className="text-xs" style={{ color: S.muted }}>添加图片（最多 9 张）</span></div>
-              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice("朋友圈发布任务已创建")} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />发布</button></div>
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="补充本次朋友圈运营动作说明..." />
+              <div className="flex items-center gap-2 px-2.5 py-2" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="w-20 h-12 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.04)", border: `1px dashed rgba(0,0,0,0.10)`, borderRadius: S.radiusSm }}><span className="text-2xl" style={{ color: S.mutedLight }}>+</span></div><span className="text-xs" style={{ color: S.muted }}>添加图片（最多 9 张）</span></div>
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice("朋友圈发布任务已创建")} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />发布</button></div>
             </>}
           </div>
         </div>
@@ -584,13 +584,13 @@ export default function InfluenceRanking() {
               </div>
               {isEditingTags && (
                 <form className="flex items-center gap-1.5 mt-1.5" onSubmit={event => { event.preventDefault(); addTag(); }}>
-                  <input value={tagDraft} onChange={event => setTagDraft(event.target.value)} className="min-w-0 flex-1 px-2 py-1 text-[10px] outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="新增标签" />
-                  <button type="submit" title="新增标签" aria-label="新增标签" className="w-5 h-5 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}><Plus size={11} strokeWidth={2.5} /></button>
+                  <input value={tagDraft} onChange={event => setTagDraft(event.target.value)} className="min-w-0 flex-1 px-2 py-1 text-[10px] outline-none" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="新增标签" />
+                  <button type="submit" title="新增标签" aria-label="新增标签" className="w-5 h-5 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}><Plus size={11} strokeWidth={2.5} /></button>
                 </form>
               )}
             </div>
             <button title="查看会员二维码" aria-label="查看会员二维码" onClick={() => showProfileNotice(`已生成 ${selectedUser.name} 的会员二维码`)} className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.5)`, borderRadius: S.radiusSm }}>
-              <QrCode size={17} style={{ color: "#0d0d0d" }} />
+              <QrCode size={17} style={{ color: "#1e293b" }} />
             </button>
           </div>
           {profileNotice && <div role="status" className="mt-3 px-2.5 py-2 text-xs font-bold" style={{ background: S.accentLight, color: S.text, borderLeft: `2px solid ${S.accent}` }}>{profileNotice}</div>}
@@ -677,12 +677,12 @@ export default function InfluenceRanking() {
                 ))}
               </div>
               <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-1.5 py-2">
-                <input value={orderSearchInput} onChange={event => setOrderSearchInput(event.target.value)} className="min-w-0 px-2 py-1.5 text-[10px] outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="搜索订单号或商品" aria-label="搜索订单号或商品" />
-                <button onClick={() => { setOrderQuery(orderSearchInput.trim()); showProfileNotice(orderSearchInput.trim() ? "已应用订单搜索" : "已显示全部订单"); }} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>查询</button>
+                <input value={orderSearchInput} onChange={event => setOrderSearchInput(event.target.value)} className="min-w-0 px-2 py-1.5 text-[10px] outline-none" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="搜索订单号或商品" aria-label="搜索订单号或商品" />
+                <button onClick={() => { setOrderQuery(orderSearchInput.trim()); showProfileNotice(orderSearchInput.trim() ? "已应用订单搜索" : "已显示全部订单"); }} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>查询</button>
               </div>
               <div className="flex items-center gap-1.5 pb-2">
-                <select value={orderDateRange} onChange={event => setOrderDateRange(event.target.value)} aria-label="订单日期范围" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }}><option>全部日期</option><option>近 7 天</option><option>近 30 天</option></select>
-                <button onClick={() => { setOrderSearchInput(""); setOrderQuery(""); setOrderDateRange("全部日期"); setActiveOrderStatus("所有订单"); showProfileNotice("订单筛选已重置"); }} className="px-2 py-1.5 text-[10px] font-bold whitespace-nowrap" style={{ background: "#f7f7f7", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>重置</button>
+                <select value={orderDateRange} onChange={event => setOrderDateRange(event.target.value)} aria-label="订单日期范围" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }}><option>全部日期</option><option>近 7 天</option><option>近 30 天</option></select>
+                <button onClick={() => { setOrderSearchInput(""); setOrderQuery(""); setOrderDateRange("全部日期"); setActiveOrderStatus("所有订单"); showProfileNotice("订单筛选已重置"); }} className="px-2 py-1.5 text-[10px] font-bold whitespace-nowrap" style={{ background: "#f1f5f9", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>重置</button>
               </div>
               <div className="flex items-center justify-between gap-2 pb-1.5">
                 <div className="min-w-0"><span className="text-[10px] font-bold" style={{ color: S.text }}>{activeOrderStatus} · {visibleOrders.length} 笔</span><span className="block text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>当前会员：{selectedUser.name}</span></div>
@@ -690,7 +690,7 @@ export default function InfluenceRanking() {
               </div>
               {visibleOrders.map(order => (
                 <article key={order.no} className="mb-2 overflow-hidden" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}>
-                  <div className="flex items-center justify-between gap-2 px-2.5 py-1.5" style={{ background: "#f7f7f7", borderBottom: `1px solid ${S.border}` }}>
+                  <div className="flex items-center justify-between gap-2 px-2.5 py-1.5" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}` }}>
                     <div className="min-w-0">
                       <div className="text-[10px] font-bold font-mono truncate" style={{ color: S.text }}>订单号：{order.no}</div>
                       <div className="text-[10px] mt-0.5" style={{ color: S.muted }}>购买日期：{order.date}</div>
@@ -718,13 +718,13 @@ export default function InfluenceRanking() {
                   </div>
                 </article>
               ))}
-              {visibleOrders.length === 0 && <div className="px-3 py-5 text-center" style={{ background: "#f7f7f7", border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }}>
+              {visibleOrders.length === 0 && <div className="px-3 py-5 text-center" style={{ background: "#f1f5f9", border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }}>
                 <Package size={17} className="mx-auto mb-2" style={{ color: S.mutedLight }} />
                 <div className="text-[11px] font-bold" style={{ color: S.textSec }}>暂无「{activeOrderStatus}」订单</div>
                 <div className="text-[10px] mt-1 leading-relaxed" style={{ color: S.muted }}>可查看全部订单，或直接为该会员创建售后跟进。</div>
-                <div className="flex justify-center gap-2 mt-3"><button onClick={() => { setActiveOrderStatus("所有订单"); setOrderQuery(""); setOrderSearchInput(""); }} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>查看全部</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建售后跟进`)} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: "#ffffff", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>创建售后</button></div>
+                <div className="flex justify-center gap-2 mt-3"><button onClick={() => { setActiveOrderStatus("所有订单"); setOrderQuery(""); setOrderSearchInput(""); }} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>查看全部</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建售后跟进`)} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: "#ffffff", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>创建售后</button></div>
               </div>}
-              <div className="flex items-center justify-center gap-1 pt-1 text-[10px]" style={{ color: S.muted }}><button className="px-1.5 py-1" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>‹</button><span className="px-1.5 py-1 font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>1</span><button className="px-1.5 py-1" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>›</button><span className="ml-1">共 {visibleOrders.length} 笔</span></div>
+              <div className="flex items-center justify-center gap-1 pt-1 text-[10px]" style={{ color: S.muted }}><button className="px-1.5 py-1" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>‹</button><span className="px-1.5 py-1 font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>1</span><button className="px-1.5 py-1" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>›</button><span className="ml-1">共 {visibleOrders.length} 笔</span></div>
             </div>
           )}
           {activeProfileTab === "订单详情" && (selectedOrderNo ? (() => {
@@ -745,12 +745,12 @@ export default function InfluenceRanking() {
                 ))}
               </div>
               <div className="mt-2 overflow-hidden" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-                <div className="px-2 py-1.5 text-[10px] font-bold" style={{ background: "#f7f7f7", color: S.textSec }}>商品明细 / 包裹 1</div>
+                <div className="px-2 py-1.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: S.textSec }}>商品明细 / 包裹 1</div>
                 {order.items.map(item => <div key={`detail-${item.name}`} className="grid grid-cols-[1fr_auto] gap-2 px-2 py-1.5" style={{ borderTop: `1px solid ${S.border}` }}><div className="min-w-0"><div className="text-[10px] font-bold truncate" style={{ color: S.text }}>{item.name}</div><div className="text-[10px]" style={{ color: S.muted }}>{item.spec}</div></div><div className="text-right text-[10px]" style={{ color: S.textSec }}>{item.price} · {item.quantity}</div></div>)}
               </div>
               <div className="flex gap-2 mt-3">
-                <button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建订单回访`)} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>发起回访</button>
-                <button onClick={() => showProfileNotice("订单备注已打开")} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: "#f7f7f7", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>添加备注</button>
+                <button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建订单回访`)} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>发起回访</button>
+                <button onClick={() => showProfileNotice("订单备注已打开")} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>添加备注</button>
               </div>
             </div>;
           })() : memberOrders.map(order => (

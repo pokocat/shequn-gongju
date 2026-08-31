@@ -2,17 +2,17 @@ import { useState, useMemo } from "react";
 import { Search, Plus, Clock, CheckCircle, AlertTriangle, X, ChevronRight, User, ChevronLeft, MessageSquare, ArrowUp, FileText } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -108,10 +108,10 @@ const initialTickets: Ticket[] = [
 ];
 
 const statusConfig: Record<TicketStatus, { bg: string; color: string }> = {
-  "进行中": { bg: "#f0f0f0", color: "#333" },
+  "进行中": { bg: "#f1f5f9", color: "#333" },
   "待处理": { bg: "#fffbeb", color: "#b45309" },
   "已解决": { bg: "#f0fff4", color: "#276749" },
-  "已升级": { bg: "#1a1a1a", color: S.accent },
+  "已升级": { bg: "#1e293b", color: S.accent },
 };
 
 const priorityConfig: Record<Priority, { color: string }> = {
@@ -135,7 +135,7 @@ const ASSIGNEE_POOL = ["吴思远", "刘刚", "林小燕", "技术支持", "客�
 function SlaBar({ hours, total }: { hours: number; total: number }) {
   const remaining = total - hours;
   const pct = Math.max(0, Math.min(100, (remaining / total) * 100));
-  const barBg = pct < 30 ? "#1a1a1a" : pct < 60 ? "#ffd600" : S.accent;
+  const barBg = pct < 30 ? "#1e293b" : pct < 60 ? "#3b82f6" : S.accent;
   const textColor = pct < 30 ? S.text : S.textSec;
   return (
     <div className="flex items-center gap-2">
@@ -297,7 +297,7 @@ export default function Tickets() {
     <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg, fontFamily: "monospace" }}>
       {/* Toast */}
       {toast && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
           {toast}
         </div>
       )}
@@ -351,8 +351,8 @@ export default function Tickets() {
               <textarea className="w-full mt-1 px-3 py-2 text-xs outline-none resize-none" style={{ background: S.bg, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} rows={3} placeholder="详细描述用户遇到的问题..." value={createForm.desc} onChange={e => setCreateForm({ ...createForm, desc: e.target.value })} />
             </div>
             <div className="flex gap-2 mt-1">
-              <button className="flex-1 py-2 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radius, border: "none" }} onClick={handleCreateTicket}>创建工单</button>
-              <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={() => setCreateOpen(false)}>取消</button>
+              <button className="flex-1 py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, border: "none" }} onClick={handleCreateTicket}>创建工单</button>
+              <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={() => setCreateOpen(false)}>取消</button>
             </div>
           </div>
         </div>
@@ -394,7 +394,7 @@ export default function Tickets() {
               </div>
               <button onClick={() => { setEscalateOpen(null); setEscalateReason(""); }}><X size={14} style={{ color: S.muted }} /></button>
             </div>
-            <div className="px-3 py-2.5 text-xs" style={{ background: "#fff8e1", borderRadius: S.radiusSm, border: `1px solid #ffd600`, color: "#b45309" }}>
+            <div className="px-3 py-2.5 text-xs" style={{ background: "#fff8e1", borderRadius: S.radiusSm, border: `1px solid #3b82f6`, color: "#b45309" }}>
               升级后工单将转交技术支持，优先级自动提升为「高」
             </div>
             <div>
@@ -402,8 +402,8 @@ export default function Tickets() {
               <textarea className="w-full mt-1 px-3 py-2 text-xs outline-none resize-none" style={{ background: S.bg, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} rows={3} placeholder="请说明升级原因..." value={escalateReason} onChange={e => setEscalateReason(e.target.value)} />
             </div>
             <div className="flex gap-2 mt-1">
-              <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#b45309", color: "#fff", borderRadius: S.radius, border: "none", opacity: escalateReason.trim() ? 1 : 0.5 }} disabled={!escalateReason.trim()} onClick={() => handleEscalate(escalateOpen)}>确认升级</button>
-              <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={() => { setEscalateOpen(null); setEscalateReason(""); }}>取消</button>
+              <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#b45309", color: "#ffffff", borderRadius: S.radius, border: "none", opacity: escalateReason.trim() ? 1 : 0.5 }} disabled={!escalateReason.trim()} onClick={() => handleEscalate(escalateOpen)}>确认升级</button>
+              <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={() => { setEscalateOpen(null); setEscalateReason(""); }}>取消</button>
             </div>
           </div>
         </div>
@@ -415,7 +415,7 @@ export default function Tickets() {
           <h2 className="font-bold" style={{ color: S.text, fontFamily: "monospace" }}>工单中心</h2>
           <p className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>管理咨询、售后、入群异常、退款跟进等工单</p>
         </div>
-        <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setCreateOpen(true)}>
+        <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setCreateOpen(true)}>
           <Plus size={13} /> 新建工单
         </button>
       </div>
@@ -429,8 +429,8 @@ export default function Tickets() {
               key={s.label}
               className="flex items-center gap-2 px-4 py-2.5 text-xs transition-all font-bold"
               style={{
-                background: isActive ? "#1a1a1a" : S.surface,
-                border: `1px solid ${isActive ? "#1a1a1a" : S.border}`,
+                background: isActive ? "#1e293b" : S.surface,
+                border: `1px solid ${isActive ? "#1e293b" : S.border}`,
                 color: isActive ? S.accent : S.muted,
                 borderRadius: S.radius,
                 fontFamily: "monospace",
@@ -438,7 +438,7 @@ export default function Tickets() {
               onClick={() => handleStatCardClick(s.filterVal)}
             >
               <span>{s.label}</span>
-              <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: isActive ? S.accent : "#f0f0ec", color: isActive ? "#000" : S.muted, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+              <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: isActive ? S.accent : "#f1f5f9", color: isActive ? "#ffffff" : S.muted, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                 {s.count}
               </span>
             </button>
@@ -453,7 +453,7 @@ export default function Tickets() {
       <div className="flex gap-4 flex-1 min-h-0">
         {/* Table */}
         <div className="flex-1 flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-          <div className="grid text-xs px-4 py-2.5 flex-shrink-0" style={{ gridTemplateColumns: "130px 90px 80px 100px 70px 80px 90px 110px", background: "#f5f5f5", borderBottom: `1px solid ${S.borderMed}`, color: "#555555", fontFamily: "monospace", fontWeight: "bold", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+          <div className="grid text-xs px-4 py-2.5 flex-shrink-0" style={{ gridTemplateColumns: "130px 90px 80px 100px 70px 80px 90px 110px", background: "#f1f5f9", borderBottom: `1px solid ${S.borderMed}`, color: "#475569", fontFamily: "monospace", fontWeight: "bold", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
             <div>工单号</div>
             <div>类型</div>
             <div>用户</div>
@@ -474,7 +474,7 @@ export default function Tickets() {
                   className="grid items-center px-4 py-3 cursor-pointer transition-all"
                   style={{
                     gridTemplateColumns: "130px 90px 80px 100px 70px 80px 90px 110px",
-                    background: isSelected ? "rgba(204,255,0,0.08)" : "transparent",
+                    background: isSelected ? "rgba(59,130,246,0.08)" : "transparent",
                     borderBottom: `1px solid ${S.border}`,
                     borderLeft: isSelected ? `3px solid ${S.accent}` : "3px solid transparent",
                   }}
@@ -501,17 +501,17 @@ export default function Tickets() {
                   )}
                   <div className="flex gap-1" onClick={e => e.stopPropagation()}>
                     {t.status === "待处理" && (
-                      <button className="px-2 py-1 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }} onClick={() => setAssignOpen(t.id)}>指派</button>
+                      <button className="px-2 py-1 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }} onClick={() => setAssignOpen(t.id)}>指派</button>
                     )}
                     {t.status === "进行中" && (
-                      <button className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(t.id)}>完成</button>
+                      <button className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(t.id)}>完成</button>
                     )}
                     {(t.status === "待处理" || t.status === "进行中") && (
-                      <button className="px-2 py-1 text-xs font-bold" style={{ background: "#fff8e1", color: "#b45309", border: `1px solid #ffd600`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setEscalateOpen(t.id)}>
+                      <button className="px-2 py-1 text-xs font-bold" style={{ background: "#fff8e1", color: "#b45309", border: `1px solid #3b82f6`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setEscalateOpen(t.id)}>
                         <ArrowUp size={10} className="inline mr-0.5" />升级
                       </button>
                     )}
-                    <button className="px-2 py-1 text-xs flex items-center gap-0.5 font-bold" style={{ background: "#f0f0ec", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setSelected(t.id)}>
+                    <button className="px-2 py-1 text-xs flex items-center gap-0.5 font-bold" style={{ background: "#f1f5f9", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setSelected(t.id)}>
                       <ChevronRight size={11} />
                     </button>
                   </div>
@@ -525,14 +525,14 @@ export default function Tickets() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between px-4 py-2.5 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}`, background: "#f5f5f5" }}>
+            <div className="flex items-center justify-between px-4 py-2.5 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}`, background: "#f1f5f9" }}>
               <span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>共 {filtered.length} 条 · 第 {safePage} / {totalPages} 页</span>
               <div className="flex gap-1.5">
                 <button className="px-2.5 py-1 text-xs font-bold disabled:opacity-30" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} disabled={safePage <= 1} onClick={() => setPage(safePage - 1)}>
                   <ChevronLeft size={12} className="inline" /> 上一页
                 </button>
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                  <button key={p} className="px-2 py-1 text-xs font-bold" style={{ background: p === safePage ? "#0d0d0d" : S.surface, color: p === safePage ? S.accent : S.muted, border: `1px solid ${p === safePage ? "#0d0d0d" : S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setPage(p)}>{p}</button>
+                  <button key={p} className="px-2 py-1 text-xs font-bold" style={{ background: p === safePage ? "#1e293b" : S.surface, color: p === safePage ? S.accent : S.muted, border: `1px solid ${p === safePage ? "#1e293b" : S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setPage(p)}>{p}</button>
                 ))}
                 <button className="px-2.5 py-1 text-xs font-bold disabled:opacity-30" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} disabled={safePage >= totalPages} onClick={() => setPage(safePage + 1)}>
                   下一页 <ChevronRight size={12} className="inline" />
@@ -559,7 +559,7 @@ export default function Tickets() {
               <div className="text-xs mt-1.5" style={{ color: S.muted, fontFamily: "monospace" }}>{detail.desc}</div>
               <div className="flex flex-wrap gap-1 mt-2">
                 {detail.tags.map(t => (
-                  <span key={t} className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f0f0ec", color: S.text, borderRadius: S.radiusSm, border: `1px solid ${S.border}`, fontFamily: "monospace" }}>{t}</span>
+                  <span key={t} className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.text, borderRadius: S.radiusSm, border: `1px solid ${S.border}`, fontFamily: "monospace" }}>{t}</span>
                 ))}
               </div>
             </div>
@@ -615,19 +615,19 @@ export default function Tickets() {
                 value={followUpText}
                 onChange={e => setFollowUpText(e.target.value)}
               />
-              <button className="w-full mt-1 py-1.5 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => handleAddFollowUp(detail.id)} disabled={!followUpText.trim()}>
+              <button className="w-full mt-1 py-1.5 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => handleAddFollowUp(detail.id)} disabled={!followUpText.trim()}>
                 + 添加跟进记录
               </button>
             </div>
 
             <div className="flex flex-col gap-2 mt-auto">
               {detail.assignee === "待分配" && detail.status !== "已解决" && detail.status !== "已升级" && (
-                <button className="w-full py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setAssignOpen(detail.id)}>
+                <button className="w-full py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setAssignOpen(detail.id)}>
                   <User size={12} className="inline mr-1" />指派处理人
                 </button>
               )}
               {detail.status === "进行中" && (
-                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(detail.id)}>
+                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(detail.id)}>
                   <CheckCircle size={12} className="inline mr-1" />标记已解决
                 </button>
               )}
@@ -636,7 +636,7 @@ export default function Tickets() {
                   <AlertTriangle size={12} className="inline mr-1" />升级处理
                 </button>
               )}
-              <button className="w-full py-2 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => showToast(`已生成工单报告 ${detail.no}`)}>
+              <button className="w-full py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => showToast(`已生成工单报告 ${detail.no}`)}>
                 <FileText size={12} className="inline mr-1" />导出工单报告
               </button>
             </div>

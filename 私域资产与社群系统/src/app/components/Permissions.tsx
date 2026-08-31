@@ -2,17 +2,17 @@ import { useState } from "react";
 import { Shield, Plus, Check, X, Eye, Edit, Trash2, Download, CheckSquare } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -65,7 +65,7 @@ export default function Permissions() {
           <h2 className="font-bold" style={{ color: S.text, fontFamily: "monospace" }}>权限设置</h2>
           <p className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>管理角色、模块权限、数据范围及高风险操作审批</p>
         </div>
-        <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>
+        <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>
           <Plus size={13} /> 新建角色
         </button>
       </div>
@@ -79,8 +79,8 @@ export default function Permissions() {
               key={r.id}
               className="flex items-center gap-2.5 px-3 py-2.5 text-left transition-all font-bold"
               style={{
-                background: selectedRole === r.name ? "#1a1a1a" : S.surface,
-                border: `1px solid ${selectedRole === r.name ? "#1a1a1a" : S.border}`,
+                background: selectedRole === r.name ? "#1e293b" : S.surface,
+                border: `1px solid ${selectedRole === r.name ? "#1e293b" : S.border}`,
                 borderRadius: S.radius,
                 boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
               }}
@@ -100,7 +100,7 @@ export default function Permissions() {
           {/* Role header */}
           <div className="p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 flex items-center justify-center" style={{ background: "#f5f5f5", borderRadius: S.radiusSm }}>
+              <div className="w-9 h-9 flex items-center justify-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}>
                 <Shield size={18} style={{ color: S.accent }} />
               </div>
               <div className="flex-1">
@@ -111,7 +111,7 @@ export default function Permissions() {
                 <div className="text-xs font-bold" style={{ color: S.muted, fontFamily: "monospace" }}>当前成员</div>
                 <div className="flex flex-wrap gap-1 mt-1 justify-end">
                   {role.users.map(u => (
-                    <span key={u} className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f0f0ec", color: S.text, borderRadius: S.radiusSm, border: `1px solid ${S.border}`, fontFamily: "monospace" }}>{u}</span>
+                    <span key={u} className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.text, borderRadius: S.radiusSm, border: `1px solid ${S.border}`, fontFamily: "monospace" }}>{u}</span>
                   ))}
                 </div>
               </div>
@@ -120,17 +120,17 @@ export default function Permissions() {
 
           {/* Permission matrix table */}
           <div className="overflow-hidden flex-1" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-            <div className="flex text-xs px-4 py-2.5 items-center" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.borderMed}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
-              <div className="flex-1 font-bold" style={{ color: "#555555", fontFamily: "monospace" }}>功能模块</div>
+            <div className="flex text-xs px-4 py-2.5 items-center" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.borderMed}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+              <div className="flex-1 font-bold" style={{ color: "#475569", fontFamily: "monospace" }}>功能模块</div>
               {permLabels.map((l, i) => {
                 const Icon = permIcons[i];
                 return (
-                  <div key={l} className="w-16 text-center flex items-center justify-center gap-1 font-bold" style={{ color: "#555555", fontFamily: "monospace" }}>
+                  <div key={l} className="w-16 text-center flex items-center justify-center gap-1 font-bold" style={{ color: "#475569", fontFamily: "monospace" }}>
                     <Icon size={11} />{l}
                   </div>
                 );
               })}
-              <div className="w-16 text-center font-bold" style={{ color: "#555555", fontFamily: "monospace" }}>操作</div>
+              <div className="w-16 text-center font-bold" style={{ color: "#475569", fontFamily: "monospace" }}>操作</div>
             </div>
             <div className="overflow-auto" style={{ maxHeight: "calc(100vh - 520px)" }}>
               {modules.map((mod, idx) => {
@@ -142,17 +142,17 @@ export default function Permissions() {
                       <div key={i} className="w-16 flex justify-center">
                         {v ? (
                           <div className="w-5 h-5 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-                            <Check size={11} style={{ color: "#000" }} />
+                            <Check size={11} style={{ color: "#ffffff" }} />
                           </div>
                         ) : (
-                          <div className="w-5 h-5 flex items-center justify-center" style={{ background: "#f0f0ec", borderRadius: S.radiusSm }}>
+                          <div className="w-5 h-5 flex items-center justify-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}>
                             <X size={11} style={{ color: "#999" }} />
                           </div>
                         )}
                       </div>
                     ))}
                     <div className="w-16 flex justify-center">
-                      <button className="text-xs px-2 py-1 font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }}>编辑</button>
+                      <button className="text-xs px-2 py-1 font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }}>编辑</button>
                     </div>
                   </div>
                 );
@@ -170,15 +170,15 @@ export default function Permissions() {
           <div className="space-y-4">
             {auditLog.map((l, i) => (
               <div key={i} className="relative pl-3">
-                <div className="absolute left-0 top-1.5 w-1.5 h-1.5" style={{ background: S.accent, borderRadius: "50%", border: "2px solid #1a1a1a" }} />
+                <div className="absolute left-0 top-1.5 w-1.5 h-1.5" style={{ background: S.accent, borderRadius: "50%", border: "2px solid #1e293b" }} />
                 <div className="text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{l.action}</div>
-                <div className="text-xs mt-0.5 font-bold inline-block px-2 py-0.5" style={{ color: S.accent, background: "#f5f5f5", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{l.role}</div>
+                <div className="text-xs mt-0.5 font-bold inline-block px-2 py-0.5" style={{ color: S.accent, background: "#f1f5f9", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{l.role}</div>
                 <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>{l.detail}</div>
                 <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>{l.operator} · {l.time}</div>
               </div>
             ))}
           </div>
-          <button className="w-full mt-4 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>
+          <button className="w-full mt-4 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>
             查看完整日志
           </button>
         </div>

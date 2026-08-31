@@ -13,17 +13,17 @@ import InviteDrawer from "./InviteDrawer";
 import InviteReviewDrawer from "./InviteReviewDrawer";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -173,16 +173,16 @@ const projects: ProjectRecord[] = [
 ];
 
 const statusCfg: Record<string, { bg: string; color: string }> = {
-  "主力项目": { bg: S.accent,            color: "#000" },
-  "主力生态": { bg: S.accent,            color: "#000" },
-  "增长中":   { bg: S.accent,            color: "#000" },
-  "成长中":   { bg: S.accentLight,       color: "#0d0d0d" },
-  "稳定运营": { bg: "#f0f0ec",           color: "#555" },
-  "孵化中":   { bg: "#f0f0ec",           color: "#555" },
-  "季节性":   { bg: "#f0f0ec",           color: "#555" },
-  "生产中":   { bg: S.accent,            color: "#000" },
-  "测试中":   { bg: "#ffd600",           color: "#000" },
-  "开发中":   { bg: "#f0f0ec",           color: "#555" },
+  "主力项目": { bg: S.accent,            color: "#ffffff" },
+  "主力生态": { bg: S.accent,            color: "#ffffff" },
+  "增长中":   { bg: S.accent,            color: "#ffffff" },
+  "成长中":   { bg: S.accentLight,       color: "#1e293b" },
+  "稳定运营": { bg: "#f1f5f9",           color: "#475569" },
+  "孵化中":   { bg: "#f1f5f9",           color: "#475569" },
+  "季节性":   { bg: "#f1f5f9",           color: "#475569" },
+  "生产中":   { bg: S.accent,            color: "#ffffff" },
+  "测试中":   { bg: "#3b82f6",           color: "#ffffff" },
+  "开发中":   { bg: "#f1f5f9",           color: "#475569" },
 };
 
 // ─── 架构流程图 ───────────────────────────────────────────────
@@ -206,7 +206,7 @@ function ArchitectureDiagram({ tiers, activeTier, onSelect }: { tiers: ReturnTyp
             onClick={() => onSelect(t.id)}
           >
             <div className="flex items-center gap-2 w-full">
-              <div className="w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: isActive ? "#0d0d0d" : "rgba(0,0,0,0.06)", color: isActive ? S.accent : S.textSec, borderRadius: S.radiusSm }}>
+              <div className="w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: isActive ? "#1e293b" : "rgba(15,23,42,0.06)", color: isActive ? S.accent : S.textSec, borderRadius: S.radiusSm }}>
                 {t.level}
               </div>
               {idx < 3 && <ArrowRight size={14} className="ml-auto" style={{ color: S.muted }} />}
@@ -214,14 +214,14 @@ function ArchitectureDiagram({ tiers, activeTier, onSelect }: { tiers: ReturnTyp
 
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Icon size={18} style={{ color: isActive ? "#0d0d0d" : S.muted }} />
+                <Icon size={18} style={{ color: isActive ? "#1e293b" : S.muted }} />
                 <span className="text-sm font-bold" style={{ color: S.text }}>{t.label}</span>
               </div>
               <p className="text-xs leading-relaxed font-mono" style={{ color: S.muted }}>{t.desc.slice(0, 48)}...</p>
             </div>
 
             <div className="flex items-center gap-1.5">
-              <span className="px-2 py-0.5 text-xs font-bold" style={{ background: isActive ? "#0d0d0d" : "rgba(0,0,0,0.06)", color: isActive ? S.accent : S.textSec, borderRadius: S.radiusSm }}>
+              <span className="px-2 py-0.5 text-xs font-bold" style={{ background: isActive ? "#1e293b" : "rgba(15,23,42,0.06)", color: isActive ? S.accent : S.textSec, borderRadius: S.radiusSm }}>
                 {t.count} 个
               </span>
               <span className="text-xs font-mono" style={{ color: S.muted }}>当前</span>
@@ -284,9 +284,9 @@ function SuperView({
 
       <div className="p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
         <div className="flex items-center gap-2 mb-4">
-          <Zap size={16} style={{ color: "#0d0d0d" }} />
+          <Zap size={16} style={{ color: "#1e293b" }} />
           <span className="text-sm font-bold" style={{ color: S.text }}>超级生态</span>
-          <span className="px-2 py-0.5 text-xs font-bold ml-2" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>最高层级</span>
+          <span className="px-2 py-0.5 text-xs font-bold ml-2" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>最高层级</span>
         </div>
         <p className="text-xs leading-relaxed mb-4 font-mono" style={{ color: S.textSec }}>
           超级生态是整个体系的最顶层。统一管理旗下所有生态、SaaS 系统、平台和具体项目。拥有全局数据视角、最高级权限、多租户管控和生态资源调配能力。
@@ -294,7 +294,7 @@ function SuperView({
         </p>
         <div className="flex gap-2 flex-wrap">
           {["全局数据看板", "跨生态权限管理", "多租户隔离", "统一账号资产", "生态营收汇总"].map(t => (
-            <span key={t} className="px-2.5 py-1 text-xs font-bold font-mono" style={{ background: S.accentLight, color: "#0d0d0d", borderRadius: S.radiusSm, border: `1px solid rgba(204,255,0,0.3)` }}>{t}</span>
+            <span key={t} className="px-2.5 py-1 text-xs font-bold font-mono" style={{ background: S.accentLight, color: "#1e293b", borderRadius: S.radiusSm, border: `1px solid rgba(204,255,0,0.3)` }}>{t}</span>
           ))}
         </div>
       </div>
@@ -302,7 +302,7 @@ function SuperView({
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div><span className="text-sm font-bold" style={{ color: S.text }}>旗下生态 ({ecoList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>超级生态下辖的行业垂直生态，每个生态下辖多个 SaaS 系统与资源池</div></div>
-          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateEcoOpen(true)}>
+          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateEcoOpen(true)}>
             <Plus size={12} /> 新建生态
           </button>
         </div>
@@ -323,7 +323,7 @@ function SuperView({
             onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setSelected(selected === e.id ? null : e.id); } }}
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius }}>
+              <div className="w-10 h-10 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius }}>
                 {e.name[0]}
               </div>
               <div className="flex-1">
@@ -335,7 +335,7 @@ function SuperView({
               </div>
               <div className="grid grid-cols-2 gap-3 text-center flex-shrink-0">
                 {[["下属SaaS 系统", e.platforms], ["招募平台", e.projects], ["生态会员", e.members.toLocaleString()], ["月营收", e.revenue]].map(([l, v]) => (
-                  <div key={l as string} className="px-3 py-1.5" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                  <div key={l as string} className="px-3 py-1.5" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                     <div className="text-xs font-bold font-mono" style={{ color: S.text }}>{v}</div>
                     <div className="font-mono" style={{ color: S.muted, fontSize: "10px" }}>{l}</div>
                   </div>
@@ -362,9 +362,9 @@ function SuperView({
                   )}
                 </div>
                 <div className="flex gap-2">
-                  <button type="button" className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasEcoId(e.id)}><Plus size={12} /> 新建 SaaS 系统</button>
+                  <button type="button" className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasEcoId(e.id)}><Plus size={12} /> 新建 SaaS 系统</button>
                   {["查看平台", "项目列表", "数据报表"].map(a => (
-                    <button key={a} type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>{a}</button>
+                    <button key={a} type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{a}</button>
                   ))}
                 </div>
               </div>
@@ -435,7 +435,7 @@ function EcoView({
           <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
             {ecoOptions.map(o => <option key={o}>{o}</option>)}
           </select>
-          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasOpen(true)}>
+          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasOpen(true)}>
             <Plus size={12} /> 新建 SaaS 系统
           </button>
         </div>
@@ -453,24 +453,24 @@ function EcoView({
             }}
           >
             {p.isCurrent && (
-              <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-0.5" style={{ background: "#0d0d0d", borderRadius: S.radiusSm }}>
+              <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-0.5" style={{ background: "#1e293b", borderRadius: S.radiusSm }}>
                 <CheckCircle size={10} style={{ color: S.accent }} />
                 <span style={{ color: S.accent, fontSize: "10px", fontFamily: "monospace" }}>当前系统</span>
               </div>
             )}
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 flex items-center justify-center text-sm font-bold flex-shrink-0" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+              <div className="w-8 h-8 flex items-center justify-center text-sm font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
                 {p.name[0]}
               </div>
               <div>
                 <span className="text-sm font-bold" style={{ color: S.text }}>{p.name}</span>
-                <span className="ml-2 px-2 py-0.5 text-[10px] font-bold" style={{ background: "#f0f0f0", color: "#555", borderRadius: S.radiusSm }}>{p.eco}</span>
+                <span className="ml-2 px-2 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{p.eco}</span>
               </div>
             </div>
             <div className="text-xs mb-3 font-mono" style={{ color: S.muted }}>{p.desc}</div>
             <div className="grid grid-cols-4 gap-2 mb-3">
               {[["服务平台", p.platformCount], ["服务项目", p.projects], ["系统用户", p.users.toLocaleString()], ["活跃群组", p.groups]].map(([l, v]) => (
-                <div key={l as string} className="px-2 py-1.5 text-center" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                <div key={l as string} className="px-2 py-1.5 text-center" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                   <div className="text-xs font-bold" style={{ color: S.text }}>{v}</div>
                   <div className="font-mono" style={{ color: S.muted, fontSize: "10px" }}>{l}</div>
                 </div>
@@ -479,7 +479,7 @@ function EcoView({
             <div className="flex items-center justify-between">
               <span className="px-2 py-0.5 text-xs font-bold" style={{ background: statusCfg[p.status]?.bg, color: statusCfg[p.status]?.color, borderRadius: S.radiusSm }}>{p.status}</span>
               <div className="flex items-center gap-2">
-                <button type="button" className="flex items-center gap-1 px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }} onClick={() => setCreatePlatformSaasId(p.id)}><Plus size={10} /> 开平台</button>
+                <button type="button" className="flex items-center gap-1 px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => setCreatePlatformSaasId(p.id)}><Plus size={10} /> 开平台</button>
               </div>
             </div>
           </div>
@@ -548,7 +548,7 @@ function SaasView({
           <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterSaas} onChange={e => setFilterSaas(e.target.value)}>
             {saasOptions.map(o => <option key={o}>{o}</option>)}
           </select>
-          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
+          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
         </div>
       </div>
       <div className="grid grid-cols-4 gap-2">
@@ -567,7 +567,7 @@ function SaasView({
             }}
           >
             <div className="flex items-center gap-3 flex-shrink-0" style={{ width: 300 }}>
-              <div className="w-10 h-10 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius }}>
+              <div className="w-10 h-10 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius }}>
                 {pf.name[0]}
               </div>
               <div>
@@ -576,21 +576,21 @@ function SaasView({
                   <span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span>
                 </div>
                 <div className="flex gap-1.5 flex-wrap">
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f0f0f0", color: "#555", borderRadius: S.radiusSm }}>{pf.saas}</span>
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f0f0f0", color: "#555", borderRadius: S.radiusSm }}>{pf.eco}</span>
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{pf.saas}</span>
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{pf.eco}</span>
                 </div>
               </div>
             </div>
             <div className="flex-1 grid grid-cols-5 gap-3">
               {[["下辖项目", pf.projects], ["平台用户", pf.users.toLocaleString()], ["运营群组", pf.groups], ["服务老师", `${pf.teachers} 人`], ["月营收", pf.revenue]].map(([l, v]) => (
-                <div key={l as string} className="px-3 py-2 text-center" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                <div key={l as string} className="px-3 py-2 text-center" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                   <div className="text-xs font-bold font-mono" style={{ color: S.text }}>{v}</div>
                   <div className="font-mono" style={{ color: S.muted, fontSize: "10px" }}>{l}</div>
                 </div>
               ))}
             </div>
             <div className="flex-shrink-0">
-              <button type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }} onClick={() => { setActivePlatformId(pf.id); setActivePlatformName(pf.name); setActiveTier && setActiveTier("platform"); }}>进入平台</button>
+              <button type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => { setActivePlatformId(pf.id); setActivePlatformName(pf.name); setActiveTier && setActiveTier("platform"); }}>进入平台</button>
             </div>
           </div>
         ))}
@@ -612,7 +612,7 @@ function SaasView({
 }
 
 // ─── 项目/平台视图 ────────────────────────────────────────────
-const fieldStyle = { background: "#fff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text, padding: "8px 10px", fontSize: 12, width: "100%" };
+const fieldStyle = { background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text, padding: "8px 10px", fontSize: 12, width: "100%" };
 const roleNames = ["超级管理员", "生态负责人", "生态COO", "SaaS负责人", "SaaS运营", "平台管理员", "平台运营", "项目负责人", "区域运营", "客服", "老师"];
 const projectVisibilityRoles = ["生态负责人", "SaaS负责人", "平台管理员", "项目负责人", "区域运营", "客服", "老师"];
 
@@ -630,7 +630,7 @@ function GroupRulesEditor({ project, updateDraft }: { project: ProjectRecord; up
     updateDraft(current => ({ ...current, groupTypes: current.groupTypes.map((rule, index) => index === idx && !rule.memberRoles.includes(value) ? { ...rule, memberRoles: [...rule.memberRoles.filter(role => role !== "待配置身份"), value] } : rule) }));
     setRoleDraft(current => ({ ...current, [idx]: "" }));
   };
-  return <div className="space-y-2"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目群类型规则</div><p className="text-xs mt-1 leading-relaxed" style={{ color: S.muted }}>群类型启用后才能建群。地区与会员身份均可多选；群类型代码、地区代码和序号由系统生成并保持只读。</p></div>{project.groupTypes.map((rule, idx) => <div key={rule.id} className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="px-2 py-1 text-xs font-bold" style={{ background: rule.enabled ? "#0d0d0d" : "#f0f0f0", color: rule.enabled ? S.accent : S.muted, borderRadius: S.radiusSm }}>{rule.code}</span><input value={rule.name} style={{ ...fieldStyle, width: 132, padding: "5px 7px" }} onChange={e => updateRule(idx, { name: e.target.value })} /></div><label className="flex items-center gap-1 text-xs font-bold" style={{ color: rule.enabled ? "#276749" : S.muted }}><input type="checkbox" checked={rule.enabled} onChange={e => updateRule(idx, { enabled: e.target.checked })} />启用</label></div><div className="grid grid-cols-1 md:grid-cols-2 gap-3"><label className="text-xs" style={{ color: S.muted }}>默认群容量<input type="number" min="1" value={rule.capacity} style={{ ...fieldStyle, marginTop: 4 }} onChange={e => updateRule(idx, { capacity: Number(e.target.value) })} /></label><label className="text-xs" style={{ color: S.muted }}>分配方式<select value={rule.allocationMode} style={{ ...fieldStyle, marginTop: 4 }} onChange={e => updateRule(idx, { allocationMode: e.target.value as GroupTypeRule["allocationMode"] })}><option>轮巡分配</option><option>统一分配</option></select></label></div><div><div className="text-xs font-bold mb-1.5">匹配会员身份 <span className="font-normal" style={{ color: S.muted }}>可多选</span></div><div className="flex flex-wrap gap-1.5">{groupRuleRoleOptions.map(role => <label key={role} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: rule.memberRoles.includes(role) ? "#0d0d0d" : "#f7f7f7", color: rule.memberRoles.includes(role) ? S.accent : S.muted, border: `1px solid ${rule.memberRoles.includes(role) ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={rule.memberRoles.includes(role)} onChange={() => toggleListValue(idx, "memberRoles", role)} />{role}</label>)}<input className="px-2 py-1 text-[10px] outline-none" style={{ ...fieldStyle, width: 116, padding: "5px 7px" }} placeholder="新增身份，回车" value={roleDraft[String(idx)] || ""} onChange={e => setRoleDraft(current => ({ ...current, [idx]: e.target.value }))} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addRole(idx); } }} /></div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>当前：{rule.memberRoles.length ? rule.memberRoles.join("、") : "未选择身份"}</div></div><div><div className="text-xs font-bold mb-1.5">管理地区 <span className="font-normal" style={{ color: S.muted }}>可多选，取消勾选即不参与建群</span></div><div className="flex flex-wrap gap-1.5">{groupRuleCityOptions.map(city => <label key={city} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: rule.cities.includes(city) ? "#0d0d0d" : "#f7f7f7", color: rule.cities.includes(city) ? S.accent : S.muted, border: `1px solid ${rule.cities.includes(city) ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={rule.cities.includes(city)} onChange={() => toggleListValue(idx, "cities", city)} />{city}</label>)}</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>已选地区：{rule.cities.length ? rule.cities.join("、") : "未选择地区，无法建群"}</div></div><div className="text-[10px] font-mono" style={{ color: S.muted }}>群名模板：<span style={{ color: S.text }}>{rule.nameTemplate}</span> · 编号只读：{rule.code} + 地区代码 + 序号</div></div>)}<button type="button" className="w-full py-2 text-xs font-bold" style={{ border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => updateDraft(current => ({ ...current, groupTypes: [...current.groupTypes, { id: `custom-${Date.now()}`, name: "新群类型", code: `FL${String(current.groupTypes.length + 1).padStart(2, "0")}`, memberRoles: [], capacity: 500, cities: ["北京"], allocationMode: "轮巡分配", nameTemplate: "{project}{type}{city}{seq}群", enabled: false }] }))}><Plus size={13} className="inline mr-1" />新增群类型规则</button></div>;
+  return <div className="space-y-2"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目群类型规则</div><p className="text-xs mt-1 leading-relaxed" style={{ color: S.muted }}>群类型启用后才能建群。地区与会员身份均可多选；群类型代码、地区代码和序号由系统生成并保持只读。</p></div>{project.groupTypes.map((rule, idx) => <div key={rule.id} className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="px-2 py-1 text-xs font-bold" style={{ background: rule.enabled ? "#1e293b" : "#f1f5f9", color: rule.enabled ? S.accent : S.muted, borderRadius: S.radiusSm }}>{rule.code}</span><input value={rule.name} style={{ ...fieldStyle, width: 132, padding: "5px 7px" }} onChange={e => updateRule(idx, { name: e.target.value })} /></div><label className="flex items-center gap-1 text-xs font-bold" style={{ color: rule.enabled ? "#276749" : S.muted }}><input type="checkbox" checked={rule.enabled} onChange={e => updateRule(idx, { enabled: e.target.checked })} />启用</label></div><div className="grid grid-cols-1 md:grid-cols-2 gap-3"><label className="text-xs" style={{ color: S.muted }}>默认群容量<input type="number" min="1" value={rule.capacity} style={{ ...fieldStyle, marginTop: 4 }} onChange={e => updateRule(idx, { capacity: Number(e.target.value) })} /></label><label className="text-xs" style={{ color: S.muted }}>分配方式<select value={rule.allocationMode} style={{ ...fieldStyle, marginTop: 4 }} onChange={e => updateRule(idx, { allocationMode: e.target.value as GroupTypeRule["allocationMode"] })}><option>轮巡分配</option><option>统一分配</option></select></label></div><div><div className="text-xs font-bold mb-1.5">匹配会员身份 <span className="font-normal" style={{ color: S.muted }}>可多选</span></div><div className="flex flex-wrap gap-1.5">{groupRuleRoleOptions.map(role => <label key={role} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: rule.memberRoles.includes(role) ? "#1e293b" : "#f1f5f9", color: rule.memberRoles.includes(role) ? S.accent : S.muted, border: `1px solid ${rule.memberRoles.includes(role) ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={rule.memberRoles.includes(role)} onChange={() => toggleListValue(idx, "memberRoles", role)} />{role}</label>)}<input className="px-2 py-1 text-[10px] outline-none" style={{ ...fieldStyle, width: 116, padding: "5px 7px" }} placeholder="新增身份，回车" value={roleDraft[String(idx)] || ""} onChange={e => setRoleDraft(current => ({ ...current, [idx]: e.target.value }))} onKeyDown={e => { if (e.key === "Enter") { e.preventDefault(); addRole(idx); } }} /></div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>当前：{rule.memberRoles.length ? rule.memberRoles.join("、") : "未选择身份"}</div></div><div><div className="text-xs font-bold mb-1.5">管理地区 <span className="font-normal" style={{ color: S.muted }}>可多选，取消勾选即不参与建群</span></div><div className="flex flex-wrap gap-1.5">{groupRuleCityOptions.map(city => <label key={city} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: rule.cities.includes(city) ? "#1e293b" : "#f1f5f9", color: rule.cities.includes(city) ? S.accent : S.muted, border: `1px solid ${rule.cities.includes(city) ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={rule.cities.includes(city)} onChange={() => toggleListValue(idx, "cities", city)} />{city}</label>)}</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>已选地区：{rule.cities.length ? rule.cities.join("、") : "未选择地区，无法建群"}</div></div><div className="text-[10px] font-mono" style={{ color: S.muted }}>群名模板：<span style={{ color: S.text }}>{rule.nameTemplate}</span> · 编号只读：{rule.code} + 地区代码 + 序号</div></div>)}<button type="button" className="w-full py-2 text-xs font-bold" style={{ border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => updateDraft(current => ({ ...current, groupTypes: [...current.groupTypes, { id: `custom-${Date.now()}`, name: "新群类型", code: `FL${String(current.groupTypes.length + 1).padStart(2, "0")}`, memberRoles: [], capacity: 500, cities: ["北京"], allocationMode: "轮巡分配", nameTemplate: "{project}{type}{city}{seq}群", enabled: false }] }))}><Plus size={13} className="inline mr-1" />新增群类型规则</button></div>;
 }
 
 function ProjectDrawer({ project, onClose, onSave }: { project: ProjectRecord; onClose: () => void; onSave: (p: ProjectRecord) => void }) {
@@ -647,7 +647,7 @@ function ProjectDrawer({ project, onClose, onSave }: { project: ProjectRecord; o
           <button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button>
         </div>
         <div className="flex gap-1 p-4 pb-2">
-          {([["overview", "概览", LayoutDashboard], ["tiers", "会员等级", UsersRound], ["groupRules", "群类型规则", SlidersHorizontal], ["mechanism", "社群机制", Workflow], ["visibility", "可见范围", Eye]] as [ProjectTab, string, any][]).map(([id, label, Icon]) => <button key={id} type="button" className="flex-1 flex items-center justify-center gap-1 px-2 py-2 text-xs font-bold" style={{ background: tab === id ? "#0d0d0d" : S.surface, color: tab === id ? S.accent : S.muted, border: `1px solid ${tab === id ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }} onClick={() => setTab(id)}><Icon size={13} />{label}</button>)}
+          {([["overview", "概览", LayoutDashboard], ["tiers", "会员等级", UsersRound], ["groupRules", "群类型规则", SlidersHorizontal], ["mechanism", "社群机制", Workflow], ["visibility", "可见范围", Eye]] as [ProjectTab, string, any][]).map(([id, label, Icon]) => <button key={id} type="button" className="flex-1 flex items-center justify-center gap-1 px-2 py-2 text-xs font-bold" style={{ background: tab === id ? "#1e293b" : S.surface, color: tab === id ? S.accent : S.muted, border: `1px solid ${tab === id ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }} onClick={() => setTab(id)}><Icon size={13} />{label}</button>)}
         </div>
         <div className="p-4 space-y-3">
           {tab === "overview" && <>
@@ -656,15 +656,15 @@ function ProjectDrawer({ project, onClose, onSave }: { project: ProjectRecord; o
               <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属 SaaS / 生态</div><div className="text-sm font-bold mt-1">{draft.saas}</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.eco}</div></div>
               <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>当前运营数据</div><div className="text-sm font-bold mt-1">{draft.users.toLocaleString()} 用户 · {draft.groups} 群</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.revenue}</div></div>
             </div>
-            <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><Building2 size={16} />企业微信归属</div><div className="text-sm font-bold mt-2">{draft.enterpriseWx}</div><div className="text-xs mt-1" style={{ color: S.muted }}>同一企业已承载 {draft.enterpriseProjectCount} 个项目 · 项目数据按项目隔离</div><button type="button" className="mt-3 px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setTab("visibility")}>管理项目范围</button></div>
+            <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><Building2 size={16} />企业微信归属</div><div className="text-sm font-bold mt-2">{draft.enterpriseWx}</div><div className="text-xs mt-1" style={{ color: S.muted }}>同一企业已承载 {draft.enterpriseProjectCount} 个项目 · 项目数据按项目隔离</div><button type="button" className="mt-3 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setTab("visibility")}>管理项目范围</button></div>
             <div className="p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between"><div className="flex items-center gap-2 text-sm font-bold"><ShieldCheck size={16} />运营基线</div><span className="text-xs font-mono" style={{ color: S.muted }}>{draft.tiers.length} 个会员等级</span></div><div className="flex flex-wrap gap-2 mt-3">{draft.tiers.map(t => <span key={t.name} className="px-2 py-1 text-xs font-bold" style={{ background: S.accentLight, borderRadius: S.radiusSm }}>{t.name}</span>)}</div><div className="grid grid-cols-2 gap-2 mt-3 text-xs"><div style={{ color: S.muted }}>入群流程 <b style={{ color: S.text }}>{draft.mechanism.welcome}</b></div><div style={{ color: S.muted }}>运营频次 <b style={{ color: S.text }}>{draft.mechanism.cadence}</b></div></div></div>
           </>}
-          {tab === "tiers" && <div className="space-y-2">{draft.tiers.map((tier, idx) => <div key={idx} className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between mb-2"><span className="text-xs font-bold px-2 py-1" style={{ background: idx === 0 ? "#f0f0f0" : S.accent, borderRadius: S.radiusSm }}>等级 {idx + 1}</span><button type="button" className="text-xs" style={{ color: "#888" }} onClick={() => setDraft(d => ({ ...d, tiers: d.tiers.filter((_, i) => i !== idx) }))}>移除</button></div><div className="grid grid-cols-2 gap-2"><input value={tier.name} style={fieldStyle} onChange={e => updateTier(idx, "name", e.target.value)} placeholder="等级名称" /><input value={tier.rule} style={fieldStyle} onChange={e => updateTier(idx, "rule", e.target.value)} placeholder="升级条件" /><input value={tier.group} style={fieldStyle} onChange={e => updateTier(idx, "group", e.target.value)} placeholder="对应社群" /><input value={tier.service} style={fieldStyle} onChange={e => updateTier(idx, "service", e.target.value)} placeholder="服务 SLA" /></div></div>)}<button type="button" className="w-full py-2 text-xs font-bold" style={{ border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setDraft(d => ({ ...d, tiers: [...d.tiers, { name: "新会员等级", rule: "待配置", group: "待配置社群", service: "待配置" }] }))}><Plus size={13} className="inline mr-1" />新增会员等级</button></div>}
+          {tab === "tiers" && <div className="space-y-2">{draft.tiers.map((tier, idx) => <div key={idx} className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between mb-2"><span className="text-xs font-bold px-2 py-1" style={{ background: idx === 0 ? "#f1f5f9" : S.accent, borderRadius: S.radiusSm }}>等级 {idx + 1}</span><button type="button" className="text-xs" style={{ color: "#888" }} onClick={() => setDraft(d => ({ ...d, tiers: d.tiers.filter((_, i) => i !== idx) }))}>移除</button></div><div className="grid grid-cols-2 gap-2"><input value={tier.name} style={fieldStyle} onChange={e => updateTier(idx, "name", e.target.value)} placeholder="等级名称" /><input value={tier.rule} style={fieldStyle} onChange={e => updateTier(idx, "rule", e.target.value)} placeholder="升级条件" /><input value={tier.group} style={fieldStyle} onChange={e => updateTier(idx, "group", e.target.value)} placeholder="对应社群" /><input value={tier.service} style={fieldStyle} onChange={e => updateTier(idx, "service", e.target.value)} placeholder="服务 SLA" /></div></div>)}<button type="button" className="w-full py-2 text-xs font-bold" style={{ border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setDraft(d => ({ ...d, tiers: [...d.tiers, { name: "新会员等级", rule: "待配置", group: "待配置社群", service: "待配置" }] }))}><Plus size={13} className="inline mr-1" />新增会员等级</button></div>}
           {tab === "groupRules" && <GroupRulesEditor project={draft} updateDraft={updateDraft} />}
           {tab === "mechanism" && <div className="p-4 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><MessageSquare size={16} />社群运营机制</div><p className="text-xs" style={{ color: S.muted }}>规则绑定当前项目，会员等级变化后自动路由到对应社群。</p>{([ ["welcome", "入群与欢迎流程"], ["cadence", "内容运营频次"], ["route", "分群路由规则"], ["escalation", "异常升级路径"]] as [keyof ProjectRecord["mechanism"], string][]).map(([key, label]) => <label key={key} className="block text-xs font-bold">{label}<input className="mt-1" value={draft.mechanism[key]} style={fieldStyle} onChange={e => updateMechanism(key, e.target.value)} /></label>)}</div>}
-          {tab === "visibility" && <div className="space-y-3"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><Eye size={16} />身份可见范围</div><p className="text-xs mt-1" style={{ color: S.muted }}>控制谁可以进入该项目并查看项目、企业微信和社群运营数据。勾选后对应角色可在其工作台看到本项目。</p></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2" style={{ color: S.textSec }}>项目相关身份（7 档）</div>{projectVisibilityRoles.map(role => <label key={role} className="flex items-center justify-between py-2 text-xs font-bold" style={{ borderBottom: `1px solid ${S.border}` }}><span className="flex items-center gap-2"><span className="w-5 h-5 flex items-center justify-center" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontSize: 10 }}>{role[0]}</span>{role}</span><input type="checkbox" checked={!!draft.visibility[role]} onChange={e => setDraft(d => ({ ...d, visibility: { ...d.visibility, [role]: e.target.checked } }))} /></label>)}</div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2">其他角色（全局/生态/SaaS/平台运营层）</div><div className="flex flex-wrap gap-1.5">{roleNames.filter(r => !projectVisibilityRoles.includes(r)).map(role => <label key={role} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: !!draft.visibility[role] ? "#0d0d0d" : "#f7f7f7", color: !!draft.visibility[role] ? S.accent : S.muted, border: `1px solid ${!!draft.visibility[role] ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={!!draft.visibility[role]} onChange={e => setDraft(d => ({ ...d, visibility: { ...d.visibility, [role]: e.target.checked } }))} />{role}</label>)}</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2">企业微信下的项目</div><div className="flex items-center gap-2 flex-wrap">{["PRO会员", "体验官", "代理商"].map(name => <span key={name} className={name === draft.name ? "px-2 py-1 text-xs font-bold" : "px-2 py-1 text-xs"} style={{ background: name === draft.name ? "#0d0d0d" : "#f5f5f5", color: name === draft.name ? S.accent : S.muted, borderRadius: S.radiusSm }}>{name}</span>)}</div></div></div>}
+          {tab === "visibility" && <div className="space-y-3"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><Eye size={16} />身份可见范围</div><p className="text-xs mt-1" style={{ color: S.muted }}>控制谁可以进入该项目并查看项目、企业微信和社群运营数据。勾选后对应角色可在其工作台看到本项目。</p></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2" style={{ color: S.textSec }}>项目相关身份（7 档）</div>{projectVisibilityRoles.map(role => <label key={role} className="flex items-center justify-between py-2 text-xs font-bold" style={{ borderBottom: `1px solid ${S.border}` }}><span className="flex items-center gap-2"><span className="w-5 h-5 flex items-center justify-center" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontSize: 10 }}>{role[0]}</span>{role}</span><input type="checkbox" checked={!!draft.visibility[role]} onChange={e => setDraft(d => ({ ...d, visibility: { ...d.visibility, [role]: e.target.checked } }))} /></label>)}</div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2">其他角色（全局/生态/SaaS/平台运营层）</div><div className="flex flex-wrap gap-1.5">{roleNames.filter(r => !projectVisibilityRoles.includes(r)).map(role => <label key={role} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: !!draft.visibility[role] ? "#1e293b" : "#f1f5f9", color: !!draft.visibility[role] ? S.accent : S.muted, border: `1px solid ${!!draft.visibility[role] ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={!!draft.visibility[role]} onChange={e => setDraft(d => ({ ...d, visibility: { ...d.visibility, [role]: e.target.checked } }))} />{role}</label>)}</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2">企业微信下的项目</div><div className="flex items-center gap-2 flex-wrap">{["PRO会员", "体验官", "代理商"].map(name => <span key={name} className={name === draft.name ? "px-2 py-1 text-xs font-bold" : "px-2 py-1 text-xs"} style={{ background: name === draft.name ? "#1e293b" : "#f1f5f9", color: name === draft.name ? S.accent : S.muted, borderRadius: S.radiusSm }}>{name}</span>)}</div></div></div>}
         </div>
-        <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => { onSave(draft); onClose(); }}><Save size={13} />保存项目配置</button></div>
+        <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => { onSave(draft); onClose(); }}><Save size={13} />保存项目配置</button></div>
       </aside>
     </div>
   );
@@ -691,7 +691,7 @@ function CreateProjectDrawer({ ecoList, saasList, platformList, defaultPlatform,
     const linked = platformList.find(p => p.name === next);
     if (linked) { setSaas(linked.saas); setEco(linked.eco); }
   };
-  return <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,.16)" }} onClick={onClose}><aside className="h-full w-full max-w-[460px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}><div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}><div><div className="text-base font-bold">接入新项目</div><div className="text-xs mt-1" style={{ color: S.muted }}>创建后继续配置会员等级和社群机制</div></div><button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button></div><div className="p-5 space-y-4"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目归属关系</div><p className="text-xs mt-1" style={{ color: S.muted }}>生态 → SaaS 系统 → 平台 → 项目：项目归属到具体平台下，平台由 SaaS 系统招募；一个企业微信可以承载多个项目，项目数据、会员等级和社群规则独立隔离。</p></div><label className="block text-xs font-bold">项目名称<input className="mt-1" value={name} placeholder="例如：PRO会员" style={fieldStyle} onChange={e => setName(e.target.value)} /></label><label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">SaaS 系统<select className="mt-1" value={saas} style={fieldStyle} onChange={e => setSaas(e.target.value)}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">所属平台<select className="mt-1" value={platform} style={fieldStyle} onChange={e => onPlatformChange(e.target.value)}>{(filteredPlatformOptions.length ? filteredPlatformOptions : platformNameOptions).map(n => <option key={n}>{n}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>项目必须归属到某个平台下，平台由SaaS 系统招募</span></label><label className="block text-xs font-bold">企业微信归属<input className="mt-1" value={enterpriseWx} placeholder="选择企业微信" style={fieldStyle} onChange={e => setEnterpriseWx(e.target.value)} /></label><label className="block text-xs font-bold">创建身份<select className="mt-1" value={creatorRole} style={fieldStyle} onChange={e => setCreatorRole(e.target.value)}>{roleNames.map(role => <option key={role}>{role}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>创建身份决定默认项目范围，后续可在“可见范围”中继续收敛。</span></label><div className="grid grid-cols-2 gap-2"><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认会员等级</div><div className="text-sm font-bold mt-1">3 个</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认可见身份</div><div className="text-sm font-bold mt-1">负责人 / 运营 / 客服</div></div></div></div><div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#0d0d0d" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ id: Date.now(), name, platform, saas, eco, users: 0, groups: 0, teacher: "待分配", cities: ["待配置"], revenue: "待核算", status: "孵化中", enterpriseWx, enterpriseProjectCount: 1, tiers: defaultTiers.map(t => ({ ...t })), groupTypes: [], mechanism: { welcome: "欢迎语 + 入群任务", cadence: "每周 1 次", route: "按城市 + 会员等级分群", escalation: "异常通知项目负责人" }, visibility: { "超级管理员": true, "生态负责人": creatorRole === "生态负责人" || true, "生态COO": false, "SaaS负责人": creatorRole === "SaaS负责人", "SaaS运营": false, "平台管理员": creatorRole === "平台管理员", "平台运营": false, "项目负责人": creatorRole === "项目负责人" || true, "区域运营": creatorRole === "区域运营" || true, "客服": creatorRole === "客服" || true, "老师": false } })}>创建项目</button></div></aside></div>;
+  return <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,.16)" }} onClick={onClose}><aside className="h-full w-full max-w-[460px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}><div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}><div><div className="text-base font-bold">接入新项目</div><div className="text-xs mt-1" style={{ color: S.muted }}>创建后继续配置会员等级和社群机制</div></div><button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button></div><div className="p-5 space-y-4"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目归属关系</div><p className="text-xs mt-1" style={{ color: S.muted }}>生态 → SaaS 系统 → 平台 → 项目：项目归属到具体平台下，平台由 SaaS 系统招募；一个企业微信可以承载多个项目，项目数据、会员等级和社群规则独立隔离。</p></div><label className="block text-xs font-bold">项目名称<input className="mt-1" value={name} placeholder="例如：PRO会员" style={fieldStyle} onChange={e => setName(e.target.value)} /></label><label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">SaaS 系统<select className="mt-1" value={saas} style={fieldStyle} onChange={e => setSaas(e.target.value)}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">所属平台<select className="mt-1" value={platform} style={fieldStyle} onChange={e => onPlatformChange(e.target.value)}>{(filteredPlatformOptions.length ? filteredPlatformOptions : platformNameOptions).map(n => <option key={n}>{n}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>项目必须归属到某个平台下，平台由SaaS 系统招募</span></label><label className="block text-xs font-bold">企业微信归属<input className="mt-1" value={enterpriseWx} placeholder="选择企业微信" style={fieldStyle} onChange={e => setEnterpriseWx(e.target.value)} /></label><label className="block text-xs font-bold">创建身份<select className="mt-1" value={creatorRole} style={fieldStyle} onChange={e => setCreatorRole(e.target.value)}>{roleNames.map(role => <option key={role}>{role}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>创建身份决定默认项目范围，后续可在“可见范围”中继续收敛。</span></label><div className="grid grid-cols-2 gap-2"><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认会员等级</div><div className="text-sm font-bold mt-1">3 个</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认可见身份</div><div className="text-sm font-bold mt-1">负责人 / 运营 / 客服</div></div></div></div><div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ id: Date.now(), name, platform, saas, eco, users: 0, groups: 0, teacher: "待分配", cities: ["待配置"], revenue: "待核算", status: "孵化中", enterpriseWx, enterpriseProjectCount: 1, tiers: defaultTiers.map(t => ({ ...t })), groupTypes: [], mechanism: { welcome: "欢迎语 + 入群任务", cadence: "每周 1 次", route: "按城市 + 会员等级分群", escalation: "异常通知项目负责人" }, visibility: { "超级管理员": true, "生态负责人": creatorRole === "生态负责人" || true, "生态COO": false, "SaaS负责人": creatorRole === "SaaS负责人", "SaaS运营": false, "平台管理员": creatorRole === "平台管理员", "平台运营": false, "项目负责人": creatorRole === "项目负责人" || true, "区域运营": creatorRole === "区域运营" || true, "客服": creatorRole === "客服" || true, "老师": false } })}>创建项目</button></div></aside></div>;
 }
 
 // ─── 新建抽屉与 Toast ─────────────────────────────────────────
@@ -703,7 +703,7 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   }, [message, onClose]);
   if (!message) return null;
   return (
-    <div className="fixed top-5 left-1/2 z-[60] px-4 py-2.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, boxShadow: "0 4px 16px rgba(0,0,0,0.2)", transform: "translateX(-50%)" }}>{message}</div>
+    <div className="fixed top-5 left-1/2 z-[60] px-4 py-2.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, boxShadow: "0 4px 16px rgba(0,0,0,0.2)", transform: "translateX(-50%)" }}>{message}</div>
   );
 }
 
@@ -781,7 +781,7 @@ function CreateEcosystemDrawer({ onClose, onCreate }: { onClose: () => void; onC
         </div>
         <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}>
           <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button>
-          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#0d0d0d" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={submit}>创建生态并生成账号</button>
+          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={submit}>创建生态并生成账号</button>
         </div>
       </aside>
     </div>
@@ -815,7 +815,7 @@ function CreateSaasDrawer({ ecoList, defaultEco, onClose, onCreate }: { ecoList:
         </div>
         <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}>
           <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button>
-          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#0d0d0d" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), eco, desc: desc.trim() })}>创建 SaaS 系统</button>
+          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), eco, desc: desc.trim() })}>创建 SaaS 系统</button>
         </div>
       </aside>
     </div>
@@ -858,7 +858,7 @@ function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onCl
         </div>
         <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}>
           <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button>
-          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#0d0d0d" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), saas, eco, desc: desc.trim() })}>创建平台</button>
+          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), saas, eco, desc: desc.trim() })}>创建平台</button>
         </div>
       </aside>
     </div>
@@ -891,30 +891,30 @@ function ProjectList({
           <div className="text-xs mt-1 font-mono" style={{ color: S.muted }}>所属 SaaS：{platform?.saas} · 所属生态：{platform?.eco}</div>
         </div>
       </div>
-      <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateOpen(true)}><Plus size={12} /> 接入新项目</button>
+      <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateOpen(true)}><Plus size={12} /> 接入新项目</button>
     </div>
     <div className="grid grid-cols-4 gap-2">{[["可见项目", filteredProjects.length, Eye], ["企业微信", new Set(filteredProjects.map(p => p.enterpriseWx)).size, Building2], ["会员等级", filteredProjects.reduce((n, p) => n + p.tiers.length, 0), UsersRound], ["运营群组", filteredProjects.reduce((n, p) => n + p.groups, 0), MessageSquare]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}</div>
     <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Building2 size={16} /><div className="text-xs leading-relaxed"><b>平台与项目关系</b>：平台由上层SaaS 系统招募，下辖多个运营项目；项目是权限和运营数据隔离的最小单元。进入项目后，成员、会员等级、社群和报表只展示当前身份有权访问的范围。</div></div>
     <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
       <div className="min-w-[1260px]">
-        <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555" }}>
+        <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
           {([["项目名称",190],["企业微信归属",170],["用户/群组",100],["服务老师",120],["覆盖城市",150],["状态",90],["操作",100]] as [string, number][]).map(([l, w]) => <div key={l} className="flex-shrink-0" style={{ width: w }}>{l}</div>)}
         </div>
         {filteredProjects.length === 0 ? (
           <div className="px-4 py-10 text-center text-xs" style={{ color: S.muted }}>该平台下暂无项目，点击右上角「接入新项目」开始创建。</div>
         ) : filteredProjects.map((p, idx) => (
-          <div key={p.id} role="button" tabIndex={0} className="flex items-center px-4 py-3 cursor-pointer transition-all text-xs font-mono" style={{ background: selectedId === p.id ? S.accentLight : idx % 2 === 0 ? "#fff" : "#fafaf8", borderBottom: `1px solid ${S.border}`, borderLeft: selectedId === p.id ? `3px solid ${S.accent}` : "3px solid transparent" }} onClick={() => setSelectedId(selectedId === p.id ? null : p.id)} onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setSelectedId(selectedId === p.id ? null : p.id); } }}>
-            <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 190 }}><div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>{p.name[3] ?? p.name[0]}</div><span className="font-bold">{p.name}</span></div>
+          <div key={p.id} role="button" tabIndex={0} className="flex items-center px-4 py-3 cursor-pointer transition-all text-xs font-mono" style={{ background: selectedId === p.id ? S.accentLight : idx % 2 === 0 ? "#ffffff" : "#fafaf8", borderBottom: `1px solid ${S.border}`, borderLeft: selectedId === p.id ? `3px solid ${S.accent}` : "3px solid transparent" }} onClick={() => setSelectedId(selectedId === p.id ? null : p.id)} onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setSelectedId(selectedId === p.id ? null : p.id); } }}>
+            <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 190 }}><div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{p.name[3] ?? p.name[0]}</div><span className="font-bold">{p.name}</span></div>
             <div className="flex-shrink-0" style={{ width: 170 }}><div className="font-bold">{p.enterpriseWx}</div><div className="text-[10px]" style={{ color: S.muted }}>同企业 {p.enterpriseProjectCount} 个项目</div></div>
             <div className="flex-shrink-0" style={{ width: 100 }}><b>{p.users.toLocaleString()}</b><span style={{ color: S.muted }}> / {p.groups} 群</span></div><div className="flex-shrink-0" style={{ width: 120, color: S.muted }}>{p.teacher}</div>
-            <div className="flex-shrink-0" style={{ width: 150 }}><div className="flex flex-wrap gap-1">{p.cities.map(c => <span key={c} className="px-1.5 py-0.5 font-bold" style={{ background: "#0d0d0d", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm }}>{c}</span>)}</div></div>
+            <div className="flex-shrink-0" style={{ width: 150 }}><div className="flex flex-wrap gap-1">{p.cities.map(c => <span key={c} className="px-1.5 py-0.5 font-bold" style={{ background: "#1e293b", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm }}>{c}</span>)}</div></div>
             <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 font-bold" style={{ background: statusCfg[p.status]?.bg, color: statusCfg[p.status]?.color, borderRadius: S.radiusSm }}>{p.status}</span></div>
-            <div className="flex-shrink-0 flex gap-1" style={{ width: 100 }} onClick={e => e.stopPropagation()}><button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }} onClick={() => { setSelectedId(p.id); setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}>进入</button><button type="button" className="px-1.5 py-1" title="配置项目" style={{ background: "#f7f7f7", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => { setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}><Settings size={11} /></button></div>
+            <div className="flex-shrink-0 flex gap-1" style={{ width: 100 }} onClick={e => e.stopPropagation()}><button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => { setSelectedId(p.id); setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}>进入</button><button type="button" className="px-1.5 py-1" title="配置项目" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => { setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}><Settings size={11} /></button></div>
           </div>
         ))}
       </div>
     </div>
-    <div className="p-4 flex items-start gap-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}><LayoutDashboard size={18} style={{ color: "#0d0d0d", marginTop: 1, flexShrink: 0 }} /><div><div className="text-sm font-bold mb-1">项目是权限和运营隔离的最小单元</div><p className="text-xs leading-relaxed font-mono" style={{ color: S.textSec }}>平台管理员可在本平台下创建项目；项目负责人可配置自己负责的项目；区域运营、客服按可见范围进入项目。企业微信负责账号承载，项目负责会员等级、社群规则和运营数据。</p></div></div>
+    <div className="p-4 flex items-start gap-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}><LayoutDashboard size={18} style={{ color: "#1e293b", marginTop: 1, flexShrink: 0 }} /><div><div className="text-sm font-bold mb-1">项目是权限和运营隔离的最小单元</div><p className="text-xs leading-relaxed font-mono" style={{ color: S.textSec }}>平台管理员可在本平台下创建项目；项目负责人可配置自己负责的项目；区域运营、客服按可见范围进入项目。企业微信负责账号承载，项目负责会员等级、社群规则和运营数据。</p></div></div>
     {configProject && <ProjectDrawer project={configProject} onClose={() => setConfigProject(null)} onSave={saveProject} />}
     {createOpen && <CreateProjectDrawer ecoList={ecoList} saasList={saasList} platformList={platformList} defaultPlatform={platformName} onClose={() => setCreateOpen(false)} onCreate={p => { registerProjectRules(p.name, p.groupTypes); setProjectList(list => [p, ...list]); setCreateOpen(false); setConfigProject(p); }} />}
   </div>;
@@ -947,7 +947,7 @@ function PlatformView({
         <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
           {ecoOptions.map(o => <option key={o}>{o}</option>)}
         </select>
-        <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
+        <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
       </div>
     </div>
     <div className="grid grid-cols-5 gap-2">
@@ -956,12 +956,12 @@ function PlatformView({
     <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Layers size={16} /><div className="text-xs leading-relaxed"><b>平台与SaaS 系统关系</b>：SaaS 系统招募平台并下发能力与权益；一个SaaS 系统可招募多个平台，一个平台下辖多个项目。平台聚合多个项目的运营团队、资源池和汇总视角。</div></div>
     <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
       <div className="min-w-[1180px]">
-        <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555" }}>
+        <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
           {([["平台名称",220],["SaaS 系统",150],["所属生态",130],["下辖项目/用户/群组",200],["服务老师",100],["月营收",110],["状态",90],["操作",140]] as [string, number][]).map(([l, w]) => <div key={l} className="flex-shrink-0" style={{ width: w }}>{l}</div>)}
         </div>
         {filtered.map((pf, idx) => (
-          <div key={pf.id} role="button" tabIndex={0} className="flex items-center px-4 py-3 cursor-pointer transition-all text-xs font-mono" style={{ background: idx % 2 === 0 ? "#fff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }} onClick={() => onEnterPlatform(pf.id, pf.name)} onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onEnterPlatform(pf.id, pf.name); } }}>
-            <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 220 }}><div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>{pf.name[3] ?? pf.name[0]}</div><span className="font-bold">{pf.name}</span></div>
+          <div key={pf.id} role="button" tabIndex={0} className="flex items-center px-4 py-3 cursor-pointer transition-all text-xs font-mono" style={{ background: idx % 2 === 0 ? "#ffffff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }} onClick={() => onEnterPlatform(pf.id, pf.name)} onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onEnterPlatform(pf.id, pf.name); } }}>
+            <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 220 }}><div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{pf.name[3] ?? pf.name[0]}</div><span className="font-bold">{pf.name}</span></div>
             <div className="flex-shrink-0" style={{ width: 150, color: S.muted }}>{pf.saas}</div>
             <div className="flex-shrink-0" style={{ width: 130, color: S.muted }}>{pf.eco}</div>
             <div className="flex-shrink-0" style={{ width: 200 }}><span className="font-bold">{pf.projects}</span><span style={{ color: S.muted }}> 项目 / </span><span className="font-bold">{pf.users.toLocaleString()}</span><span style={{ color: S.muted }}> 用户 / </span><span className="font-bold">{pf.groups}</span><span style={{ color: S.muted }}> 群</span></div>
@@ -969,14 +969,14 @@ function PlatformView({
             <div className="flex-shrink-0 font-bold" style={{ width: 110, color: S.text }}>{pf.revenue}</div>
             <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 font-bold" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span></div>
             <div className="flex-shrink-0 flex gap-1" style={{ width: 140 }} onClick={e => e.stopPropagation()}>
-              <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }} onClick={() => onEnterPlatform(pf.id, pf.name)}>进入平台</button>
-              <button type="button" className="px-1.5 py-1" title="平台配置" style={{ background: "#f7f7f7", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}><Settings size={11} /></button>
+              <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => onEnterPlatform(pf.id, pf.name)}>进入平台</button>
+              <button type="button" className="px-1.5 py-1" title="平台配置" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}><Settings size={11} /></button>
             </div>
           </div>
         ))}
       </div>
     </div>
-    <div className="p-4 flex items-start gap-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}><Building2 size={18} style={{ color: "#0d0d0d", marginTop: 1, flexShrink: 0 }} /><div><div className="text-sm font-bold mb-1">平台由SaaS 系统招募，下辖多个项目</div><p className="text-xs leading-relaxed font-mono" style={{ color: S.textSec }}>每个平台由平台管理员负责，在同一个SaaS 系统下拥有独立的运营团队和独立的项目隔离。项目是权限与运营数据隔离的最小单元，可单独配置会员等级、社群规则和可见范围。</p></div></div>
+    <div className="p-4 flex items-start gap-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}><Building2 size={18} style={{ color: "#1e293b", marginTop: 1, flexShrink: 0 }} /><div><div className="text-sm font-bold mb-1">平台由SaaS 系统招募，下辖多个项目</div><p className="text-xs leading-relaxed font-mono" style={{ color: S.textSec }}>每个平台由平台管理员负责，在同一个SaaS 系统下拥有独立的运营团队和独立的项目隔离。项目是权限与运营数据隔离的最小单元，可单独配置会员等级、社群规则和可见范围。</p></div></div>
     {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} onClose={() => setCreatePlatformOpen(false)} onCreate={({ name, saas, eco, desc }) => {
       setPlatformList(list => [...list, { id: Date.now(), name, saas, eco, desc, projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
       const approval = createApproval("platform_onboard", {
@@ -1221,33 +1221,33 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
   }
   return (
     <div className="p-4 relative flex flex-col" style={{
-      background: plan.highlight ? "#0d0d0d" : S.surface,
+      background: plan.highlight ? "#1e293b" : S.surface,
       border: plan.highlight ? `2px solid ${S.accent}` : `1px solid ${S.border}`,
       borderRadius: S.radius, boxShadow: plan.highlight ? "0 6px 24px rgba(204,255,0,0.12)" : "0 1px 4px rgba(0,0,0,0.05)",
     }}>
       {plan.highlight && (
-        <div className="absolute -top-2.5 left-4 px-2 py-0.5 text-[10px] font-bold" style={{ background: S.accent, color: "#0d0d0d", borderRadius: S.radiusSm }}>
+        <div className="absolute -top-2.5 left-4 px-2 py-0.5 text-[10px] font-bold" style={{ background: S.accent, color: "#1e293b", borderRadius: S.radiusSm }}>
           推荐方案
         </div>
       )}
       <div className="flex items-center gap-2 mb-2">
         <div className="w-7 h-7 flex items-center justify-center flex-shrink-0" style={{
-          background: plan.highlight ? S.accent : "#0d0d0d",
-          color: plan.highlight ? "#0d0d0d" : S.accent, borderRadius: S.radiusSm,
+          background: plan.highlight ? S.accent : "#1e293b",
+          color: plan.highlight ? "#1e293b" : S.accent, borderRadius: S.radiusSm,
         }}><Icon size={14} /></div>
         <span className="text-[10px] font-bold font-mono px-1.5 py-0.5" style={{
           background: plan.highlight ? "rgba(255,255,255,0.1)" : S.accentLight,
-          color: plan.highlight ? S.accent : "#0d0d0d", borderRadius: S.radiusSm,
+          color: plan.highlight ? S.accent : "#1e293b", borderRadius: S.radiusSm,
         }}>{tierLabels[plan.tier]}</span>
       </div>
-      <div className="text-sm font-bold mb-0.5" style={{ color: plan.highlight ? "#fff" : S.text }}>{plan.name}</div>
+      <div className="text-sm font-bold mb-0.5" style={{ color: plan.highlight ? "#ffffff" : S.text }}>{plan.name}</div>
       <div className="mb-3">
         <span className="text-xl font-bold" style={{ color: plan.highlight ? S.accent : S.text }}>
           {plan.priceCnyYear === 0 ? "免费" : fmtCny(plan.priceCnyYear)}
         </span>
         {plan.priceCnyYear > 0 && <span className="text-xs font-mono ml-1" style={{ color: plan.highlight ? "rgba(255,255,255,0.5)" : S.muted }}>/年</span>}
       </div>
-      <div className="space-y-1 mb-3 p-2" style={{ background: plan.highlight ? "rgba(255,255,255,0.05)" : "#f7f7f7", borderRadius: S.radiusSm }}>
+      <div className="space-y-1 mb-3 p-2" style={{ background: plan.highlight ? "rgba(255,255,255,0.05)" : "#f1f5f9", borderRadius: S.radiusSm }}>
         {Object.entries(plan.quota).length === 0 ? (
           <div className="text-[10px] font-mono" style={{ color: plan.highlight ? "rgba(255,255,255,0.5)" : S.muted }}>按服务包计</div>
         ) : Object.entries(plan.quota).map(([k, v]) => {
@@ -1255,7 +1255,7 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
           return (
             <div key={k} className="flex justify-between text-[10px] font-mono">
               <span style={{ color: plan.highlight ? "rgba(255,255,255,0.55)" : S.muted }}>{label[k]}</span>
-              <span className="font-bold" style={{ color: plan.highlight ? "#fff" : S.text }}>
+              <span className="font-bold" style={{ color: plan.highlight ? "#ffffff" : S.text }}>
                 {typeof v === "number" && v >= 999999 ? "不限" : typeof v === "number" ? v.toLocaleString() : v}
               </span>
             </div>
@@ -1271,8 +1271,8 @@ function PricingCard({ plan }: { plan: PricingPlan }) {
         ))}
       </div>
       <button type="button" onClick={handleSubscribe} className="w-full py-2 text-xs font-bold" style={{
-        background: done ? "#16a34a" : (plan.highlight ? S.accent : "#0d0d0d"),
-        color: done ? "#fff" : (plan.highlight ? "#0d0d0d" : S.accent), borderRadius: S.radiusSm,
+        background: done ? "#16a34a" : (plan.highlight ? S.accent : "#1e293b"),
+        color: done ? "#ffffff" : (plan.highlight ? "#1e293b" : S.accent), borderRadius: S.radiusSm,
       }}>
         {done ? "已推送审批单 ✓" : (plan.priceCnyYear === 0 ? "立即激活" : "立即订阅")}
       </button>
@@ -1293,7 +1293,7 @@ function PricingSection() {
         return (
           <div key={tier} className="space-y-3">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 flex items-center justify-center" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+              <div className="w-7 h-7 flex items-center justify-center" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
                 <Icon size={14} />
               </div>
               <div>
@@ -1350,22 +1350,22 @@ function SubscriptionSection({ subs }: { subs: Subscription[] }) {
       </div>
       <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
         <div className="min-w-[1200px]">
-          <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555" }}>
+          <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
             {([["订阅单号",120],["订阅方",180],["层级",80],["方案",170],["金额",100],["周期",80],["有效期",210],["状态",100],["分润比例",90]] as [string,number][]).map(([l,w]) => <div key={l} className="flex-shrink-0" style={{width:w}}>{l}</div>)}
           </div>
           {filtered.map((s, idx) => {
             const plan = findPlan(s.planKey);
             return (
-              <div key={s.id} className="flex items-center px-4 py-3 text-xs font-mono" style={{ background: idx % 2 === 0 ? "#fff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }}>
+              <div key={s.id} className="flex items-center px-4 py-3 text-xs font-mono" style={{ background: idx % 2 === 0 ? "#ffffff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }}>
                 <div className="flex-shrink-0 font-bold" style={{width:120, color: S.textSec}}>{s.id}</div>
                 <div className="flex-shrink-0 flex items-center gap-2" style={{width:180}}>
-                  <div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+                  <div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
                     {s.subscriberName[0]}
                   </div>
                   <span className="font-bold" style={{color:S.text}}>{s.subscriberName}</span>
                 </div>
                 <div className="flex-shrink-0" style={{width:80}}>
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background: S.accentLight, color:"#0d0d0d", borderRadius: S.radiusSm}}>{tierLabels[s.subscriberType]}</span>
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background: S.accentLight, color:"#1e293b", borderRadius: S.radiusSm}}>{tierLabels[s.subscriberType]}</span>
                 </div>
                 <div className="flex-shrink-0" style={{width:170, color:S.text}}>{plan?.name ?? s.planKey}</div>
                 <div className="flex-shrink-0 font-bold" style={{width:100, color:S.text}}>{fmtCny(s.priceCny)}</div>
@@ -1399,7 +1399,7 @@ function ShareFlowDiagram() {
   return (
     <div className="p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
       <div className="flex items-center gap-2 mb-4">
-        <TrendingUp size={16} style={{ color: "#0d0d0d" }} />
+        <TrendingUp size={16} style={{ color: "#1e293b" }} />
         <span className="text-sm font-bold" style={{ color: S.text }}>分润流向 · 五级链路</span>
         <span className="ml-auto text-[10px] font-mono" style={{ color: S.muted }}>2026-08 月度汇总</span>
       </div>
@@ -1407,18 +1407,18 @@ function ShareFlowDiagram() {
         {tiers.map((t, idx) => (
           <div key={t.id} className="flex-1 flex items-center gap-2">
             <div className="flex-1 p-3" style={{
-              background: t.id === "super" ? "#0d0d0d" : S.accentLight,
+              background: t.id === "super" ? "#1e293b" : S.accentLight,
               border: `1px solid ${t.id === "super" ? S.accent : "rgba(204,255,0,0.3)"}`,
               borderRadius: S.radius,
             }}>
               <div className="flex items-center gap-1.5 mb-1.5">
                 <div className="w-5 h-5 flex items-center justify-center" style={{
-                  background: t.id === "super" ? S.accent : "#0d0d0d",
-                  color: t.id === "super" ? "#0d0d0d" : S.accent, borderRadius: "4px",
+                  background: t.id === "super" ? S.accent : "#1e293b",
+                  color: t.id === "super" ? "#1e293b" : S.accent, borderRadius: "4px",
                 }}><t.Icon size={11} /></div>
                 <span className="text-[11px] font-bold" style={{ color: t.id === "super" ? S.accent : S.text }}>{t.label}</span>
               </div>
-              <div className="text-base font-bold" style={{ color: t.id === "super" ? "#fff" : S.text }}>{t.amount}</div>
+              <div className="text-base font-bold" style={{ color: t.id === "super" ? "#ffffff" : S.text }}>{t.amount}</div>
               <div className="text-[10px] font-mono mt-0.5" style={{ color: t.id === "super" ? "rgba(255,255,255,0.5)" : S.muted }}>
                 {t.id === "project" ? "GMV 总额" : `抽取 比例 ${["10%","5%","7%","8%","12%"][idx-1]}`}
               </div>
@@ -1451,14 +1451,14 @@ function ShareSection() {
           { label: "待结算",     value: fmtCny(pending), sub: "预计 9/5 出账", Icon: Package, accent: false },
         ].map(c => (
           <div key={c.label} className="p-4" style={{
-            background: c.accent ? "#0d0d0d" : S.surface,
+            background: c.accent ? "#1e293b" : S.surface,
             border: c.accent ? `2px solid ${S.accent}` : `1px solid ${S.border}`,
             borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
           }}>
             <div className="flex items-center gap-2 mb-2">
               <div className="w-7 h-7 flex items-center justify-center" style={{
-                background: c.accent ? S.accent : "#0d0d0d",
-                color: c.accent ? "#0d0d0d" : S.accent, borderRadius: S.radiusSm,
+                background: c.accent ? S.accent : "#1e293b",
+                color: c.accent ? "#1e293b" : S.accent, borderRadius: S.radiusSm,
               }}><c.Icon size={14} /></div>
               <span className="text-xs" style={{ color: c.accent ? "rgba(255,255,255,0.7)" : S.muted }}>{c.label}</span>
             </div>
@@ -1470,23 +1470,23 @@ function ShareSection() {
       <ShareFlowDiagram />
       <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
         <div className="min-w-[1100px]">
-          <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555" }}>
+          <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
             {([["流水号",90],["账期",80],["出账方",170],["出账层级",90],["→",20],["分润方",170],["分润层级",90],["分润比例",90],["GMV",100],["分润金额",110]] as [string,number][]).map(([l,w]) => <div key={l} className="flex-shrink-0" style={{width:w}}>{l}</div>)}
           </div>
           {gmvShares.map((g, idx) => (
-            <div key={g.id} className="flex items-center px-4 py-3 text-xs font-mono" style={{ background: idx % 2 === 0 ? "#fff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }}>
+            <div key={g.id} className="flex items-center px-4 py-3 text-xs font-mono" style={{ background: idx % 2 === 0 ? "#ffffff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }}>
               <div className="flex-shrink-0" style={{width:90, color:S.textSec}}>{g.id}</div>
               <div className="flex-shrink-0" style={{width:80}}>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background: S.accentLight, color:"#0d0d0d", borderRadius: S.radiusSm}}>{g.period}</span>
+                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background: S.accentLight, color:"#1e293b", borderRadius: S.radiusSm}}>{g.period}</span>
               </div>
               <div className="flex-shrink-0" style={{width:170, color:S.text}}>{g.fromName}</div>
               <div className="flex-shrink-0" style={{width:90}}>
-                <span className="px-1.5 py-0.5 text-[10px]" style={{background:"#f0f0f0", color:S.textSec, borderRadius: S.radiusSm}}>{tierLabels[g.fromTier]}</span>
+                <span className="px-1.5 py-0.5 text-[10px]" style={{background:"#f1f5f9", color:S.textSec, borderRadius: S.radiusSm}}>{tierLabels[g.fromTier]}</span>
               </div>
               <div className="flex-shrink-0 flex justify-center" style={{width:20, color:S.muted}}><ArrowRight size={12} /></div>
               <div className="flex-shrink-0" style={{width:170, color:S.text, fontWeight:"bold"}}>{g.toName}</div>
               <div className="flex-shrink-0" style={{width:90}}>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background:"#0d0d0d", color:S.accent, borderRadius: S.radiusSm}}>{tierLabels[g.toTier]}</span>
+                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background:"#1e293b", color:S.accent, borderRadius: S.radiusSm}}>{tierLabels[g.toTier]}</span>
               </div>
               <div className="flex-shrink-0 font-bold" style={{width:90, color:S.text}}>{(g.rate * 100).toFixed(0)}%</div>
               <div className="flex-shrink-0" style={{width:100, color:S.textSec}}>{fmtCny(g.gmv)}</div>
@@ -1508,7 +1508,7 @@ function BillingSection({ bills }: { bills: BillRecord[] }) {
       <div className="grid grid-cols-3 gap-3">
         <div className="p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
               <CheckCircle size={12} />
             </div>
             <span className="text-xs" style={{ color: S.muted }}>已支付账单</span>
@@ -1520,7 +1520,7 @@ function BillingSection({ bills }: { bills: BillRecord[] }) {
         </div>
         <div className="p-4" style={{ background: "rgba(234,179,8,0.08)", border: `1px solid rgba(234,179,8,0.25)`, borderRadius: S.radius }}>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#eab308", color: "#0d0d0d", borderRadius: S.radiusSm }}>
+            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#eab308", color: "#1e293b", borderRadius: S.radiusSm }}>
               <Package size={12} />
             </div>
             <span className="text-xs font-bold" style={{ color: "#a16207" }}>即将到期 · 提醒</span>
@@ -1532,7 +1532,7 @@ function BillingSection({ bills }: { bills: BillRecord[] }) {
         </div>
         <div className="p-4" style={{ background: "rgba(239,68,68,0.08)", border: `1px solid rgba(239,68,68,0.25)`, borderRadius: S.radius }}>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#ef4444", color: "#fff", borderRadius: S.radiusSm }}>
+            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#ef4444", color: "#ffffff", borderRadius: S.radiusSm }}>
               <X size={12} />
             </div>
             <span className="text-xs font-bold" style={{ color: "#b91c1c" }}>已逾期 · 欠费</span>
@@ -1545,20 +1545,20 @@ function BillingSection({ bills }: { bills: BillRecord[] }) {
       </div>
       <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
         <div className="min-w-[1000px]">
-          <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555" }}>
+          <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
             {([["账单号",140],["付款方",180],["层级",80],["账单项目",220],["金额",110],["到期日",110],["状态",100]] as [string,number][]).map(([l,w]) => <div key={l} className="flex-shrink-0" style={{width:w}}>{l}</div>)}
           </div>
           {bills.map((b, idx) => (
-            <div key={b.id} className="flex items-center px-4 py-3 text-xs font-mono" style={{ background: idx % 2 === 0 ? "#fff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }}>
+            <div key={b.id} className="flex items-center px-4 py-3 text-xs font-mono" style={{ background: idx % 2 === 0 ? "#ffffff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }}>
               <div className="flex-shrink-0 font-bold" style={{width:140, color:S.textSec}}>{b.id}</div>
               <div className="flex-shrink-0 flex items-center gap-2" style={{width:180}}>
-                <div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+                <div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
                   {b.payerName[0]}
                 </div>
                 <span className="font-bold" style={{color:S.text}}>{b.payerName}</span>
               </div>
               <div className="flex-shrink-0" style={{width:80}}>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background: S.accentLight, color:"#0d0d0d", borderRadius: S.radiusSm}}>{tierLabels[b.payerType]}</span>
+                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{background: S.accentLight, color:"#1e293b", borderRadius: S.radiusSm}}>{tierLabels[b.payerType]}</span>
               </div>
               <div className="flex-shrink-0" style={{width:220, color:S.textSec}}>{b.items.join("、")}</div>
               <div className="flex-shrink-0 font-bold" style={{width:110, color:S.text}}>{fmtCny(b.amountCny)}</div>
@@ -1588,15 +1588,15 @@ function CommercialTab({ subs, bills }: { subs: Subscription[]; bills: BillRecor
   ];
   return (
     <div className="space-y-4">
-      <div className="p-5" style={{ background: "linear-gradient(135deg,#0d0d0d 0%,#1a1a1a 100%)", borderRadius: S.radiusLg, boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}>
+      <div className="p-5" style={{ background: "linear-gradient(135deg,#1e293b 0%,#1e293b 100%)", borderRadius: S.radiusLg, boxShadow: "0 2px 12px rgba(0,0,0,0.1)" }}>
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 flex items-center justify-center" style={{ background: S.accent, color: "#0d0d0d", borderRadius: S.radius }}>
+              <div className="w-8 h-8 flex items-center justify-center" style={{ background: S.accent, color: "#1e293b", borderRadius: S.radius }}>
                 <Zap size={18} />
               </div>
               <div>
-                <div className="text-lg font-bold" style={{ color: "#fff" }}>商业与计费</div>
+                <div className="text-lg font-bold" style={{ color: "#ffffff" }}>商业与计费</div>
                 <div className="text-xs font-mono mt-0.5" style={{ color: "rgba(255,255,255,0.55)" }}>
                   五级分层定价 · 订阅全生命周期管理 · GMV 分润链路 · 账单结算中心
                 </div>
@@ -1604,7 +1604,7 @@ function CommercialTab({ subs, bills }: { subs: Subscription[]; bills: BillRecor
             </div>
             <div className="flex flex-wrap gap-2 mt-3">
               {[`${pricingPlans.length} 个定价方案`, `${subs.length} 条订阅`, `${bills.length} 张账单`, `${gmvShares.length} 条分润流水`].map(t => (
-                <span key={t} className="px-2.5 py-1 text-[10px] font-bold font-mono" style={{ background: S.accent, color: "#0d0d0d", borderRadius: S.radiusSm }}>{t}</span>
+                <span key={t} className="px-2.5 py-1 text-[10px] font-bold font-mono" style={{ background: S.accent, color: "#1e293b", borderRadius: S.radiusSm }}>{t}</span>
               ))}
             </div>
           </div>
@@ -1626,7 +1626,7 @@ function CommercialTab({ subs, bills }: { subs: Subscription[]; bills: BillRecor
       <div className="flex gap-1 p-1" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
         {subTabs.map(([id, label, Icon]) => (
           <button key={id} type="button" className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs font-bold transition-all" style={{
-            background: tab === id ? "#0d0d0d" : "transparent",
+            background: tab === id ? "#1e293b" : "transparent",
             color: tab === id ? S.accent : S.muted,
             borderRadius: S.radiusSm,
           }} onClick={() => setTab(id)}>
@@ -1712,7 +1712,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
 
   const toolTypeIcon = { wecom: Building2, wechat: UsersRound, phone: Phone, media: Radio };
   const toolTypeLabel: Record<string, string> = { wecom: "企业微信", wechat: "个人微信", phone: "手机号", media: "媒体账号" };
-  const toolTypeColor: Record<string, string> = { wecom: "#0d0d0d", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
+  const toolTypeColor: Record<string, string> = { wecom: "#1e293b", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,0.16)" }} onClick={onClose}>
@@ -1738,7 +1738,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                     <button key={s} type="button" onClick={() => update("bindingStatus", s)} className="py-1.5 text-[10px] font-bold" style={{
                       background: draft.bindingStatus === s ? bindingStatusMeta[s].bg : "#fafaf8",
                       color: draft.bindingStatus === s ? bindingStatusMeta[s].color : S.textSec,
-                      border: `1px solid ${draft.bindingStatus === s ? "#0d0d0d" : S.border}`,
+                      border: `1px solid ${draft.bindingStatus === s ? "#1e293b" : S.border}`,
                       borderRadius: S.radiusSm,
                     }}>{bindingStatusMeta[s].label}</button>
                   ))}
@@ -1771,7 +1771,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                           projectIds: checked ? d.projectIds.filter(x => x !== pid) : [...d.projectIds, pid],
                         }));
                       }} />
-                      <span className="font-bold" style={{ color: checked ? "#0d0d0d" : S.textSec }}>{p.name}</span>
+                      <span className="font-bold" style={{ color: checked ? "#1e293b" : S.textSec }}>{p.name}</span>
                     </label>
                   );
                 })}
@@ -1785,7 +1785,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                 <div className="flex items-center gap-2 text-sm font-bold"><Eye size={16} />身份绑定（可多条）</div>
                 <p className="text-xs mt-1" style={{ color: S.muted }}>一个账号可拥有多身份；每个身份绑定具体范围（生态/SaaS/平台/项目/城市或全局）。</p>
               </div>
-              <button type="button" className="flex items-center gap-1 px-3 py-2 text-xs font-bold ml-3 self-end" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={addIdentity}><Plus size={12} />新增身份</button>
+              <button type="button" className="flex items-center gap-1 px-3 py-2 text-xs font-bold ml-3 self-end" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={addIdentity}><Plus size={12} />新增身份</button>
             </div>
             {draft.identities.length === 0 && <div className="p-4 text-center text-xs font-mono" style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radius, color: S.muted }}>该账号暂无身份绑定，点击右上角「新增身份」开始添加</div>}
             {draft.identities.map((ident, idx) => {
@@ -1800,7 +1800,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                       <select value={ident.scopeType} style={{ ...fieldStyle, width: 110, padding: "6px 8px", fontSize: 12 }} onChange={e => updateIdentity(idx, { scopeType: e.target.value as IdentityRole["scopeType"] })}>
                         {(["global","eco","saas","platform","project","city"] as IdentityRole["scopeType"][]).map(s => <option key={s} value={s}>{scopeTypeLabelMap[s].label}</option>)}
                       </select>
-                      <span className="px-2 py-1 text-[10px] font-bold font-mono" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>{scopeCfg.label} · {ident.scopeIds.length} 已选</span>
+                      <span className="px-2 py-1 text-[10px] font-bold font-mono" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{scopeCfg.label} · {ident.scopeIds.length} 已选</span>
                     </div>
                     <button type="button" className="text-[10px] font-mono px-2 py-1" style={{ color: "#a22", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => removeIdentity(idx)}>移除</button>
                   </div>
@@ -1809,7 +1809,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                     <div className="flex flex-wrap gap-1.5">
                       {scopeCfg.options.map(opt => {
                         const on = ident.scopeIds.includes(opt.id);
-                        return <label key={opt.id} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: on ? "#0d0d0d" : "#f7f7f7", color: on ? S.accent : S.muted, border: `1px solid ${on ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}>
+                        return <label key={opt.id} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: on ? "#1e293b" : "#f1f5f9", color: on ? S.accent : S.muted, border: `1px solid ${on ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>
                           <input className="sr-only" type="checkbox" checked={on} onChange={() => toggleScopeId(idx, opt.id)} />{opt.name}
                         </label>;
                       })}
@@ -1838,7 +1838,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                   return (
                     <div key={t.id} className="flex items-center gap-2 p-2" style={{ background: "#fafaf8", borderRadius: S.radiusSm }}>
                       <div className="w-7 h-7 flex items-center justify-center flex-shrink-0" style={{ background: toolTypeColor[t.type], borderRadius: S.radiusSm }}>
-                        <TI size={12} style={{ color: "#fff" }} />
+                        <TI size={12} style={{ color: "#ffffff" }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-bold truncate">{t.name}</div>
@@ -1846,7 +1846,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                       </div>
                       {t.boundProjectIds.length > 0 && (
                         <div className="flex flex-wrap gap-1 max-w-[120px]">
-                          {t.boundProjectIds.slice(0, 2).map(pid => <span key={pid} className="px-1 py-0.5 text-[9px]" style={{ background: S.accentLight, color: "#0d0d0d", borderRadius: S.radiusSm }}>{pid}</span>)}
+                          {t.boundProjectIds.slice(0, 2).map(pid => <span key={pid} className="px-1 py-0.5 text-[9px]" style={{ background: S.accentLight, color: "#1e293b", borderRadius: S.radiusSm }}>{pid}</span>)}
                         </div>
                       )}
                       <button type="button" className="text-[10px] px-2 py-1" style={{ color: "#a22", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => toggleTool(t.id)}>移除</button>
@@ -1873,14 +1873,14 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                       onClick={() => toggleTool(t.id)}
                       className="flex items-center gap-2 p-2 text-left transition-all"
                       style={{
-                        background: selected ? "#0d0d0d" : "#fafaf8",
-                        border: `1px solid ${selected ? "#0d0d0d" : S.border}`,
+                        background: selected ? "#1e293b" : "#fafaf8",
+                        border: `1px solid ${selected ? "#1e293b" : S.border}`,
                         borderRadius: S.radiusSm,
                         color: selected ? S.accent : S.text,
                       }}
                     >
                       <div className="w-6 h-6 flex items-center justify-center flex-shrink-0" style={{ background: toolTypeColor[t.type], borderRadius: 4 }}>
-                        <TI size={10} style={{ color: "#fff" }} />
+                        <TI size={10} style={{ color: "#ffffff" }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="text-[11px] font-bold truncate">{t.name}</div>
@@ -1896,7 +1896,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
         </div>
         <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}>
           <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button>
-          <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" disabled={!canSave} style={{ background: canSave ? "#0d0d0d" : "#ddd", color: canSave ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={handleSave}><Save size={13} />{initial ? "保存账号" : "创建账号"}</button>
+          <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" disabled={!canSave} style={{ background: canSave ? "#1e293b" : "#ddd", color: canSave ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={handleSave}><Save size={13} />{initial ? "保存账号" : "创建账号"}</button>
         </div>
       </aside>
     </div>
@@ -1905,10 +1905,10 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
 
 // ─── 账号管理主 Tab ────────────────────────────────────────────
 const toolStatusChip: Record<string, { label: string; bg: string; color: string }> = {
-  idle:            { label: "空闲",   bg: "#f0f0f0", color: "#555" },
-  in_use:          { label: "使用中", bg: S.accent,  color: "#000" },
-  pending_transfer:{ label: "待交接", bg: "#ffd600", color: "#000" },
-  abnormal:        { label: "异常",   bg: "#ff6b6b", color: "#fff" },
+  idle:            { label: "空闲",   bg: "#f1f5f9", color: "#475569" },
+  in_use:          { label: "使用中", bg: S.accent,  color: "#ffffff" },
+  pending_transfer:{ label: "待交接", bg: "#3b82f6", color: "#ffffff" },
+  abnormal:        { label: "异常",   bg: "#ff6b6b", color: "#ffffff" },
 };
 
 type AccSortKey = "name" | "createdAt" | "toolCount";
@@ -1971,9 +1971,9 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
   const [toast, setToast] = useState("");
 
   const statusChip: Record<SystemAccount["status"], { label: string; bg: string; color: string }> = {
-    active:   { label: "正常",   bg: S.accent,     color: "#000" },
-    disabled: { label: "停用",   bg: "#f0f0f0",    color: "#555" },
-    pending:  { label: "待激活", bg: "#ffd600",    color: "#000" },
+    active:   { label: "正常",   bg: S.accent,     color: "#ffffff" },
+    disabled: { label: "停用",   bg: "#f1f5f9",    color: "#475569" },
+    pending:  { label: "待激活", bg: "#3b82f6",    color: "#ffffff" },
   };
 
   const allRoleLabels = Array.from(new Set(accounts.flatMap(a => a.identities.map(i => i.label))));
@@ -2219,7 +2219,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
 
   const statCardHighlight = (label: string) => statCardPreset === label;
   const statCardStyle = (on: boolean) => on
-    ? { boxShadow: "0 0 0 2px #0d0d0d inset, 0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", transition: "box-shadow .2s" }
+    ? { boxShadow: "0 0 0 2px #1e293b inset, 0 2px 8px rgba(0,0,0,0.1)", cursor: "pointer", transition: "box-shadow .2s" }
     : { boxShadow: "0 1px 4px rgba(0,0,0,0.05)", cursor: "pointer", transition: "box-shadow .2s" };
 
   // 批量选择对应的账号列表（用于批量操作头部显示）
@@ -2229,7 +2229,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
   const someVisibleChecked = visibleUids.some(u => batchSelection.includes(u)) && !allVisibleChecked;
 
   const opTypeMeta: Record<AccountOperation["type"], { label: string; bg: string; icon: any; color: string }> = {
-    create:            { label: "创建",   bg: "#ccff00", icon: Plus,         color: "#000" },
+    create:            { label: "创建",   bg: "#3b82f6", icon: Plus,         color: "#ffffff" },
     edit:              { label: "编辑",   bg: "#e0e7ff", icon: Settings,     color: "#2b3ba0" },
     enable:            { label: "启用",   bg: "#d1fae5", icon: CheckCircle,  color: "#065f46" },
     disable:           { label: "停用",   bg: "#fee2e2", icon: XCircle,      color: "#991b1b" },
@@ -2240,7 +2240,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
   };
 
   const scopeColor: Record<IdentityRole["scopeType"], string> = {
-    global: "#0d0d0d", eco: "#7c3aed", saas: "#2563eb", platform: "#0891b2", project: "#059669", city: "#d97706",
+    global: "#1e293b", eco: "#7c3aed", saas: "#2563eb", platform: "#0891b2", project: "#059669", city: "#d97706",
   };
 
   return (
@@ -2248,13 +2248,13 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
       {/* 子 Tab 切换 */}
       <div
         className="flex items-center gap-1 p-1"
-        style={{ background: "#fff", border: `1px solid ${S.border}`, borderRadius: S.radius }}
+        style={{ background: "#ffffff", border: `1px solid ${S.border}`, borderRadius: S.radius }}
       >
         <button
           onClick={() => setSubTab("accounts")}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-[12px] font-bold transition-all relative"
           style={{
-            background: subTab === "accounts" ? "#0d0d0d" : "transparent",
+            background: subTab === "accounts" ? "#1e293b" : "transparent",
             color: subTab === "accounts" ? S.accent : S.textSec,
             borderRadius: S.radiusSm,
           }}
@@ -2263,14 +2263,14 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
           账号管理
           <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full" style={{
             background: subTab === "accounts" ? S.accent : S.accentLight,
-            color: "#000",
+            color: "#ffffff",
           }}>{accounts.length}</span>
         </button>
         <button
           onClick={() => setSubTab("invites")}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 text-[12px] font-bold transition-all relative"
           style={{
-            background: subTab === "invites" ? "#0d0d0d" : "transparent",
+            background: subTab === "invites" ? "#1e293b" : "transparent",
             color: subTab === "invites" ? S.accent : S.textSec,
             borderRadius: S.radiusSm,
           }}
@@ -2279,7 +2279,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
           邀请审核
           <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full" style={{
             background: subTab === "invites" ? S.accent : S.accentLight,
-            color: "#000",
+            color: "#ffffff",
           }}>{invSubmitted > 0 ? `${invites.length} · 待审${invSubmitted}` : invites.length}</span>
         </button>
       </div>
@@ -2295,7 +2295,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
               { label: "覆盖项目", value: totalProjects, Icon: Building2, onClick: () => applyStatCard({ label: "覆盖项目" }) },
             ].map(s => (
               <button key={s.label} type="button" className="text-left px-3 py-3 flex items-center gap-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, ...statCardStyle(statCardHighlight(s.label)) }} onClick={s.onClick}>
-                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: "#0d0d0d", borderRadius: S.radiusSm }}><s.Icon size={14} style={{ color: S.accent }} /></div>
+                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: "#1e293b", borderRadius: S.radiusSm }}><s.Icon size={14} style={{ color: S.accent }} /></div>
                 <div className="flex-1 min-w-0">
                   <div className="text-[10px] font-mono" style={{ color: S.muted }}>{s.label}</div>
                   <div className="text-base font-bold mt-0.5" style={{ color: S.text }}>{s.value}</div>
@@ -2308,10 +2308,10 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
           {/* 第二排统计卡（领用分档） */}
           <div className="grid grid-cols-4 gap-3">
             {[
-              { label: "领用·使用中", value: bindInUse, bg: S.accent, color: "#000", Icon: Eye, preset: { bf: "in_use" as BindingStatus } },
-              { label: "领用·空闲", value: bindIdle, bg: "#f0f0f0", color: "#555", Icon: EyeOff, preset: { bf: "idle" as BindingStatus } },
-              { label: "领用·待交接", value: bindPending, bg: "#ffd600", color: "#000", Icon: Clock, preset: { bf: "pending_transfer" as BindingStatus } },
-              { label: "领用·异常", value: bindAbnormal, bg: "#ff6b6b", color: "#fff", Icon: AlertTriangle, preset: { bf: "abnormal" as BindingStatus } },
+              { label: "领用·使用中", value: bindInUse, bg: S.accent, color: "#ffffff", Icon: Eye, preset: { bf: "in_use" as BindingStatus } },
+              { label: "领用·空闲", value: bindIdle, bg: "#f1f5f9", color: "#475569", Icon: EyeOff, preset: { bf: "idle" as BindingStatus } },
+              { label: "领用·待交接", value: bindPending, bg: "#3b82f6", color: "#ffffff", Icon: Clock, preset: { bf: "pending_transfer" as BindingStatus } },
+              { label: "领用·异常", value: bindAbnormal, bg: "#ff6b6b", color: "#ffffff", Icon: AlertTriangle, preset: { bf: "abnormal" as BindingStatus } },
             ].map(s => (
               <button key={s.label} type="button" className="text-left px-3 py-2.5 flex items-center gap-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, ...statCardStyle(statCardHighlight(s.label)) }} onClick={() => applyStatCard({ label: s.label, ...s.preset })}>
                 <div className="w-7 h-7 flex items-center justify-center flex-shrink-0" style={{ background: s.bg, borderRadius: S.radiusSm }}><s.Icon size={12} style={{ color: s.color }} /></div>
@@ -2368,19 +2368,19 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
               <span className="text-xs font-mono" style={{ color: S.muted }}>共 <b style={{ color: S.text }}>{totalFiltered}</b> 条 · 第 {safePage}/{totalPages} 页</span>
             </div>
             <div className="flex items-center gap-2">
-              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#fff", color: "#0d0d0d", borderRadius: S.radiusSm, border: "1px solid #0d0d0d" }} onClick={() => setInviteOpen(true)}><UserPlus size={12} />邀请注册</button>
-              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#fff", color: "#0d0d0d", borderRadius: S.radiusSm, border: "1px solid #0d0d0d" }} onClick={exportCsv}><Download size={12} />导出CSV</button>
-              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreating(true)}><Plus size={12} />新建账号</button>
+              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#ffffff", color: "#1e293b", borderRadius: S.radiusSm, border: "1px solid #1e293b" }} onClick={() => setInviteOpen(true)}><UserPlus size={12} />邀请注册</button>
+              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#ffffff", color: "#1e293b", borderRadius: S.radiusSm, border: "1px solid #1e293b" }} onClick={exportCsv}><Download size={12} />导出CSV</button>
+              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreating(true)}><Plus size={12} />新建账号</button>
             </div>
           </div>
 
           {/* 表格 + 分页 */}
           <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="min-w-[1860px]">
-              <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono sticky top-0 z-10" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555" }}>
+              <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono sticky top-0 z-10" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
                 <div className="flex-shrink-0 pr-2" style={{ width: 40 }}>
-                  <button type="button" onClick={toggleAllVisibleRows} style={{ color: someVisibleChecked ? "#999" : "#0d0d0d", display: "inline-flex", alignItems: "center" }} title="勾选本页全部">
-                    {allVisibleChecked ? <CheckSquare size={14} style={{ color: "#0d0d0d" }} /> : someVisibleChecked ? <CheckSquare size={14} style={{ color: "#bbb" }} /> : <Square size={14} />}
+                  <button type="button" onClick={toggleAllVisibleRows} style={{ color: someVisibleChecked ? "#999" : "#1e293b", display: "inline-flex", alignItems: "center" }} title="勾选本页全部">
+                    {allVisibleChecked ? <CheckSquare size={14} style={{ color: "#1e293b" }} /> : someVisibleChecked ? <CheckSquare size={14} style={{ color: "#bbb" }} /> : <Square size={14} />}
                   </button>
                 </div>
                 {([
@@ -2407,7 +2407,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                       {col.label}
                       {col.sort && (
                         isSorted
-                          ? (sortDir === "asc" ? <ChevronUp size={12} style={{ color: "#0d0d0d" }} /> : <ChevronDown size={12} style={{ color: "#0d0d0d" }} />)
+                          ? (sortDir === "asc" ? <ChevronUp size={12} style={{ color: "#1e293b" }} /> : <ChevronDown size={12} style={{ color: "#1e293b" }} />)
                           : <ChevronDown size={12} style={{ color: "#ccc" }} />
                       )}
                     </div>
@@ -2420,16 +2420,16 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                 const primaryToolStatus = toolStatuses.length > 0 ? toolStatuses[0] : "idle";
                 const bindMeta = bindingStatusMeta[a.bindingStatus];
                 const checked = batchSelection.includes(a.uid);
-                const typeColors: Record<string, string> = { wecom: "#0d0d0d", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
+                const typeColors: Record<string, string> = { wecom: "#1e293b", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
                 return (
-                  <div key={a.uid} className="flex items-start px-4 py-3 text-xs font-mono" style={{ background: checked ? "rgba(204,255,0,0.05)" : (idx % 2 === 0 ? "#fff" : "#fafaf8"), borderBottom: `1px solid ${S.border}`, transition: "background .15s" }}>
+                  <div key={a.uid} className="flex items-start px-4 py-3 text-xs font-mono" style={{ background: checked ? "rgba(204,255,0,0.05)" : (idx % 2 === 0 ? "#ffffff" : "#fafaf8"), borderBottom: `1px solid ${S.border}`, transition: "background .15s" }}>
                     <div className="flex-shrink-0 pr-2 pt-0.5" style={{ width: 40 }}>
                       <button type="button" onClick={() => toggleRow(a.uid)}>
-                        {checked ? <CheckSquare size={14} style={{ color: "#0d0d0d" }} /> : <Square size={14} style={{ color: S.mutedLight }} />}
+                        {checked ? <CheckSquare size={14} style={{ color: "#1e293b" }} /> : <Square size={14} style={{ color: S.mutedLight }} />}
                       </button>
                     </div>
                     <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 160 }}>
-                      <div className="w-8 h-8 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>{a.name[0] || "?"}</div>
+                      <div className="w-8 h-8 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{a.name[0] || "?"}</div>
                       <div className="min-w-0 flex-1">
                         <div className="font-bold truncate" style={{ color: S.text }}>{a.name || "<未填>"}</div>
                         <div className="text-[10px] truncate" style={{ color: S.muted }}>{a.uid}</div>
@@ -2442,10 +2442,10 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                       {a.identities.length === 0 && <span className="px-1.5 py-0.5 text-[10px]" style={{ color: S.muted }}>未分配身份</span>}
                       {a.identities.map((i, k) => (
                         <div key={k} className="flex items-center gap-1 flex-wrap">
-                          <span className="px-1 py-0.5 text-[9px] font-bold inline-flex items-center gap-0.5" style={{ background: scopeColor[i.scopeType], color: "#fff", borderRadius: S.radiusSm }} title={`作用域：${scopeTypeLabelZh[i.scopeType]}`}>
+                          <span className="px-1 py-0.5 text-[9px] font-bold inline-flex items-center gap-0.5" style={{ background: scopeColor[i.scopeType], color: "#ffffff", borderRadius: S.radiusSm }} title={`作用域：${scopeTypeLabelZh[i.scopeType]}`}>
                             <MapPin size={8} />{scopeTypeLabelZh[i.scopeType]}
                           </span>
-                          <span className="px-1.5 py-0.5 text-[10px] font-bold" title={i.permissionSummary} style={{ background: S.accentLight, color: "#0d0d0d", border: `1px solid rgba(204,255,0,0.35)`, borderRadius: S.radiusSm }}>
+                          <span className="px-1.5 py-0.5 text-[10px] font-bold" title={i.permissionSummary} style={{ background: S.accentLight, color: "#1e293b", border: `1px solid rgba(204,255,0,0.35)`, borderRadius: S.radiusSm }}>
                             {i.label}
                           </span>
                           {i.scopeType !== "global" && i.scopeIds.length > 0 && (
@@ -2474,11 +2474,11 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                             const TI = toolTypeIconMap[t.type];
                             return (
                               <div key={k} className="flex flex-wrap gap-1 items-center">
-                                <span className="px-1 py-0.5 text-[9px] font-bold inline-flex items-center gap-1" style={{ background: typeColors[t.type] || "#0d0d0d", color: "#fff", borderRadius: S.radiusSm }}>
+                                <span className="px-1 py-0.5 text-[9px] font-bold inline-flex items-center gap-1" style={{ background: typeColors[t.type] || "#1e293b", color: "#ffffff", borderRadius: S.radiusSm }}>
                                   <TI size={8} />{t.name}
                                 </span>
                                 <span className="px-1 py-0.5 text-[9px] font-bold" style={{ background: toolStatusChip[t.status].bg, color: toolStatusChip[t.status].color, borderRadius: S.radiusSm }}>{toolStatusChip[t.status].label}</span>
-                                {t.boundProjectIds.length > 0 && t.boundProjectIds.slice(0, 2).map(pid => <span key={pid} className="px-1 py-0.5 text-[9px]" style={{ background: S.accentLight, color: "#0d0d0d", borderRadius: S.radiusSm }}>{projectId2Name[pid] || pid}</span>)}
+                                {t.boundProjectIds.length > 0 && t.boundProjectIds.slice(0, 2).map(pid => <span key={pid} className="px-1 py-0.5 text-[9px]" style={{ background: S.accentLight, color: "#1e293b", borderRadius: S.radiusSm }}>{projectId2Name[pid] || pid}</span>)}
                                 {t.boundProjectIds.length > 2 && <span className="text-[9px]" style={{ color: S.muted }}>+{t.boundProjectIds.length - 2}</span>}
                               </div>
                             );
@@ -2506,11 +2506,11 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                     </div>
                     <div className="flex-shrink-0" style={{ width: 130, color: S.textSec }}>{a.createdAt}</div>
                     <div className="flex-shrink-0 flex items-center gap-1 flex-wrap" style={{ width: 200 }}>
-                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#fff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => setDetailOpen(a)}><Eye size={11} />详情</button>
-                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }} onClick={() => setEditing(a)}><Settings size={11} />编辑</button>
-                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#fff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => setQuickAssignToolOpen(a)} title="快速分配工具"><ArrowLeftRight size={11} /></button>
-                      {a.status !== "active" && <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setStatus(a.uid, "active")}>启用</button>}
-                      {a.status === "active" && <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#fff", color: "#991b1b", border: "1px solid #991b1b", borderRadius: S.radiusSm }} onClick={() => setStatus(a.uid, "disabled", true)}>停用</button>}
+                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => setDetailOpen(a)}><Eye size={11} />详情</button>
+                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => setEditing(a)}><Settings size={11} />编辑</button>
+                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => setQuickAssignToolOpen(a)} title="快速分配工具"><ArrowLeftRight size={11} /></button>
+                      {a.status !== "active" && <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setStatus(a.uid, "active")}>启用</button>}
+                      {a.status === "active" && <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", color: "#991b1b", border: "1px solid #991b1b", borderRadius: S.radiusSm }} onClick={() => setStatus(a.uid, "disabled", true)}>停用</button>}
                     </div>
                   </div>
                 );
@@ -2521,7 +2521,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
             <div className="sticky bottom-0 flex items-center justify-between px-4 py-3 gap-4 flex-wrap" style={{ background: "#fcfcfc", borderTop: `1px solid ${S.border}`, borderRadius: `0 0 ${S.radius} ${S.radius}` }}>
               <div className="flex items-center gap-4 text-xs font-mono">
                 <div style={{ color: S.muted }}>
-                  已选中 <b style={{ color: "#0d0d0d" }}>{batchSelection.length}</b> 项
+                  已选中 <b style={{ color: "#1e293b" }}>{batchSelection.length}</b> 项
                   {batchSelection.length > 0 && (
                     <button className="ml-2 underline" style={{ color: S.muted }} onClick={() => setBatchSelection([])}>清空</button>
                   )}
@@ -2531,36 +2531,36 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                     type="button"
                     disabled={batchSelection.length === 0}
                     className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold"
-                    style={{ background: batchSelection.length ? S.accent : "#f0f0f0", color: batchSelection.length ? "#000" : "#999", borderRadius: S.radiusSm }}
+                    style={{ background: batchSelection.length ? S.accent : "#f1f5f9", color: batchSelection.length ? "#ffffff" : "#999", borderRadius: S.radiusSm }}
                     onClick={() => batchSetStatus("active")}
                   ><CheckCircle size={11} />批量启用</button>
                   <button
                     type="button"
                     disabled={batchSelection.length === 0}
                     className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold"
-                    style={{ background: batchSelection.length ? "#fff" : "#f0f0f0", color: batchSelection.length ? "#991b1b" : "#999", border: `1px solid ${batchSelection.length ? "#991b1b" : S.border}`, borderRadius: S.radiusSm }}
+                    style={{ background: batchSelection.length ? "#ffffff" : "#f1f5f9", color: batchSelection.length ? "#991b1b" : "#999", border: `1px solid ${batchSelection.length ? "#991b1b" : S.border}`, borderRadius: S.radiusSm }}
                     onClick={() => batchSetStatus("disabled")}
                   ><XCircle size={11} />批量停用</button>
                   <button
                     type="button"
                     disabled={batchSelection.length === 0}
                     className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold"
-                    style={{ background: batchSelection.length ? "#fff" : "#f0f0f0", color: batchSelection.length ? "#0d0d0d" : "#999", border: `1px solid ${batchSelection.length ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}
+                    style={{ background: batchSelection.length ? "#ffffff" : "#f1f5f9", color: batchSelection.length ? "#1e293b" : "#999", border: `1px solid ${batchSelection.length ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}
                     onClick={() => { setBatchAction("assignProject"); setBatchTargetId([]); }}
                   ><Building2 size={11} />批量分配项目</button>
                   <button
                     type="button"
                     disabled={batchSelection.length === 0}
                     className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold"
-                    style={{ background: batchSelection.length ? "#fff" : "#f0f0f0", color: batchSelection.length ? "#0d0d0d" : "#999", border: `1px solid ${batchSelection.length ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}
+                    style={{ background: batchSelection.length ? "#ffffff" : "#f1f5f9", color: batchSelection.length ? "#1e293b" : "#999", border: `1px solid ${batchSelection.length ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}
                     onClick={() => { setBatchAction("assignTools"); setBatchTargetId([]); }}
                   ><Radio size={11} />批量分配工具</button>
                 </div>
               </div>
               <div className="flex items-center gap-3 text-xs font-mono">
-                <button type="button" disabled={safePage <= 1} className="px-2.5 py-1.5 font-bold" style={{ background: safePage > 1 ? "#fff" : "#f0f0f0", color: safePage > 1 ? S.text : "#999", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))}>上一页</button>
+                <button type="button" disabled={safePage <= 1} className="px-2.5 py-1.5 font-bold" style={{ background: safePage > 1 ? "#ffffff" : "#f1f5f9", color: safePage > 1 ? S.text : "#999", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))}>上一页</button>
                 <div style={{ color: S.text }}>第 <b>{safePage}</b> / {totalPages} 页</div>
-                <button type="button" disabled={safePage >= totalPages} className="px-2.5 py-1.5 font-bold" style={{ background: safePage < totalPages ? "#fff" : "#f0f0f0", color: safePage < totalPages ? S.text : "#999", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>下一页</button>
+                <button type="button" disabled={safePage >= totalPages} className="px-2.5 py-1.5 font-bold" style={{ background: safePage < totalPages ? "#ffffff" : "#f1f5f9", color: safePage < totalPages ? S.text : "#999", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>下一页</button>
                 <select className="px-2 py-1.5 text-[11px] font-bold" style={{ background: "#fafaf8", border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={safePage} onChange={e => setPage(Number(e.target.value))}>
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => <option key={p} value={p}>跳转到第 {p} 页</option>)}
                 </select>
@@ -2569,7 +2569,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
           </div>
 
           <div className="p-4 flex items-start gap-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}>
-            <ShieldCheck size={18} style={{ color: "#0d0d0d", marginTop: 1, flexShrink: 0 }} />
+            <ShieldCheck size={18} style={{ color: "#1e293b", marginTop: 1, flexShrink: 0 }} />
             <div>
               <div className="text-sm font-bold mb-1">账号 · 工具池 · 项目分配 <span className="ml-2 text-[10px] font-mono font-normal" style={{ color: S.muted }}>Tip: 统计卡可点击跳转对应筛选 · 表头姓名/工具数/创建时间可排序</span></div>
               <p className="text-xs leading-relaxed font-mono" style={{ color: S.textSec }}>通讯工具（企微/个人微信/手机号/媒体账号）独立管理在「通讯工具中心」的工具池中。账号编辑时从工具池选择分配，保存后自动同步工具的领用状态。一个工具同一时间只能被一个账号领用，但可跨多个项目使用。如需新成员加入，点击「邀请注册」发送带邀请码的链接，对方填写后回到本页「邀请审核」Tab 完成审核，通过后将自动创建系统账号。</p>
@@ -2581,18 +2581,18 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
         <>
           <div className="grid grid-cols-4 gap-3">
             {[
-              { label: "邀请总数", value: invites.length, Icon: Share2, bg: "#0d0d0d", color: S.accent },
-              { label: "待填写", value: invPending, Icon: Clock, bg: "#fff", color: "#000" },
-              { label: "待审核", value: invSubmitted, Icon: AlertTriangle, bg: "#ccff00", color: "#000" },
-              { label: "已通过 / 已驳回", value: `${invApproved} / ${invRejected}`, Icon: ThumbsUp, bg: "#fff", color: "#000" },
+              { label: "邀请总数", value: invites.length, Icon: Share2, bg: "#1e293b", color: S.accent },
+              { label: "待填写", value: invPending, Icon: Clock, bg: "#ffffff", color: "#ffffff" },
+              { label: "待审核", value: invSubmitted, Icon: AlertTriangle, bg: "#3b82f6", color: "#ffffff" },
+              { label: "已通过 / 已驳回", value: `${invApproved} / ${invRejected}`, Icon: ThumbsUp, bg: "#ffffff", color: "#ffffff" },
             ].map((s: any) => (
-              <div key={s.label} className="px-3 py-3 flex items-center gap-2" style={{ background: s.bg || S.surface, border: `1px solid ${s.bg === "#0d0d0d" ? "#0d0d0d" : S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: s.bg === "#0d0d0d" ? "#000" : S.accentLight, borderRadius: S.radiusSm }}>
-                  <s.Icon size={14} style={{ color: s.bg === "#0d0d0d" ? S.accent : "#0d0d0d" }} />
+              <div key={s.label} className="px-3 py-3 flex items-center gap-2" style={{ background: s.bg || S.surface, border: `1px solid ${s.bg === "#1e293b" ? "#1e293b" : S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+                <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: s.bg === "#1e293b" ? "#ffffff" : S.accentLight, borderRadius: S.radiusSm }}>
+                  <s.Icon size={14} style={{ color: s.bg === "#1e293b" ? S.accent : "#1e293b" }} />
                 </div>
                 <div>
-                  <div className="text-[10px] font-mono" style={{ color: s.bg === "#0d0d0d" ? "rgba(255,255,255,0.7)" : S.muted }}>{s.label}</div>
-                  <div className="text-base font-bold mt-0.5" style={{ color: s.bg === "#0d0d0d" ? "#fff" : S.text }}>{s.value}</div>
+                  <div className="text-[10px] font-mono" style={{ color: s.bg === "#1e293b" ? "rgba(255,255,255,0.7)" : S.muted }}>{s.label}</div>
+                  <div className="text-base font-bold mt-0.5" style={{ color: s.bg === "#1e293b" ? "#ffffff" : S.text }}>{s.value}</div>
                 </div>
               </div>
             ))}
@@ -2628,13 +2628,13 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
               <span className="text-xs font-mono" style={{ color: S.muted }}>共 <b style={{ color: S.text }}>{filteredInvites.length}</b> 条</span>
             </div>
             <div className="flex items-center gap-2">
-              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setInviteOpen(true)}><UserPlus size={12} />新建邀请</button>
+              <button type="button" className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setInviteOpen(true)}><UserPlus size={12} />新建邀请</button>
             </div>
           </div>
 
           <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="min-w-[1300px]">
-              <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}`, color: "#555" }}>
+              <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
                 {([
                   ["被邀请人", 170], ["手机 / 邮箱", 200], ["邀请码", 120],
                   ["建议身份 / 项目", 260], ["邀请状态", 120],
@@ -2651,13 +2651,13 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                     key={inv.id}
                     className="flex items-start px-4 py-3 text-xs font-mono"
                     style={{
-                      background: idx % 2 === 0 ? "#fff" : "#fafaf8",
+                      background: idx % 2 === 0 ? "#ffffff" : "#fafaf8",
                       borderBottom: `1px solid ${S.border}`,
-                      boxShadow: inv.status === "submitted" ? "inset 2px 0 0 #0d0d0d" : undefined,
+                      boxShadow: inv.status === "submitted" ? "inset 2px 0 0 #1e293b" : undefined,
                     }}
                   >
                     <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 170 }}>
-                      <div className="w-8 h-8 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#ccff00", color: "#000", borderRadius: S.radiusSm }}>
+                      <div className="w-8 h-8 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: S.radiusSm }}>
                         {inv.inviteeName?.[0] || "?"}
                       </div>
                       <div>
@@ -2670,7 +2670,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                       <div className="text-[10px] truncate" style={{ color: S.muted }}>✉ {inv.inviteeEmail}</div>
                     </div>
                     <div className="flex-shrink-0" style={{ width: 120 }}>
-                      <div className="inline-flex items-center px-2 py-1 font-bold" style={{ fontFamily: "ui-monospace, Menlo, monospace", background: S.surfaceSoft, border: `1px solid ${S.border}`, color: "#000", borderRadius: S.radiusSm, letterSpacing: 1 }}>
+                      <div className="inline-flex items-center px-2 py-1 font-bold" style={{ fontFamily: "ui-monospace, Menlo, monospace", background: S.surfaceSoft, border: `1px solid ${S.border}`, color: "#ffffff", borderRadius: S.radiusSm, letterSpacing: 1 }}>
                         {inv.inviteCode}
                       </div>
                     </div>
@@ -2678,7 +2678,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                       <div className="flex flex-wrap gap-1">
                         {inv.suggestedIdentities.length === 0 && <span className="px-1.5 py-0.5 text-[10px]" style={{ color: S.muted }}>未指定身份</span>}
                         {inv.suggestedIdentities.map((i, k) => (
-                          <span key={k} className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#0d0d0d", border: `1px solid rgba(204,255,0,0.35)`, borderRadius: S.radiusSm }}>{i.label}</span>
+                          <span key={k} className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#1e293b", border: `1px solid rgba(204,255,0,0.35)`, borderRadius: S.radiusSm }}>{i.label}</span>
                         ))}
                       </div>
                       <div className="flex flex-wrap gap-1">
@@ -2706,30 +2706,30 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                       <div>⏳ {inv.expireAt}</div>
                       <div className="text-[10px]" style={{ color: S.muted }}>
                         {inv.status === "expired" ? "邀请链接已失效" : "邀请链接有效中"}
-                        {resendCount != null && resendCount > 0 && <span className="ml-1 px-1" style={{ background: S.accentLight, color: "#000", borderRadius: 3 }}>重发 {resendCount}</span>}
+                        {resendCount != null && resendCount > 0 && <span className="ml-1 px-1" style={{ background: S.accentLight, color: "#ffffff", borderRadius: 3 }}>重发 {resendCount}</span>}
                       </div>
                     </div>
                     <div className="flex-shrink-0 flex items-center flex-wrap gap-1.5" style={{ width: 200 }}>
-                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#fff", border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm }} onClick={() => openReview(inv)}>
+                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm }} onClick={() => openReview(inv)}>
                         <Eye size={11} /> 查看
                       </button>
                       {inv.status === "submitted" && (
-                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }} onClick={() => openReview(inv)}>
+                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => openReview(inv)}>
                           <CheckCircle size={11} /> 审核
                         </button>
                       )}
                       {(inv.status === "pending" || inv.status === "expired" || inv.status === "rejected") && (
-                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }} onClick={() => resendInvite(inv)} title="重置有效期为 7 天后">
+                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => resendInvite(inv)} title="重置有效期为 7 天后">
                           <RotateCcw size={11} /> 重发
                         </button>
                       )}
                       {(inv.status === "pending" || inv.status === "submitted") && (
-                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#fff", border: "1px solid #c00", color: "#c00", borderRadius: S.radiusSm }} onClick={() => revokeInvite(inv)}>
+                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", border: "1px solid #c00", color: "#c00", borderRadius: S.radiusSm }} onClick={() => revokeInvite(inv)}>
                           撤销
                         </button>
                       )}
                       {inv.status === "rejected" && (
-                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#fff", border: "1px solid #0d0d0d", color: "#0d0d0d", borderRadius: S.radiusSm }} onClick={() => {
+                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", border: "1px solid #1e293b", color: "#1e293b", borderRadius: S.radiusSm }} onClick={() => {
                           setInvites(prev => prev.map(i => i.id === inv.id ? { ...i, status: "pending", rejectReason: undefined, reviewedBy: undefined, reviewedByUid: undefined, reviewedAt: undefined } : i));
                           setToast("已退回邀请为待填写，申请人可重新提交");
                         }}>
@@ -2774,10 +2774,10 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
       {/* 详情抽屉 */}
       {detailOpen && (
         <div className="fixed inset-0 z-50 flex items-stretch justify-end" style={{ background: "rgba(0,0,0,0.35)" }} onClick={() => setDetailOpen(null)}>
-          <aside className="w-[560px] max-w-full h-full flex flex-col animate-[slideIn_.2s_ease-out]" style={{ background: "#fff", boxShadow: "-4px 0 24px rgba(0,0,0,0.08)" }} onClick={e => e.stopPropagation()}>
+          <aside className="w-[560px] max-w-full h-full flex flex-col animate-[slideIn_.2s_ease-out]" style={{ background: "#ffffff", boxShadow: "-4px 0 24px rgba(0,0,0,0.08)" }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `1px solid ${S.border}` }}>
               <div className="flex items-center gap-3 min-w-0">
-                <div className="w-10 h-10 flex items-center justify-center font-bold flex-shrink-0" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius }}>{detailOpen.name[0] || "?"}</div>
+                <div className="w-10 h-10 flex items-center justify-center font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius }}>{detailOpen.name[0] || "?"}</div>
                 <div className="min-w-0">
                   <div className="text-base font-bold truncate">{detailOpen.name}</div>
                   <div className="text-[11px] font-mono" style={{ color: S.muted }}>{detailOpen.uid} · 创建于 {detailOpen.createdAt}</div>
@@ -2814,10 +2814,10 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                     return (
                       <div key={k} className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                         <div className="flex items-center gap-2 flex-wrap mb-2">
-                          <span className="px-1.5 py-0.5 text-[9px] font-bold inline-flex items-center gap-0.5" style={{ background: scopeColor[i.scopeType], color: "#fff", borderRadius: S.radiusSm }}>
+                          <span className="px-1.5 py-0.5 text-[9px] font-bold inline-flex items-center gap-0.5" style={{ background: scopeColor[i.scopeType], color: "#ffffff", borderRadius: S.radiusSm }}>
                             <MapPin size={8} />{scopeTypeLabelZh[i.scopeType]}
                           </span>
-                          <span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#0d0d0d", borderRadius: S.radiusSm }}>{i.label}</span>
+                          <span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#1e293b", borderRadius: S.radiusSm }}>{i.label}</span>
                           <span className="text-[10px]" style={{ color: S.muted }}>permission: {i.permissionSummary}</span>
                         </div>
                         <div className="flex flex-wrap gap-1">
@@ -2854,18 +2854,18 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                     const t = toolMap[tid];
                     if (!t) return null;
                     const TI = toolTypeIconMap[t.type];
-                    const typeColors: Record<string, string> = { wecom: "#0d0d0d", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
+                    const typeColors: Record<string, string> = { wecom: "#1e293b", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
                     return (
                       <div key={tid} className="flex items-center gap-2 p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-                        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: typeColors[t.type] || "#0d0d0d", borderRadius: S.radiusSm }}>
-                          <TI size={12} style={{ color: "#fff" }} />
+                        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: typeColors[t.type] || "#1e293b", borderRadius: S.radiusSm }}>
+                          <TI size={12} style={{ color: "#ffffff" }} />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="font-bold" style={{ color: S.text }}>{t.name}</div>
                           <div className="text-[10px]" style={{ color: S.muted }}>{t.identifier} · 所属 {t.type}</div>
                           {t.boundProjectIds.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-1">
-                              {t.boundProjectIds.slice(0, 4).map(pid => <span key={pid} className="px-1 py-0.5 text-[9px]" style={{ background: S.accentLight, color: "#0d0d0d", borderRadius: 3 }}>{projectId2Name[pid] || pid}</span>)}
+                              {t.boundProjectIds.slice(0, 4).map(pid => <span key={pid} className="px-1 py-0.5 text-[9px]" style={{ background: S.accentLight, color: "#1e293b", borderRadius: 3 }}>{projectId2Name[pid] || pid}</span>)}
                               {t.boundProjectIds.length > 4 && <span className="text-[9px]" style={{ color: S.muted }}>+{t.boundProjectIds.length - 4}</span>}
                             </div>
                           )}
@@ -2909,9 +2909,9 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                 </div>
               </section>
             </div>
-            <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: "#fff", borderTop: `1px solid ${S.border}` }}>
+            <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: "#ffffff", borderTop: `1px solid ${S.border}` }}>
               <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setDetailOpen(null)}>关闭</button>
-              <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }} onClick={() => { const a = detailOpen; setDetailOpen(null); setEditing(a); }}><Settings size={13} />前往编辑</button>
+              <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => { const a = detailOpen; setDetailOpen(null); setEditing(a); }}><Settings size={13} />前往编辑</button>
             </div>
           </aside>
         </div>
@@ -2926,7 +2926,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
         const [local, setLocal] = useState<string[]>([]);
         return (
           <div className="fixed inset-0 z-50 flex items-stretch justify-end" style={{ background: "rgba(0,0,0,0.35)" }} onClick={() => { isBatch ? setBatchAction(null) : setQuickAssignToolOpen(null); }}>
-            <aside className="w-[520px] max-w-full h-full flex flex-col" style={{ background: "#fff", boxShadow: "-4px 0 24px rgba(0,0,0,0.08)" }} onClick={e => e.stopPropagation()}>
+            <aside className="w-[520px] max-w-full h-full flex flex-col" style={{ background: "#ffffff", boxShadow: "-4px 0 24px rgba(0,0,0,0.08)" }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `1px solid ${S.border}` }}>
                 <div className="min-w-0">
                   <div className="text-base font-bold truncate">{title}</div>
@@ -2938,26 +2938,26 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                 {availablePool.length === 0 && <div className="p-4 text-center text-[11px]" style={{ color: S.muted }}>工具池暂无可用工具，请到「通讯工具中心」先新增工具。</div>}
                 {availablePool.map(t => {
                   const TI = toolTypeIconMap[t.type];
-                  const typeColors: Record<string, string> = { wecom: "#0d0d0d", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
+                  const typeColors: Record<string, string> = { wecom: "#1e293b", wechat: "#07c160", phone: "#4a90e2", media: "#ff6b35" };
                   const checked = local.includes(t.id);
                   return (
-                    <button key={t.id} type="button" className="w-full text-left flex items-center gap-3 p-3" style={{ background: checked ? S.accentLight : S.surface, border: `1px solid ${checked ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}
+                    <button key={t.id} type="button" className="w-full text-left flex items-center gap-3 p-3" style={{ background: checked ? S.accentLight : S.surface, border: `1px solid ${checked ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}
                       onClick={() => setLocal(prev => prev.includes(t.id) ? prev.filter(x => x !== t.id) : [...prev, t.id])}>
-                      <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: typeColors[t.type] || "#0d0d0d", borderRadius: S.radiusSm }}>
-                        <TI size={12} style={{ color: "#fff" }} />
+                      <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: typeColors[t.type] || "#1e293b", borderRadius: S.radiusSm }}>
+                        <TI size={12} style={{ color: "#ffffff" }} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="font-bold truncate" style={{ color: S.text }}>{t.name}</div>
                         <div className="text-[10px] truncate" style={{ color: S.muted }}>{t.identifier}</div>
                       </div>
-                      {checked ? <CheckSquare size={16} style={{ color: "#0d0d0d" }} /> : <Square size={16} style={{ color: S.mutedLight }} />}
+                      {checked ? <CheckSquare size={16} style={{ color: "#1e293b" }} /> : <Square size={16} style={{ color: S.mutedLight }} />}
                     </button>
                   );
                 })}
               </div>
-              <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: "#fff", borderTop: `1px solid ${S.border}` }}>
+              <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: "#ffffff", borderTop: `1px solid ${S.border}` }}>
                 <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => { isBatch ? setBatchAction(null) : setQuickAssignToolOpen(null); }}>取消</button>
-                <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" disabled={local.length === 0} style={{ background: local.length ? "#0d0d0d" : "#ddd", color: local.length ? S.accent : "#888", borderRadius: S.radiusSm }}
+                <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" disabled={local.length === 0} style={{ background: local.length ? "#1e293b" : "#ddd", color: local.length ? S.accent : "#888", borderRadius: S.radiusSm }}
                   onClick={() => {
                     if (isBatch) batchAssignTools(local);
                     else if (quickAssignToolOpen) quickAssignToolsToSingle(quickAssignToolOpen, local);
@@ -2977,7 +2977,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
         const merged = Array.from(new Map(projectOptions.map(o => [o.id, o])).values());
         return (
           <div className="fixed inset-0 z-50 flex items-stretch justify-end" style={{ background: "rgba(0,0,0,0.35)" }} onClick={() => setBatchAction(null)}>
-            <aside className="w-[520px] max-w-full h-full flex flex-col" style={{ background: "#fff", boxShadow: "-4px 0 24px rgba(0,0,0,0.08)" }} onClick={e => e.stopPropagation()}>
+            <aside className="w-[520px] max-w-full h-full flex flex-col" style={{ background: "#ffffff", boxShadow: "-4px 0 24px rgba(0,0,0,0.08)" }} onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between px-5 py-4" style={{ borderBottom: `1px solid ${S.border}` }}>
                 <div className="min-w-0">
                   <div className="text-base font-bold truncate">批量分配项目：{batchAccounts.length} 个账号</div>
@@ -2989,23 +2989,23 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                 {merged.map(p => {
                   const checked = local.includes(p.id);
                   return (
-                    <button key={p.id} type="button" className="w-full text-left flex items-center gap-3 p-3" style={{ background: checked ? S.accentLight : S.surface, border: `1px solid ${checked ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}
+                    <button key={p.id} type="button" className="w-full text-left flex items-center gap-3 p-3" style={{ background: checked ? S.accentLight : S.surface, border: `1px solid ${checked ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}
                       onClick={() => setLocal(prev => prev.includes(p.id) ? prev.filter(x => x !== p.id) : [...prev, p.id])}>
-                      <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: "#0d0d0d", borderRadius: S.radiusSm }}>
+                      <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: "#1e293b", borderRadius: S.radiusSm }}>
                         <Building2 size={12} style={{ color: S.accent }} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="font-bold truncate" style={{ color: S.text }}>{p.name}</div>
                         <div className="text-[10px] truncate" style={{ color: S.muted }}>{p.id}</div>
                       </div>
-                      {checked ? <CheckSquare size={16} style={{ color: "#0d0d0d" }} /> : <Square size={16} style={{ color: S.mutedLight }} />}
+                      {checked ? <CheckSquare size={16} style={{ color: "#1e293b" }} /> : <Square size={16} style={{ color: S.mutedLight }} />}
                     </button>
                   );
                 })}
               </div>
-              <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: "#fff", borderTop: `1px solid ${S.border}` }}>
+              <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: "#ffffff", borderTop: `1px solid ${S.border}` }}>
                 <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setBatchAction(null)}>取消</button>
-                <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" disabled={local.length === 0} style={{ background: local.length ? "#0d0d0d" : "#ddd", color: local.length ? S.accent : "#888", borderRadius: S.radiusSm }}
+                <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" disabled={local.length === 0} style={{ background: local.length ? "#1e293b" : "#ddd", color: local.length ? S.accent : "#888", borderRadius: S.radiusSm }}
                   onClick={() => batchAssignProjects(local)}>
                   <Building2 size={13} />分配 {local.length} 个项目（追加）
                 </button>
@@ -3101,11 +3101,11 @@ export default function EcosystemManagement() {
           </div>
           {/* 当前登录身份选择器（权限联动演示） */}
           <div className="flex items-center gap-2 px-3 py-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radiusSm }}>
-            <div className="w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>{currentUser.avatar}</div>
+            <div className="w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{currentUser.avatar}</div>
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">
                 <span className="text-xs font-bold" style={{ color: S.text }}>{currentUser.name}</span>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: "3px" }}>{currentRole}</span>
+                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: "3px" }}>{currentRole}</span>
               </div>
               <label className="flex items-center gap-1 mt-0.5" style={{ color: S.muted, fontSize: "10px" }}>
                 切换身份
@@ -3128,7 +3128,7 @@ export default function EcosystemManagement() {
 
       {/* 当前层级说明条 */}
       <div className="flex items-center gap-4 px-4 py-3 flex-shrink-0" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}>
-        <tier.icon size={16} style={{ color: "#0d0d0d", flexShrink: 0 }} />
+        <tier.icon size={16} style={{ color: "#1e293b", flexShrink: 0 }} />
         <div className="flex-1">
           <span className="text-sm font-bold" style={{ color: S.text }}>第 {tier.level} 层：{tier.label}</span>
           <span className="text-xs ml-3 font-mono" style={{ color: S.muted }}>{tier.desc}</span>
@@ -3141,7 +3141,7 @@ export default function EcosystemManagement() {
             </div>
           ))}
         </div>
-        <div className="flex-shrink-0 px-3 py-1.5 text-xs font-bold font-mono" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+        <div className="flex-shrink-0 px-3 py-1.5 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
           {tier.role}
         </div>
       </div>
@@ -3159,7 +3159,7 @@ export default function EcosystemManagement() {
             title={hint}
             className="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold transition-all relative"
             style={{
-              background: mainTab === id ? "#0d0d0d" : "transparent",
+              background: mainTab === id ? "#1e293b" : "transparent",
               color: mainTab === id ? S.accent : S.textSec,
               borderRadius: S.radiusSm,
             }}

@@ -12,7 +12,7 @@ const M = {
   primaryFill: "#b8f000",
   primaryLight: "rgba(184,240,0,0.16)",
   muted: "#72796a",
-  text: "#111111",
+  text: "#1e293b",
   textSec: "#3e4637",
 };
 
@@ -41,7 +41,7 @@ function HomeTab() {
             <div className="w-9 h-9 flex items-center justify-center" style={{ background: M.surface, border: `1px solid ${M.border}`, borderRadius: "8px" }}>
               <Bell size={17} style={{ color: M.primary }} />
             </div>
-            <div className="absolute top-0 right-0 w-4 h-4 flex items-center justify-center font-bold" style={{ fontSize: "9px", background: M.primaryFill, color: "#000", borderRadius: "50%" }}>3</div>
+            <div className="absolute top-0 right-0 w-4 h-4 flex items-center justify-center font-bold" style={{ fontSize: "9px", background: M.primaryFill, color: "#ffffff", borderRadius: "50%" }}>3</div>
           </div>
         </div>
 
@@ -56,7 +56,7 @@ function HomeTab() {
               </div>
               <div className="font-bold" style={{ fontSize: "18px", color: M.text, fontFamily: "monospace" }}>会员中心</div>
             </div>
-            <div className="w-11 h-11 flex items-center justify-center text-lg font-bold" style={{ background: M.primaryFill, color: "#000", borderRadius: "8px" }}>李</div>
+            <div className="w-11 h-11 flex items-center justify-center text-lg font-bold" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "8px" }}>李</div>
           </div>
           <div className="flex items-end justify-between relative">
             <div>
@@ -132,7 +132,7 @@ function HomeTab() {
       <div className="px-5 mb-4">
         <div className="text-sm font-bold mb-3 tracking-widest font-mono" style={{ color: M.text }}>// 服务老师</div>
         <div className="p-4 flex items-center gap-4" style={{ background: M.surface, border: `1px solid ${M.border}`, borderRadius: "12px" }}>
-              <div className="w-12 h-12 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: M.primaryFill, color: "#000", borderRadius: "10px" }}>吴</div>
+              <div className="w-12 h-12 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "10px" }}>吴</div>
           <div className="flex-1">
             <div className="font-bold font-mono" style={{ color: M.text }}>吴思远</div>
             <div className="text-xs mt-0.5 font-mono" style={{ color: M.muted }}>北京区域 · 5年经验</div>
@@ -141,7 +141,7 @@ function HomeTab() {
               <span className="text-xs ml-1 font-mono" style={{ color: M.muted }}>4.9分</span>
             </div>
           </div>
-          <button className="px-3 py-1.5 text-xs font-bold font-mono" style={{ background: M.primaryFill, color: "#000", borderRadius: "8px" }}>联系</button>
+          <button className="px-3 py-1.5 text-xs font-bold font-mono" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "8px" }}>联系</button>
         </div>
       </div>
 
@@ -182,7 +182,7 @@ function CommunityTab() {
         <div className="text-xs font-bold mb-2 tracking-widest font-mono" style={{ color: M.primary }}>[ 已加入 ]</div>
         <div className="p-4 mb-4" style={{ background: M.surface, border: `2px solid ${M.primary}`, borderRadius: "12px" }}>
           <div className="flex items-center gap-3 mb-3">
-          <div className="w-12 h-12 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: M.primaryFill, color: "#000", borderRadius: "10px" }}>北</div>
+          <div className="w-12 h-12 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "10px" }}>北</div>
             <div>
               <div className="font-bold font-mono" style={{ color: M.text }}>北京PRO会员群01</div>
               <div className="text-xs mt-0.5 flex items-center gap-2 font-mono" style={{ color: M.muted }}>
@@ -196,7 +196,7 @@ function CommunityTab() {
           <div className="h-1.5 overflow-hidden mb-3" style={{ background: M.borderDim, borderRadius: "4px" }}>
             <div className="h-full" style={{ width: "97.4%", background: M.primaryFill, borderRadius: "4px" }} />
           </div>
-          <button className="w-full py-2.5 text-sm font-bold font-mono flex items-center justify-center gap-2" style={{ background: M.primaryFill, color: "#000", borderRadius: "8px" }} onClick={() => setShowQR(true)}>
+          <button className="w-full py-2.5 text-sm font-bold font-mono flex items-center justify-center gap-2" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "8px" }} onClick={() => setShowQR(true)}>
             <QrCode size={16} /> 查看入群二维码
           </button>
         </div>
@@ -209,8 +209,8 @@ function CommunityTab() {
                 <div className="font-bold font-mono" style={{ color: M.text }}>北京PRO会员群01</div>
                 <div className="text-xs mt-1 font-mono" style={{ color: M.muted }}>长按识别进群</div>
               </div>
-              <div className="w-48 h-48 flex items-center justify-center mx-auto mb-4" style={{ background: "#fff", borderRadius: "8px" }}>
-                <QrCode size={120} style={{ color: "#000" }} />
+              <div className="w-48 h-48 flex items-center justify-center mx-auto mb-4" style={{ background: "#ffffff", borderRadius: "8px" }}>
+                <QrCode size={120} style={{ color: "#ffffff" }} />
               </div>
               <div className="text-center text-xs font-mono" style={{ color: M.muted }}>二维码有效期至 2026-07-31</div>
             </div>
@@ -252,7 +252,7 @@ function TaskTab() {
     { id: 4, title: "7月打卡 Day 5",           type: "每日签到", priority: "低", deadline: "今日",       points: 10 },
     { id: 5, title: "分享特训营预告朋友圈",    type: "内容任务", priority: "低", deadline: "后日",       points: 20 },
   ];
-  const priorityColor: Record<string, string> = { "高": M.primary, "中": "#ffcc00", "低": "#888888" };
+  const priorityColor: Record<string, string> = { "高": M.primary, "中": "#ffcc00", "低": "#94a3b8" };
   const completedCount = completedIds.length;
   const totalPoints = completedIds.reduce((s, id) => s + (tasks.find(t => t.id === id)?.points || 0), 0);
 
@@ -278,7 +278,7 @@ function TaskTab() {
             <div key={t.id} className="p-4 transition-all" style={{ background: isDone ? "rgba(184,240,0,0.08)" : M.surface, border: `1px solid ${isDone ? M.primary : M.border}`, opacity: isDone ? 0.75 : 1, borderRadius: "12px" }}>
               <div className="flex items-start gap-3">
                 <button className="mt-0.5 flex-shrink-0 w-5 h-5 border-2 flex items-center justify-center transition-all" style={{ borderColor: isDone ? M.primary : priorityColor[t.priority], background: isDone ? M.primaryFill : "transparent", borderRadius: "4px" }} onClick={() => setCompletedIds(prev => isDone ? prev.filter(id => id !== t.id) : [...prev, t.id])}>
-                  {isDone && <CheckCircle size={12} style={{ color: "#000" }} />}
+                  {isDone && <CheckCircle size={12} style={{ color: "#ffffff" }} />}
                 </button>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
@@ -364,14 +364,14 @@ function EarningsTab() {
         </div>
 
         {/* 提现按钮 */}
-        <button className="w-full py-4 text-base font-bold mb-4 font-mono" style={{ background: M.primaryFill, color: "#000", borderRadius: "8px" }}>
+        <button className="w-full py-4 text-base font-bold mb-4 font-mono" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "8px" }}>
           <Wallet size={16} className="inline mr-2" />申请提现
         </button>
 
         {/* 明细 */}
         <div className="overflow-hidden mb-8" style={{ background: M.surface, border: `1px solid ${M.border}`, borderRadius: "12px" }}>
           {/* Table header */}
-          <div className="px-4 py-3 font-bold text-sm font-mono" style={{ color: "#fff", background: "#000", borderBottom: `1px solid ${M.borderDim}` }}>收益明细</div>
+          <div className="px-4 py-3 font-bold text-sm font-mono" style={{ color: "#ffffff", background: "#1e293b", borderBottom: `1px solid ${M.borderDim}` }}>收益明细</div>
           {records.map((r, i) => (
             <div key={i} className="flex items-center gap-3 px-4 py-3.5" style={{ borderBottom: i < records.length - 1 ? `1px solid ${M.borderDim}` : "none" }}>
               <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: r.positive ? M.primaryLight : "rgba(0,0,0,0.04)", borderRadius: "8px", border: `1px solid ${r.positive ? M.primary : M.borderDim}` }}>
@@ -409,11 +409,11 @@ function ProfileTab() {
     <div className="flex flex-col h-full overflow-auto" style={{ background: M.bg }}>
       {/* 个人资料头 */}
       <div className="px-5 pt-12 pb-5 text-center" style={{ background: M.bg, borderBottom: `1px solid ${M.borderDim}` }}>
-        <div className="w-20 h-20 flex items-center justify-center text-3xl font-bold mx-auto mb-3" style={{ background: M.primaryFill, color: "#000", borderRadius: "50%" }}>李</div>
+        <div className="w-20 h-20 flex items-center justify-center text-3xl font-bold mx-auto mb-3" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "50%" }}>李</div>
         <div className="font-bold font-mono" style={{ fontSize: "19px", color: M.text }}>李云天</div>
         <div className="text-xs mt-1 font-mono" style={{ color: M.muted }}>138-0123-4567 · 北京</div>
         <div className="flex items-center justify-center gap-2 mt-3">
-          <span className="px-3 py-1 text-xs font-bold font-mono" style={{ background: M.primaryFill, color: "#000", borderRadius: "6px" }}>PRO会员</span>
+          <span className="px-3 py-1 text-xs font-bold font-mono" style={{ background: M.primaryFill, color: "#ffffff", borderRadius: "6px" }}>PRO会员</span>
           <span className="px-2 py-1 text-xs font-mono" style={{ background: M.primaryLight, color: M.primary, borderRadius: "6px", border: `1px solid ${M.primary}` }}>积分：2,840</span>
         </div>
 
@@ -432,9 +432,9 @@ function ProfileTab() {
         {/* 信息卡 */}
         <div className="overflow-hidden mb-4" style={{ background: M.surface, border: `1px solid ${M.border}`, borderRadius: "12px" }}>
           {/* Table header */}
-          <div className="flex justify-between px-4 py-2" style={{ background: "#000" }}>
-            <span className="text-xs font-bold font-mono" style={{ color: "#fff" }}>字段</span>
-            <span className="text-xs font-bold font-mono" style={{ color: "#fff" }}>值</span>
+          <div className="flex justify-between px-4 py-2" style={{ background: "#1e293b" }}>
+            <span className="text-xs font-bold font-mono" style={{ color: "#ffffff" }}>字段</span>
+            <span className="text-xs font-bold font-mono" style={{ color: "#ffffff" }}>值</span>
           </div>
           {[
             ["微信号", "liyuntian88"], ["所在城市", "北京"],
@@ -507,11 +507,11 @@ export default function MobileApp() {
   const ActiveComponent = tabs.find(t => t.id === activeTab)!.component;
 
   return (
-    <div className="flex items-center justify-center h-full py-6" style={{ background: "#f0f0ec" }}>
+    <div className="flex items-center justify-center h-full py-6" style={{ background: "#f1f5f9" }}>
       {/* iPhone 16 Pro Max 外壳 */}
       <div className="relative flex-shrink-0" style={{ width: "393px", height: "852px", borderRadius: "54px", background: "#ffffff", border: "8px solid #dfe5d2", boxShadow: "0 30px 60px rgba(40,50,20,0.18), inset 0 0 0 1px rgba(0,0,0,0.05)", overflow: "hidden" }}>
         {/* Dynamic island */}
-        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-8 rounded-full z-20" style={{ background: "#000" }} />
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-8 rounded-full z-20" style={{ background: "#1e293b" }} />
 
         {/* Screen */}
         <div className="h-full flex flex-col" style={{ background: M.bg }}>

@@ -5,17 +5,17 @@ import {
 } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -106,17 +106,17 @@ const TYPE_ICONS: Record<string, React.ReactNode> = {
 };
 
 const STATUS_STYLE: Record<TaskStatus, { bg: string; color: string }> = {
-  "已完成": { bg: S.accent,   color: "#000" },
-  "进行中": { bg: "#1a1a1a",  color: "#ffffff" },
-  "待发送": { bg: "#ffd600",  color: "#000" },
-  "草稿":   { bg: "#f0f0ec",  color: "#555" },
-  "已暂停": { bg: "#1a1a1a",  color: S.accent },
+  "已完成": { bg: S.accent,   color: "#ffffff" },
+  "进行中": { bg: "#1e293b",  color: "#ffffff" },
+  "待发送": { bg: "#3b82f6",  color: "#ffffff" },
+  "草稿":   { bg: "#f1f5f9",  color: "#475569" },
+  "已暂停": { bg: "#1e293b",  color: S.accent },
 };
 
 const PRIORITY_STYLE: Record<string, { bg: string; color: string }> = {
-  "高": { bg: "#0d0d0d", color: S.accent },
-  "中": { bg: "#ffd600", color: "#000" },
-  "低": { bg: "#f0f0ec", color: "#555" },
+  "高": { bg: "#1e293b", color: S.accent },
+  "中": { bg: "#3b82f6", color: "#ffffff" },
+  "低": { bg: "#f1f5f9", color: "#475569" },
 };
 
 const PUSH_TYPES = ["朋友圈图文", "朋友圈视频", "文字消息", "私信消息"];
@@ -136,7 +136,7 @@ function PlatformBadge({ platform }: { platform: string }) {
   const isPersonal = platform === "个人微信";
   return (
     <span className="text-[10px] px-1.5 py-0.5 font-bold"
-      style={{ background: isPersonal ? S.accent : "#0d0d0d", color: isPersonal ? "#000" : S.accent, borderRadius: S.radiusSm }}>
+      style={{ background: isPersonal ? S.accent : "#1e293b", color: isPersonal ? "#ffffff" : S.accent, borderRadius: S.radiusSm }}>
       {platform}
     </span>
   );
@@ -160,7 +160,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.5)" }}>
       <div className="w-[640px] overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, boxShadow: "0 20px 60px rgba(0,0,0,0.10)" }}>
         {/* Modal header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: S.border, background: "#0d0d0d", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
+        <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: S.border, background: "#1e293b", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
           <div>
             <div className="text-base font-bold" style={{ color: S.accent }}>新建推送任务</div>
             <div className="text-xs mt-0.5 font-mono" style={{ color: S.muted }}>步骤 {step} / 3</div>
@@ -177,12 +177,12 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
             <div key={s.n} className="flex items-center">
               <div className="flex items-center gap-2">
                 <div className="w-7 h-7 flex items-center justify-center text-sm font-bold"
-                  style={{ background: step >= s.n ? "#0d0d0d" : "rgba(0,0,0,0.06)", color: step >= s.n ? S.accent : S.muted, borderRadius: S.radiusSm }}>
+                  style={{ background: step >= s.n ? "#1e293b" : "rgba(15,23,42,0.06)", color: step >= s.n ? S.accent : S.muted, borderRadius: S.radiusSm }}>
                   {s.n}
                 </div>
                 <span className="text-sm font-mono" style={{ color: step >= s.n ? S.text : S.muted }}>{s.label}</span>
               </div>
-              {i < 2 && <div className="w-12 h-px mx-3" style={{ background: step > s.n ? "#0d0d0d" : S.border }} />}
+              {i < 2 && <div className="w-12 h-px mx-3" style={{ background: step > s.n ? "#1e293b" : S.border }} />}
             </div>
           ))}
         </div>
@@ -196,7 +196,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                 <input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                   placeholder="请输入任务名称..."
                   className="w-full px-3 py-2 text-sm outline-none"
-                  style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
+                  style={{ background: "#f1f5f9", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
               </div>
               <div>
                 <label className="block text-sm font-bold mb-2" style={{ color: S.textSec }}>推送类型</label>
@@ -204,7 +204,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                   {PUSH_TYPES.map(type => (
                     <button key={type} onClick={() => setForm(f => ({ ...f, type }))}
                       className="flex items-center gap-2 px-4 py-2 text-sm font-bold transition-all"
-                      style={{ background: form.type === type ? "#0d0d0d" : "#f8f8f5", color: form.type === type ? S.accent : S.textSec, border: `1px solid ${form.type === type ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}>
+                      style={{ background: form.type === type ? "#1e293b" : "#f8f8f5", color: form.type === type ? S.accent : S.textSec, border: `1px solid ${form.type === type ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>
                       {TYPE_ICONS[type]}{type}
                     </button>
                   ))}
@@ -225,7 +225,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                 <label className="block text-sm font-bold mb-2" style={{ color: S.textSec }}>目标用户</label>
                 <select value={form.target} onChange={e => setForm(f => ({ ...f, target: e.target.value }))}
                   className="w-full px-3 py-2 text-sm outline-none"
-                  style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, borderRadius: S.radiusSm }}>
+                  style={{ background: "#f1f5f9", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, borderRadius: S.radiusSm }}>
                   <option value="">请选择目标用户群体</option>
                   {TARGET_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                 </select>
@@ -236,7 +236,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                   {["立即", "定时"].map(mode => (
                     <button key={mode} onClick={() => setForm(f => ({ ...f, scheduleMode: mode }))}
                       className="px-4 py-2 text-sm font-bold transition-all"
-                      style={{ background: form.scheduleMode === mode ? "#0d0d0d" : "#f8f8f5", color: form.scheduleMode === mode ? S.accent : S.textSec, border: `1px solid ${form.scheduleMode === mode ? "#0d0d0d" : S.border}`, borderRadius: S.radiusSm }}>
+                      style={{ background: form.scheduleMode === mode ? "#1e293b" : "#f8f8f5", color: form.scheduleMode === mode ? S.accent : S.textSec, border: `1px solid ${form.scheduleMode === mode ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>
                       {mode === "立即" ? <><Zap size={13} className="inline mr-1" />立即发送</> : <><Calendar size={13} className="inline mr-1" />定时发送</>}
                     </button>
                   ))}
@@ -244,7 +244,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                 {form.scheduleMode === "定时" && (
                   <input type="datetime-local" value={form.scheduledAt} onChange={e => setForm(f => ({ ...f, scheduledAt: e.target.value }))}
                     className="w-full px-3 py-2 text-sm outline-none"
-                    style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
+                    style={{ background: "#f1f5f9", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
                 )}
               </div>
             </div>
@@ -276,7 +276,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                     {VARIABLES.map(v => (
                       <button key={v} onClick={() => insertVariable(v)}
                         className="text-[10px] px-2 py-0.5 font-bold transition-colors"
-                        style={{ border: `1px solid ${S.border}`, color: "#000", background: S.accent, borderRadius: S.radiusSm }}>
+                        style={{ border: `1px solid ${S.border}`, color: "#ffffff", background: S.accent, borderRadius: S.radiusSm }}>
                         {v}
                       </button>
                     ))}
@@ -285,7 +285,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                 <textarea value={form.content} onChange={e => setForm(f => ({ ...f, content: e.target.value }))}
                   rows={5} placeholder="请输入推送消息内容..."
                   className="w-full px-3 py-2 text-sm outline-none resize-none font-mono"
-                  style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
+                  style={{ background: "#f1f5f9", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
                 <div className="text-right text-xs mt-1 font-mono" style={{ color: S.mutedLight }}>{form.content.length} / 500 字</div>
               </div>
               {(form.type === "朋友圈图文" || form.type === "朋友圈视频") && (
@@ -294,7 +294,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                     上传{form.type === "朋友圈视频" ? "视频" : "图片"}
                   </label>
                   <div className="border-2 border-dashed p-6 text-center"
-                    style={{ borderColor: S.borderMed, background: "#f7f7f7", borderRadius: S.radiusSm }}>
+                    style={{ borderColor: S.borderMed, background: "#f1f5f9", borderRadius: S.radiusSm }}>
                     <Image size={28} style={{ color: S.mutedLight, margin: "0 auto 8px" }} />
                     <div className="text-sm font-mono" style={{ color: S.muted }}>点击上传或拖拽文件至此</div>
                     <div className="text-xs mt-1 font-mono" style={{ color: S.mutedLight }}>
@@ -308,11 +308,11 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
 
           {step === 3 && (
             <div className="space-y-5">
-              <div className="p-4" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <div className="p-4" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                 <div className="text-sm font-bold mb-3" style={{ color: S.text }}>内容预览</div>
                 <div className="p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-8 h-8 flex items-center justify-center font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>运</div>
+                    <div className="w-8 h-8 flex items-center justify-center font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>运</div>
                     <div>
                       <div className="text-sm font-bold" style={{ color: S.text }}>运营团队</div>
                       <div className="text-xs font-mono" style={{ color: S.muted }}>{form.type}</div>
@@ -332,7 +332,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                       { label: "发送时间", value: form.scheduleMode === "立即" ? "立即发送" : form.scheduledAt || "（未设置）" },
                     ].map((row, i) => (
                       <tr key={row.label} style={{ borderTop: i > 0 ? `1px solid ${S.border}` : "none" }}>
-                        <td className="px-4 py-2.5 text-xs w-24 font-mono font-bold" style={{ color: S.muted, background: "#f7f7f7" }}>{row.label}</td>
+                        <td className="px-4 py-2.5 text-xs w-24 font-mono font-bold" style={{ color: S.muted, background: "#f1f5f9" }}>{row.label}</td>
                         <td className="px-4 py-2.5 text-sm font-mono" style={{ color: S.textSec }}>{row.value}</td>
                       </tr>
                     ))}
@@ -340,8 +340,8 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                 </table>
               </div>
               <div className="p-4 flex items-start gap-3" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radiusSm }}>
-                <AlertTriangle size={16} style={{ color: "#0d0d0d", marginTop: 1, flexShrink: 0 }} />
-                <div className="text-xs font-mono font-bold" style={{ color: "#0d0d0d" }}>
+                <AlertTriangle size={16} style={{ color: "#1e293b", marginTop: 1, flexShrink: 0 }} />
+                <div className="text-xs font-mono font-bold" style={{ color: "#1e293b" }}>
                   请确认以上信息无误后再发送。推送一旦开始将无法中途撤回全部消息，请谨慎操作。
                 </div>
               </div>
@@ -361,12 +361,12 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
             )}
             {step < 3 ? (
               <button onClick={handleNext} className="px-5 py-2 text-sm font-bold font-mono"
-                style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+                style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
                 下一步
               </button>
             ) : (
               <button onClick={onClose} className="flex items-center gap-2 px-5 py-2 text-sm font-bold font-mono"
-                style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>
+                style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
                 <Send size={14} /> 确认发送
               </button>
             )}
@@ -393,7 +393,7 @@ function TaskCard({ task, onSelect, selected }: { task: Task; onSelect: (t: Task
       }}>
       <div className="flex items-start gap-3">
         <div className="w-9 h-9 flex items-center justify-center flex-shrink-0"
-          style={{ background: selected ? "#0d0d0d" : "rgba(0,0,0,0.06)", color: selected ? S.accent : S.muted, borderRadius: S.radiusSm }}>
+          style={{ background: selected ? "#1e293b" : "rgba(15,23,42,0.06)", color: selected ? S.accent : S.muted, borderRadius: S.radiusSm }}>
           {TYPE_ICONS[task.type] ?? <Send size={16} />}
         </div>
         <div className="flex-1 min-w-0">
@@ -426,18 +426,18 @@ function TaskCard({ task, onSelect, selected }: { task: Task; onSelect: (t: Task
         <div className="flex flex-col gap-1.5">
           {task.status === "已完成" && (
             <button className="text-xs px-3 py-1.5 font-bold"
-              style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}
+              style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}
               onClick={e => e.stopPropagation()}>查看报告</button>
           )}
           {task.status === "进行中" && (
             <button className="flex items-center gap-1 text-xs px-3 py-1.5 font-bold"
-              style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}
+              style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}
               onClick={e => e.stopPropagation()}><Pause size={11} /> 暂停</button>
           )}
           {task.status === "待发送" && (
             <>
               <button className="flex items-center gap-1 text-xs px-3 py-1.5 font-bold"
-                style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}
+                style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}
                 onClick={e => e.stopPropagation()}><Send size={11} /> 立即发</button>
               <button className="text-xs px-3 py-1.5 font-bold"
                 style={{ border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}
@@ -452,7 +452,7 @@ function TaskCard({ task, onSelect, selected }: { task: Task; onSelect: (t: Task
           {task.status === "已暂停" && (
             <>
               <button className="flex items-center gap-1 text-xs px-3 py-1.5 font-bold"
-                style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}
+                style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}
                 onClick={e => e.stopPropagation()}><Play size={11} /> 恢复</button>
               <button className="flex items-center gap-1 text-xs px-3 py-1.5 font-bold"
                 style={{ border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}
@@ -468,7 +468,7 @@ function TaskCard({ task, onSelect, selected }: { task: Task; onSelect: (t: Task
 function DetailPanel({ task, onClose }: { task: Task; onClose: () => void }) {
   return (
     <div className="w-80 flex-shrink-0 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: S.border, background: "#0d0d0d", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+      <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: S.border, background: "#1e293b", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
         <span className="text-sm font-bold" style={{ color: S.accent }}>任务详情</span>
         <button onClick={onClose} className="w-6 h-6 flex items-center justify-center font-bold" style={{ color: S.accent }}>
           <X size={14} />
@@ -478,7 +478,7 @@ function DetailPanel({ task, onClose }: { task: Task; onClose: () => void }) {
       <div className="p-4 space-y-4" style={{ fontFamily: "monospace" }}>
         <div>
           <div className="text-xs mb-1 font-bold" style={{ color: S.muted }}>内容预览</div>
-          <div className="p-3 text-sm leading-relaxed" style={{ background: "#f7f7f7", color: S.textSec, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>
+          <div className="p-3 text-sm leading-relaxed" style={{ background: "#f1f5f9", color: S.textSec, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>
             {task.content}
           </div>
         </div>
@@ -505,23 +505,23 @@ function DetailPanel({ task, onClose }: { task: Task; onClose: () => void }) {
         <div className="pt-2 space-y-2 border-t" style={{ borderColor: S.border }}>
           {task.status === "已完成" && (
             <button className="w-full py-2 text-sm font-bold"
-              style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>查看完整报告</button>
+              style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>查看完整报告</button>
           )}
           {task.status === "进行中" && (
             <button className="w-full flex items-center justify-center gap-2 py-2 text-sm font-bold"
-              style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+              style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
               <Pause size={14} /> 暂停任务
             </button>
           )}
           {task.status === "待发送" && (
             <button className="w-full flex items-center justify-center gap-2 py-2 text-sm font-bold"
-              style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+              style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
               <Send size={14} /> 立即发送
             </button>
           )}
           {task.status === "已暂停" && (
             <button className="w-full flex items-center justify-center gap-2 py-2 text-sm font-bold"
-              style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>
+              style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
               <Play size={14} /> 恢复任务
             </button>
           )}
@@ -556,14 +556,14 @@ export default function PushTasks() {
             {(["任务列表", "模板库", "执行日志"] as const).map(tab => (
               <button key={tab} onClick={() => { setActiveView(tab); setSelectedTask(null); }}
                 className="px-4 py-1.5 text-sm font-bold transition-all"
-                style={{ background: activeView === tab ? "#0d0d0d" : "transparent", color: activeView === tab ? S.accent : S.muted, borderRadius: S.radiusSm }}>
+                style={{ background: activeView === tab ? "#1e293b" : "transparent", color: activeView === tab ? S.accent : S.muted, borderRadius: S.radiusSm }}>
                 {tab}
               </button>
             ))}
           </div>
           <button onClick={() => setShowModal(true)}
             className="flex items-center gap-2 px-4 py-2 text-sm font-bold"
-            style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius }}>
+            style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius }}>
             <Plus size={14} /> 新建任务
           </button>
         </div>
@@ -578,7 +578,7 @@ export default function PushTasks() {
               {STATUS_FILTER.map(sf => (
                 <button key={sf} onClick={() => setStatusFilter(sf)}
                   className="px-3 py-1.5 text-xs font-bold transition-all"
-                  style={{ background: statusFilter === sf ? "#0d0d0d" : "transparent", color: statusFilter === sf ? S.accent : S.muted, borderRadius: S.radiusSm }}>
+                  style={{ background: statusFilter === sf ? "#1e293b" : "transparent", color: statusFilter === sf ? S.accent : S.muted, borderRadius: S.radiusSm }}>
                   {sf}({STATUS_COUNTS[sf]})
                 </button>
               ))}
@@ -609,7 +609,7 @@ export default function PushTasks() {
           <button className="p-6 flex flex-col items-center justify-center gap-3 border-2 border-dashed transition-colors"
             style={{ borderColor: S.borderMed, minHeight: 180, borderRadius: S.radius }}>
             <div className="w-10 h-10 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-              <Plus size={20} style={{ color: "#000" }} />
+              <Plus size={20} style={{ color: "#ffffff" }} />
             </div>
             <div className="text-sm font-bold" style={{ color: S.textSec }}>创建模板</div>
           </button>
@@ -620,7 +620,7 @@ export default function PushTasks() {
                 <div>
                   <div className="text-sm font-bold" style={{ color: S.text }}>{tpl.name}</div>
                   <span className="text-[10px] px-1.5 py-0.5 mt-1 inline-block font-bold"
-                    style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>{tpl.category}</span>
+                    style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{tpl.category}</span>
                 </div>
               </div>
               <div className="text-xs leading-relaxed mb-4 line-clamp-3 font-mono" style={{ color: S.muted }}>{tpl.preview}</div>
@@ -630,7 +630,7 @@ export default function PushTasks() {
                   <button className="text-xs px-2.5 py-1 font-bold"
                     style={{ border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}>编辑</button>
                   <button className="text-xs px-2.5 py-1 font-bold"
-                    style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>使用</button>
+                    style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>使用</button>
                 </div>
               </div>
             </div>
@@ -646,17 +646,17 @@ export default function PushTasks() {
           </div>
           <table className="w-full">
             <thead>
-              <tr style={{ background: "#1a1a1a" }}>
+              <tr style={{ background: "#1e293b" }}>
                 {["时间", "任务名称", "微信号", "目标用户", "发送渠道", "状态"].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-bold" style={{ color: "#555555" }}>{h}</th>
+                  <th key={h} className="px-4 py-3 text-left text-xs font-bold" style={{ color: "#475569" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {LOGS.map((log, i) => (
-                <tr key={i} style={{ borderTop: `1px solid ${S.border}`, background: i % 2 === 0 ? "#fff" : "#fafaf8" }}
+                <tr key={i} style={{ borderTop: `1px solid ${S.border}`, background: i % 2 === 0 ? "#ffffff" : "#fafaf8" }}
                   onMouseEnter={e => (e.currentTarget.style.background = "rgba(204,255,0,0.06)")}
-                  onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#fafaf8")}>
+                  onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#ffffff" : "#fafaf8")}>
                   <td className="px-4 py-3 text-xs font-mono" style={{ color: S.muted }}>{log.time}</td>
                   <td className="px-4 py-3 text-sm font-mono" style={{ color: S.textSec }}>{log.task}</td>
                   <td className="px-4 py-3 text-xs font-mono" style={{ color: S.muted }}>{log.account}</td>
@@ -664,7 +664,7 @@ export default function PushTasks() {
                   <td className="px-4 py-3"><PlatformBadge platform={log.channel} /></td>
                   <td className="px-4 py-3">
                     <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 font-bold"
-                      style={{ background: log.status === "成功" ? S.accent : "#1a1a1a", color: log.status === "成功" ? "#000" : S.accent, borderRadius: S.radiusSm }}>
+                      style={{ background: log.status === "成功" ? S.accent : "#1e293b", color: log.status === "成功" ? "#ffffff" : S.accent, borderRadius: S.radiusSm }}>
                       {log.status === "成功" ? <CheckCircle size={10} /> : <AlertTriangle size={10} />}
                       {log.status}
                     </span>

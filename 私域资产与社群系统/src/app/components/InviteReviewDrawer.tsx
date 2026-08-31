@@ -12,16 +12,16 @@ import { useInvites, useApprovals } from "../App";
 import { createApproval } from "../data/approvalTypes";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
   surfaceSoft: "#fafaf8",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -50,11 +50,11 @@ function roleKeyToLabel(k: string): string {
 function useStyles() {
   return {
     input:
-      "px-3 py-2 text-xs outline-none bg-[#fafaf8] border border-[rgba(0,0,0,0.06)] rounded-[6px] text-[#111] w-full",
+      "px-3 py-2 text-xs outline-none bg-[#fafaf8] border border-[rgba(15,23,42,0.06)] rounded-[6px] text-[#111] w-full",
     btnPrimary:
-      "px-4 py-2 text-xs font-bold rounded-[6px] bg-black text-[#ccff00] border border-black transition-all hover:opacity-95",
+      "px-4 py-2 text-xs font-bold rounded-[6px] bg-black text-[#3b82f6] border border-black transition-all hover:opacity-95",
     btnGhost:
-      "px-4 py-2 text-xs font-bold rounded-[6px] bg-white text-[#111] border border-[rgba(0,0,0,0.12)] transition-all hover:bg-[#f7f7f7]",
+      "px-4 py-2 text-xs font-bold rounded-[6px] bg-white text-[#111] border border-[rgba(15,23,42,0.12)] transition-all hover:bg-[#f1f5f9]",
   };
 }
 
@@ -200,10 +200,10 @@ export default function InviteReviewDrawer({
         <div
           className="absolute left-1/2 -translate-x-1/2 top-6 px-4 py-2 text-[12px] font-bold"
           style={{
-            background: "#000",
-            color: "#ccff00",
+            background: "#1e293b",
+            color: "#3b82f6",
             borderRadius: S.radiusSm,
-            border: "1px solid #0d0d0d",
+            border: "1px solid #1e293b",
             zIndex: 70,
           }}
         >
@@ -231,8 +231,8 @@ export default function InviteReviewDrawer({
                 width: 28,
                 height: 28,
                 borderRadius: S.radiusSm,
-                background: "#000",
-                color: "#ccff00",
+                background: "#1e293b",
+                color: "#3b82f6",
               }}
             >
               <UserCheck size={14} strokeWidth={2.2} />
@@ -260,7 +260,7 @@ export default function InviteReviewDrawer({
               width: 28,
               height: 28,
               borderRadius: S.radiusSm,
-              background: "#fff",
+              background: "#ffffff",
               color: S.text,
               border: `1px solid ${S.border}`,
             }}
@@ -284,7 +284,7 @@ export default function InviteReviewDrawer({
               className="px-3 py-2 text-[11px] font-bold -mb-px transition-all"
               style={{
                 color: tab === t.k ? S.text : S.muted,
-                borderBottom: `2px solid ${tab === t.k ? "#0d0d0d" : "transparent"}`,
+                borderBottom: `2px solid ${tab === t.k ? "#1e293b" : "transparent"}`,
               }}
             >
               <span className="mr-1">{t.icon}</span>{t.label}
@@ -332,7 +332,7 @@ export default function InviteReviewDrawer({
                       <div
                         className="mt-1 p-2.5 text-[11px]"
                         style={{
-                          background: "#fff",
+                          background: "#ffffff",
                           border: `1px solid ${S.border}`,
                           borderRadius: S.radiusSm,
                           color: S.text,
@@ -372,7 +372,7 @@ export default function InviteReviewDrawer({
                         key={id.roleKey + id.scopeType}
                         className="flex items-center justify-between p-2"
                         style={{
-                          background: "#fff",
+                          background: "#ffffff",
                           border: `1px solid ${S.border}`,
                           borderRadius: S.radiusSm,
                         }}
@@ -381,8 +381,8 @@ export default function InviteReviewDrawer({
                           <span
                             className="px-1.5 py-0.5 text-[10px] font-bold"
                             style={{
-                              background: "#000",
-                              color: "#ccff00",
+                              background: "#1e293b",
+                              color: "#3b82f6",
                               borderRadius: 4,
                             }}
                           >
@@ -409,12 +409,12 @@ export default function InviteReviewDrawer({
                           key={pid}
                           className="flex items-center gap-2 p-2"
                           style={{
-                            background: "#fff",
+                            background: "#ffffff",
                             border: `1px solid ${S.border}`,
                             borderRadius: S.radiusSm,
                           }}
                         >
-                          <span className="text-[10px] font-bold px-1.5 py-0.5" style={{ background: "#ccff00", color: "#000", borderRadius: 4 }}>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: 4 }}>
                             {p?.type || "项目"}
                           </span>
                           <span className="text-[11px] font-bold truncate flex-1">{p?.name || pid}</span>
@@ -478,17 +478,17 @@ export default function InviteReviewDrawer({
                         onClick={() => toggleRole(m.roleKey)}
                         className="text-left p-2.5 transition-all"
                         style={{
-                          background: on ? "#0d0d0d" : S.surfaceSoft,
-                          color: on ? "#fff" : S.text,
-                          border: `1px solid ${on ? "#0d0d0d" : S.border}`,
+                          background: on ? "#1e293b" : S.surfaceSoft,
+                          color: on ? "#ffffff" : S.text,
+                          border: `1px solid ${on ? "#1e293b" : S.border}`,
                           borderRadius: S.radiusSm,
                         }}
                       >
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold">{m.label}</span>
                           <span className="text-[10px] font-bold px-1.5 py-0.5" style={{
-                            background: on ? "#ccff00" : S.surfaceSoft,
-                            color: "#000",
+                            background: on ? "#3b82f6" : S.surfaceSoft,
+                            color: "#ffffff",
                             borderRadius: 4,
                           }}>
                             {m.scopeTypeLabel}
@@ -519,8 +519,8 @@ export default function InviteReviewDrawer({
                         onClick={() => toggleProject(p.id)}
                         className="flex items-center gap-2 p-2 text-left transition-all"
                         style={{
-                          background: on ? "#ccff0033" : S.surfaceSoft,
-                          border: `1px solid ${on ? "#0d0d0d" : S.border}`,
+                          background: on ? "#3b82f633" : S.surfaceSoft,
+                          border: `1px solid ${on ? "#1e293b" : S.border}`,
                           borderRadius: S.radiusSm,
                         }}
                       >
@@ -528,9 +528,9 @@ export default function InviteReviewDrawer({
                           className="flex items-center justify-center font-bold"
                           style={{
                             width: 18, height: 18, borderRadius: 4,
-                            background: on ? "#000" : "#fff",
-                            color: on ? "#ccff00" : "#999",
-                            border: `1px solid ${on ? "#000" : S.border}`,
+                            background: on ? "#ffffff" : "#ffffff",
+                            color: on ? "#3b82f6" : "#999",
+                            border: `1px solid ${on ? "#ffffff" : S.border}`,
                           }}
                         >
                           {on ? "✓" : ""}
@@ -562,7 +562,7 @@ export default function InviteReviewDrawer({
                         style={{
                           background: on ? bindingStatusMeta[s].bg : "#fafaf8",
                           color: on ? bindingStatusMeta[s].color : S.textSec,
-                          border: `1px solid ${on ? "#0d0d0d" : S.border}`,
+                          border: `1px solid ${on ? "#1e293b" : S.border}`,
                           borderRadius: S.radiusSm,
                         }}
                       >
@@ -611,7 +611,7 @@ export default function InviteReviewDrawer({
                   onClick={onReject}
                   className="px-4 py-2 text-xs font-bold flex items-center gap-1.5"
                   style={{
-                    background: "#fff",
+                    background: "#ffffff",
                     border: "1px solid #c00",
                     color: "#c00",
                     borderRadius: S.radiusSm,
@@ -640,7 +640,7 @@ function InfoCard({ k, v }: { k: string; v: string }) {
     <div
       className="p-2.5"
       style={{
-        background: "#fff",
+        background: "#ffffff",
         border: `1px solid ${S.border}`,
         borderRadius: S.radiusSm,
       }}

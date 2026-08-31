@@ -6,17 +6,17 @@ import {
 } from "recharts";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -76,18 +76,18 @@ const WITHDRAWAL_REQUESTS = [
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; radius?: string }> = {
   "已结算": { bg: S.accent,  color: S.text,  radius: S.radiusSm },
-  "待结算": { bg: "#ffd600", color: S.text,  radius: S.radiusSm },
-  "结算中": { bg: "#f0f0f0", color: "#333333",  radius: S.radiusSm },
+  "待结算": { bg: "#3b82f6", color: S.text,  radius: S.radiusSm },
+  "结算中": { bg: "#f1f5f9", color: "#475569",  radius: S.radiusSm },
   "已打款": { bg: S.accent,  color: S.text,  radius: S.radiusSm },
-  "待审核": { bg: "#ffd600", color: S.text,  radius: S.radiusSm },
-  "已拒绝": { bg: "#1a1a1a", color: S.accent, radius: S.radiusSm },
-  "直销":   { bg: "#f0f0ec", color: "#555555", radius: S.radiusSm },
-  "间接":   { bg: "#f0f0ec", color: "#555555", radius: S.radiusSm },
+  "待审核": { bg: "#3b82f6", color: S.text,  radius: S.radiusSm },
+  "已拒绝": { bg: "#1e293b", color: S.accent, radius: S.radiusSm },
+  "直销":   { bg: "#f1f5f9", color: "#475569", radius: S.radiusSm },
+  "间接":   { bg: "#f1f5f9", color: "#475569", radius: S.radiusSm },
   "团队奖": { bg: S.accent,  color: S.text,  radius: S.radiusSm },
 };
 
 function Badge({ label }: { label: string }) {
-  const st = STATUS_STYLES[label] ?? { bg: "#f0f0ec", color: "#555555", radius: S.radiusSm };
+  const st = STATUS_STYLES[label] ?? { bg: "#f1f5f9", color: "#475569", radius: S.radiusSm };
   return (
     <span
       style={{
@@ -108,14 +108,14 @@ function Badge({ label }: { label: string }) {
 
 const LEVEL_COLOR: Record<string, string> = {
   "一级": S.accent,
-  "二级": "#ffd600",
-  "三级": "#f0f0ec",
+  "二级": "#3b82f6",
+  "三级": "#f1f5f9",
 };
 
 const LEVEL_TEXT: Record<string, string> = {
   "一级": S.text,
   "二级": S.text,
-  "三级": "#555555",
+  "三级": "#475569",
 };
 
 // ─── Modal ────────────────────────────────────────────────────────────────────
@@ -144,7 +144,7 @@ function WithdrawalModal({ onClose }: { onClose: () => void }) {
           borderRadius: S.radiusLg,
           padding: 24,
           width: 400,
-          boxShadow: "0 16px 48px rgba(0,0,0,0.12)",
+          boxShadow: "0 16px 48px rgba(15,23,42,0.12)",
         }}
         onClick={e => e.stopPropagation()}
       >
@@ -164,13 +164,13 @@ function WithdrawalModal({ onClose }: { onClose: () => void }) {
               placeholder="请输入提现金额"
               style={{
                 width: "100%",
-                border: `1px solid rgba(0,0,0,0.12)`,
+                border: `1px solid rgba(15,23,42,0.12)`,
                 borderRadius: S.radiusSm,
                 padding: "8px 10px",
                 fontSize: 13,
                 color: S.text,
                 outline: "none",
-                background: "#f7f7f7",
+                background: "#f1f5f9",
                 fontFamily: "monospace",
                 boxSizing: "border-box",
               }}
@@ -187,7 +187,7 @@ function WithdrawalModal({ onClose }: { onClose: () => void }) {
                     padding: "6px 14px",
                     borderRadius: S.radiusSm,
                     border: `1px solid ${method === m ? S.text : S.border}`,
-                    background: method === m ? "#0d0d0d" : S.surface,
+                    background: method === m ? "#1e293b" : S.surface,
                     color: method === m ? S.accent : S.muted,
                     fontSize: 12,
                     cursor: "pointer",
@@ -206,13 +206,13 @@ function WithdrawalModal({ onClose }: { onClose: () => void }) {
               placeholder={method === "银行卡" ? "银行卡号" : `${method}账号`}
               style={{
                 width: "100%",
-                border: `1px solid rgba(0,0,0,0.12)`,
+                border: `1px solid rgba(15,23,42,0.12)`,
                 borderRadius: S.radiusSm,
                 padding: "8px 10px",
                 fontSize: 13,
                 color: S.text,
                 outline: "none",
-                background: "#f7f7f7",
+                background: "#f1f5f9",
                 fontFamily: "monospace",
                 boxSizing: "border-box",
               }}
@@ -233,7 +233,7 @@ function WithdrawalModal({ onClose }: { onClose: () => void }) {
             onClick={onClose}
             style={{
               flex: 1, padding: "8px", borderRadius: S.radiusSm, border: "none",
-              background: "#0d0d0d", color: S.accent, fontSize: 13, cursor: "pointer", fontWeight: 700, fontFamily: "monospace",
+              background: "#1e293b", color: S.accent, fontSize: 13, cursor: "pointer", fontWeight: 700, fontFamily: "monospace",
             }}
           >
             提交申请
@@ -249,8 +249,8 @@ function WithdrawalModal({ onClose }: { onClose: () => void }) {
 function AgentTree() {
   const levels = [
     { label: "一级代理", bg: S.accent, tc: S.text, count: 34, rate: "20%佣金", example: ["张志远", "李晓红", "王建国"] },
-    { label: "二级代理", bg: "#ffd600", tc: S.text, count: 67, rate: "10%佣金", example: ["陈美玲", "赵伟明", "孙文英"] },
-    { label: "三级代理", bg: "#f0f0ec", tc: "#555555", count: 33, rate: "5%佣金",  example: ["刘春雨", "钱小明", "方大国"] },
+    { label: "二级代理", bg: "#3b82f6", tc: S.text, count: 67, rate: "10%佣金", example: ["陈美玲", "赵伟明", "孙文英"] },
+    { label: "三级代理", bg: "#f1f5f9", tc: "#475569", count: 33, rate: "5%佣金",  example: ["刘春雨", "钱小明", "方大国"] },
   ];
 
   return (
@@ -349,7 +349,7 @@ export default function Commission() {
         <button
           onClick={() => setWithdrawalModal(true)}
           style={{
-            background: "#0d0d0d", color: S.accent, border: "none", borderRadius: S.radius,
+            background: "#1e293b", color: S.accent, border: "none", borderRadius: S.radius,
             padding: "8px 16px", fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "monospace",
           }}
         >
@@ -371,7 +371,7 @@ export default function Commission() {
             onClick={() => setActiveTab(t.key)}
             style={{
               padding: "6px 16px", borderRadius: S.radiusSm, border: "none",
-              background: activeTab === t.key ? "#0d0d0d" : "transparent",
+              background: activeTab === t.key ? "#1e293b" : "transparent",
               color: activeTab === t.key ? S.accent : S.muted,
               fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "monospace",
             }}
@@ -390,9 +390,9 @@ export default function Commission() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
             {[
               { label: "本月总佣金", value: "¥38,420", icon: DollarSign, bg: S.accent,   tc: S.text },
-              { label: "待结算",     value: "¥12,840", icon: Clock,       bg: "#ffd600",  tc: S.text },
-              { label: "已提现",     value: "¥25,580", icon: Check,       bg: "#0d0d0d",  tc: S.accent },
-              { label: "代理总数",   value: "134人",   icon: Users,       bg: "#f0f0ec",  tc: "#555555" },
+              { label: "待结算",     value: "¥12,840", icon: Clock,       bg: "#3b82f6",  tc: S.text },
+              { label: "已提现",     value: "¥25,580", icon: Check,       bg: "#1e293b",  tc: S.accent },
+              { label: "代理总数",   value: "134人",   icon: Users,       bg: "#f1f5f9",  tc: "#475569" },
             ].map(s => {
               const Icon = s.icon;
               return (
@@ -422,8 +422,8 @@ export default function Commission() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
             {[
               { label: "一级代理", fee: "¥4,800授权费", rate: "20%", count: 34, revenue: 18200, bg: S.accent, tc: S.text },
-              { label: "二级代理", fee: "下线推荐佣金", rate: "10%", count: 67, revenue: 12600, bg: "#ffd600", tc: S.text },
-              { label: "三级代理", fee: "团队奖励",     rate: "5%",  count: 33, revenue: 7620,  bg: "#f0f0ec", tc: "#555555" },
+              { label: "二级代理", fee: "下线推荐佣金", rate: "10%", count: 67, revenue: 12600, bg: "#3b82f6", tc: S.text },
+              { label: "三级代理", fee: "团队奖励",     rate: "5%",  count: 33, revenue: 7620,  bg: "#f1f5f9", tc: "#475569" },
             ].map(p => (
               <div
                 key={p.label}
@@ -456,7 +456,7 @@ export default function Commission() {
                 </div>
                 {/* Progress bar */}
                 <div style={{ marginTop: 10, height: 4, background: S.border, borderRadius: "4px", overflow: "hidden" }}>
-                  <div style={{ width: `${(p.revenue / 38420) * 100}%`, height: "100%", background: p.bg === "#f0f0ec" ? S.text : p.bg, borderRadius: "4px" }} />
+                  <div style={{ width: `${(p.revenue / 38420) * 100}%`, height: "100%", background: p.bg === "#f1f5f9" ? S.text : p.bg, borderRadius: "4px" }} />
                 </div>
                 <div style={{ fontSize: 10, marginTop: 4, color: S.muted, fontFamily: "monospace" }}>
                   占总佣金 {((p.revenue / 38420) * 100).toFixed(1)}%
@@ -502,12 +502,12 @@ export default function Commission() {
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "monospace" }}>
               <thead>
-                <tr style={{ background: "#1a1a1a" }}>
+                <tr style={{ background: "#1e293b" }}>
                   {["排名", "姓名", "等级", "本月佣金", "累计佣金", "团队人数"].map(h => (
                     <th
                       key={h}
                       style={{
-                        padding: "8px 14px", textAlign: "left", color: "#555555",
+                        padding: "8px 14px", textAlign: "left", color: "#475569",
                         fontWeight: 700, borderBottom: `1px solid ${S.border}`,
                         fontFamily: "monospace", fontSize: 11, textTransform: "uppercase",
                       }}
@@ -525,7 +525,7 @@ export default function Commission() {
                         style={{
                           display: "inline-flex", alignItems: "center", justifyContent: "center",
                           width: 22, height: 22, borderRadius: S.radiusSm,
-                          background: r.rank <= 3 ? "#0d0d0d" : "#f0f0ec",
+                          background: r.rank <= 3 ? "#1e293b" : "#f1f5f9",
                           color: r.rank <= 3 ? S.accent : S.muted,
                           fontSize: 11, fontWeight: 700, fontFamily: "monospace",
                         }}
@@ -537,8 +537,8 @@ export default function Commission() {
                     <td style={{ padding: "9px 14px" }}>
                       <span
                         style={{
-                          background: LEVEL_COLOR[r.level] ?? "#f0f0ec",
-                          color: LEVEL_TEXT[r.level] ?? "#555555",
+                          background: LEVEL_COLOR[r.level] ?? "#f1f5f9",
+                          color: LEVEL_TEXT[r.level] ?? "#475569",
                           borderRadius: S.radiusSm, padding: "2px 7px", fontSize: 11, fontWeight: 700, fontFamily: "monospace",
                         }}
                       >
@@ -574,7 +574,7 @@ export default function Commission() {
                 value={detailFilter.level}
                 onChange={e => setDetailFilter(f => ({ ...f, level: e.target.value }))}
                 style={{
-                  border: `1px solid rgba(0,0,0,0.12)`, borderRadius: S.radiusSm,
+                  border: `1px solid rgba(15,23,42,0.12)`, borderRadius: S.radiusSm,
                   padding: "5px 28px 5px 10px", fontSize: 12, color: S.text,
                   background: S.surface, cursor: "pointer", appearance: "none", fontFamily: "monospace",
                 }}
@@ -591,7 +591,7 @@ export default function Commission() {
                 value={detailFilter.type}
                 onChange={e => setDetailFilter(f => ({ ...f, type: e.target.value }))}
                 style={{
-                  border: `1px solid rgba(0,0,0,0.12)`, borderRadius: S.radiusSm,
+                  border: `1px solid rgba(15,23,42,0.12)`, borderRadius: S.radiusSm,
                   padding: "5px 28px 5px 10px", fontSize: 12, color: S.text,
                   background: S.surface, cursor: "pointer", appearance: "none", fontFamily: "monospace",
                 }}
@@ -607,12 +607,12 @@ export default function Commission() {
 
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "monospace" }}>
             <thead>
-              <tr style={{ background: "#1a1a1a" }}>
+              <tr style={{ background: "#1e293b" }}>
                 {["时间", "代理人", "等级", "来源订单", "佣金类型", "金额", "状态"].map(h => (
                   <th
                     key={h}
                     style={{
-                      padding: "8px 14px", textAlign: "left", color: "#555555",
+                      padding: "8px 14px", textAlign: "left", color: "#475569",
                       fontWeight: 700, borderBottom: `1px solid ${S.border}`,
                       whiteSpace: "nowrap", fontFamily: "monospace", fontSize: 11, textTransform: "uppercase",
                     }}
@@ -633,8 +633,8 @@ export default function Commission() {
                   <td style={{ padding: "8px 14px" }}>
                     <span
                       style={{
-                        background: LEVEL_COLOR[r.level] ?? "#f0f0ec",
-                        color: LEVEL_TEXT[r.level] ?? "#555555",
+                        background: LEVEL_COLOR[r.level] ?? "#f1f5f9",
+                        color: LEVEL_TEXT[r.level] ?? "#475569",
                         borderRadius: S.radiusSm, padding: "1px 6px", fontSize: 11, fontWeight: 700, fontFamily: "monospace",
                       }}
                     >
@@ -662,7 +662,7 @@ export default function Commission() {
             <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 12, color: S.text, fontFamily: "monospace", textTransform: "uppercase" }}>结算月历</div>
             <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
               {SETTLEMENT_RECORDS.map(r => {
-                const st = STATUS_STYLES[r.status] ?? { bg: "#f0f0ec", color: "#555555" };
+                const st = STATUS_STYLES[r.status] ?? { bg: "#f1f5f9", color: "#475569" };
                 return (
                   <div
                     key={r.period}
@@ -687,12 +687,12 @@ export default function Commission() {
             </div>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "monospace" }}>
               <thead>
-                <tr style={{ background: "#1a1a1a" }}>
+                <tr style={{ background: "#1e293b" }}>
                   {["结算周期", "代理人数", "总金额", "状态", "操作时间"].map(h => (
                     <th
                       key={h}
                       style={{
-                        padding: "8px 16px", textAlign: "left", color: "#555555",
+                        padding: "8px 16px", textAlign: "left", color: "#475569",
                         fontWeight: 700, borderBottom: `1px solid ${S.border}`,
                         fontFamily: "monospace", fontSize: 11, textTransform: "uppercase",
                       }}
@@ -754,12 +754,12 @@ export default function Commission() {
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "monospace" }}>
             <thead>
-              <tr style={{ background: "#1a1a1a" }}>
+              <tr style={{ background: "#1e293b" }}>
                 {["申请人", "金额", "收款方式", "申请时间", "状态", "操作"].map(h => (
                   <th
                     key={h}
                     style={{
-                      padding: "8px 16px", textAlign: "left", color: "#555555",
+                      padding: "8px 16px", textAlign: "left", color: "#475569",
                       fontWeight: 700, borderBottom: `1px solid ${S.border}`,
                       whiteSpace: "nowrap", fontFamily: "monospace", fontSize: 11, textTransform: "uppercase",
                     }}
@@ -796,7 +796,7 @@ export default function Commission() {
                           onClick={() => rejectWithdrawal(r.id)}
                           style={{
                             padding: "3px 10px", borderRadius: S.radiusSm, border: "none",
-                            background: "#0d0d0d", color: S.accent, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "monospace",
+                            background: "#1e293b", color: S.accent, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: "monospace",
                           }}
                         >
                           拒绝

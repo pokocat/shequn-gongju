@@ -2,17 +2,17 @@ import { useState, useMemo } from "react";
 import { Search, Filter, ChevronDown, AlertTriangle, CheckCircle, Clock, X, CreditCard, FileText, Download, ChevronLeft, ChevronRight } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -52,11 +52,11 @@ const initialOrders: Order[] = [
 ];
 
 const statusConfig: Record<string, { bg: string; color: string; label: string }> = {
-  "已完成": { bg: S.accent, color: "#000", label: "已完成" },
-  "待确认": { bg: "#ffd600", color: "#000", label: "待确认" },
-  "退款申请": { bg: "#1a1a1a", color: S.accent, label: "退款申请" },
-  "审核中": { bg: "#f0f0f0", color: "#333333", label: "审核中" },
-  "退款完成": { bg: "#f0f0ec", color: "#555", label: "退款完成" },
+  "已完成": { bg: S.accent, color: "#ffffff", label: "已完成" },
+  "待确认": { bg: "#3b82f6", color: "#ffffff", label: "待确认" },
+  "退款申请": { bg: "#1e293b", color: S.accent, label: "退款申请" },
+  "审核中": { bg: "#f1f5f9", color: "#475569", label: "审核中" },
+  "退款完成": { bg: "#f1f5f9", color: "#475569", label: "退款完成" },
   "退款已拒": { bg: "#fff0f0", color: "#cc0000", label: "退款已拒" },
 };
 
@@ -151,7 +151,7 @@ export default function Orders() {
     <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg, fontFamily: "monospace" }}>
       {/* Toast */}
       {toast && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
           {toast}
         </div>
       )}
@@ -196,7 +196,7 @@ export default function Orders() {
                       className="flex-1 py-2 text-xs font-bold"
                       style={{
                         background: confirmAction.action === "approve" ? S.accent : confirmAction.action === "reject" ? "#cc0000" : S.accent,
-                        color: confirmAction.action === "reject" ? "#fff" : "#000",
+                        color: confirmAction.action === "reject" ? "#ffffff" : "#ffffff",
                         borderRadius: S.radius, border: "none",
                         opacity: confirmAction.action === "reject" && !rejectReason.trim() ? 0.5 : 1,
                       }}
@@ -205,7 +205,7 @@ export default function Orders() {
                     >
                       确认{confirmAction.action === "approve" ? "批准" : confirmAction.action === "reject" ? "拒绝" : "收款"}
                     </button>
-                    <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={() => { setConfirmAction(null); setRejectReason(""); }}>
+                    <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={() => { setConfirmAction(null); setRejectReason(""); }}>
                       取消
                     </button>
                   </div>
@@ -223,11 +223,11 @@ export default function Orders() {
           <p className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>管理订单、退款、发票及异常支付</p>
         </div>
         <div className="flex gap-2">
-          <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radius, fontFamily: "monospace" }} onClick={handleExport}>
+          <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radius, fontFamily: "monospace" }} onClick={handleExport}>
             <Download size={13} /> 导出CSV
           </button>
           {[{ id: "list", label: "全部订单" }, { id: "refund", label: `退款队列 (${refundQueue.length})` }].map(t => (
-            <button key={t.id} className="px-3 py-2 text-xs font-bold" style={{ background: view === t.id ? "#1a1a1a" : S.surface, color: view === t.id ? S.accent : S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => { setView(t.id as any); setSelected(null); setPage(1); }}>
+            <button key={t.id} className="px-3 py-2 text-xs font-bold" style={{ background: view === t.id ? "#1e293b" : S.surface, color: view === t.id ? S.accent : S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => { setView(t.id as any); setSelected(null); setPage(1); }}>
               {t.label}
             </button>
           ))}
@@ -272,13 +272,13 @@ export default function Orders() {
                   <input className="bg-transparent outline-none text-xs flex-1" style={{ color: S.textSec, fontFamily: "monospace" }} placeholder="搜索订单号、用户、产品..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
                 </div>
                 <div className="relative">
-                  <select className="appearance-none px-3 py-2 pr-7 text-xs outline-none cursor-pointer font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setStatCardFilter(null); setPage(1); }}>
+                  <select className="appearance-none px-3 py-2 pr-7 text-xs outline-none cursor-pointer font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setStatCardFilter(null); setPage(1); }}>
                     {["全部状态", "已完成", "待确认", "退款申请", "审核中", "退款完成", "退款已拒"].map(o => <option key={o} value={o} style={{ background: "#ffffff" }}>{o}</option>)}
                   </select>
                   <ChevronDown size={12} className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: S.muted }} />
                 </div>
                 {(statCardFilter || statusFilter !== "全部状态" || search) && (
-                  <button className="flex items-center gap-1 px-3 py-2 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.borderMed}`, color: S.muted, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => { setStatCardFilter(null); setStatusFilter("全部状态"); setSearch(""); setPage(1); }}>
+                  <button className="flex items-center gap-1 px-3 py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.muted, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => { setStatCardFilter(null); setStatusFilter("全部状态"); setSearch(""); setPage(1); }}>
                     <X size={12} /> 清除
                   </button>
                 )}
@@ -286,7 +286,7 @@ export default function Orders() {
 
               {/* Table */}
               <div className="overflow-hidden flex-1 flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-                <div className="grid text-xs px-4 py-2.5 flex-shrink-0" style={{ gridTemplateColumns: "160px 80px 200px 90px 70px 80px 100px 90px", background: "#f5f5f5", borderBottom: `1px solid ${S.borderMed}`, color: "#555555", fontFamily: "monospace", fontWeight: "bold", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+                <div className="grid text-xs px-4 py-2.5 flex-shrink-0" style={{ gridTemplateColumns: "160px 80px 200px 90px 70px 80px 100px 90px", background: "#f1f5f9", borderBottom: `1px solid ${S.borderMed}`, color: "#475569", fontFamily: "monospace", fontWeight: "bold", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
                   <div>订单号</div><div>用户</div><div>产品</div><div>金额</div><div>城市</div><div>渠道</div><div>状态</div><div>时间</div>
                 </div>
                 <div className="overflow-auto flex-1">
@@ -299,7 +299,7 @@ export default function Orders() {
                         className="grid items-center px-4 py-2.5 cursor-pointer transition-all"
                         style={{
                           gridTemplateColumns: "160px 80px 200px 90px 70px 80px 100px 90px",
-                          background: isSelected ? "rgba(204,255,0,0.08)" : "transparent",
+                          background: isSelected ? "rgba(59,130,246,0.08)" : "transparent",
                           borderBottom: `1px solid ${S.border}`,
                           borderLeft: isSelected ? `3px solid ${S.accent}` : "3px solid transparent",
                         }}
@@ -328,14 +328,14 @@ export default function Orders() {
 
                 {/* Pagination */}
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-between px-4 py-2.5 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}`, background: "#f5f5f5" }}>
+                  <div className="flex items-center justify-between px-4 py-2.5 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}`, background: "#f1f5f9" }}>
                     <span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>共 {filtered.length} 条 · 第 {safePage} / {totalPages} 页</span>
                     <div className="flex gap-1.5">
                       <button className="px-2.5 py-1 text-xs font-bold disabled:opacity-30" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} disabled={safePage <= 1} onClick={() => setPage(safePage - 1)}>
                         <ChevronLeft size={12} className="inline" /> 上一页
                       </button>
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-                        <button key={p} className="px-2 py-1 text-xs font-bold" style={{ background: p === safePage ? "#0d0d0d" : S.surface, color: p === safePage ? S.accent : S.muted, border: `1px solid ${p === safePage ? "#0d0d0d" : S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setPage(p)}>{p}</button>
+                        <button key={p} className="px-2 py-1 text-xs font-bold" style={{ background: p === safePage ? "#1e293b" : S.surface, color: p === safePage ? S.accent : S.muted, border: `1px solid ${p === safePage ? "#1e293b" : S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setPage(p)}>{p}</button>
                       ))}
                       <button className="px-2.5 py-1 text-xs font-bold disabled:opacity-30" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }} disabled={safePage >= totalPages} onClick={() => setPage(safePage + 1)}>
                         下一页 <ChevronRight size={12} className="inline" />
@@ -349,7 +349,7 @@ export default function Orders() {
 
           {view === "refund" && (
             <div className="flex-1 overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-              <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: `1px solid ${S.border}`, background: "#f5f5f5", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+              <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: `1px solid ${S.border}`, background: "#f1f5f9", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
                 <AlertTriangle size={14} style={{ color: S.accent }} />
                 <span className="text-sm font-bold" style={{ color: S.accent, fontFamily: "monospace" }}>退款审核队列</span>
                 <span className="ml-auto text-xs" style={{ color: S.mutedLight, fontFamily: "monospace" }}>按申请时间排序</span>
@@ -376,16 +376,16 @@ export default function Orders() {
                       </div>
                     )}
                     <div className="flex gap-2 mt-3">
-                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: o.id, action: "approve" })}>
+                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: o.id, action: "approve" })}>
                         <CheckCircle size={11} className="inline mr-1" />批准退款
                       </button>
-                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: o.id, action: "reject" })}>
+                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: o.id, action: "reject" })}>
                         <X size={11} className="inline mr-1" />拒绝
                       </button>
-                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#f0f0ec", color: S.text, borderRadius: S.radius, fontFamily: "monospace", border: `1px solid ${S.border}` }} onClick={() => { setSelected(o.id); setView("list"); }}>
+                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.text, borderRadius: S.radius, fontFamily: "monospace", border: `1px solid ${S.border}` }} onClick={() => { setSelected(o.id); setView("list"); }}>
                         <FileText size={11} className="inline mr-1" />查看详情
                       </button>
-                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#f0f0ec", color: S.text, borderRadius: S.radius, fontFamily: "monospace", border: `1px solid ${S.border}` }} onClick={() => showToast("已转交人工复核，将在24小时内处理")}>
+                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.text, borderRadius: S.radius, fontFamily: "monospace", border: `1px solid ${S.border}` }} onClick={() => showToast("已转交人工复核，将在24小时内处理")}>
                         <Clock size={11} className="inline mr-1" />转人工复核
                       </button>
                     </div>
@@ -419,7 +419,7 @@ export default function Orders() {
               </div>
             ))}
             {detail.refundReason && (
-              <div className="px-3 py-2" style={{ background: "#fff8e1", borderRadius: S.radiusSm, border: `1px solid #ffd600` }}>
+              <div className="px-3 py-2" style={{ background: "#fff8e1", borderRadius: S.radiusSm, border: `1px solid #3b82f6` }}>
                 <div className="text-xs font-bold mb-0.5" style={{ color: "#b45309" }}>退款原因</div>
                 <div className="text-xs" style={{ color: S.textSec }}>{detail.refundReason}</div>
               </div>
@@ -432,17 +432,17 @@ export default function Orders() {
             )}
             <div className="flex flex-col gap-2 mt-auto">
               {detail.status === "待确认" && (
-                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "confirm" })}>
+                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "confirm" })}>
                   确认收款
                 </button>
               )}
               {detail.status === "退款申请" && (
                 <>
-                  <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "approve" })}>批准退款</button>
-                  <button className="w-full py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "reject" })}>拒绝退款</button>
+                  <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "approve" })}>批准退款</button>
+                  <button className="w-full py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "reject" })}>拒绝退款</button>
                 </>
               )}
-              <button className="w-full py-2 text-xs font-bold" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => showToast("已创建关联工单，工单号 TK" + Date.now().toString().slice(-6))}>建立工单</button>
+              <button className="w-full py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius, fontFamily: "monospace" }} onClick={() => showToast("已创建关联工单，工单号 TK" + Date.now().toString().slice(-6))}>建立工单</button>
             </div>
           </div>
         )}

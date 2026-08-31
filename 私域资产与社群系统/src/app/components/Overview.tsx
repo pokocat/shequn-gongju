@@ -3,17 +3,17 @@ import { TrendingUp, Database, Users2, UserPlus, AlertTriangle, Zap, CheckCircle
 
 // ─── Soft rounded cyberpunk constants ────────────────────────
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "12px",
   radiusSm: "8px",
   radiusLg: "14px",
@@ -190,8 +190,8 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
 
   const kpis = [
     { icon: Database,      label: "// ACCOUNT ASSETS", value: "1,247", delta: "12 本月新增", deltaDir: "up" as const,   accentColor: S.accent, targetModule: "accounts" },
-    { icon: MessageCircle, label: "// ACTIVE WECHATS", value: "68",    delta: "3 待交接",  deltaDir: "down" as const, accentColor: "#000", targetModule: "wechat" },
-    { icon: Users2,        label: "// ACTIVE GROUPS",   value: "34",    delta: "2 接近满员", deltaDir: "down" as const, accentColor: "#000", targetModule: "community" },
+    { icon: MessageCircle, label: "// ACTIVE WECHATS", value: "68",    delta: "3 待交接",  deltaDir: "down" as const, accentColor: "#3b82f6", targetModule: "wechat" },
+    { icon: Users2,        label: "// ACTIVE GROUPS",   value: "34",    delta: "2 接近满员", deltaDir: "down" as const, accentColor: "#3b82f6", targetModule: "community" },
     { icon: UserPlus,      label: "// PENDING ASSIGN",  value: "23",    delta: "8 今日新增", deltaDir: "up" as const,   accentColor: S.accent, targetModule: "users" },
   ];
 
@@ -202,17 +202,17 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
     <div className="p-6 space-y-5 relative" style={{ background: S.bg, minHeight: "100%", fontFamily: "monospace" }}>
       {/* Toast */}
       {toast && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
           {toast}
         </div>
       )}
 
       {/* Risk bar - real-time with action */}
-      <div className="p-3 flex items-center gap-4 flex-wrap" style={{ background: "#0d0d0d", border: `1px solid ${S.accent}`, borderRadius: S.radiusSm }}>
+      <div className="p-3 flex items-center gap-4 flex-wrap" style={{ background: "#1e293b", border: `1px solid ${S.accent}`, borderRadius: S.radiusSm }}>
         <div className="flex items-center gap-2">
           <AlertTriangle size={13} style={{ color: S.accent }} />
           <span className="text-xs font-bold font-mono tracking-wider" style={{ color: S.accent }}>// HIGH RISK ALERT</span>
-          <span className="text-xs font-bold px-1.5 py-0.5" style={{ background: highRiskCount > 0 ? "#cc0000" : S.accent, color: "#fff", borderRadius: "4px" }}>{risks.length}</span>
+          <span className="text-xs font-bold px-1.5 py-0.5" style={{ background: highRiskCount > 0 ? "#cc0000" : S.accent, color: "#ffffff", borderRadius: "4px" }}>{risks.length}</span>
         </div>
         <div className="flex gap-3 flex-wrap">
           {risks.map(r => (
@@ -222,7 +222,7 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
               {r.delta && <span className="px-1 py-0.5 text-xs font-bold" style={{ background: r.level === "high" ? "rgba(204,0,0,0.2)" : S.accentMid, color: r.level === "high" ? "#ff6b6b" : S.accent, borderRadius: "3px" }}>{r.delta}</span>}
               <button
                 className="text-xs font-bold px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: S.accent, color: "#000", borderRadius: "3px" }}
+                style={{ background: S.accent, color: "#ffffff", borderRadius: "3px" }}
                 onClick={() => handleRiskAction(r)}
               >
                 {r.action}
@@ -230,7 +230,7 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
             </div>
           ))}
         </div>
-        <button className="ml-auto text-xs font-mono font-bold px-3 py-1 flex items-center gap-1" style={{ background: S.accent, color: "#000", borderRadius: "6px" }} onClick={handleViewAllRisks}>
+        <button className="ml-auto text-xs font-mono font-bold px-3 py-1 flex items-center gap-1" style={{ background: S.accent, color: "#ffffff", borderRadius: "6px" }} onClick={handleViewAllRisks}>
           VIEW ALL <ChevronRight size={10} className="inline" />
         </button>
       </div>
@@ -247,11 +247,11 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
               onClick={() => navigate(k.targetModule)}
             >
               <div className="flex items-center justify-between">
-                <div className="w-8 h-8 flex items-center justify-center" style={{ background: k.accentColor === S.accent ? S.accent : "#0d0d0d", borderRadius: S.radiusSm }}>
-                  <Icon size={16} style={{ color: k.accentColor === S.accent ? "#000" : S.accent }} />
+                <div className="w-8 h-8 flex items-center justify-center" style={{ background: k.accentColor === S.accent ? S.accent : "#1e293b", borderRadius: S.radiusSm }}>
+                  <Icon size={16} style={{ color: k.accentColor === S.accent ? "#ffffff" : S.accent }} />
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="flex items-center gap-1 text-xs font-mono font-bold" style={{ color: k.deltaDir === "up" ? "#0d0d0d" : "#e53e3e" }}>
+                  <div className="flex items-center gap-1 text-xs font-mono font-bold" style={{ color: k.deltaDir === "up" ? "#1e293b" : "#e53e3e" }}>
                     {k.deltaDir === "up" ? <ArrowUp size={11} /> : <ArrowDown size={11} />}{k.delta}
                   </div>
                   <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: S.muted }} />
@@ -294,16 +294,16 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
         <div className="col-span-2 p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div className="flex items-center gap-2 mb-4">
             <div className="w-5 h-5 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-              <Zap size={12} style={{ color: "#000" }} />
+              <Zap size={12} style={{ color: "#ffffff" }} />
             </div>
             <span className="text-xs font-bold font-mono tracking-wider" style={{ color: S.text }}>// AI_SUGGESTIONS</span>
-            <span className="ml-auto text-xs font-mono px-2 py-0.5" style={{ background: "#0d0d0d", color: S.accent, borderRadius: "6px" }}>{suggestions.length} 待处理</span>
+            <span className="ml-auto text-xs font-mono px-2 py-0.5" style={{ background: "#1e293b", color: S.accent, borderRadius: "6px" }}>{suggestions.length} 待处理</span>
           </div>
           <div className="space-y-2">
             {suggestions.map(s => {
               const isHigh = s.level === "high";
               return (
-                <div key={s.id} className="flex items-start gap-3 px-3 py-2.5 group transition-all" style={{ background: isHigh ? "#0d0d0d" : S.bg, border: `1px solid ${isHigh ? S.accent : S.border}`, borderRadius: S.radiusSm }}>
+                <div key={s.id} className="flex items-start gap-3 px-3 py-2.5 group transition-all" style={{ background: isHigh ? "#1e293b" : S.bg, border: `1px solid ${isHigh ? S.accent : S.border}`, borderRadius: S.radiusSm }}>
                   <span className="font-bold font-mono flex-shrink-0 mt-0.5" style={{ color: isHigh ? S.accent : s.level === "medium" ? "#b45309" : S.muted, fontSize: "14px" }}>{s.icon}</span>
                   <div className="flex-1 min-w-0">
                     <div className="text-xs font-bold" style={{ color: isHigh ? S.accent : S.text }}>{s.title}</div>
@@ -313,8 +313,8 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
                     <button
                       className="text-xs font-bold font-mono px-2.5 py-1 transition-all"
                       style={{
-                        background: s.level === "high" ? S.accent : "#0d0d0d",
-                        color: s.level === "high" ? "#000" : S.accent,
+                        background: s.level === "high" ? S.accent : "#1e293b",
+                        color: s.level === "high" ? "#ffffff" : S.accent,
                         borderRadius: "6px",
                         border: "none",
                       }}
@@ -367,7 +367,7 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
                   }}
                   onClick={e => { e.stopPropagation(); toggleTodo(t.id); }}
                 >
-                  {t.done && <CheckCircle size={9} style={{ color: "#000" }} />}
+                  {t.done && <CheckCircle size={9} style={{ color: "#ffffff" }} />}
                 </button>
                 <span className="flex-1 text-xs font-mono" style={{ color: t.done ? S.muted : S.textSec, textDecoration: t.done ? "line-through" : "none" }}>{t.text}</span>
                 <div className="flex items-center gap-1 text-xs font-mono flex-shrink-0" style={{ color: S.muted }}>
@@ -379,14 +379,14 @@ export default function Overview({ onNavigate }: OverviewProps = {}) {
           <div className="flex gap-2 mt-3">
             <button
               className="flex-1 py-2 text-xs font-bold font-mono tracking-wider transition-all"
-              style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, border: "none" }}
+              style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}
               onClick={() => navigate("tickets")}
             >
               工单中心 →
             </button>
             <button
               className="flex-1 py-2 text-xs font-bold font-mono tracking-wider transition-all"
-              style={{ background: completedCount > 0 ? S.accent : "#f7f7f7", color: completedCount > 0 ? "#000" : S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}
+              style={{ background: completedCount > 0 ? S.accent : "#f1f5f9", color: completedCount > 0 ? "#ffffff" : S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}
               disabled={completedCount === 0}
               onClick={() => { setTodos(prev => prev.map(t => ({ ...t, done: false }))); showToast("已重置所有任务"); }}
             >

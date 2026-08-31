@@ -180,7 +180,7 @@ function getToolCapacity(t: Tool) {
 // 同步状态展示
 function getSyncMeta(t: Tool, risk: ReturnType<typeof getToolCapacity>) {
   if (risk.isSyncRisk) return { label: "需核查", bg: "#fff7ed", color: "#c2410c" };
-  if (t.status === "not_enabled" || t.status === "idle" || t.status === "nurturing") return { label: "未启用", bg: "#f5f5f5", color: "#888" };
+  if (t.status === "not_enabled" || t.status === "idle" || t.status === "nurturing") return { label: "未启用", bg: "#f1f5f9", color: "#888" };
   return { label: "正常", bg: "#f0fdf4", color: "#276749" };
 }
 
@@ -275,7 +275,7 @@ function BrowsePager({ page, totalPages, total, onPageChange }: { page: number; 
   const start = total === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
   const end = Math.min(page * PAGE_SIZE, total);
   return (
-    <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}`, background: "#fafafa" }}>
+    <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}`, background: "#f8fafc" }}>
       <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>第 {start}–{end} 条，共 {total} 条</div>
       <div className="flex items-center gap-1">
         <button type="button" aria-label="上一页" className="w-7 h-7 flex items-center justify-center transition-all"
@@ -675,12 +675,12 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
             <button type="button" onClick={() => setConfirmAction(null)}
-              style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#fff", fontSize: 13, cursor: "pointer", color: S.textSec }}>取消</button>
+              style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#ffffff", fontSize: 13, cursor: "pointer", color: S.textSec }}>取消</button>
             <button type="button"
               onClick={confirmAction.action === "disable" ? doDisable : confirmAction.action === "archive" ? doArchive : doSendNurture}
               style={{ padding: "7px 15px", border: "none", borderRadius: 7,
                 background: confirmAction.action === "disable" || confirmAction.action === "archive" ? S.danger : S.primary,
-                color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(0,0,0,.08)" }}>
+                color: "#ffffff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(0,0,0,.08)" }}>
               <Check size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 确认
             </button>
           </div>
@@ -709,9 +709,9 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
               <button type="button" onClick={() => setHandoverDraft(null)}
-                style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#fff", fontSize: 13, cursor: "pointer", color: S.textSec }}>取消</button>
+                style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#ffffff", fontSize: 13, cursor: "pointer", color: S.textSec }}>取消</button>
               <button type="button" onClick={confirmHandover}
-                style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
+                style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: "#ffffff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
                 <Check size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 推送审批单
               </button>
             </div>
@@ -738,7 +738,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
             </div>
             <div style={{ marginTop: 12 }}>注册方式：
               <span style={{ display: "inline-flex", marginLeft: 8, gap: 6 }}>
-                {([{ key: "single", label: "单个注册" }, { key: "batch", label: "批量导入" }] as const).map(option => <button key={option.key} type="button" onClick={() => setNewToolDrawer({ ...newToolDrawer, draft: { ...newToolDrawer.draft, mode: option.key } })} style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${newToolDrawer.draft.mode === option.key ? S.ink : S.borderMed}`, background: newToolDrawer.draft.mode === option.key ? S.primaryLight : "#fff", color: S.textSec, cursor: "pointer" }}>{option.label}</button>)}
+                {([{ key: "single", label: "单个注册" }, { key: "batch", label: "批量导入" }] as const).map(option => <button key={option.key} type="button" onClick={() => setNewToolDrawer({ ...newToolDrawer, draft: { ...newToolDrawer.draft, mode: option.key } })} style={{ padding: "4px 10px", borderRadius: 6, border: `1px solid ${newToolDrawer.draft.mode === option.key ? S.ink : S.borderMed}`, background: newToolDrawer.draft.mode === option.key ? S.primaryLight : "#ffffff", color: S.textSec, cursor: "pointer" }}>{option.label}</button>)}
               </span>
             </div>
             <div style={{ marginTop: 6 }}>入库后状态：
@@ -756,7 +756,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}>
             <button type="button" onClick={() => newToolDrawer.step === 1 ? setNewToolDrawer(null) : setNewToolDrawer({ ...newToolDrawer, step: 1 })}
-              style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#fff", fontSize: 13, cursor: "pointer", color: S.textSec }}>{newToolDrawer.step === 1 ? "取消" : "上一步"}</button>
+              style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#ffffff", fontSize: 13, cursor: "pointer", color: S.textSec }}>{newToolDrawer.step === 1 ? "取消" : "上一步"}</button>
             <button type="button"
               onClick={() => {
                 if (newToolDrawer.step === 1) { setNewToolDrawer({ ...newToolDrawer, step: 2 }); return; }
@@ -778,7 +778,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                 setStatusFilter("未使用");
                 showToast("✅ 注册入库成功：已在『未启用』阶段");
               }}
-              style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: "#fff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
+              style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: "#ffffff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
               {newToolDrawer.step === 1 ? <><ChevronRight size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 下一步</> : <><Check size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 确定注册</>}
             </button>
           </div>
@@ -948,7 +948,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                 <span className="px-1.5 py-0.5"
                   style={{
                     background: active ? S.accent : S.bg,
-                    color: active ? "#000" : S.muted,
+                    color: active ? "#ffffff" : S.muted,
                     fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace",
                   }}>
                   {statusCounts[s]}
@@ -1048,7 +1048,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
         <div className="flex items-center gap-2 px-3 py-2 flex-shrink-0"
           style={{ background: S.ink, color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>
           <span className="text-xs font-bold">已选 {selectedRows.length} 个资源</span>
-          <button type="button" className="px-2 py-1 text-xs" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}
+          <button type="button" className="px-2 py-1 text-xs" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}
             onClick={() => runBulkAction("批量交接")}>批量交接</button>
           <button type="button" className="px-2 py-1 text-xs" style={{ background: S.surface, color: S.text, borderRadius: S.radiusSm }}
             onClick={() => runBulkAction("送回养号")}>送回养号</button>
@@ -1077,7 +1077,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
           </div>
         ) : (
           <div className="flex-1 min-w-0 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="px-4 py-3 flex items-center justify-between flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
+            <div className="px-4 py-3 flex items-center justify-between flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f1f5f9" }}>
               <div>
                 <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>
                   {TOP_TABS.find(t => t.key === topTab)?.label} 资源列表
@@ -1092,10 +1092,10 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
             <div className="flex-1 overflow-auto">
               <div style={{ minWidth: Math.max(980, visibleTableWidth) }}>
                 {/* 表头 */}
-                <div className="flex items-center px-4 py-2.5 sticky top-0 z-10" style={{ background: "#f5f5f5", borderBottom: `1px solid ${S.border}` }}>
+                <div className="flex items-center px-4 py-2.5 sticky top-0 z-10" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}` }}>
                   {COLS.map(c => (
                     <div key={c.key} className="flex-shrink-0 text-xs font-semibold"
-                      style={columnStyle(c.key, { width: c.w, color: "#555", fontFamily: "monospace" })}>
+                      style={columnStyle(c.key, { width: c.w, color: "#475569", fontFamily: "monospace" })}>
                       {c.key === "select" ? (
                         <input type="checkbox" aria-label="选择当前页"
                           checked={pagedTools.length > 0 && pagedTools.every(t => selectedRows.includes(t.id))}
@@ -1135,7 +1135,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                       </div>
                       <div className="flex-shrink-0" style={columnStyle("avatar", { width: 60 })}>
                         {t.status === "not_enabled" || t.status === "idle" ? (
-                          <div className="w-8 h-8 grid place-items-center" style={{ background: "#f0f0ec", borderRadius: S.radiusSm, color: S.muted }}><Icon size={14} /></div>
+                          <div className="w-8 h-8 grid place-items-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm, color: S.muted }}><Icon size={14} /></div>
                         ) : (
                           <img src={getAvatar(parseInt(t.id.replace(/\D/g, "") || "0", 10) || 0)} alt={t.name} style={{ width: 32, height: 32, borderRadius: S.radiusSm, objectFit: "cover" }} />
                         )}
@@ -1190,7 +1190,7 @@ export default function AccountsAndResourceCenter({ initialTopTab = "wechat", em
                     🤷‍♀️ 当前筛选下没有匹配的资源 · 试试清空筛选条件
                     <div style={{ marginTop: 12 }}>
                       <button type="button" onClick={() => { setSearch(""); setStatusFilter("全部"); clearAdvancedFilters(); }}
-                        style={{ padding: "7px 16px", background: S.primary, color: "#fff", fontWeight: 600, borderRadius: 7, border: "none", cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)", fontSize: 12 }}>
+                        style={{ padding: "7px 16px", background: S.primary, color: "#ffffff", fontWeight: 600, borderRadius: 7, border: "none", cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)", fontSize: 12 }}>
                         清空筛选条件
                       </button>
                     </div>
@@ -1282,7 +1282,7 @@ function ResourceCards({
               }}>
               <div className="flex items-start gap-3">
                 {isStock ? (
-                  <div className="w-10 h-10 flex items-center justify-center" style={{ background: "#f0f0ec", color: S.muted, borderRadius: S.radiusSm }}>
+                  <div className="w-10 h-10 flex items-center justify-center" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm }}>
                     <Icon size={16} />
                   </div>
                 ) : (
@@ -1390,7 +1390,7 @@ function DetailPanel({
   return (
     <aside className="w-[400px] flex-shrink-0 flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="资源详情">
       {/* 顶部标题栏 */}
-      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
+      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f1f5f9" }}>
         <div>
           <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>资源详情</div>
           <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>点击列表资源后查看与调度</div>
@@ -1403,7 +1403,7 @@ function DetailPanel({
       <div className="px-4 pt-3">
         <div className="flex items-start gap-3">
           {tool.status === "not_enabled" || tool.status === "idle" ? (
-            <div className="w-12 h-12 grid place-items-center" style={{ background: "#f0f0ec", borderRadius: S.radiusSm, color: S.muted }}>
+            <div className="w-12 h-12 grid place-items-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm, color: S.muted }}>
               <Icon size={18} />
             </div>
           ) : (
@@ -1438,7 +1438,7 @@ function DetailPanel({
               onClick={() => setTab(t.key)}
               className="flex items-center gap-1 px-2.5 py-2 text-[11px] font-bold"
               style={{
-                background: active ? S.ink : "#f5f5f5",
+                background: active ? S.ink : "#f1f5f9",
                 color: active ? S.accent : S.muted,
                 border: `1px solid ${active ? S.ink : S.border}`,
                 borderRadius: S.radiusSm,
@@ -1517,7 +1517,7 @@ function DetailPanel({
               </div>
             </div>
             {tool.notes && (
-              <div className="p-3 text-xs" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, color: S.muted, lineHeight: 1.6, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+              <div className="p-3 text-xs" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.muted, lineHeight: 1.6, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                 📝 {tool.notes}
               </div>
             )}
@@ -1552,7 +1552,7 @@ function DetailPanel({
                 <div style={{ position: "absolute", left: 5, top: 2, bottom: 2, width: 2, background: S.borderMed }} />
                 {(tool.operationLogs || []).map(l => (
                   <div key={l.id} style={{ position: "relative", marginBottom: 10 }}>
-                    <div style={{ position: "absolute", left: -14, top: 3, width: 10, height: 10, background: "#fff", border: `2px solid ${S.primary}`, borderRadius: "50%", boxShadow: `0 0 0 3px ${S.primaryLight}` }} />
+                    <div style={{ position: "absolute", left: -14, top: 3, width: 10, height: 10, background: "#ffffff", border: `2px solid ${S.primary}`, borderRadius: "50%", boxShadow: `0 0 0 3px ${S.primaryLight}` }} />
                     <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>{l.time} · <span style={{ color: S.textSec }}>{l.actor}</span></div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: S.text }}>{l.action}</div>
                     {l.summary && <div style={{ fontSize: 11, color: S.textSec, marginTop: 1 }}>{l.summary}</div>}
@@ -1636,7 +1636,7 @@ function CardGrid({ children }: { children: React.ReactNode }) {
 }
 function KCard({ title, value, sub, color }: { title: string; value: string | number; sub?: string; color?: string }) {
   return (
-    <div className="px-2 py-2" style={{ background: color ? `${color}11` : "#fafafa", border: `1px solid ${color || S.borderMed}`, borderRadius: S.radiusSm }}>
+    <div className="px-2 py-2" style={{ background: color ? `${color}11` : "#f8fafc", border: `1px solid ${color || S.borderMed}`, borderRadius: S.radiusSm }}>
       <div style={{ fontSize: 9, color: S.muted, fontWeight: 700, fontFamily: "monospace" }}>{title}</div>
       <div style={{ fontSize: 14, fontWeight: 800, color: S.text, fontFamily: "monospace" }}>{typeof value === "number" ? value.toLocaleString() : value}</div>
       {sub && <div style={{ fontSize: 9, color: S.success, fontWeight: 700, fontFamily: "monospace" }}>{sub}</div>}
@@ -1657,7 +1657,7 @@ function OpsMedia({ tool }: { tool: Tool }) {
       </CardGrid>
       <div className="grid grid-cols-2 gap-2">
         <Row k="平台认证" v={<>
-          {tool.certifiedType && <span style={{ padding: "1px 6px", background: S.primary, color: "#fff", borderRadius: 4, fontSize: 10, fontWeight: 600, marginRight: 4 }}>{tool.certifiedType}</span>}
+          {tool.certifiedType && <span style={{ padding: "1px 6px", background: S.primary, color: "#ffffff", borderRadius: 4, fontSize: 10, fontWeight: 600, marginRight: 4 }}>{tool.certifiedType}</span>}
           {tool.certifiedSubject || <span style={{ color: S.muted }}>未认证</span>}
         </>} />
         <Row k="创作者中心" v={tool.creatorLevel ? <b>L{tool.creatorLevel.replace(/^L/, "")}</b> : <span style={{ color: S.muted }}>未开通</span>} />
@@ -1681,7 +1681,7 @@ function OpsMedia({ tool }: { tool: Tool }) {
             <div key={i} style={{ display: "contents" }}>
               <span style={{ color: S.muted, fontFamily: "monospace" }}>{p.date}</span>
               <span style={{ color: S.text }}>
-                <span style={{ padding: "1px 5px", background: p.contentType === "短视频" ? "#ff6b35" : p.contentType === "直播" ? S.success : p.contentType === "合集" ? "#8b5cf6" : "#4a90e2", color: "#fff", borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{p.contentType}</span>
+                <span style={{ padding: "1px 5px", background: p.contentType === "短视频" ? "#ff6b35" : p.contentType === "直播" ? S.success : p.contentType === "合集" ? "#8b5cf6" : "#4a90e2", color: "#ffffff", borderRadius: 4, fontSize: 9, fontWeight: 600, marginRight: 4 }}>{p.contentType}</span>
                 {p.title}
               </span>
               <span style={{ textAlign: "right", fontWeight: 700, color: S.success, fontFamily: "monospace" }}>{p.playViews >= 10000 ? (p.playViews / 10000).toFixed(1) + "w" : p.playViews.toLocaleString()}</span>
@@ -1750,7 +1750,7 @@ function OpsPhone({ tool }: { tool: Tool }) {
     <div className="space-y-3 text-xs" style={{ lineHeight: 1.8 }}>
       <CardGrid>
         <KCard title="运营商" value={tool.carrier || "未填"} />
-        <KCard title="实名状态" value={tool.realNameStatus || "未实名"} sub={tool.realNameDate || ""} color={tool.realNameStatus === "已实名" ? "#bef264" : "#ffd600"} />
+        <KCard title="实名状态" value={tool.realNameStatus || "未实名"} sub={tool.realNameDate || ""} color={tool.realNameStatus === "已实名" ? "#bef264" : "#3b82f6"} />
         <KCard title="注册微信号" value={tool.boundWechatCount ?? 0} sub={`最多 5 个/号`} />
       </CardGrid>
       <div className="grid grid-cols-2 gap-2">
@@ -1767,9 +1767,9 @@ function OpsEmail({ tool }: { tool: Tool }) {
   return (
     <div className="space-y-3 text-xs" style={{ lineHeight: 1.8 }}>
       <CardGrid>
-        <KCard title="邮箱状态" value={tool.emailVerified ? "已验证" : "待验证"} color={tool.emailVerified ? "#7c3aed" : "#ffd600"} />
+        <KCard title="邮箱状态" value={tool.emailVerified ? "已验证" : "待验证"} color={tool.emailVerified ? "#7c3aed" : "#3b82f6"} />
         <KCard title="服务商" value={tool.emailProvider || "未设置"} />
-        <KCard title="安全密保" value={tool.emailSecurityConfigured ? "已配置" : "未配置"} color={tool.emailSecurityConfigured ? "#bef264" : "#ffd600"} />
+        <KCard title="安全密保" value={tool.emailSecurityConfigured ? "已配置" : "未配置"} color={tool.emailSecurityConfigured ? "#bef264" : "#3b82f6"} />
       </CardGrid>
       <div className="grid grid-cols-2 gap-2">
         <Row k="邮箱地址" v={<span style={{ fontFamily: "monospace" }}>{tool.identifier}</span>} />
@@ -1797,9 +1797,9 @@ function Modal({ title, children, onClose, width = 400 }: { title: string; child
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(15,23,42,.32)", backdropFilter: "blur(2px)" }}
       onClick={onClose}>
-      <div className="flex flex-col overflow-hidden" style={{ width, maxWidth: "92vw", background: "#fff", borderRadius: S.radiusLg, border: `1px solid ${S.borderMed}`, boxShadow: "0 25px 50px -12px rgba(15,23,42,.25)" }}
+      <div className="flex flex-col overflow-hidden" style={{ width, maxWidth: "92vw", background: "#ffffff", borderRadius: S.radiusLg, border: `1px solid ${S.borderMed}`, boxShadow: "0 25px 50px -12px rgba(15,23,42,.25)" }}
         onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
+        <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${S.border}`, background: "#f1f5f9" }}>
           <div className="font-semibold text-sm" style={{ color: S.text, fontFamily: "monospace" }}>{title}</div>
           <button type="button" onClick={onClose} title="关闭" style={{ background: "transparent", border: "none", cursor: "pointer", padding: 4, color: S.textSec, borderRadius: 6 }}><X size={16} /></button>
         </div>

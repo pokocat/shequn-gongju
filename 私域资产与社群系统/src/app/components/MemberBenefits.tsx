@@ -5,17 +5,17 @@ import {
 } from "recharts";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -31,7 +31,7 @@ const TIERS = [
     priceNum: 0,
     period: "",
     color: S.text,
-    colorLight: "#f0f0ec",
+    colorLight: "#f1f5f9",
     icon: Star,
     users: 1842,
     desc: "基础浏览权限，适合了解平台",
@@ -83,7 +83,7 @@ const TIERS = [
     priceNum: 29800,
     period: "/年",
     color: "#ffffff",
-    colorLight: "#1a1a1a",
+    colorLight: "#1e293b",
     icon: Diamond,
     users: 23,
     desc: "顶级资源直通，城市合伙人资格",
@@ -202,7 +202,7 @@ export default function MemberBenefits() {
               key={tier.id}
               onClick={() => setActiveTier(tier.id)}
               style={{
-                background: isActive ? (isBlack ? "#1a1a1a" : S.accentLight) : S.surface,
+                background: isActive ? (isBlack ? "#1e293b" : S.accentLight) : S.surface,
                 border: `1.5px solid ${isActive ? (isBlack ? S.accent : S.accent) : S.border}`,
                 borderRadius: S.radius,
                 padding: "14px 12px",
@@ -236,8 +236,8 @@ export default function MemberBenefits() {
               <div
                 style={{
                   marginTop: 12, fontSize: 11, fontWeight: 700, textAlign: "center", padding: "4px 0", borderRadius: S.radiusSm, fontFamily: "monospace",
-                  background: isActive ? (isBlack ? S.accent : "#0d0d0d") : "#f0f0ec",
-                  color: isActive ? (isBlack ? "#0d0d0d" : S.accent) : S.muted,
+                  background: isActive ? (isBlack ? S.accent : "#1e293b") : "#f1f5f9",
+                  color: isActive ? (isBlack ? "#1e293b" : S.accent) : S.muted,
                 }}
               >
                 {isActive ? "当前查看" : "查看详情"}
@@ -265,12 +265,12 @@ export default function MemberBenefits() {
           <div style={{ overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "monospace" }}>
               <thead>
-                <tr style={{ background: "#1a1a1a" }}>
+                <tr style={{ background: "#1e293b" }}>
                   <th
                     style={{
                       padding: "8px 14px",
                       textAlign: "left",
-                      color: "#555555",
+                      color: "#475569",
                       fontWeight: 700,
                       whiteSpace: "nowrap",
                       borderBottom: `1px solid ${S.border}`,
@@ -288,7 +288,7 @@ export default function MemberBenefits() {
                       style={{
                         padding: "8px 10px",
                         textAlign: "center",
-                        color: activeTier === t.id ? S.accent : "#fff",
+                        color: activeTier === t.id ? S.accent : "#ffffff",
                         fontWeight: 700,
                         borderBottom: `1px solid ${S.border}`,
                         whiteSpace: "nowrap",
@@ -327,7 +327,7 @@ export default function MemberBenefits() {
                           padding: "7px 10px",
                           textAlign: "center",
                           borderBottom: `1px solid ${S.border}`,
-                          background: activeTier === k ? "rgba(204,255,0,0.08)" : undefined,
+                          background: activeTier === k ? "rgba(59,130,246,0.08)" : undefined,
                         }}
                       >
                         <MatrixCell val={(row as Record<string, boolean | string>)[k]} />
@@ -376,7 +376,7 @@ export default function MemberBenefits() {
           {/* Active tier spotlight */}
           <div
             style={{
-              background: active.id === "black" ? "#1a1a1a" : S.accentLight,
+              background: active.id === "black" ? "#1e293b" : S.accentLight,
               border: `1px solid ${active.id === "black" ? S.accent : S.border}`,
               borderRadius: S.radiusSm,
               padding: "10px 12px",
@@ -390,7 +390,7 @@ export default function MemberBenefits() {
             <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
               <div>
                 <div style={{ fontSize: 10, color: active.id === "black" ? "rgba(204,255,0,0.5)" : S.muted, fontFamily: "monospace" }}>当前用户</div>
-                <div style={{ fontWeight: 700, fontSize: 14, color: active.id === "black" ? "#fff" : S.text, fontFamily: "monospace" }}>{active.users.toLocaleString()}</div>
+                <div style={{ fontWeight: 700, fontSize: 14, color: active.id === "black" ? "#ffffff" : S.text, fontFamily: "monospace" }}>{active.users.toLocaleString()}</div>
               </div>
               <div>
                 <div style={{ fontSize: 10, color: active.id === "black" ? "rgba(204,255,0,0.5)" : S.muted, fontFamily: "monospace" }}>年费</div>
@@ -422,7 +422,7 @@ export default function MemberBenefits() {
             <div
               key={s.label}
               style={{
-                background: "#f7f7f7",
+                background: "#f1f5f9",
                 border: `1px solid ${S.border}`,
                 borderRadius: S.radiusSm,
                 padding: "12px 14px",
@@ -449,9 +449,9 @@ export default function MemberBenefits() {
                       style={{
                         padding: "6px 10px",
                         textAlign: "left",
-                        color: "#555555",
+                        color: "#475569",
                         fontWeight: 700,
-                        background: "#f5f5f5",
+                        background: "#f1f5f9",
                         borderBottom: `1px solid ${S.border}`,
                         fontFamily: "monospace",
                         fontSize: 11,
@@ -501,9 +501,9 @@ export default function MemberBenefits() {
                       style={{
                         padding: "6px 10px",
                         textAlign: "left",
-                        color: "#555555",
+                        color: "#475569",
                         fontWeight: 700,
-                        background: "#f5f5f5",
+                        background: "#f1f5f9",
                         borderBottom: `1px solid ${S.border}`,
                         fontFamily: "monospace",
                         fontSize: 11,
@@ -522,7 +522,7 @@ export default function MemberBenefits() {
                     <td style={{ padding: "6px 10px", borderBottom: `1px solid ${S.border}` }}>
                       <span
                         style={{
-                          background: "#0d0d0d",
+                          background: "#1e293b",
                           color: S.accent,
                           borderRadius: S.radiusSm,
                           padding: "1px 6px",
@@ -563,7 +563,7 @@ export default function MemberBenefits() {
                 {/* Tier node */}
                 <div
                   style={{
-                    background: isBlack ? "#1a1a1a" : (activeTier === tier.id ? S.accentLight : "#f8f8f5"),
+                    background: isBlack ? "#1e293b" : (activeTier === tier.id ? S.accentLight : "#f8f8f5"),
                     border: `1.5px solid ${isBlack ? S.accent : (activeTier === tier.id ? S.accent : S.border)}`,
                     borderRadius: S.radius,
                     padding: "10px 14px",
@@ -583,7 +583,7 @@ export default function MemberBenefits() {
                     <div
                       style={{
                         fontSize: 10, textAlign: "center", marginBottom: 4, color: S.muted, fontFamily: "monospace",
-                        background: "#f0f0ec", border: `1px solid ${S.border}`, borderRadius: S.radiusSm,
+                        background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm,
                         padding: "2px 5px", maxWidth: 80, lineHeight: 1.3,
                       }}
                     >

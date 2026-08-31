@@ -5,12 +5,12 @@ import InfluenceRanking from "./InfluenceRanking";
 import PushTasks from "./PushTasks";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
   border: "rgba(0,0,0,0.08)",
-  accent: "#ccff00",
-  text: "#111111",
-  muted: "#777777",
+  accent: "#3b82f6",
+  text: "#1e293b",
+  muted: "#94a3b8",
   radius: "10px",
   radiusSm: "6px",
 };
@@ -53,15 +53,15 @@ export default function MemberOperationsWorkbench() {
                 onClick={() => setActiveView(tab.id)}
                 className="flex items-center gap-2 px-3 py-2 text-left whitespace-nowrap transition-all"
                 style={{
-                  background: isActive ? "#0d0d0d" : "#ffffff",
+                  background: isActive ? "#1e293b" : "#ffffff",
                   color: isActive ? S.accent : S.text,
-                  border: `1px solid ${isActive ? "#0d0d0d" : S.border}`,
+                  border: `1px solid ${isActive ? "#1e293b" : S.border}`,
                   borderRadius: S.radiusSm,
                 }}
               >
                 <Icon size={14} />
                 <span className="text-xs font-bold">{tab.label}</span>
-                {tab.badge && <span className="min-w-4 h-4 px-1 flex items-center justify-center text-[9px] font-bold" style={{ background: S.accent, color: "#000", borderRadius: "999px" }}>{tab.badge}</span>}
+                {tab.badge && <span className="min-w-4 h-4 px-1 flex items-center justify-center text-[9px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: "999px" }}>{tab.badge}</span>}
                 <span className="hidden xl:inline text-[10px]" style={{ color: isActive ? "rgba(204,255,0,0.68)" : S.muted }}>{tab.description}</span>
               </button>
             );

@@ -8,17 +8,17 @@ import {
 
 // ─── 软圆角赛博朋克 · 柔和边框 ────────────────────────────────
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -71,7 +71,7 @@ export default function PCLayout({ activeModule, onModuleChange, children }: PCL
         {/* Logo */}
         <div className={isSidebarCollapsed ? "h-14 flex items-center justify-center gap-1 flex-shrink-0" : "h-14 flex items-center px-4 gap-3 flex-shrink-0"} style={{ borderBottom: `1px solid ${S.border}` }}>
           <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-            <Zap size={15} style={{ color: "#000" }} />
+            <Zap size={15} style={{ color: "#ffffff" }} />
           </div>
           {!isSidebarCollapsed && <div className="min-w-0">
             <div className="font-black tracking-wide" style={{ fontSize: "14px", color: S.text, fontFamily: "monospace", letterSpacing: "0.08em" }}>聚域</div>
@@ -111,7 +111,7 @@ export default function PCLayout({ activeModule, onModuleChange, children }: PCL
                     style={{
                       background: isActive ? S.accent : "transparent",
                       borderRadius: S.radiusSm,
-                      color: isActive ? "#000" : S.muted,
+                      color: isActive ? "#ffffff" : S.muted,
                       fontSize: "12px",
                       fontFamily: "monospace",
                       fontWeight: isActive ? 700 : 400,
@@ -120,7 +120,7 @@ export default function PCLayout({ activeModule, onModuleChange, children }: PCL
                     <Icon size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.6 }} />
                     {!isSidebarCollapsed && <span className="flex-1 truncate">{item.label}</span>}
                     {!isSidebarCollapsed && item.badge && (
-                      <span className="px-1.5 py-0.5 font-bold" style={{ background: isActive ? "rgba(0,0,0,0.15)" : S.accent, color: "#000", fontSize: "9px", borderRadius: "4px", fontFamily: "monospace" }}>
+                      <span className="px-1.5 py-0.5 font-bold" style={{ background: isActive ? "rgba(0,0,0,0.15)" : S.accent, color: "#ffffff", fontSize: "9px", borderRadius: "4px", fontFamily: "monospace" }}>
                         {item.badge}
                       </span>
                     )}
@@ -134,7 +134,7 @@ export default function PCLayout({ activeModule, onModuleChange, children }: PCL
         {/* User */}
         <div className={isSidebarCollapsed ? "p-2 mb-2 flex-shrink-0" : "p-3 mx-2 mb-2 flex-shrink-0"} style={{ borderTop: `1px solid ${S.border}` }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+            <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
               创
             </div>
             {!isSidebarCollapsed && <div className="flex-1 min-w-0">
@@ -155,8 +155,8 @@ export default function PCLayout({ activeModule, onModuleChange, children }: PCL
             {["SUPER", "ECO", "SAAS", activeItem?.label?.toUpperCase()].map((seg, i, arr) => (
               <span key={i} className="flex items-center gap-1.5">
                 <span className="px-2 py-0.5 font-bold text-xs" style={{
-                  background: i === arr.length - 1 ? S.accent : "rgba(0,0,0,0.06)",
-                  color: i === arr.length - 1 ? "#000" : S.muted,
+                  background: i === arr.length - 1 ? S.accent : "rgba(15,23,42,0.06)",
+                  color: i === arr.length - 1 ? "#ffffff" : S.muted,
                   borderRadius: "4px",
                   fontSize: "9px",
                 }}>
@@ -178,10 +178,10 @@ export default function PCLayout({ activeModule, onModuleChange, children }: PCL
           <div className="ml-auto flex items-center gap-3">
             <div className="relative cursor-pointer">
               <Bell size={15} style={{ color: S.muted }} />
-              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: "#000", fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>3</div>
+              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: "#ffffff", fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>3</div>
             </div>
             <Settings size={15} style={{ color: S.muted, cursor: "pointer" }} />
-            <div className="px-3 py-1 font-bold" style={{ background: "#0d0d0d", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace", letterSpacing: "0.04em" }}>
+            <div className="px-3 py-1 font-bold" style={{ background: "#1e293b", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace", letterSpacing: "0.04em" }}>
               2026-07-05
             </div>
           </div>

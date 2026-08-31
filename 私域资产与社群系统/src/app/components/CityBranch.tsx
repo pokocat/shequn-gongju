@@ -4,17 +4,17 @@ import { getAvatar } from "./Avatar";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -30,16 +30,16 @@ const cities = [
 ];
 
 const statusConfig: Record<string, { bg: string; color: string }> = {
-  "优秀":   { bg: S.accent, color: "#000" },
-  "良好":   { bg: "#f0f0ec", color: "#555" },
-  "高增长": { bg: "#ffd600", color: "#000" },
-  "待提升": { bg: "#1a1a1a", color: S.accent },
+  "优秀":   { bg: S.accent, color: "#ffffff" },
+  "良好":   { bg: "#f1f5f9", color: "#475569" },
+  "高增长": { bg: "#3b82f6", color: "#ffffff" },
+  "待提升": { bg: "#1e293b", color: S.accent },
 };
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload?.length) {
     return (
-      <div className="px-3 py-2 text-xs" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace", boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
+      <div className="px-3 py-2 text-xs" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace", boxShadow: "0 4px 12px rgba(15,23,42,0.06)" }}>
         <div className="mb-1 font-bold">{label}</div>
         {payload.map((p: any) => <div key={p.name} style={{ color: S.textSec }}>{p.name}: {typeof p.value === "number" && p.value > 1000 ? `¥${p.value.toLocaleString()}` : p.value}</div>)}
       </div>
@@ -61,7 +61,7 @@ export default function CityBranch() {
           <h2 className="font-bold" style={{ color: S.text, letterSpacing: "0.05em", fontFamily: "monospace" }}>城市分站管理</h2>
           <p className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>管理各城市区域负责人、会员、群组和运营状态</p>
         </div>
-        <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>
+        <button className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>
           <Plus size={13} /> 新建分站
         </button>
       </div>
@@ -76,7 +76,7 @@ export default function CityBranch() {
         ].map(s => (
           <div key={s.label} className="px-3 py-3 flex items-center gap-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="w-9 h-9 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-              <s.icon size={18} style={{ color: "#000" }} />
+              <s.icon size={18} style={{ color: "#ffffff" }} />
             </div>
             <div>
               <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{s.label}</div>
@@ -101,7 +101,7 @@ export default function CityBranch() {
                   border: `1px solid ${isSelected ? S.accent : S.border}`,
                   borderLeft: isSelected ? `3px solid ${S.accent}` : `1px solid ${S.border}`,
                   borderRadius: S.radius,
-                  boxShadow: isSelected ? "0 4px 16px rgba(204,255,0,0.08)" : "0 1px 4px rgba(0,0,0,0.05)",
+                  boxShadow: isSelected ? "0 4px 16px rgba(59,130,246,0.08)" : "0 1px 4px rgba(0,0,0,0.05)",
                 }}
                 onClick={() => setSelected(c.id)}
               >
@@ -117,16 +117,16 @@ export default function CityBranch() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mb-3">
-                  <div className="px-2 py-1.5 text-center" style={{ background: isSelected ? "#1a1a1a" : "#f0f0ec", borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>
+                  <div className="px-2 py-1.5 text-center" style={{ background: isSelected ? "#1e293b" : "#f1f5f9", borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>
                     <div className="text-xs font-bold" style={{ color: isSelected ? S.accent : S.text, fontFamily: "monospace" }}>{c.members}</div>
                     <div className="text-xs" style={{ color: isSelected ? S.mutedLight : S.muted, fontSize: "10px", fontFamily: "monospace" }}>总会员</div>
                   </div>
-                  <div className="px-2 py-1.5 text-center" style={{ background: isSelected ? "#1a1a1a" : "#f0f0ec", borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>
+                  <div className="px-2 py-1.5 text-center" style={{ background: isSelected ? "#1e293b" : "#f1f5f9", borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>
                     <div className="text-xs font-bold" style={{ color: isSelected ? S.accent : S.text, fontFamily: "monospace" }}>{c.groups}</div>
                     <div className="text-xs" style={{ color: isSelected ? S.mutedLight : S.muted, fontSize: "10px", fontFamily: "monospace" }}>活跃群</div>
                   </div>
-                  <div className="px-2 py-1.5 text-center" style={{ background: S.accent, borderRadius: S.radiusSm, border: `1px solid rgba(0,0,0,0.06)` }}>
-                    <div className="text-xs font-bold" style={{ color: "#000", fontFamily: "monospace" }}>¥{(c.monthlyRevenue / 10000).toFixed(1)}万</div>
+                  <div className="px-2 py-1.5 text-center" style={{ background: S.accent, borderRadius: S.radiusSm, border: `1px solid rgba(15,23,42,0.06)` }}>
+                    <div className="text-xs font-bold" style={{ color: "#ffffff", fontFamily: "monospace" }}>¥{(c.monthlyRevenue / 10000).toFixed(1)}万</div>
                     <div className="text-xs" style={{ color: "#333", fontSize: "10px", fontFamily: "monospace" }}>本月营收</div>
                   </div>
                 </div>
@@ -172,7 +172,7 @@ export default function CityBranch() {
             <div className="text-sm font-bold mb-3" style={{ color: S.text, fontFamily: "monospace" }}>近4月趋势</div>
             <ResponsiveContainer width="100%" height={120}>
               <BarChart data={detail.monthlyData} margin={{ top: 0, right: 0, bottom: 0, left: -25 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                 <XAxis dataKey="m" tick={{ fill: S.muted, fontSize: 10, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: S.muted, fontSize: 10, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
@@ -181,8 +181,8 @@ export default function CityBranch() {
             </ResponsiveContainer>
 
             <div className="mt-4 flex flex-col gap-2">
-              <button className="w-full py-2 text-xs font-bold" style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>查看分站详情</button>
-              <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>联系负责人</button>
+              <button className="w-full py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>查看分站详情</button>
+              <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>联系负责人</button>
               <button className="w-full py-2 text-xs font-bold" style={{ background: S.surface, color: S.text, borderRadius: S.radius, border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }}>导出月报</button>
             </div>
           </div>

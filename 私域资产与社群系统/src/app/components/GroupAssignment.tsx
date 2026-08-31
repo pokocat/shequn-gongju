@@ -3,17 +3,17 @@ import { getAvatar } from "./Avatar";
 import { Search, Zap, CheckCircle, ChevronRight, Users, AlertTriangle } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -85,7 +85,7 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
       <div className="flex gap-4 flex-1 min-h-0">
         {/* Left: pending users */}
         <div className="w-64 flex-shrink-0 flex flex-col gap-3">
-          <div className="flex items-center gap-2 px-2.5 py-2" style={{ background: "#f7f7f7", border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+          <div className="flex items-center gap-2 px-2.5 py-2" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radius }}>
             <Search size={12} style={{ color: S.muted }} />
             <input className="bg-transparent outline-none text-xs flex-1" style={{ color: S.textSec, fontFamily: "monospace" }} placeholder="搜索待分配用户..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
@@ -98,7 +98,7 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
                   key={u.id}
                   className="p-3 cursor-pointer transition-all"
                   style={{
-                    background: isSelected ? "rgba(204,255,0,0.08)" : S.surface,
+                    background: isSelected ? "rgba(59,130,246,0.08)" : S.surface,
                     border: `1px solid ${isSelected ? S.borderMed : S.border}`,
                     borderLeft: isSelected ? `3px solid ${S.accent}` : `1px solid ${S.border}`,
                     borderRadius: S.radius,
@@ -106,7 +106,7 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
                   onClick={() => { setSelectedUser(u.id); setAssignedGroupId(null); }}
                 >
                   <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#f5f5f5", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+                    <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#f1f5f9", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                       {u.name[0]}
                     </div>
                     <div>
@@ -132,7 +132,7 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
                     <div className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.name}</div>
                     <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{user.phone}</div>
                   </div>
-                  <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+                  <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                     {user.identity}
                   </span>
                 </div>
@@ -153,7 +153,7 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
               {/* AI Recommendations */}
               <div className="p-4 flex-1" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-5 h-5 flex items-center justify-center" style={{ background: "#f5f5f5", borderRadius: S.radiusSm }}>
+                  <div className="w-5 h-5 flex items-center justify-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}>
                     <Zap size={11} style={{ color: S.accent }} />
                   </div>
                   <span className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>AI 推荐群组</span>
@@ -176,13 +176,13 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
                           }}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: idx === 0 ? "#1a1a1a" : "#f0f0ec", color: idx === 0 ? S.accent : S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+                            <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: idx === 0 ? "#1e293b" : "#f1f5f9", color: idx === 0 ? S.accent : S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                               {idx + 1}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{g.name}</span>
-                                {idx === 0 && <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f5f5f5", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>最佳推荐</span>}
+                                {idx === 0 && <span className="px-1.5 py-0.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>最佳推荐</span>}
                               </div>
                               <div className="text-xs mt-0.5 flex items-center gap-3" style={{ color: S.muted, fontFamily: "monospace" }}>
                                 <span><Users size={10} className="inline mr-1" />{g.capacity}/{g.max}</span>
@@ -190,17 +190,17 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
                                 <span style={{ color: S.text, fontWeight: "bold" }}>评分：{g.score}</span>
                               </div>
                               <div className="mt-2 h-1 overflow-hidden" style={{ background: S.border, borderRadius: "4px" }}>
-                                <div className="h-full" style={{ width: `${pct}%`, background: pct >= 90 ? "#1a1a1a" : S.accent, borderRadius: "4px" }} />
+                                <div className="h-full" style={{ width: `${pct}%`, background: pct >= 90 ? "#1e293b" : S.accent, borderRadius: "4px" }} />
                               </div>
                             </div>
                             {isAssigned ? (
-                              <div className="flex items-center gap-1 text-xs px-2.5 py-1.5 flex-shrink-0 font-bold" style={{ background: "#f5f5f5", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+                              <div className="flex items-center gap-1 text-xs px-2.5 py-1.5 flex-shrink-0 font-bold" style={{ background: "#f1f5f9", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                                 <CheckCircle size={12} /> 已分配
                               </div>
                             ) : (
                               <button
                                 className="px-2.5 py-1.5 text-xs flex-shrink-0 font-bold transition-all"
-                                style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }}
+                                style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }}
                                 onClick={() => setAssignedGroupId(g.id)}
                               >
                                 分配
@@ -244,13 +244,13 @@ export default function GroupAssignment({ embedded = false }: { embedded?: boole
             <div className="space-y-3">
               {assignedHistory.map((h, i) => (
                 <div key={i} className="flex items-start gap-2">
-                  <div className="w-1.5 h-1.5 mt-1.5 flex-shrink-0" style={{ background: h.method === "AI推荐" ? "#1a1a1a" : "#ffd600", borderRadius: "50%" }} />
+                  <div className="w-1.5 h-1.5 mt-1.5 flex-shrink-0" style={{ background: h.method === "AI推荐" ? "#1e293b" : "#3b82f6", borderRadius: "50%" }} />
                   <div>
                     <div className="text-xs font-bold" style={{ color: S.textSec, fontFamily: "monospace" }}>{h.name}</div>
                     <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>{h.group}</div>
                     <div className="flex items-center gap-1 mt-0.5">
                       <span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{h.time}</span>
-                      <span className="px-1 py-0.5 text-xs font-bold" style={{ background: h.method === "AI推荐" ? "#1a1a1a" : "#ffd600", color: h.method === "AI推荐" ? S.accent : "#000", fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{h.method}</span>
+                      <span className="px-1 py-0.5 text-xs font-bold" style={{ background: h.method === "AI推荐" ? "#1e293b" : "#3b82f6", color: h.method === "AI推荐" ? S.accent : "#ffffff", fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{h.method}</span>
                     </div>
                   </div>
                 </div>

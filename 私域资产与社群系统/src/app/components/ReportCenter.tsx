@@ -6,23 +6,23 @@ import {
 import { TrendingUp, TrendingDown, Download, ArrowUp, ArrowDown } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
 };
 
-const COLORS = [S.accent, "#1a1a1a", "#808080", "#b0b0b0", "#d0d0d0", "#3d3d3d", "rgba(204,255,0,0.5)"];
+const COLORS = [S.accent, "#1e293b", "#808080", "#b0b0b0", "#d0d0d0", "#3d3d3d", "rgba(204,255,0,0.5)"];
 
 const revenueData = [
   { month: "1月", revenue: 28.4, users: 890 },
@@ -98,7 +98,7 @@ const TABS = ["概览报表", "城市分析", "项目报表", "渠道来源"];
 
 const Tip = ({ active, payload, label }: any) =>
   active && payload?.length ? (
-    <div className="px-3 py-2 text-xs" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace", boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
+    <div className="px-3 py-2 text-xs" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace", boxShadow: "0 4px 12px rgba(15,23,42,0.06)" }}>
       <div className="font-bold mb-1">{label}</div>
       {payload.map((p: any) => (
         <div key={p.name} style={{ color: S.textSec }}>{p.name}: {p.value}</div>
@@ -136,13 +136,13 @@ function OverviewTab() {
           <div className="text-sm font-bold mb-4" style={{ color: S.text, fontFamily: "monospace" }}>营收与用户趋势</div>
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={revenueData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
               <YAxis yAxisId="left" tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
               <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
               <Tooltip content={<Tip />} />
               <Line yAxisId="left"  type="monotone" dataKey="revenue" name="营收(万)" stroke={S.accent} strokeWidth={2.5} dot={false} />
-              <Line yAxisId="right" type="monotone" dataKey="users"   name="用户数"  stroke="#1a1a1a" strokeWidth={2} dot={false} strokeDasharray="4 3" />
+              <Line yAxisId="right" type="monotone" dataKey="users"   name="用户数"  stroke="#1e293b" strokeWidth={2} dot={false} strokeDasharray="4 3" />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -177,12 +177,12 @@ function OverviewTab() {
         <div className="text-sm font-bold mb-4" style={{ color: S.text, fontFamily: "monospace" }}>近7日用户增长</div>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={dailyUserData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
             <XAxis dataKey="day" tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
             <Tooltip content={<Tip />} />
             <Bar dataKey="new" name="新增" fill={S.accent} radius={[4, 4, 0, 0]} />
-            <Bar dataKey="churned" name="流失" fill="#1a1a1a" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="churned" name="流失" fill="#1e293b" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -213,7 +213,7 @@ function CityTab() {
           <div className="text-sm font-bold mb-4" style={{ color: S.text, fontFamily: "monospace" }}>城市营收对比</div>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={cityData} layout="vertical" margin={{ top: 5, right: 20, left: 30, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" horizontal={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
               <XAxis type="number" tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
               <YAxis type="category" dataKey="city" tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
               <Tooltip formatter={(v: any) => `¥${v}万`} />
@@ -230,12 +230,12 @@ function CityTab() {
                 <div className="flex items-center justify-between text-xs mb-1 font-mono">
                   <div className="flex items-center gap-2">
                     <span className="w-5 h-5 flex items-center justify-center text-[10px] font-bold"
-                      style={{ background: i < 3 ? "#1a1a1a" : "#f0f0ec", color: i < 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{i + 1}</span>
+                      style={{ background: i < 3 ? "#1e293b" : "#f1f5f9", color: i < 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{i + 1}</span>
                     <span style={{ color: S.textSec, fontFamily: "monospace" }}>{city.city}</span>
                   </div>
                   <span className="font-bold" style={{ color: S.text, fontFamily: "monospace" }}>+{city.growth}%</span>
                 </div>
-                <div className="h-1.5" style={{ background: "#f0f0ec", borderRadius: "99px" }}>
+                <div className="h-1.5" style={{ background: "#f1f5f9", borderRadius: "99px" }}>
                   <div className="h-full" style={{ width: `${(city.growth / 25) * 100}%`, background: i < 3 ? S.accent : S.mutedLight, borderRadius: "99px" }} />
                 </div>
               </div>
@@ -250,7 +250,7 @@ function CityTab() {
         </div>
         <table className="w-full">
           <thead>
-            <tr style={{ background: "#1a1a1a" }}>
+            <tr style={{ background: "#1e293b" }}>
               {[
                 { key: "city", label: "城市" },
                 { key: "revenue", label: "本月营收" },
@@ -260,7 +260,7 @@ function CityTab() {
                 { key: "arpu", label: "人均贡献" },
               ].map(col => (
                 <th key={col.key} className="px-4 py-3 text-left text-xs font-bold cursor-pointer select-none font-mono"
-                  style={{ color: "#555555" }}
+                  style={{ color: "#475569" }}
                   onClick={() => col.key !== "city" && handleSort(col.key)}>
                   <div className="flex items-center gap-1">
                     {col.label}
@@ -283,7 +283,7 @@ function CityTab() {
                 <td className="px-4 py-3 text-sm font-mono" style={{ color: S.text, fontFamily: "monospace" }}>
                   <div className="flex items-center gap-2">
                     ¥{city.revenue}万
-                    <div className="h-1.5 w-16" style={{ background: "#f0f0ec", borderRadius: "99px" }}>
+                    <div className="h-1.5 w-16" style={{ background: "#f1f5f9", borderRadius: "99px" }}>
                       <div className="h-full" style={{ width: `${(city.revenue / maxRevenue) * 100}%`, background: S.accent, borderRadius: "99px" }} />
                     </div>
                   </div>
@@ -309,7 +309,7 @@ function ProjectTab() {
           <div key={p.name} className="p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="flex items-center justify-between mb-4">
               <div className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{p.name}</div>
-              <span className="text-xs px-2 py-0.5 font-bold" style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{p.growth}</span>
+              <span className="text-xs px-2 py-0.5 font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{p.growth}</span>
             </div>
             <div className="space-y-2">
               <div>
@@ -338,7 +338,7 @@ function ProjectTab() {
         <div className="flex gap-4 mb-4">
           {[
             { key: "pro", label: "PRO会员", color: S.accent },
-            { key: "experience", label: "体验官", color: "#1a1a1a" },
+            { key: "experience", label: "体验官", color: "#1e293b" },
             { key: "agent", label: "代理商", color: "#808080" },
             { key: "city", label: "城市分站", color: "#b0b0b0" },
           ].map(item => (
@@ -350,12 +350,12 @@ function ProjectTab() {
         </div>
         <ResponsiveContainer width="100%" height={240}>
           <LineChart data={projectData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f0f0ec" />
+            <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
             <XAxis dataKey="month" tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
             <YAxis tick={{ fontSize: 11, fill: S.muted, fontFamily: "monospace" }} axisLine={false} tickLine={false} />
             <Tooltip content={<Tip />} />
             <Line type="monotone" dataKey="pro" name="PRO会员" stroke={S.accent} strokeWidth={2} dot={false} />
-            <Line type="monotone" dataKey="experience" name="体验官" stroke="#1a1a1a" strokeWidth={2} dot={false} />
+            <Line type="monotone" dataKey="experience" name="体验官" stroke="#1e293b" strokeWidth={2} dot={false} />
             <Line type="monotone" dataKey="agent" name="代理商" stroke="#808080" strokeWidth={2} dot={false} />
             <Line type="monotone" dataKey="city" name="城市分站" stroke="#b0b0b0" strokeWidth={2} dot={false} />
           </LineChart>
@@ -406,12 +406,12 @@ function ChannelTab() {
                     <span style={{ color: S.muted, fontFamily: "monospace" }}>({stage.pct}%)</span>
                   </div>
                 </div>
-                <div className="h-6 overflow-hidden" style={{ background: "#f0f0ec", borderRadius: S.radiusSm }}>
+                <div className="h-6 overflow-hidden" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}>
                   <div className="h-full flex items-center px-2 text-[10px] font-bold font-mono transition-all"
                     style={{
                       width: `${stage.pct}%`,
-                      background: i === 0 ? S.accent : i === 1 ? "rgba(204,255,0,0.5)" : i === 2 ? "#1a1a1a" : "#3d3d3d",
-                      color: i === 0 || i === 1 ? "#000" : "#fff",
+                      background: i === 0 ? S.accent : i === 1 ? "rgba(204,255,0,0.5)" : i === 2 ? "#1e293b" : "#3d3d3d",
+                      color: i === 0 || i === 1 ? "#ffffff" : "#ffffff",
                       borderRadius: S.radiusSm,
                       fontFamily: "monospace",
                     }}>
@@ -430,9 +430,9 @@ function ChannelTab() {
         </div>
         <table className="w-full">
           <thead>
-            <tr style={{ background: "#1a1a1a" }}>
+            <tr style={{ background: "#1e293b" }}>
               {["渠道名称", "用户数", "营收", "转化率", "ARPU"].map(h => (
-                <th key={h} className="px-4 py-3 text-left text-xs font-bold font-mono" style={{ color: "#555555", fontFamily: "monospace" }}>{h}</th>
+                <th key={h} className="px-4 py-3 text-left text-xs font-bold font-mono" style={{ color: "#475569", fontFamily: "monospace" }}>{h}</th>
               ))}
             </tr>
           </thead>
@@ -480,7 +480,7 @@ export default function ReportCenter() {
               <button key={r} onClick={() => setDateRange(r)}
                 className="px-3 py-1.5 text-xs font-bold transition-all"
                 style={{
-                  background: dateRange === r ? "#1a1a1a" : S.surface,
+                  background: dateRange === r ? "#1e293b" : S.surface,
                   color: dateRange === r ? S.accent : S.muted,
                   borderRight: r !== "本年" ? `1px solid ${S.border}` : "none",
                   fontFamily: "monospace",
@@ -490,7 +490,7 @@ export default function ReportCenter() {
             ))}
           </div>
           <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold"
-            style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>
+            style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>
             <Download size={14} /> 导出报表
           </button>
         </div>
@@ -502,7 +502,7 @@ export default function ReportCenter() {
           <button key={tab} onClick={() => setActiveTab(tab)}
             className="px-4 py-2 text-sm font-bold transition-all"
             style={{
-              background: activeTab === tab ? "#1a1a1a" : "transparent",
+              background: activeTab === tab ? "#1e293b" : "transparent",
               color: activeTab === tab ? S.accent : S.muted,
               borderRadius: S.radiusSm,
               fontFamily: "monospace",

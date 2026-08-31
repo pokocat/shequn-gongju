@@ -26,19 +26,19 @@ const painPoints = [
 ];
 
 const coreFeatures = [
-  { icon: Database,      bg: "#ccff00", title: "账号资产中心",           desc: "统一管理手机号、微信号、邮箱及各平台媒体账号，支持身份证绑定、分配记录、证件上传" },
-  { icon: MessageCircle, bg: "#ccff00", title: "企业微信 + 个人微信双轨", desc: "个人微信负责私域加人，企业微信负责服务管理，双账号同步添加用户" },
-  { icon: Users,         bg: "#ccff00", title: "微信群智能管理",          desc: "群码刷新、满群预警、备用群管理、群活跃度监控，一览掌握所有群组状态" },
-  { icon: Zap,           bg: "#ccff00", title: "AI 群分配引擎",           desc: "根据用户城市、身份、推荐关系、群容量自动推荐最优群组，支持人工调整" },
-  { icon: Radio,         bg: "#ccff00", title: "全渠道流量绑定",          desc: "绑定抖音、小红书、微信小店、公众号等渠道，配置自动分配规则，追踪流量来源" },
-  { icon: BarChart2,     bg: "#ccff00", title: "数据报表中心",            desc: "多维度数据看板，城市分析、渠道来源、项目报表、RFM用户分层，一目了然" },
-  { icon: Shield,        bg: "#ccff00", title: "权限与交接管理",          desc: "角色权限矩阵、高风险操作审批、审计日志，人员变动时有序完成账号交接" },
-  { icon: TrendingUp,    bg: "#ccff00", title: "影响力与分销",            desc: "用户影响力排行、分销佣金自动计算、多级代理管理、提现审批一站完成" },
+  { icon: Database,      bg: "#3b82f6", title: "账号资产中心",           desc: "统一管理手机号、微信号、邮箱及各平台媒体账号，支持身份证绑定、分配记录、证件上传" },
+  { icon: MessageCircle, bg: "#3b82f6", title: "企业微信 + 个人微信双轨", desc: "个人微信负责私域加人，企业微信负责服务管理，双账号同步添加用户" },
+  { icon: Users,         bg: "#3b82f6", title: "微信群智能管理",          desc: "群码刷新、满群预警、备用群管理、群活跃度监控，一览掌握所有群组状态" },
+  { icon: Zap,           bg: "#3b82f6", title: "AI 群分配引擎",           desc: "根据用户城市、身份、推荐关系、群容量自动推荐最优群组，支持人工调整" },
+  { icon: Radio,         bg: "#3b82f6", title: "全渠道流量绑定",          desc: "绑定抖音、小红书、微信小店、公众号等渠道，配置自动分配规则，追踪流量来源" },
+  { icon: BarChart2,     bg: "#3b82f6", title: "数据报表中心",            desc: "多维度数据看板，城市分析、渠道来源、项目报表、RFM用户分层，一目了然" },
+  { icon: Shield,        bg: "#3b82f6", title: "权限与交接管理",          desc: "角色权限矩阵、高风险操作审批、审计日志，人员变动时有序完成账号交接" },
+  { icon: TrendingUp,    bg: "#3b82f6", title: "影响力与分销",            desc: "用户影响力排行、分销佣金自动计算、多级代理管理、提现审批一站完成" },
 ];
 
 const tiers = [
   { level: 1, label: "超级生态", bg: "rgba(204,255,0,0.12)", desc: "统管所有生态与资源" },
-  { level: 2, label: "生态",     bg: "rgba(204,255,0,0.08)", desc: "垂直领域闭环体系" },
+  { level: 2, label: "生态",     bg: "rgba(59,130,246,0.08)", desc: "垂直领域闭环体系" },
   { level: 3, label: "SaaS平台", bg: "rgba(204,255,0,0.05)", desc: "私域工具能力层" },
   { level: 4, label: "平台项目", bg: "rgba(204,255,0,0.03)", desc: "具体运营项目单元" },
 ];
@@ -70,7 +70,7 @@ const aiCapabilities = [
     before: "每天人工分配2小时",
     after: "5分钟全部搞定",
     improvement: "效率提升 96%",
-    color: "#ccff00",
+    color: "#3b82f6",
     terminalLines: [
       { text: "// 新用户入库", type: "comment" },
       { text: 'user.city = "上海"', type: "code" },
@@ -95,7 +95,7 @@ const aiCapabilities = [
     before: "风险靠人工发现",
     after: "7×24小时自动监控",
     improvement: "预警响应提升 10×",
-    color: "#ccff00",
+    color: "#3b82f6",
     terminalLines: [
       { text: "// 实时账号健康扫描", type: "comment" },
       { text: 'scanning accounts... [68/68]', type: "code" },
@@ -120,7 +120,7 @@ const aiCapabilities = [
     before: "用户标签靠人工打",
     after: "AI自动分层更新",
     improvement: "转化率提升 34%",
-    color: "#ccff00",
+    color: "#3b82f6",
     terminalLines: [
       { text: "// RFM 模型计算", type: "comment" },
       { text: "recency   × 0.35", type: "code" },
@@ -145,7 +145,7 @@ const aiCapabilities = [
     before: "群发靠手动逐个操作",
     after: "条件触发自动推送",
     improvement: "消息到达率 +62%",
-    color: "#ccff00",
+    color: "#3b82f6",
     terminalLines: [
       { text: "// 推送任务配置", type: "comment" },
       { text: 'task.name = "7日未购唤醒"', type: "code" },
@@ -179,11 +179,11 @@ function NavBar({ onEnterApp }: { onEnterApp: () => void }) {
     <nav className="fixed top-0 left-0 right-0 z-50" style={{ background: "rgba(5,9,23,0.92)", backdropFilter: "blur(12px)", borderBottom: "1px solid rgba(204,255,0,0.15)" }}>
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 flex items-center justify-center" style={{ background: "#ccff00", borderRadius: "8px" }}>
-            <Zap size={16} style={{ color: "#000" }} />
+          <div className="w-8 h-8 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "8px" }}>
+            <Zap size={16} style={{ color: "#ffffff" }} />
           </div>
-          <span className="font-bold text-lg" style={{ color: "#fff", fontFamily: "monospace" }}>{PRODUCT.name}</span>
-          <span className="text-xs px-2 py-0.5 font-mono font-bold" style={{ background: "#000", color: "#ccff00", borderRadius: "6px", border: "1px solid #ccff00" }}>AI · 私域云</span>
+          <span className="font-bold text-lg" style={{ color: "#ffffff", fontFamily: "monospace" }}>{PRODUCT.name}</span>
+          <span className="text-xs px-2 py-0.5 font-mono font-bold" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "6px", border: "1px solid #3b82f6" }}>AI · 私域云</span>
         </div>
         <div className="hidden md:flex items-center gap-8">
           {navItems.map(item => (
@@ -192,7 +192,7 @@ function NavBar({ onEnterApp }: { onEnterApp: () => void }) {
         </div>
         <div className="hidden md:flex items-center gap-3">
           <button className="text-sm px-4 py-2 font-mono transition-all" style={{ color: "rgba(255,255,255,0.7)", borderRadius: "8px" }}>登录</button>
-          <button className="text-sm px-5 py-2 font-bold font-mono transition-all" style={{ background: "#ccff00", color: "#000", borderRadius: "8px" }} onClick={onEnterApp}>
+          <button className="text-sm px-5 py-2 font-bold font-mono transition-all" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "8px" }} onClick={onEnterApp}>
             免费试用 <ArrowRight size={13} className="inline ml-1" />
           </button>
         </div>
@@ -221,22 +221,22 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-16" style={{ background: "linear-gradient(160deg, #050917 0%, #0d1535 50%, #050917 100%)" }}>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full" style={{ background: "radial-gradient(circle, rgba(204,255,0,0.18), transparent)", filter: "blur(100px)" }} />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full" style={{ background: "radial-gradient(circle, rgba(59,130,246,0.18), transparent)", filter: "blur(100px)" }} />
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full" style={{ background: "radial-gradient(circle, rgba(204,255,0,0.1), transparent)", filter: "blur(120px)" }} />
         <div className="absolute inset-0 opacity-5" style={{ backgroundImage: "linear-gradient(rgba(204,255,0,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,0.2) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
       </div>
 
       <div className="relative max-w-6xl mx-auto px-6 py-24 w-full">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8" style={{ background: "#000", border: "1px solid #ccff00", borderRadius: "8px" }}>
-            <Brain size={13} style={{ color: "#ccff00" }} />
-            <span className="text-sm font-bold font-mono" style={{ color: "#ccff00" }}>AI 驱动的新一代私域运营平台</span>
-            <div className="w-2 h-2 animate-pulse ml-1" style={{ background: "#ccff00", borderRadius: "50%" }} />
+          <div className="inline-flex items-center gap-2 px-4 py-2 mb-8" style={{ background: "#1e293b", border: "1px solid #3b82f6", borderRadius: "8px" }}>
+            <Brain size={13} style={{ color: "#3b82f6" }} />
+            <span className="text-sm font-bold font-mono" style={{ color: "#3b82f6" }}>AI 驱动的新一代私域运营平台</span>
+            <div className="w-2 h-2 animate-pulse ml-1" style={{ background: "#3b82f6", borderRadius: "50%" }} />
           </div>
 
-          <h1 className="font-bold leading-tight mb-6" style={{ fontSize: "clamp(36px, 5vw, 72px)", color: "#fff", letterSpacing: "-0.02em", fontFamily: "monospace" }}>
+          <h1 className="font-bold leading-tight mb-6" style={{ fontSize: "clamp(36px, 5vw, 72px)", color: "#ffffff", letterSpacing: "-0.02em", fontFamily: "monospace" }}>
             把私域运营<br />
-            <span style={{ color: "#ccff00" }}>交给 AI 来做</span>
+            <span style={{ color: "#3b82f6" }}>交给 AI 来做</span>
           </h1>
 
           <p className="max-w-2xl mx-auto text-lg mb-10 leading-relaxed font-mono" style={{ color: "rgba(255,255,255,0.55)" }}>
@@ -244,10 +244,10 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
           </p>
 
           <div className="flex items-center justify-center gap-4 mb-6 flex-wrap">
-            <button className="flex items-center gap-2 px-8 py-4 text-base font-bold font-mono" style={{ background: "#ccff00", color: "#000", borderRadius: "8px" }} onClick={onEnterApp}>
+            <button className="flex items-center gap-2 px-8 py-4 text-base font-bold font-mono" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "8px" }} onClick={onEnterApp}>
               免费开始使用 <ArrowRight size={16} />
             </button>
-            <button className="flex items-center gap-2 px-8 py-4 text-base font-bold font-mono" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "8px" }}>
+            <button className="flex items-center gap-2 px-8 py-4 text-base font-bold font-mono" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.3)", color: "#ffffff", borderRadius: "8px" }}>
               <Play size={16} /> 观看演示视频
             </button>
           </div>
@@ -260,34 +260,34 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
             <div className="flex items-center gap-2 px-4 py-3" style={{ background: "rgba(204,255,0,0.04)", borderBottom: "1px solid rgba(204,255,0,0.1)" }}>
               <div className="w-3 h-3 bg-red-500 opacity-80" style={{ borderRadius: "50%" }} />
               <div className="w-3 h-3 bg-yellow-500 opacity-80" style={{ borderRadius: "50%" }} />
-              <div className="w-3 h-3 opacity-80" style={{ background: "#ccff00", borderRadius: "50%" }} />
+              <div className="w-3 h-3 opacity-80" style={{ background: "#3b82f6", borderRadius: "50%" }} />
               <div className="flex-1 mx-4 h-6 flex items-center px-3" style={{ background: "rgba(255,255,255,0.04)", borderRadius: "4px" }}>
                 <span className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>app.juyuprivate.com/dashboard</span>
               </div>
               <div className="flex items-center gap-1.5 px-2 py-0.5" style={{ background: "rgba(204,255,0,0.1)", borderRadius: "4px", border: "1px solid rgba(204,255,0,0.2)" }}>
-                <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#ccff00", borderRadius: "50%" }} />
-                <span className="text-xs font-mono font-bold" style={{ color: "#ccff00" }}>AI 在线</span>
+                <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#3b82f6", borderRadius: "50%" }} />
+                <span className="text-xs font-mono font-bold" style={{ color: "#3b82f6" }}>AI 在线</span>
               </div>
             </div>
 
             <div className="flex" style={{ height: "380px" }}>
-              <div className="w-44 flex-shrink-0 p-4" style={{ background: "#000", borderRight: "1px solid rgba(204,255,0,0.1)" }}>
+              <div className="w-44 flex-shrink-0 p-4" style={{ background: "#1e293b", borderRight: "1px solid rgba(204,255,0,0.1)" }}>
                 <div className="flex items-center gap-2 mb-6">
-                  <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#ccff00", borderRadius: "4px" }}>
-                    <Zap size={12} style={{ color: "#000" }} />
+                  <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "4px" }}>
+                    <Zap size={12} style={{ color: "#ffffff" }} />
                   </div>
-                  <span className="text-xs font-bold font-mono" style={{ color: "#ccff00" }}>聚域</span>
+                  <span className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>聚域</span>
                 </div>
                 {["后台总览", "账号资产", "微信管理", "社群管理", "AI分群", "用户操作台", "数据报表"].map((item, i) => (
-                  <div key={item} className="flex items-center gap-2 px-2 py-1.5 mb-1" style={{ background: i === 0 ? "#ccff00" : "transparent", borderRadius: "6px" }}>
-                    <div className="w-1.5 h-1.5" style={{ background: i === 0 ? "#000" : "rgba(204,255,0,0.3)", borderRadius: "50%" }} />
-                    <span className="text-xs font-mono" style={{ color: i === 0 ? "#000" : "rgba(255,255,255,0.4)" }}>{item}</span>
+                  <div key={item} className="flex items-center gap-2 px-2 py-1.5 mb-1" style={{ background: i === 0 ? "#3b82f6" : "transparent", borderRadius: "6px" }}>
+                    <div className="w-1.5 h-1.5" style={{ background: i === 0 ? "#ffffff" : "rgba(204,255,0,0.3)", borderRadius: "50%" }} />
+                    <span className="text-xs font-mono" style={{ color: i === 0 ? "#ffffff" : "rgba(255,255,255,0.4)" }}>{item}</span>
                   </div>
                 ))}
                 {/* AI status mini panel */}
                 <div className="mt-4 p-2" style={{ background: "rgba(204,255,0,0.06)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "6px" }}>
                   <div className="text-xs font-mono font-bold mb-1.5" style={{ color: "rgba(204,255,0,0.6)", fontSize: "9px" }}>// AI ENGINE</div>
-                  <div className="text-xs font-mono" style={{ color: "#ccff00", fontSize: "9px" }}>{floatingDecisions[tick % floatingDecisions.length]}</div>
+                  <div className="text-xs font-mono" style={{ color: "#3b82f6", fontSize: "9px" }}>{floatingDecisions[tick % floatingDecisions.length]}</div>
                 </div>
               </div>
 
@@ -301,7 +301,7 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
                   ].map(c => (
                     <div key={c.label} className="p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "8px" }}>
                       <div className="text-xs mb-1.5 font-mono" style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>{c.label}</div>
-                      <div className="text-xl font-bold font-mono" style={{ color: "#ccff00" }}>{c.value}</div>
+                      <div className="text-xl font-bold font-mono" style={{ color: "#3b82f6" }}>{c.value}</div>
                     </div>
                   ))}
                 </div>
@@ -311,7 +311,7 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
                     <div className="text-xs mb-2 font-mono" style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>用户增长趋势</div>
                     <div className="flex items-end gap-1 h-16">
                       {[40,55,45,70,60,80,75,90,85,100].map((h, i) => (
-                        <div key={i} className="flex-1" style={{ height: `${h}%`, background: i === 9 ? "#ccff00" : `rgba(204,255,0,${0.15 + i * 0.06})`, borderRadius: "2px 2px 0 0" }} />
+                        <div key={i} className="flex-1" style={{ height: `${h}%`, background: i === 9 ? "#3b82f6" : `rgba(204,255,0,${0.15 + i * 0.06})`, borderRadius: "2px 2px 0 0" }} />
                       ))}
                     </div>
                   </div>
@@ -324,7 +324,7 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
                             <span>{city}</span><span>{pct}%</span>
                           </div>
                           <div className="h-1" style={{ background: "rgba(255,255,255,0.08)", borderRadius: "4px" }}>
-                            <div className="h-full" style={{ width: `${pct}%`, background: "#ccff00", borderRadius: "4px" }} />
+                            <div className="h-full" style={{ width: `${pct}%`, background: "#3b82f6", borderRadius: "4px" }} />
                           </div>
                         </div>
                       ))}
@@ -334,9 +334,9 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
 
                 <div className="p-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.1)", borderRadius: "8px" }}>
                   <div className="flex items-center gap-1.5 mb-2 font-mono" style={{ color: "rgba(255,255,255,0.6)", fontSize: "10px" }}>
-                    <Brain size={10} style={{ color: "#ccff00" }} />
+                    <Brain size={10} style={{ color: "#3b82f6" }} />
                     <span>AI 运营建议 — 实时更新</span>
-                    <div className="w-1.5 h-1.5 animate-pulse ml-auto" style={{ background: "#ccff00", borderRadius: "50%" }} />
+                    <div className="w-1.5 h-1.5 animate-pulse ml-auto" style={{ background: "#3b82f6", borderRadius: "50%" }} />
                   </div>
                   <div className="flex gap-2">
                     {[
@@ -353,22 +353,22 @@ function HeroSection({ onEnterApp }: { onEnterApp: () => void }) {
           </div>
 
           {/* Floating AI badge */}
-          <div className="absolute -left-8 top-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2" style={{ background: "#000", border: "1px solid #ccff00", borderRadius: "10px" }}>
-            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#ccff00", borderRadius: "6px" }}>
-              <Brain size={12} style={{ color: "#000" }} />
+          <div className="absolute -left-8 top-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2" style={{ background: "#1e293b", border: "1px solid #3b82f6", borderRadius: "10px" }}>
+            <div className="w-6 h-6 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "6px" }}>
+              <Brain size={12} style={{ color: "#ffffff" }} />
             </div>
             <div>
-              <div className="text-xs font-bold font-mono" style={{ color: "#ccff00" }}>AI 决策</div>
+              <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>AI 决策</div>
               <div className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>已处理 12,400次</div>
             </div>
           </div>
-          <div className="absolute -right-8 bottom-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2" style={{ background: "#000", border: "1px solid #ccff00", borderRadius: "10px" }}>
+          <div className="absolute -right-8 bottom-1/3 px-3 py-2 shadow-xl hidden md:flex items-center gap-2" style={{ background: "#1e293b", border: "1px solid #3b82f6", borderRadius: "10px" }}>
             <div className="w-6 h-6 flex items-center justify-center" style={{ background: "rgba(204,255,0,0.15)", borderRadius: "6px" }}>
-              <TrendingUp size={12} style={{ color: "#ccff00" }} />
+              <TrendingUp size={12} style={{ color: "#3b82f6" }} />
             </div>
             <div>
-              <div className="text-xs font-bold font-mono" style={{ color: "#ccff00" }}>本月营收</div>
-              <div className="text-xs font-bold font-mono" style={{ color: "#ccff00" }}>¥51.6 万 ↑13%</div>
+              <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>本月营收</div>
+              <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>¥51.6 万 ↑13%</div>
             </div>
           </div>
         </div>
@@ -384,7 +384,7 @@ function StatsSection() {
         <div className="grid grid-cols-4 gap-8 text-center">
           {stats.map(s => (
             <div key={s.label}>
-              <div className="font-bold mb-1 font-mono" style={{ fontSize: "36px", color: "#ccff00" }}>{s.value}</div>
+              <div className="font-bold mb-1 font-mono" style={{ fontSize: "36px", color: "#3b82f6" }}>{s.value}</div>
               <div className="text-sm font-mono" style={{ color: "rgba(255,255,255,0.45)" }}>{s.label}</div>
             </div>
           ))}
@@ -405,7 +405,7 @@ function TerminalLine({ line, delay }: { line: { text: string; type: string }; d
   const colors: Record<string, string> = {
     comment: "rgba(204,255,0,0.4)",
     code: "rgba(255,255,255,0.75)",
-    success: "#ccff00",
+    success: "#3b82f6",
     warn: "#ffaa00",
     blank: "transparent",
   };
@@ -414,7 +414,7 @@ function TerminalLine({ line, delay }: { line: { text: string; type: string }; d
     <div className="font-mono text-xs transition-all" style={{ color: colors[line.type] || "rgba(255,255,255,0.5)", opacity: visible ? 1 : 0, transform: visible ? "none" : "translateX(-6px)", transition: "opacity 0.3s ease, transform 0.3s ease", minHeight: "18px" }}>
       {line.type !== "blank" && (
         <span>
-          {line.type === "success" && <span style={{ color: "#ccff00", marginRight: "4px" }}>→</span>}
+          {line.type === "success" && <span style={{ color: "#3b82f6", marginRight: "4px" }}>→</span>}
           {line.type === "warn" && <span style={{ color: "#ffaa00", marginRight: "4px" }}>!</span>}
           {line.type === "comment" && <span style={{ color: "rgba(204,255,0,0.35)", marginRight: "4px" }}></span>}
           {line.text}
@@ -426,21 +426,21 @@ function TerminalLine({ line, delay }: { line: { text: string; type: string }; d
 
 function AICapabilityCard({ cap, active, onClick }: { cap: typeof aiCapabilities[0]; active: boolean; onClick: () => void }) {
   return (
-    <button className="w-full text-left p-4 transition-all" style={{ background: active ? "rgba(204,255,0,0.08)" : "transparent", border: `1px solid ${active ? "#ccff00" : "rgba(204,255,0,0.2)"}`, borderRadius: "10px", cursor: "pointer" }} onClick={onClick}>
+    <button className="w-full text-left p-4 transition-all" style={{ background: active ? "rgba(59,130,246,0.08)" : "transparent", border: `1px solid ${active ? "#3b82f6" : "rgba(204,255,0,0.2)"}`, borderRadius: "10px", cursor: "pointer" }} onClick={onClick}>
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: active ? "#ccff00" : "rgba(204,255,0,0.1)", borderRadius: "8px" }}>
-          <cap.icon size={16} style={{ color: active ? "#000" : "#ccff00" }} />
+        <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: active ? "#3b82f6" : "rgba(204,255,0,0.1)", borderRadius: "8px" }}>
+          <cap.icon size={16} style={{ color: active ? "#ffffff" : "#3b82f6" }} />
         </div>
         <div>
-          <div className="text-sm font-bold font-mono" style={{ color: active ? "#ccff00" : "rgba(255,255,255,0.7)" }}>{cap.label}</div>
+          <div className="text-sm font-bold font-mono" style={{ color: active ? "#3b82f6" : "rgba(255,255,255,0.7)" }}>{cap.label}</div>
           <div className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}>{cap.badge}</div>
         </div>
-        {active && <ChevronRight size={14} style={{ color: "#ccff00", marginLeft: "auto" }} />}
+        {active && <ChevronRight size={14} style={{ color: "#3b82f6", marginLeft: "auto" }} />}
       </div>
       <div className="flex items-center gap-2 mt-2">
         <span className="text-xs font-mono px-2 py-0.5" style={{ background: "rgba(255,50,50,0.1)", color: "#ff8888", borderRadius: "4px", textDecoration: "line-through", fontSize: "10px" }}>{cap.before}</span>
         <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "10px" }}>→</span>
-        <span className="text-xs font-mono px-2 py-0.5" style={{ background: "rgba(204,255,0,0.1)", color: "#ccff00", borderRadius: "4px", fontSize: "10px" }}>{cap.improvement}</span>
+        <span className="text-xs font-mono px-2 py-0.5" style={{ background: "rgba(204,255,0,0.1)", color: "#3b82f6", borderRadius: "4px", fontSize: "10px" }}>{cap.improvement}</span>
       </div>
     </button>
   );
@@ -460,16 +460,16 @@ function AISection() {
   return (
     <section className="py-24 relative overflow-hidden" style={{ background: "linear-gradient(180deg, #050917 0%, #070d24 100%)" }}>
       {/* subtle grid */}
-      <div className="absolute inset-0 opacity-3 pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(204,255,0,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,0.08) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
+      <div className="absolute inset-0 opacity-3 pointer-events-none" style={{ backgroundImage: "linear-gradient(rgba(59,130,246,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(59,130,246,0.08) 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
 
       <div className="relative max-w-6xl mx-auto px-6">
         {/* Section header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-bold font-mono" style={{ background: "#000", color: "#ccff00", border: "1px solid #ccff00", borderRadius: "8px", fontSize: "12px" }}>
-            <Brain size={13} style={{ color: "#ccff00" }} /> AI CORE ENGINE
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", border: "1px solid #3b82f6", borderRadius: "8px", fontSize: "12px" }}>
+            <Brain size={13} style={{ color: "#3b82f6" }} /> AI CORE ENGINE
           </div>
           <h2 className="font-bold mb-4 text-white font-mono" style={{ fontSize: "clamp(28px, 4vw, 48px)", letterSpacing: "-0.02em" }}>
-            AI 是聚域的<span style={{ color: "#ccff00" }}>核心驱动力</span>
+            AI 是聚域的<span style={{ color: "#3b82f6" }}>核心驱动力</span>
           </h2>
           <p className="text-lg max-w-2xl mx-auto font-mono" style={{ color: "rgba(255,255,255,0.45)" }}>
             不只是工具辅助，而是让 AI 主动做决策、做运营、做预警。<br />
@@ -482,9 +482,9 @@ function AISection() {
           {aiMetrics.map((m, i) => (
             <div key={i} className="p-4 text-center" style={{ background: "rgba(204,255,0,0.04)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "10px" }}>
               <div className="w-8 h-8 flex items-center justify-center mx-auto mb-2" style={{ background: "rgba(204,255,0,0.1)", borderRadius: "8px" }}>
-                <m.icon size={16} style={{ color: "#ccff00" }} />
+                <m.icon size={16} style={{ color: "#3b82f6" }} />
               </div>
-              <div className="font-bold font-mono mb-1" style={{ color: "#ccff00", fontSize: "20px" }}>{m.value}</div>
+              <div className="font-bold font-mono mb-1" style={{ color: "#3b82f6", fontSize: "20px" }}>{m.value}</div>
               <div className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.35)" }}>{m.label}</div>
             </div>
           ))}
@@ -507,12 +507,12 @@ function AISection() {
               <div className="flex items-center gap-2 px-4 py-3" style={{ background: "rgba(204,255,0,0.04)", borderBottom: "1px solid rgba(204,255,0,0.12)" }}>
                 <div className="w-2.5 h-2.5 bg-red-500 opacity-70" style={{ borderRadius: "50%" }} />
                 <div className="w-2.5 h-2.5 bg-yellow-400 opacity-70" style={{ borderRadius: "50%" }} />
-                <div className="w-2.5 h-2.5 opacity-70" style={{ background: "#ccff00", borderRadius: "50%" }} />
+                <div className="w-2.5 h-2.5 opacity-70" style={{ background: "#3b82f6", borderRadius: "50%" }} />
                 <div className="flex-1 mx-3 px-3 py-1 flex items-center justify-between" style={{ background: "rgba(255,255,255,0.03)", borderRadius: "4px" }}>
                   <span className="text-xs font-mono" style={{ color: "rgba(204,255,0,0.5)" }}>juyu-ai-engine — {cap.badge}</span>
                   <div className="flex items-center gap-1.5">
-                    <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#ccff00", borderRadius: "50%" }} />
-                    <span className="text-xs font-mono" style={{ color: "#ccff00", fontSize: "10px" }}>RUNNING</span>
+                    <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#3b82f6", borderRadius: "50%" }} />
+                    <span className="text-xs font-mono" style={{ color: "#3b82f6", fontSize: "10px" }}>RUNNING</span>
                   </div>
                 </div>
               </div>
@@ -537,7 +537,7 @@ function AISection() {
                 <div className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>
                   <span style={{ color: "rgba(204,255,0,0.4)" }}>■</span> {cap.after}
                 </div>
-                <div className="ml-auto text-xs font-mono font-bold" style={{ color: "#ccff00" }}>{cap.improvement}</div>
+                <div className="ml-auto text-xs font-mono font-bold" style={{ color: "#3b82f6" }}>{cap.improvement}</div>
               </div>
             </div>
           </div>
@@ -560,10 +560,10 @@ function AISection() {
             ].map((step, i, arr) => (
               <div key={i} className="flex items-center flex-shrink-0">
                 <div className="text-center" style={{ width: "100px" }}>
-                  <div className="w-12 h-12 flex items-center justify-center mx-auto mb-2" style={{ background: i === 0 || i === arr.length - 1 ? "rgba(204,255,0,0.08)" : "rgba(204,255,0,0.12)", border: "1px solid rgba(204,255,0,0.3)", borderRadius: "10px" }}>
-                    <step.icon size={18} style={{ color: "#ccff00" }} />
+                  <div className="w-12 h-12 flex items-center justify-center mx-auto mb-2" style={{ background: i === 0 || i === arr.length - 1 ? "rgba(59,130,246,0.08)" : "rgba(204,255,0,0.12)", border: "1px solid rgba(204,255,0,0.3)", borderRadius: "10px" }}>
+                    <step.icon size={18} style={{ color: "#3b82f6" }} />
                   </div>
-                  <div className="text-xs font-bold font-mono" style={{ color: "#ccff00" }}>{step.label}</div>
+                  <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>{step.label}</div>
                   <div className="text-xs font-mono mt-0.5" style={{ color: "rgba(255,255,255,0.3)", fontSize: "10px" }}>{step.sub}</div>
                 </div>
                 {i < arr.length - 1 && (
@@ -586,11 +586,11 @@ function PainPointsSection() {
     <section className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#000", color: "#ccff00", borderRadius: "8px" }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>
             你是否也遇到这些问题？
           </div>
           <h2 className="font-bold mb-4 font-mono" style={{ fontSize: "40px", color: "#0f172a", letterSpacing: "-0.02em" }}>
-            私域运营的<span style={{ color: "#000" }}> 6 大痛点</span>
+            私域运营的<span style={{ color: "#ffffff" }}> 6 大痛点</span>
           </h2>
           <p className="text-lg max-w-xl mx-auto font-mono" style={{ color: "#64748b" }}>
             这些问题正在消耗你的团队精力，也在流失你的客户价值
@@ -598,7 +598,7 @@ function PainPointsSection() {
         </div>
         <div className="grid grid-cols-3 gap-6">
           {painPoints.map((p, i) => (
-            <div key={i} className="p-6 transition-all hover:shadow-lg hover:-translate-y-0.5" style={{ border: "1px solid rgba(0,0,0,0.08)", background: "#fff", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
+            <div key={i} className="p-6 transition-all hover:shadow-lg hover:-translate-y-0.5" style={{ border: "1px solid rgba(0,0,0,0.08)", background: "#ffffff", borderRadius: "10px", boxShadow: "0 2px 8px rgba(0,0,0,0.04)" }}>
               <div className="text-3xl mb-4">{p.icon}</div>
               <h3 className="font-bold mb-2 font-mono" style={{ fontSize: "15px", color: "#111827" }}>{p.title}</h3>
               <p className="text-sm leading-relaxed font-mono" style={{ color: "#6b7280" }}>{p.desc}</p>
@@ -606,10 +606,10 @@ function PainPointsSection() {
           ))}
         </div>
         <div className="mt-12 text-center">
-          <div className="inline-flex items-center gap-3 px-6 py-4" style={{ background: "#000", borderRadius: "8px" }}>
-            <Brain size={18} style={{ color: "#ccff00" }} />
-            <span className="font-bold font-mono" style={{ color: "#ccff00" }}>聚域 AI 把以上 6 个问题全部纳入自动化处理，一次解决</span>
-            <ArrowRight size={16} style={{ color: "#ccff00" }} />
+          <div className="inline-flex items-center gap-3 px-6 py-4" style={{ background: "#1e293b", borderRadius: "8px" }}>
+            <Brain size={18} style={{ color: "#3b82f6" }} />
+            <span className="font-bold font-mono" style={{ color: "#3b82f6" }}>聚域 AI 把以上 6 个问题全部纳入自动化处理，一次解决</span>
+            <ArrowRight size={16} style={{ color: "#3b82f6" }} />
           </div>
         </div>
       </div>
@@ -622,11 +622,11 @@ function FeaturesSection() {
     <section className="py-24" style={{ background: "#f8f8f5" }}>
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#000", color: "#ccff00", borderRadius: "8px" }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>
             核心功能模块
           </div>
           <h2 className="font-bold mb-4 font-mono" style={{ fontSize: "40px", color: "#0f172a", letterSpacing: "-0.02em" }}>
-            覆盖私域运营<span style={{ color: "#000" }}>全链路</span>
+            覆盖私域运营<span style={{ color: "#ffffff" }}>全链路</span>
           </h2>
           <p className="text-lg max-w-xl mx-auto font-mono" style={{ color: "#64748b" }}>
             从账号资产到用户服务，从 AI 分群到数据分析，22个功能模块一体化覆盖
@@ -634,9 +634,9 @@ function FeaturesSection() {
         </div>
         <div className="grid grid-cols-4 gap-5">
           {coreFeatures.map((f, i) => (
-            <div key={i} className="p-5 bg-white transition-all hover:shadow-md hover:-translate-y-0.5" style={{ border: "1px solid rgba(0,0,0,0.08)", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
+            <div key={i} className="p-5 bg-white transition-all hover:shadow-md hover:-translate-y-0.5" style={{ border: "1px solid rgba(0,0,0,0.08)", borderRadius: "12px", boxShadow: "0 4px 12px rgba(15,23,42,0.06)" }}>
               <div className="w-10 h-10 flex items-center justify-center mb-4" style={{ background: f.bg, borderRadius: "8px" }}>
-                <f.icon size={20} style={{ color: "#000" }} />
+                <f.icon size={20} style={{ color: "#ffffff" }} />
               </div>
               <h3 className="font-bold mb-2 text-sm font-mono" style={{ color: "#111827" }}>{f.title}</h3>
               <p className="text-xs leading-relaxed font-mono" style={{ color: "#6b7280" }}>{f.desc}</p>
@@ -653,11 +653,11 @@ function EcosystemSection() {
     <section className="py-24" style={{ background: "linear-gradient(180deg, #050917 0%, #0d1535 100%)" }}>
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#000", color: "#ccff00", border: "1px solid #ccff00", borderRadius: "8px" }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", border: "1px solid #3b82f6", borderRadius: "8px" }}>
             四层生态架构
           </div>
           <h2 className="font-bold mb-4 text-white font-mono" style={{ fontSize: "40px", letterSpacing: "-0.02em" }}>
-            生态级系统<span style={{ color: "#ccff00" }}>，不只是工具</span>
+            生态级系统<span style={{ color: "#3b82f6" }}>，不只是工具</span>
           </h2>
           <p className="text-lg max-w-xl mx-auto font-mono" style={{ color: "rgba(255,255,255,0.5)" }}>
             从单个项目到多生态管理，聚域支持超级生态→生态→SaaS平台→平台四层架构，随业务规模弹性扩展
@@ -668,14 +668,14 @@ function EcosystemSection() {
           {tiers.map((t, i) => (
             <div key={t.level} className="flex items-center">
               <div className="text-center">
-                <div className="w-20 h-20 flex flex-col items-center justify-center mx-auto mb-3" style={{ background: t.bg, border: "1px solid #ccff00", borderRadius: "10px" }}>
-                  <div className="w-8 h-8 flex items-center justify-center text-sm font-bold font-mono mb-1" style={{ background: "#ccff00", color: "#000", borderRadius: "6px" }}>{t.level}</div>
-                  <div className="text-xs font-bold font-mono" style={{ color: "#ccff00" }}>{t.label}</div>
+                <div className="w-20 h-20 flex flex-col items-center justify-center mx-auto mb-3" style={{ background: t.bg, border: "1px solid #3b82f6", borderRadius: "10px" }}>
+                  <div className="w-8 h-8 flex items-center justify-center text-sm font-bold font-mono mb-1" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "6px" }}>{t.level}</div>
+                  <div className="text-xs font-bold font-mono" style={{ color: "#3b82f6" }}>{t.label}</div>
                 </div>
                 <div className="text-xs max-w-24 text-center font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>{t.desc}</div>
               </div>
               {i < tiers.length - 1 && (
-                <div className="w-16 h-px mx-2" style={{ background: "linear-gradient(90deg, #ccff00, rgba(204,255,0,0.1))" }} />
+                <div className="w-16 h-px mx-2" style={{ background: "linear-gradient(90deg, #3b82f6, rgba(204,255,0,0.1))" }} />
               )}
             </div>
           ))}
@@ -685,13 +685,13 @@ function EcosystemSection() {
           {modules.map((m, i) => (
             <div key={i} className="p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "10px" }}>
               <div className="flex items-center gap-2 mb-3">
-                <div className="w-2.5 h-2.5" style={{ background: "#ccff00", borderRadius: "50%" }} />
-                <span className="font-bold text-sm font-mono" style={{ color: "#ccff00" }}>{m.name}</span>
+                <div className="w-2.5 h-2.5" style={{ background: "#3b82f6", borderRadius: "50%" }} />
+                <span className="font-bold text-sm font-mono" style={{ color: "#3b82f6" }}>{m.name}</span>
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 {m.items.map(item => (
                   <div key={item} className="flex items-center gap-1.5 text-xs font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>
-                    <div className="w-1 h-1 flex-shrink-0" style={{ background: "#ccff00", borderRadius: "50%" }} />
+                    <div className="w-1 h-1 flex-shrink-0" style={{ background: "#3b82f6", borderRadius: "50%" }} />
                     {item}
                   </div>
                 ))}
@@ -709,7 +709,7 @@ function TestimonialsSection() {
     <section className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#000", color: "#ccff00", borderRadius: "8px" }}>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>
             客户真实评价
           </div>
           <h2 className="font-bold mb-4 font-mono" style={{ fontSize: "40px", color: "#0f172a", letterSpacing: "-0.02em" }}>
@@ -718,9 +718,9 @@ function TestimonialsSection() {
         </div>
         <div className="grid grid-cols-3 gap-6 mb-12">
           {testimonials.map((t, i) => (
-            <div key={i} className="p-6" style={{ border: "1px solid rgba(0,0,0,0.08)", borderRadius: "12px", boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}>
+            <div key={i} className="p-6" style={{ border: "1px solid rgba(0,0,0,0.08)", borderRadius: "12px", boxShadow: "0 4px 12px rgba(15,23,42,0.06)" }}>
               <div className="flex items-center gap-1 mb-4">
-                {[...Array(5)].map((_, j) => <Star key={j} size={14} style={{ color: "#ccff00" }} />)}
+                {[...Array(5)].map((_, j) => <Star key={j} size={14} style={{ color: "#3b82f6" }} />)}
               </div>
               <p className="text-sm leading-relaxed mb-6 font-mono" style={{ color: "#374151" }}>"{t.content}"</p>
               <div className="flex items-center gap-3">
@@ -737,7 +737,7 @@ function TestimonialsSection() {
           <p className="text-sm mb-4 font-mono" style={{ color: "#9ca3af" }}>已服务行业</p>
           <div className="flex items-center justify-center gap-3 flex-wrap">
             {clients.map(c => (
-              <span key={c} className="px-4 py-2 text-sm font-bold font-mono" style={{ background: "#000", color: "#ccff00", borderRadius: "8px" }}>{c}</span>
+              <span key={c} className="px-4 py-2 text-sm font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", borderRadius: "8px" }}>{c}</span>
             ))}
           </div>
         </div>
@@ -754,28 +754,28 @@ function CTASection({ onEnterApp }: { onEnterApp: () => void }) {
         <div className="absolute inset-0 opacity-3" style={{ backgroundImage: "linear-gradient(rgba(204,255,0,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(204,255,0,0.1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
       </div>
       <div className="relative max-w-3xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 font-bold font-mono" style={{ background: "#000", color: "#ccff00", border: "1px solid rgba(204,255,0,0.3)", borderRadius: "8px", fontSize: "12px" }}>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 font-bold font-mono" style={{ background: "#1e293b", color: "#3b82f6", border: "1px solid rgba(204,255,0,0.3)", borderRadius: "8px", fontSize: "12px" }}>
           <Brain size={12} /> AI 正在等待为你工作
         </div>
         <h2 className="font-bold mb-6 text-white font-mono" style={{ fontSize: "48px", letterSpacing: "-0.02em" }}>
           开始构建你的<br />
-          <span style={{ color: "#ccff00" }}>AI 私域运营体系</span>
+          <span style={{ color: "#3b82f6" }}>AI 私域运营体系</span>
         </h2>
         <p className="text-lg mb-10 font-mono" style={{ color: "rgba(255,255,255,0.5)" }}>
           14天免费试用，无需信用卡，团队即开即用
         </p>
         <div className="flex items-center justify-center gap-4">
-          <button className="flex items-center gap-2 px-10 py-4 text-base font-bold font-mono" style={{ background: "#ccff00", color: "#000", borderRadius: "8px" }} onClick={onEnterApp}>
+          <button className="flex items-center gap-2 px-10 py-4 text-base font-bold font-mono" style={{ background: "#3b82f6", color: "#ffffff", borderRadius: "8px" }} onClick={onEnterApp}>
             立即免费试用 <ArrowRight size={16} />
           </button>
-          <button className="px-8 py-4 text-base font-bold font-mono" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.3)", color: "#fff", borderRadius: "8px" }}>
+          <button className="px-8 py-4 text-base font-bold font-mono" style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.3)", color: "#ffffff", borderRadius: "8px" }}>
             预约演示
           </button>
         </div>
         <div className="flex items-center justify-center gap-8 mt-10 flex-wrap">
           {["14天免费体验", "专属客户成功顾问", "数据安全合规", "随时导出数据"].map(item => (
             <div key={item} className="flex items-center gap-1.5 text-sm font-mono" style={{ color: "rgba(255,255,255,0.4)" }}>
-              <CheckCircle size={13} style={{ color: "#ccff00" }} /> {item}
+              <CheckCircle size={13} style={{ color: "#3b82f6" }} /> {item}
             </div>
           ))}
         </div>
@@ -798,16 +798,16 @@ function Footer() {
         <div className="grid grid-cols-5 gap-8 mb-12">
           <div className="col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 flex items-center justify-center" style={{ background: "#ccff00", borderRadius: "8px" }}>
-                <Zap size={16} style={{ color: "#000" }} />
+              <div className="w-8 h-8 flex items-center justify-center" style={{ background: "#3b82f6", borderRadius: "8px" }}>
+                <Zap size={16} style={{ color: "#ffffff" }} />
               </div>
-              <span className="font-bold text-lg font-mono" style={{ color: "#ccff00" }}>{PRODUCT.name}</span>
+              <span className="font-bold text-lg font-mono" style={{ color: "#3b82f6" }}>{PRODUCT.name}</span>
             </div>
             <p className="text-sm mb-4 font-mono" style={{ color: "rgba(255,255,255,0.35)", lineHeight: 1.7 }}>
               AI 驱动的私域资产<br />与社群运营平台
             </p>
             <div className="flex items-center gap-1.5 mb-2 px-2 py-1 w-fit" style={{ background: "rgba(204,255,0,0.06)", border: "1px solid rgba(204,255,0,0.15)", borderRadius: "6px" }}>
-              <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#ccff00", borderRadius: "50%" }} />
+              <div className="w-1.5 h-1.5 animate-pulse" style={{ background: "#3b82f6", borderRadius: "50%" }} />
               <span className="text-xs font-mono" style={{ color: "rgba(204,255,0,0.6)" }}>AI 引擎运行中</span>
             </div>
             <div className="text-xs font-mono mt-3" style={{ color: "rgba(255,255,255,0.2)" }}>ICP备2024XXXXXX号</div>
@@ -823,7 +823,7 @@ function Footer() {
             </div>
           ))}
         </div>
-        <div className="pt-8 flex items-center justify-between" style={{ borderTop: "1px solid rgba(204,255,0,0.08)" }}>
+        <div className="pt-8 flex items-center justify-between" style={{ borderTop: "1px solid rgba(59,130,246,0.08)" }}>
           <p className="text-sm font-mono" style={{ color: "rgba(255,255,255,0.25)" }}>© 2026 聚域（JuYu）· 保留所有权利</p>
           <div className="flex gap-6">
             {["隐私政策", "服务条款", "Cookie政策"].map(item => (

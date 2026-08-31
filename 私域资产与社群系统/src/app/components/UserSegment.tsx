@@ -3,17 +3,17 @@ import { getAvatar } from "./Avatar";
 import { Search, Plus, X, Tag, Users, TrendingUp, Star, Zap, ChevronRight, CheckSquare, Download } from "lucide-react";
 
 const S = {
-  bg: "#fafafa",
+  bg: "#f8fafc",
   surface: "#ffffff",
-  border: "rgba(0,0,0,0.06)",
-  borderMed: "rgba(0,0,0,0.12)",
-  accent: "#ccff00",
-  accentLight: "rgba(204,255,0,0.08)",
-  accentMid: "rgba(204,255,0,0.18)",
-  text: "#111111",
-  textSec: "#444444",
-  muted: "#888888",
-  mutedLight: "#bbbbbb",
+  border: "rgba(15,23,42,0.06)",
+  borderMed: "rgba(15,23,42,0.12)",
+  accent: "#3b82f6",
+  accentLight: "rgba(59,130,246,0.08)",
+  accentMid: "rgba(59,130,246,0.18)",
+  text: "#1e293b",
+  textSec: "#475569",
+  muted: "#94a3b8",
+  mutedLight: "#cbd5e1",
   radius: "10px",
   radiusSm: "6px",
   radiusLg: "14px",
@@ -86,10 +86,10 @@ const RFM_SEGMENTS = [
 ];
 
 const rfmStyle = (name: string): { bg: string; color: string } => {
-  if (name === "冠军客户" || name === "忠实客户") return { bg: S.accent, color: "#000" };
-  if (name === "流失风险" || name === "已流失")   return { bg: "#1a1a1a", color: S.accent };
-  if (name === "潜力客户")                         return { bg: "#ffd600", color: "#000" };
-  return { bg: "#f0f0ec", color: "#555" };
+  if (name === "冠军客户" || name === "忠实客户") return { bg: S.accent, color: "#ffffff" };
+  if (name === "流失风险" || name === "已流失")   return { bg: "#1e293b", color: S.accent };
+  if (name === "潜力客户")                         return { bg: "#3b82f6", color: "#ffffff" };
+  return { bg: "#f1f5f9", color: "#475569" };
 };
 
 const TOTAL_USERS = 1623;
@@ -99,7 +99,7 @@ function TagBadge({ name }: { name: string }) {
   const useDark = idx % 2 === 0;
   return (
     <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-bold font-mono"
-      style={{ background: useDark ? "#0d0d0d" : S.accent, color: useDark ? S.accent : "#000", borderRadius: S.radiusSm }}>
+      style={{ background: useDark ? "#1e293b" : S.accent, color: useDark ? S.accent : "#ffffff", borderRadius: S.radiusSm }}>
       {name}
     </span>
   );
@@ -169,7 +169,7 @@ export default function UserSegment() {
             {(["用户列表", "RFM分层", "标签分析"] as const).map(tab => (
               <button key={tab} onClick={() => { setActiveView(tab); setSelectedUsers([]); }}
                 className="px-4 py-1.5 text-sm font-bold transition-all"
-                style={{ background: activeView === tab ? "#0d0d0d" : "transparent", color: activeView === tab ? S.accent : S.muted, borderRadius: S.radiusSm }}>
+                style={{ background: activeView === tab ? "#1e293b" : "transparent", color: activeView === tab ? S.accent : S.muted, borderRadius: S.radiusSm }}>
                 {tab}
               </button>
             ))}
@@ -181,13 +181,13 @@ export default function UserSegment() {
       {activeView === "用户列表" && (
         <div className="flex gap-4">
           {/* Tag Sidebar */}
-          <div className="flex-shrink-0 w-60 p-4 space-y-2" style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.08)`, borderRadius: S.radius }}>
+          <div className="flex-shrink-0 w-60 p-4 space-y-2" style={{ background: "#f1f5f9", border: `1px solid rgba(0,0,0,0.08)`, borderRadius: S.radius }}>
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Tag size={14} style={{ color: S.text }} />
                 <span className="text-sm font-bold" style={{ color: S.text }}>标签库</span>
               </div>
-              <button className="w-6 h-6 flex items-center justify-center font-bold" style={{ color: "#000", background: S.accent, borderRadius: S.radiusSm }}>
+              <button className="w-6 h-6 flex items-center justify-center font-bold" style={{ color: "#ffffff", background: S.accent, borderRadius: S.radiusSm }}>
                 <Plus size={14} />
               </button>
             </div>
@@ -238,20 +238,20 @@ export default function UserSegment() {
                 <input value={search} onChange={e => setSearch(e.target.value)}
                   placeholder="搜索姓名、手机号、城市..."
                   className="w-full pl-9 pr-4 py-2 text-sm outline-none"
-                  style={{ background: "#f7f7f7", border: `1px solid rgba(0,0,0,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
+                  style={{ background: "#f1f5f9", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, borderRadius: S.radiusSm }} />
               </div>
               {(selectedTags.length > 0 || rfmFilter) && (
                 <div className="flex items-center gap-2 flex-wrap">
                   {selectedTags.map(tag => (
                     <span key={tag} className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold"
-                      style={{ background: "#0d0d0d", color: S.accent, borderRadius: S.radiusSm }}>
+                      style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
                       {tag}
                       <button onClick={() => toggleTag(tag)}><X size={10} /></button>
                     </span>
                   ))}
                   {rfmFilter && (
                     <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold"
-                      style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>
+                      style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
                       {rfmFilter}
                       <button onClick={() => setRfmFilter(null)}><X size={10} /></button>
                     </span>
@@ -266,22 +266,22 @@ export default function UserSegment() {
             <div className="overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
               <table className="w-full">
                 <thead>
-                  <tr style={{ background: "#1a1a1a" }}>
+                  <tr style={{ background: "#1e293b" }}>
                     <th className="px-4 py-3 w-10" style={{ borderRadius: `${S.radius} 0 0 0` }}>
                       <button onClick={toggleAll} className="flex items-center justify-center">
                         <CheckSquare size={14} style={{ color: selectedUsers.length > 0 ? S.accent : S.mutedLight }} />
                       </button>
                     </th>
                     {["用户", "手机号", "城市", "等级", "标签", "总消费", "最近活跃", "RFM层级", "影响力"].map(h => (
-                      <th key={h} className="px-3 py-3 text-left text-xs font-bold" style={{ color: "#555555" }}>{h}</th>
+                      <th key={h} className="px-3 py-3 text-left text-xs font-bold" style={{ color: "#475569" }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {filteredUsers.map((user, i) => (
-                    <tr key={user.id} style={{ borderTop: `1px solid ${S.border}`, background: i % 2 === 0 ? "#fff" : "#fafaf8" }}
+                    <tr key={user.id} style={{ borderTop: `1px solid ${S.border}`, background: i % 2 === 0 ? "#ffffff" : "#fafaf8" }}
                       onMouseEnter={e => (e.currentTarget.style.background = "rgba(204,255,0,0.06)")}
-                      onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#fff" : "#fafaf8")}>
+                      onMouseLeave={e => (e.currentTarget.style.background = i % 2 === 0 ? "#ffffff" : "#fafaf8")}>
                       <td className="px-4 py-3">
                         <input type="checkbox" checked={selectedUsers.includes(user.id)}
                           onChange={() => toggleUser(user.id)}
@@ -297,7 +297,7 @@ export default function UserSegment() {
                       <td className="px-3 py-3 text-sm" style={{ color: S.textSec }}>{user.city}</td>
                       <td className="px-3 py-3">
                         <span className="text-xs px-2 py-0.5 font-bold"
-                          style={{ background: S.accent, color: "#000", borderRadius: S.radiusSm }}>{user.level}</span>
+                          style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{user.level}</span>
                       </td>
                       <td className="px-3 py-3">
                         <div className="flex flex-wrap gap-1">
@@ -322,7 +322,7 @@ export default function UserSegment() {
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-1.5">
                           <div className="h-1.5 w-16" style={{ background: "rgba(0,0,0,0.08)", borderRadius: "2px" }}>
-                            <div className="h-full" style={{ width: `${user.influence}%`, background: user.influence >= 80 ? S.accent : user.influence >= 50 ? "#0d0d0d" : S.mutedLight, borderRadius: "2px" }} />
+                            <div className="h-full" style={{ width: `${user.influence}%`, background: user.influence >= 80 ? S.accent : user.influence >= 50 ? "#1e293b" : S.mutedLight, borderRadius: "2px" }} />
                           </div>
                           <span className="text-xs font-bold" style={{ color: S.textSec }}>{user.influence}</span>
                         </div>
@@ -347,7 +347,7 @@ export default function UserSegment() {
       {activeView === "RFM分层" && (
         <div className="space-y-5">
           <div className="p-4 flex items-start gap-3" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}>
-            <Zap size={16} style={{ color: "#0d0d0d", marginTop: 2 }} />
+            <Zap size={16} style={{ color: "#1e293b", marginTop: 2 }} />
             <div>
               <div className="text-sm font-bold mb-1" style={{ color: S.text }}>RFM模型说明</div>
               <div className="text-xs" style={{ color: S.textSec }}>
@@ -417,7 +417,7 @@ export default function UserSegment() {
               return (
                 <div key={tag.name} className="p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="w-3 h-3" style={{ background: useDark ? "#0d0d0d" : S.accent, borderRadius: "50%" }} />
+                    <div className="w-3 h-3" style={{ background: useDark ? "#1e293b" : S.accent, borderRadius: "50%" }} />
                     <span className="text-sm font-bold" style={{ color: S.text }}>{tag.name}</span>
                   </div>
                   <div className="flex items-end justify-between mb-3">
@@ -425,15 +425,15 @@ export default function UserSegment() {
                       <div className="text-2xl font-bold" style={{ color: S.text }}>{tag.count}</div>
                       <div className="text-xs font-mono" style={{ color: S.muted }}>占全部用户 {pct}%</div>
                     </div>
-                    <TrendingUp size={20} style={{ color: useDark ? "#0d0d0d" : S.accent, opacity: 0.8 }} />
+                    <TrendingUp size={20} style={{ color: useDark ? "#1e293b" : S.accent, opacity: 0.8 }} />
                   </div>
-                  <div className="h-2 mb-3" style={{ background: "rgba(0,0,0,0.06)", borderRadius: "4px" }}>
-                    <div className="h-full" style={{ width: `${pct}%`, background: useDark ? "#0d0d0d" : S.accent, borderRadius: "4px" }} />
+                  <div className="h-2 mb-3" style={{ background: "rgba(15,23,42,0.06)", borderRadius: "4px" }}>
+                    <div className="h-full" style={{ width: `${pct}%`, background: useDark ? "#1e293b" : S.accent, borderRadius: "4px" }} />
                   </div>
                   <button
                     onClick={() => { toggleTag(tag.name); setActiveView("用户列表"); }}
                     className="w-full py-1.5 text-xs font-bold transition-colors"
-                    style={{ background: useDark ? "#0d0d0d" : S.accent, color: useDark ? S.accent : "#000", borderRadius: S.radiusSm }}>
+                    style={{ background: useDark ? "#1e293b" : S.accent, color: useDark ? S.accent : "#ffffff", borderRadius: S.radiusSm }}>
                     查看用户
                   </button>
                 </div>
