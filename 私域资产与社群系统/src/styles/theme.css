@@ -1,32 +1,52 @@
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 【统一字体系统 · 2026-09】
+ * 4 级语义字体尺寸，所有模块统一通过 CSS 变量引用，不再分散硬编码。
+ * 若后续希望整体放大/缩小字号，只改这里一个地方即可全系统生效。
+ * ═══════════════════════════════════════════════════════════════════════════ */
 :root {
-  --font-size: 14px;
+  /* —— 基础 html 字号（rem 基准）：15px 比默认 14 更现代舒适，移动端表现更稳 */
+  --font-size: 15px;
+
+  /* —— 4 级语义字体大小 —— */
+  --fs-h1: clamp(32px, 4.6vw, 64px);       /* 页面大标题 / Hero */
+  --fs-h2: clamp(24px, 3.2vw, 40px);       /* Section 小标题 */
+  --fs-h3: clamp(19px, 2.2vw, 25px);       /* 卡片 / 分组标题（下限提至 19，避免小视口掉到 16–17） */
+  --fs-h4: 16px;                           /* 子卡片 / 弹窗头部 */
+  --fs-lead: 17px;                         /* 引导 / Hero 副文案 */
+  --fs-body: 14px;                         /* 正文、按钮、输入框（主） */
+  --fs-small: 13px;                        /* 次要正文、次级按钮、表格主内容 */
+  --fs-caption: 12px;                      /* 辅助说明、标签、页脚、表格表头 */
+  --fs-micro: 12px;                        /* 角标、Breadcrumb、VIBE：下限 12 消灭挤在一起 */
+  --fs-pico: 11px;                         /* 最小级：徽标/副角标 11px 可读 */
+
+  /* —— 语义行高（阅读舒适） —— */
+  --lh-tight: 1.15;                        /* 标题行高 */
+  --lh-snug:  1.35;                        /* 副标题 / 按钮 / 正文紧凑 */
+  --lh-normal:1.55;                        /* 正文行高（不挤） */
+  --lh-relax: 1.7;                         /* 长文 / 落地页引导 */
+
+  /* —— 语义字重 —— */
+  --fw-black: 900;
+  --fw-bold: 700;
+  --fw-semibold: 600;
+  --fw-medium: 500;
+  --fw-regular: 400;
+
+  /* —— 字体家族：无衬线 + 等宽数字 —— */
+  --font-sans: "Inter", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+               "Noto Sans SC", "Source Han Sans SC", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "IBM Plex Mono", "SF Mono",
+               ui-monospace, Menlo, Consolas, monospace;
+
+  /* —— 原有设计 token（保留兼容） —— */
   --background: #ffffff;
   --foreground: #000000;
   --card: #ffffff;
   --card-foreground: #000000;
   --popover: #ffffff;
   --popover-foreground: #000000;
-  --primary: #ccff00;
-  --primary-foreground: #000000;
-  --secondary: #000000;
-  --secondary-foreground: #ffffff;
-  --muted: #f0f0f0;
-  --muted-foreground: #666666;
-  --accent: #ccff00;
-  --accent-foreground: #000000;
-  --destructive: #ff2200;
-  --destructive-foreground: #ffffff;
-  --border: #000000;
-  --input: #ffffff;
-  --input-background: #f8f8f8;
-  --switch-background: #cccccc;
-  --ring: #ccff00;
-  --card: #ffffff;
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
   --primary: #030213;
   --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.95 0.0058 264.53);
@@ -41,8 +61,6 @@
   --input: transparent;
   --input-background: #f3f3f5;
   --switch-background: #cbced4;
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
@@ -58,6 +76,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
 }
 
 .dark {
@@ -80,8 +100,6 @@
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
-  --font-weight-medium: 500;
-  --font-weight-normal: 400;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -143,58 +161,167 @@
     @apply border-border outline-ring/50;
   }
 
-  body {
-    @apply bg-background text-foreground;
-  }
-
-  /**
-  * Default typography styles for HTML elements (h1-h4, p, label, button, input).
-  * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.
-  */
-
   html {
     font-size: var(--font-size);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11", "kern";
   }
 
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+    font-weight: var(--fw-regular);
+    letter-spacing: -0.005em;
+  }
+
+  /* —— 语义标题 4 级 —— */
   h1 {
-    font-size: var(--text-2xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-size: var(--fs-h1);
+    font-weight: var(--fw-black);
+    line-height: var(--lh-tight);
+    letter-spacing: -0.03em;
   }
-
   h2 {
-    font-size: var(--text-xl);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-size: var(--fs-h2);
+    font-weight: var(--fw-black);
+    line-height: 1.2;
+    letter-spacing: -0.02em;
   }
-
   h3 {
-    font-size: var(--text-lg);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-size: var(--fs-h3);
+    font-weight: var(--fw-bold);
+    line-height: 1.25;
+    letter-spacing: -0.015em;
   }
-
   h4 {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+    font-size: var(--fs-h4);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-snug);
+    letter-spacing: -0.01em;
   }
 
-  label {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  /* —— 正文 / 引导 / 次级 —— */
+  p, li {
+    font-size: var(--fs-body);
+    line-height: var(--lh-normal);
+  }
+  .text-lead {
+    font-size: var(--fs-lead);
+    line-height: var(--lh-relax);
+    font-weight: var(--fw-medium);
+  }
+  .text-small {
+    font-size: var(--fs-small);
+    line-height: var(--lh-snug);
+  }
+  .text-caption, th, thead td, label, .badge {
+    font-size: var(--fs-caption);
+    line-height: 1.4;
+  }
+  .text-micro {
+    font-size: var(--fs-micro);
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+  }
+  .text-pico {
+    font-size: var(--fs-pico);
+    line-height: 1.25;
+    letter-spacing: 0.04em;
   }
 
-  button {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-medium);
-    line-height: 1.5;
+  /* —— 交互元素：按钮 / 输入 / 链接 —— */
+  button, input, select, textarea {
+    font-family: var(--font-sans);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-medium);
+    line-height: var(--lh-snug);
+    letter-spacing: 0;
   }
 
-  input {
-    font-size: var(--text-base);
-    font-weight: var(--font-weight-normal);
-    line-height: 1.5;
+  /* —— 表格：主内容 small 级，表头 caption 级 —— */
+  table {
+    font-size: var(--fs-small);
+    line-height: var(--lh-snug);
   }
+
+  /* —— 等宽数字徽标 / Terminal 区 —— */
+  .mono, code, kbd, pre, .tabular {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 【统一字体：Tailwind 字号 Class 覆盖 —— 放在 @layer 之外！】
+ * Tailwind 的 text-xs / text-sm / text-xl 等 Utility 由 @layer utilities 产出，
+ * 必须在 layer 外（且用 !important）重写才能真正赢 utilities 的默认值。
+ * 以后调字号只改 :root 下的 --fs-* 变量，不需再改任何组件。
+ * ═══════════════════════════════════════════════════════════════════════════ */
+.text-xs, [class~="text-xs"]       { font-size: 12px !important; }  /* Caption */
+.text-sm, [class~="text-sm"]       { font-size: 13px !important; }  /* Small */
+.text-base, [class~="text-base"]   { font-size: 14px !important; }  /* Body */
+.text-lg, [class~="text-lg"]       { font-size: 16px !important; }  /* H4 */
+.text-xl, [class~="text-xl"]       { font-size: clamp(19px, 2.2vw, 25px) !important; } /* H3 */
+.text-2xl, [class~="text-2xl"]     { font-size: clamp(24px, 3.2vw, 40px) !important; } /* H2 */
+.text-3xl, [class~="text-3xl"],
+.text-4xl, [class~="text-4xl"]     { font-size: clamp(32px, 4.6vw, 64px) !important; } /* H1 */
+
+/* text-[Npx] / 任意 px 级别：统一映射到可读下限 */
+[class*="text-\[9px\]"],
+[class*="text-\[8px\]"],
+[class*="text-\[7px\]"]            { font-size: 11px !important; }
+[class*="text-\[10px\]"],
+[class*="text-\[11px\]"]           { font-size: 12px !important; }
+[class*="text-\[12px\]"]           { font-size: 13px !important; }
+[class*="text-\[13px\]"]           { font-size: 14px !important; }
+[class*="text-\[14px\]"]           { font-size: 14px !important; }
+[class*="text-\[20px\]"]           { font-size: 16px !important; }
+[class*="text-\[22px\]"],
+[class*="text-\[24px\]"]           { font-size: 20px !important; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * 【统一字体：内联 style 的最小字号兜底 —— 放在 @layer 之外！】
+ * 各模块历史代码里有大量 style={{ fontSize: "9px"/"10px"/"11px" }} 硬编码，
+ * Cascade 顺序：非 @layer 包裹的作者规则 + !important 优先级最高（高于 inline non-important）。
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* 9/8/7 px：一律拔到 11px（fs-pico）—— 杜绝肉眼看不清的极小文字 */
+[style*="font-size: 9px"],
+[style*="font-size:9px"],
+[style*="font-size: 8px"],
+[style*="font-size:8px"],
+[style*="font-size: 7px"],
+[style*="font-size:7px"] { font-size: 11px !important; }
+
+/* 10 px：拔到 12px（fs-micro 可读下限）*/
+[style*="font-size: 10px"],
+[style*="font-size:10px"] { font-size: 12px !important; }
+
+/* 11 px：保持 12px（fs-caption）—— 让辅助说明与标签不再发虚 */
+[style*="font-size: 11px"],
+[style*="font-size:11px"] { font-size: 12px !important; }
+
+/* 12 px：升到 13px（fs-small 表格内容级）—— 更现代舒适 */
+[style*="font-size: 12px"],
+[style*="font-size:12px"] { font-size: 13px !important; }
+
+/* 13 px → 14px（fs-body）*/
+[style*="font-size: 13px"],
+[style*="font-size:13px"] { font-size: 14px !important; }
+
+/* 14 px → 保持 14 */
+[style*="font-size: 14px"],
+[style*="font-size:14px"] { font-size: 14px !important; }
+
+/* 20 / 22 / 24 px：标题级，统一向上对齐到语义规范 */
+[style*="font-size: 20px"],
+[style*="font-size:20px"] { font-size: 16px !important; }   /* h4 */
+[style*="font-size: 22px"],
+[style*="font-size:22px"] { font-size: 19px !important; }   /* h3 下限 */
+[style*="font-size: 24px"],
+[style*="font-size:24px"] { font-size: 20px !important; }   /* h3 */

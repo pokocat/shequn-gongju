@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { S, useThemeSingleton } from "../theme";
-import { ArrowRight, CheckCircle, Zap, Users, MessageCircle, Database, Shield, BarChart2, Radio, Star, Play, TrendingUp, Menu, X, Brain, Cpu, GitBranch, AlertTriangle, Target, Layers, ChevronRight, Activity, FileCheck, FolderKanban, Palette, Settings, Receipt, Wrench, LineChart, Home, Sparkles, Rocket, Coins, MapPin, RefreshCw, FileSpreadsheet, Scale } from "lucide-react";
+import { S, useThemeSingleton, useTheme, resolvePalette, getTheme } from "../theme";
+import { Sun, Moon, ArrowRight, CheckCircle, Zap, Users, MessageCircle, Database, Shield, BarChart2, Radio, Star, Play, TrendingUp, Menu, X, Brain, Cpu, GitBranch, AlertTriangle, Target, Layers, ChevronRight, Activity, FileCheck, FolderKanban, Palette, Settings, Receipt, Wrench, LineChart, Home, Sparkles, Rocket, Coins, MapPin, RefreshCw, FileSpreadsheet, Scale } from "lucide-react";
 
 // ══════════════════════════════════════════════════════════════════════════════
 // 平台功能 & 内容（贴合系统实际落地模块）
@@ -223,6 +223,10 @@ function CTA() {
 /* ─────────────────────────── NavBar ─────────────────────────── */
 function NavBar({ onEnterApp }: { onEnterApp: () => void }) {
   useThemeSingleton();
+  const ctx = useTheme();
+  const { darkMode, toggleDarkMode, themeId } = ctx;
+  const dark = darkMode === "dark";
+  const activePalette = resolvePalette(themeId, darkMode);
   const S_ = S;
   const cta = CTA();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -271,6 +275,26 @@ function NavBar({ onEnterApp }: { onEnterApp: () => void }) {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* ── 暗黑模式开关（和 PC 视图同风格） ───────────────────── */}
+          <button
+            type="button"
+            aria-label={dark ? "切换为明亮模式" : "切换为暗黑模式"}
+            title={dark ? "暗黑模式 · 点击切换为明亮" : "明亮模式 · 点击切换为暗黑"}
+            onClick={toggleDarkMode}
+            className="w-9 h-9 flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:-translate-y-0.5"
+            style={{
+              background: dark
+                ? getTheme(themeId).gradient
+                : S_.surface,
+              color: dark ? activePalette.onPrimary : S_.muted,
+              border: `1px solid ${dark ? "transparent" : S_.borderMed}`,
+              borderRadius: S_.radiusSm,
+              boxShadow: dark ? S_.shadow : "none",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            {dark ? <Moon size={15} /> : <Sun size={15} />}
+          </button>
           <button
             className="text-sm px-4 py-2 font-mono transition-all"
             style={{ color: S_.textSec, borderRadius: S_.radiusSm, background: "transparent", border: `1px solid ${S_.borderMed}` }}
