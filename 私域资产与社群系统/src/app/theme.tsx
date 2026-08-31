@@ -3,11 +3,11 @@ import { Sun, Moon } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    4 套潮系主题 × 2 种明暗模式 = 8 种外观
-   主题：NEON 霓虹 · SUNSET 日落 · MINT 薄荷 · OBSIDIAN 曜石
+   主题：NEON 霓虹 · SUNSET 日落 · MINT 薄荷 · OBSIDIAN 曜石 · ACID 酸柠（经典黄绿荧光UI）
    模式：LIGHT（明亮）· DARK（暗黑）—— 独立开关
    ═══════════════════════════════════════════════════════════════════════════ */
 
-export type ThemeId = "neon" | "sunset" | "mint" | "obsidian";
+export type ThemeId = "neon" | "sunset" | "mint" | "obsidian" | "acid";
 export type DarkMode = "light" | "dark";
 
 export interface SPalette {
@@ -185,7 +185,46 @@ const OBSIDIAN: ThemePalette = {
   },
 };
 
-export const THEMES: ThemePalette[] = [NEON, SUNSET, MINT, OBSIDIAN];
+/* ── 5. ACID 酸柠（经典黄绿荧光 · 原系统最早期UI配色） ───────────────────── */
+const ACID: ThemePalette = {
+  id: "acid", name: "酸柠", emoji: "💛", tagline: "Lime Acid · 经典黄绿荧光",
+  gradient: "linear-gradient(135deg,#a3e635 0%,#bef264 50%,#eab308 100%)",
+  accentGlow: "0 0 0 2px rgba(204,255,0,0.35)",
+  light: {
+    // 明亮黄绿：纸白+嫩柠草绿（经典荧光黄柔和化，不刺眼）
+    bg: "#f7fce9", surface: "#ffffff",
+    border: "rgba(163,230,53,0.10)", borderMed: "rgba(163,230,53,0.22)",
+    primary: "#a3e635", primaryDark: "#65a30d",
+    primaryLight: "rgba(163,230,53,0.10)", primaryMid: "rgba(163,230,53,0.22)",
+    accent: "#ccff00", accentLight: "rgba(204,255,0,0.12)", accentMid: "rgba(204,255,0,0.28)",
+    success: "#16a34a", successBg: "#f0fdf4",
+    warning: "#eab308", warningBg: "#fefce8",
+    danger: "#dc2626", dangerBg: "#fef2f2",
+    text: "#1a2e05", textSec: "#4d7c0f", muted: "#78716c", mutedLight: "#d6d3d1",
+    radius: "14px", radiusSm: "10px", radiusLg: "22px",
+    shadow: "0 8px 28px rgba(101,163,13,0.18)",
+    glass: "rgba(255,255,255,0.70)", glassBorder: "rgba(255,255,255,0.6)",
+    onPrimary: "#1a2e05",
+  },
+  dark: {
+    // 暗黑荧光：纯黑底 + 酸柠荧光黄（复刻早期 ccff00 + 0d0d0d 赛博味道）
+    bg: "#0a1205", surface: "#141f0b",
+    border: "rgba(204,255,0,0.14)", borderMed: "rgba(204,255,0,0.26)",
+    primary: "#bef264", primaryDark: "#a3e635",
+    primaryLight: "rgba(190,242,100,0.16)", primaryMid: "rgba(190,242,100,0.30)",
+    accent: "#eaff5a", accentLight: "rgba(204,255,0,0.14)", accentMid: "rgba(204,255,0,0.30)",
+    success: "#4ade80", successBg: "rgba(74,222,128,0.14)",
+    warning: "#facc15", warningBg: "rgba(250,204,21,0.14)",
+    danger: "#f87171", dangerBg: "rgba(248,113,113,0.14)",
+    text: "#ecfccb", textSec: "#d9f99d", muted: "#a3a29e", mutedLight: "#2c3d14",
+    radius: "14px", radiusSm: "10px", radiusLg: "22px",
+    shadow: "0 10px 40px rgba(0,0,0,0.7), 0 0 26px rgba(204,255,0,0.25)",
+    glass: "rgba(20,31,11,0.75)", glassBorder: "rgba(204,255,0,0.24)",
+    onPrimary: "#0a1205",
+  },
+};
+
+export const THEMES: ThemePalette[] = [NEON, SUNSET, MINT, OBSIDIAN, ACID];
 export function getTheme(id: ThemeId): ThemePalette {
   return THEMES.find(t => t.id === id) ?? SUNSET;
 }
@@ -235,7 +274,7 @@ const MODE_KEY = "sq_dark_mode_v1";
 function readStoredId(): ThemeId {
   try {
     const v = localStorage.getItem(ID_KEY);
-    if (v && (v === "neon" || v === "sunset" || v === "mint" || v === "obsidian")) return v;
+    if (v && (v === "neon" || v === "sunset" || v === "mint" || v === "obsidian" || v === "acid")) return v;
   } catch {}
   return "sunset";
 }
