@@ -1027,94 +1027,6 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
   );
 }
 
-function WechatPreviewModal({ account, onClose }: { account: PersonalAccount; onClose: () => void }) {
-  const isUnused = account.status === "未使用";
-  const avatarIndex = Math.max(0, Number(account.no) - 1);
-  const mask = (value: string | undefined, fallback = "未配置") => value ? "••••••••" : fallback;
-  const display = (value: string | undefined, fallback = "未配置") => value && value !== "—" ? value : fallback;
-  const totalSlots = Math.max(20, account.groupCount, account.groupQrNames.length);
-  const groupRows = Array.from({ length: totalSlots }, (_, index) => {
-    const bound = index < account.groupCount;
-    const sequence = String(index + 1).padStart(2, "0");
-    const groupNo = `FL${sequence}`;
-    const groupBase = account.targetGroup === "—" ? `${display(account.city, "待配置")}${display(account.groupType, "会员")}群` : account.targetGroup.replace(/\d+$/, "");
-    const groupName = bound ? `${groupBase}${sequence}` : "待配置群";
-    return {
-      bound,
-      groupNo,
-      groupName,
-      city: bound ? display(account.city) : "暂无",
-      qr: account.groupQrNames[index],
-      available: bound ? Math.max(0, 90 - index * 3) : 0,
-      assigned: bound ? Math.max(0, 56 - index * 2) : 0,
-      joined: bound ? Math.max(0, 24 - index) : 0,
-      unjoined: bound ? Math.max(0, 32 - index) : 0,
-      scanned: bound ? Math.max(0, 10 - index) : 0,
-    };
-  });
-  const infoItems = [
-    ["微信昵称", display(account.nickname, "待获取")],
-    ["微信号", display(account.wechatId, "待填写")],
-    ["微信密码", mask(account.wechatPassword)],
-    ["微信二维码", display(account.wechatQrName)],
-    ["绑定人姓名", display(account.opsManager)],
-    ["绑定人手机", display(account.phone)],
-    ["身份证号", display(account.idCard)],
-    ["身份证正面", account.idCardFront ? "已上传" : "未上传"],
-    ["身份证反面", account.idCardBack ? "已上传" : "未上传"],
-    ["银行卡号", display(account.bankCard)],
-    ["支付密码", mask(account.paymentPassword)],
-    ["绑定QQ", display(account.qqNo)],
-    ["QQ密码", mask(account.qqPassword)],
-    ["QQ密保", display(account.qqSecurity)],
-    ["绑定邮箱", display(account.boundEmail)],
-    ["邮箱密码", mask(account.emailPassword)],
-    ["邮箱密保", display(account.emailSecurity)],
-    ["微信号类型", display(account.accountType)],
-    ["归属项目", display(account.project)],
-    ["所属员工", display(account.opsManager)],
-    ["归属大区", display(account.region)],
-    ["所属地区", display(account.city)],
-    ["群类型", display(account.groupType)],
-    ["微信群数", `${account.groupCount} 个`],
-  ];
-  const tdStyle = { borderTop: `1px solid ${S.border}`, color: S.textSec, fontFamily: "monospace" };
-  return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ background: "rgba(17,17,17,0.56)" }} role="dialog" aria-modal="true" aria-labelledby="wechat-preview-title">
-      <div className="w-full max-w-[1280px] max-h-[94vh] flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, boxShadow: "0 24px 70px rgba(0,0,0,0.22)" }}>
-        <div className="flex items-center justify-between gap-4 px-5 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f7f7f7" }}>
-          <div className="min-w-0"><div id="wechat-preview-title" className="text-base font-bold" style={{ color: S.text, fontFamily: "monospace" }}>微信号资料预览</div><div className="mt-1 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>完整展示录入资料、敏感字段状态及该微信号下的群信息 · {account.wechatId}</div></div>
-          <button type="button" title="关闭预览" aria-label="关闭预览" className="w-8 h-8 grid place-items-center flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={15} /></button>
-        </div>
-        <div className="flex-1 overflow-auto p-5 space-y-5" style={{ background: "#f4f5f6" }}>
-          <section style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center justify-between gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${S.border}` }}><div className="flex items-center gap-2 text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}><MessageCircle size={15} />微信信息</div><div className="flex items-center gap-2 text-xs" style={{ fontFamily: "monospace" }}><span className="px-2 py-1" style={{ background: statusCfg[account.status]?.bg || S.bg, color: statusCfg[account.status]?.color || S.textSec, borderRadius: S.radiusSm }}>{account.status}</span><span style={{ color: S.muted }}>编号 {account.no}</span></div></div>
-            <div className="p-4">
-              <div className="flex items-start gap-4 mb-4">
-                {isUnused ? <div className="w-16 h-16 grid place-items-center flex-shrink-0" style={{ background: "#f0f0ec", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.muted }}><MessageCircle size={24} /></div> : <img src={getAvatar(avatarIndex)} alt={account.nickname} className="w-16 h-16 flex-shrink-0 object-cover" style={{ borderRadius: S.radiusSm }} />}
-                <div className="min-w-0 flex-1"><div className="text-lg font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{display(account.nickname, "待获取微信昵称")}</div><div className="mt-1 text-sm font-semibold" style={{ color: S.textSec, fontFamily: "monospace" }}>{display(account.wechatId, "待填写微信号")}</div><div className="mt-1 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{display(account.project)} · {display(account.city)} · {display(account.opsManager)}</div></div>
-                <div className="w-24 h-24 grid place-items-center flex-shrink-0" style={{ background: S.bg, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm, color: S.muted }}><QrCode size={38} /><span className="sr-only">微信二维码</span></div>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 gap-x-4 gap-y-3">{infoItems.map(([label, value]) => <div key={label} className="min-w-0"><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" title={value} style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div></div>)}</div>
-              <div className="mt-4 px-3 py-2 text-[10px]" style={{ color: S.muted, background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}>省份 / 地区按分隔符展示：<span title={account.city}>{display(account.city, "暂未设置")}</span>；敏感字段仅显示脱敏结果，需授权后查看。</div>
-            </div>
-          </section>
-
-          <section style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center justify-between px-4 py-3" style={{ borderBottom: `1px solid ${S.border}` }}><div className="flex items-center gap-2 text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}><Users size={15} />紧急联系人</div><span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{account.emergencyContacts.length} 位微信联系人</span></div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 p-4">{account.emergencyContacts.map((contact, index) => <div key={index} className="flex items-center gap-3 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="w-10 h-10 overflow-hidden grid place-items-center flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.muted }}>{contact.wechatId ? <img src={getAvatar(contact.avatarIndex)} alt={contact.name} className="w-full h-full object-cover" /> : <QrCode size={15} />}</div><div className="min-w-0"><div className="text-xs font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>{display(contact.name)}</div><div className="mt-1 text-[10px] truncate" title={contact.phone || contact.note} style={{ color: S.muted, fontFamily: "monospace" }}>{display(contact.phone || contact.note)}{contact.wechatId ? ` · ${contact.wechatId}` : ""}</div></div></div>)}</div>
-          </section>
-
-          <section style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center justify-between gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${S.border}` }}><div className="flex items-center gap-2 text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}><QrCode size={15} />微信群列表</div><div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>已使用 {account.groupCount} 个 · 群位 {totalSlots} 个</div></div>
-            <div className="overflow-x-auto"><table className="w-full min-w-[1020px] text-[11px]" style={{ borderCollapse: "collapse" }}><thead><tr style={{ background: "#f7f7f7" }}>{["使用状态", "群编号", "微信群名称", "所属地区", "群二维码", "可分配人数", "已分配人数", "已进群", "未进群", "已扫码", "微信群管理"].map(label => <th key={label} className="px-3 py-2.5 text-left font-semibold whitespace-nowrap" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</th>)}</tr></thead><tbody>{groupRows.map(row => <tr key={row.groupNo} style={{ background: row.bound ? S.surface : "#fcfcfb" }}><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}><span className="inline-flex items-center gap-1.5" style={{ color: row.bound ? "#276749" : S.muted, fontWeight: 600 }}><span className="w-1.5 h-1.5 rounded-full" style={{ background: row.bound ? "#51b86a" : S.mutedLight }} />{row.bound ? "已使用" : "未使用"}</span></td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{row.groupNo}</td><td className="px-3 py-2.5 max-w-[230px] truncate" title={row.groupName} style={tdStyle}>{row.groupName}</td><td className="px-3 py-2.5 max-w-[170px] truncate" title={row.city} style={tdStyle}>{row.city}</td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{row.bound ? <span className="inline-flex items-center gap-1"><QrCode size={14} />{row.qr || "已绑定二维码"}</span> : "暂无"}</td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{row.available}</td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{row.assigned}</td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{row.joined}</td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{row.unjoined}</td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{row.scanned}</td><td className="px-3 py-2.5 whitespace-nowrap" style={tdStyle}>{display(account.opsManager, "待配置")}</td></tr>)}</tbody></table></div>
-          </section>
-        </div>
-        <div className="flex items-center justify-between gap-3 px-5 py-3 flex-shrink-0" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><span className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>预览只读 · 详细修改请使用“编辑”或“分配”</span><button type="button" className="px-4 py-2 text-xs font-bold" style={{ background: S.primary, color: "#ffffff", border: `1px solid ${S.primary}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={onClose}>关闭预览</button></div>
-      </div>
-    </div>
-  );
-}
 
 function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAccounts[number]; onClose: () => void; onAction: (message: string) => void }) {
   const status = statusCfg[account.status] || { bg: "#f5f5f5", color: "#888" };
@@ -1642,7 +1554,6 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
   const [createdAccounts, setCreatedAccounts] = useState<PersonalAccount[]>([]);
   const [accountOverrides, setAccountOverrides] = useState<Record<string, Partial<PersonalAccount>>>({});
   const [allocationAccount, setAllocationAccount] = useState<PersonalAccount | null>(null);
-  const [previewAccount, setPreviewAccount] = useState<PersonalAccount | null>(null);
   // ── 列宽拖拽（表头分隔线拖动） ──
   // 防御：cols 在 Vite HMR 场景下偶发 undefined，先用硬编码默认宽度兜底，后续 effect 再同步一次
   const defaultColWidths: Record<string, number> = Object.fromEntries((cols || []).map(c => [c.key, c.w]));
@@ -2004,7 +1915,6 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
       {showModal && mainTab === "personal" && <AuthorizedWechatModal onClose={() => setShowModal(false)} onSave={saveNewAccount} />}
       {showWecomCreateModal && mainTab === "wecom" && <AuthorizedWechatModal accountKind="wecom" onClose={() => setShowWecomCreateModal(false)} onSave={() => runAccountAction("企业微信已注册入库，可继续分配项目")} />}
       {allocationAccount && <WechatAllocationModal account={allocationAccount} onClose={() => setAllocationAccount(null)} onSave={patch => saveAllocation(allocationAccount.no, patch)} />}
-      {previewAccount && <WechatPreviewModal account={previewAccount} onClose={() => setPreviewAccount(null)} />}
 
       {/* 页头：三维度总视角 */}
       <div className="flex items-start justify-between flex-shrink-0 gap-4" style={hidePageTitle && headerActionTargetId ? { display: "contents" } : undefined}>
@@ -2165,7 +2075,6 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
                         {paged.map(w => <AccountRowForGroups key={w.no} a={w} isSelected={selectedRow === w.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(w)} cols={cols}
                           onToggleSelect={() => toggleRow(w.no)} checked={selectedRows.includes(w.no)}
                           onAdvance={() => advanceLifecycle(w.no)}
-                          onPreview={() => setPreviewAccount(w)}
                           onHandover={() => startHandoverApproval(w.no)}
                           onRecycle={() => recycleAccount(w.no)}
                           onArchive={() => archiveAccount(w.no)}
@@ -2222,7 +2131,6 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
                     {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
                       onToggleSelect={() => toggleRow(a.no)} checked={selectedRows.includes(a.no)}
                       onAdvance={() => advanceLifecycle(a.no)}
-                      onPreview={() => setPreviewAccount(a)}
                       onHandover={() => startHandoverApproval(a.no)}
                       onRecycle={() => recycleAccount(a.no)}
                       onArchive={() => archiveAccount(a.no)}
@@ -2279,7 +2187,6 @@ export default function WeChatManagement({ controlledViewDimension, controlledMa
                     {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
                       onToggleSelect={() => toggleRow(a.no)} checked={selectedRows.includes(a.no)}
                       onAdvance={() => advanceLifecycle(a.no)}
-                      onPreview={() => setPreviewAccount(a)}
                       onHandover={() => startHandoverApproval(a.no)}
                       onRecycle={() => recycleAccount(a.no)}
                       onArchive={() => archiveAccount(a.no)}
@@ -2362,7 +2269,7 @@ function BadgeKPI({ label, value, bg, color }: { label: string; value: number | 
 }
 function AccountRowForGroups({
   a, isColumnVisible, columnStyle, visibleTableWidth, risk, isSelected, checked,
-  onToggleSelect, onAdvance, onPreview, onHandover, onRecycle, onArchive, onAllocate, onClickRow,
+  onToggleSelect, onAdvance, onHandover, onRecycle, onArchive, onAllocate, onClickRow,
 }: {
   a: PersonalAccount;
   isColumnVisible: (key: string) => boolean;
@@ -2373,7 +2280,6 @@ function AccountRowForGroups({
   checked: boolean;
   onToggleSelect: () => void;
   onAdvance: () => void;
-  onPreview: () => void;
   onHandover: () => void;
   onRecycle: () => void;
   onArchive: () => void;
@@ -2410,8 +2316,7 @@ function AccountRowForGroups({
         <div className="flex-shrink-0" style={columnStyle("groups", { width: 66 })}><b className="text-[10px]" style={{ color: risk.isGroupRisk ? "#c2410c" : S.text, fontFamily: "monospace" }}>{a.groupCount}/{Math.max(20, a.groupQrNames.length)}</b><div className="mt-0.5 h-[3px] overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}><div style={{ width: `${Math.max(risk.groupRate * 100, a.groupCount ? 4 : 0)}%`, height: "100%", background: risk.isGroupRisk ? "#f59e0b" : S.accent }} /></div></div>
         <div className="flex-shrink-0" style={columnStyle("sync", { width: 66 })}><span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px]" style={{ background: risk.isSyncRisk ? "#fff7ed" : a.status === "未使用" ? "#f5f5f5" : "#f0fff4", color: syncColor, borderRadius: 999, fontFamily: "monospace" }}>{risk.isSyncRisk && <AlertTriangle size={9} />}{syncLabel}</span></div>
         <div className="flex-shrink-0 text-[10px]" style={columnStyle("updated", { width: 64, color: S.muted, fontFamily: "monospace" })}>{a.lastLogin}</div>
-        <div className="flex-shrink-0 flex items-center gap-[3px] whitespace-nowrap" style={columnStyle("action", { width: 168 })}>
-          <button type="button" title="预览账号详情" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-medium rounded-[5px]" style={{ background: S.surface, color: "#4b5563", border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onPreview(); }}><Eye size={10} />预览</button>
+        <div className="flex-shrink-0 flex items-center gap-[3px] whitespace-nowrap" style={columnStyle("action", { width: 128 })}>
           {a.lifecycleStage === "assigned_to_person" && <button type="button" title="发起交接审批" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]" style={{ background: "#fffbeb", color: "#92400e", border: "1px solid #fde68a", fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onHandover(); }}><ArrowRight size={10} />交接</button>}
           {a.lifecycleStage === "assigned_to_person" && <button type="button" title="一键回收账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]" style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onRecycle(); }}><RotateCcw size={10} />回收</button>}
           <button type="button" title="归档停用账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-medium rounded-[5px]" style={{ background: S.surface, color: "#4b5563", border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onArchive(); }}><History size={10} />归档</button>
