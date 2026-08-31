@@ -7,22 +7,7 @@ import {
 } from "../data/accountTypes";
 import { useInvites } from "../App";
 import { InviteRecord, genInviteCode, daysLater } from "../data/inviteRecords";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  surfaceSoft: "#fafaf8",
-  border: "rgba(15,23,42,0.06)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // 基于已有的 roleKeyMeta 合成 identityMeta 列表（保持与 AccountDrawer 一致）
 const identityMeta = (Object.keys(roleKeyMeta) as IdentityRole["roleKey"][]).map((rk) => {
   const m = roleKeyMeta[rk];
@@ -67,8 +52,10 @@ type Props = {
   inviterName?: string;
 };
 
-export default function InviteDrawer({ open, onClose, inviterUid = "acc_chenyuhang", inviterName = "陈宇航" }: Props) {
-  const _cls = useStyles();
+export default function InviteDrawer({
+ open, onClose, inviterUid = "acc_chenyuhang", inviterName = "陈宇航" }: Props) {
+  useThemeSingleton();
+const _cls = useStyles();
   const { invites, setInvites } = useInvites();
 
   const [inviteeName, setInviteeName] = useState("");

@@ -1,24 +1,7 @@
 import { useState } from "react";
 import { getAvatar } from "./Avatar";
 import { Search, Zap, CheckCircle, ChevronRight, Users, AlertTriangle } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 const pendingUsers = [
   { id: 1, name: "刘晓峰", phone: "138-9876-5432", identity: "PRO会员", city: "北京", source: "公众号", referrer: "吴思远" },
   { id: 2, name: "赵雨晴", phone: "139-8765-4321", identity: "体验官", city: "上海", source: "小红书", referrer: "—" },
@@ -61,8 +44,10 @@ function getRecommendedGroup(user: (typeof pendingUsers)[0]) {
     .slice(0, 3);
 }
 
-export default function GroupAssignment({ embedded = false }: { embedded?: boolean }) {
-  const [selectedUser, setSelectedUser] = useState<number | null>(1);
+export default function GroupAssignment({
+ embedded = false }: { embedded?: boolean }) {
+  useThemeSingleton();
+const [selectedUser, setSelectedUser] = useState<number | null>(1);
   const [assignedGroupId, setAssignedGroupId] = useState<number | null>(null);
   const [search, setSearch] = useState("");
 

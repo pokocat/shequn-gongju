@@ -5,24 +5,7 @@ import {
   Users, Target, Copy, Settings, Eye, X, Check, ChevronRight,
   Megaphone, BookOpen, Coffee, Flame
 } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   "进行中":  { bg: S.accent,   color: S.text },
   "即将开始": { bg: "#1e293b", color: "#ffffff" },
@@ -122,7 +105,8 @@ const DEFAULT_MODAL: ModalState = {
 };
 
 export default function Activities() {
-  const [tab, setTab] = useState("全部活动");
+  useThemeSingleton();
+const [tab, setTab] = useState("全部活动");
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [modal, setModal] = useState<ModalState>(DEFAULT_MODAL);

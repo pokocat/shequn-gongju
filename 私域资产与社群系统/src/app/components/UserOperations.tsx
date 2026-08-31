@@ -1,24 +1,7 @@
 import { useState } from "react";
 import { getAvatar } from "./Avatar";
 import { Search, Phone, MessageCircle, ShoppingCart, Users, FileText, Star, Clock, CheckCircle, AlertTriangle, Plus } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 const users = [
   { id: 1, name: "李云天", phone: "138-0123-4567", wechat: "liyuntian88", identity: "PRO会员", city: "北京", source: "公众号", referrer: "吴思远", group: "北京PRO会员群01", teacher: "吴思远", memberSince: "2025-03-15", tags: ["高价值", "活跃"], orders: [{ no: "ORD2025031501", product: "PRO会员年卡", amount: 2980, status: "已完成", date: "2025-03-15" }, { no: "ORD2026030101", product: "续费PRO年卡", amount: 2480, status: "已完成", date: "2026-03-01" }], tickets: [{ no: "TK2026070501", type: "功能咨询", status: "已解决", date: "2026-07-01" }], timeline: [{ action: "续费PRO会员", time: "2026-03-01", type: "order" }, { action: "提交工单：功能咨询", time: "2026-07-01", type: "ticket" }, { action: "服务老师回访", time: "2026-07-03", type: "visit" }] },
   { id: 2, name: "张晓红", phone: "139-0123-4568", wechat: "zhangxiaohong_sh", identity: "体验官", city: "上海", source: "小红书", referrer: "—", group: "上海游客群01", teacher: "林小燕", memberSince: "2026-06-20", tags: ["潜力用户"], orders: [{ no: "ORD2026062001", product: "体验营", amount: 980, status: "已完成", date: "2026-06-20" }], tickets: [], timeline: [{ action: "购买体验营", time: "2026-06-20", type: "order" }, { action: "加入上海游客群01", time: "2026-06-21", type: "group" }] },
@@ -36,7 +19,8 @@ const statusBadge: Record<string, { bg: string; color: string }> = {
 };
 
 export default function UserOperations() {
-  const [search, setSearch] = useState("");
+  useThemeSingleton();
+const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<number>(1);
   const [activeTab, setActiveTab] = useState(0);
 

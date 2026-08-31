@@ -1,23 +1,6 @@
 import { useState } from "react";
 import { Search, Plus, AlertTriangle, X, Phone, Mail, MessageCircle, Globe, ChevronDown, Filter, ExternalLink, Upload, CreditCard, Eye, EyeOff, CheckCircle, List, LayoutGrid } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ───────────────────────────────────────────────
 const phones = [
   { id: 1, number: "138-0012-3456", carrier: "中国移动", region: "北京市朝阳区",  idOwner: "吴思远", idNumber: "110105198801011234", idFront: true,  idBack: true,  assignedTo: "吴思远", assignedProject: "北京PRO服务",    registrations: ["微信 wx_bj_01", "支付宝"],           manager: "吴思远",         status: "使用中", risk: "normal",   note: "北京主号" },
@@ -923,7 +906,8 @@ const mediaPlatformFilters = [
 ];
 
 export default function AccountAssets() {
-  const [activeTab, setActiveTab] = useState("all");
+  useThemeSingleton();
+const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("全部状态");
   const [mediaExpanded, setMediaExpanded] = useState(false);

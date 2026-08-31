@@ -4,24 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line,
 } from "recharts";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // ─── Mock data ────────────────────────────────────────────────────────────────
 
 const MONTHLY_TREND = [
@@ -311,7 +294,8 @@ function AgentTree() {
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export default function Commission() {
-  const [activeTab, setActiveTab] = useState("overview");
+  useThemeSingleton();
+const [activeTab, setActiveTab] = useState("overview");
   const [withdrawalModal, setWithdrawalModal] = useState(false);
   const [withdrawals, setWithdrawals] = useState(WITHDRAWAL_REQUESTS);
   const [detailFilter, setDetailFilter] = useState({ level: "全部", type: "全部" });

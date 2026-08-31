@@ -4,24 +4,7 @@ import GroupAssignment from "./GroupAssignment";
 import { Search, Plus, X, ChevronLeft, ChevronRight, QrCode, Users, ArrowLeft, GitBranch, RefreshCw, ChevronDown, Edit3, Archive, UserCog, SlidersHorizontal } from "lucide-react";
 import { buildGroupCode, buildGroupName, defaultGroupTypeRules, pickWechatAccount, type AllocationMode, type GroupTypeRule } from "../data/projectGroupRules";
 import { addGeneratedGroups, updateGeneratedGroup, useCommunityData } from "../data/communityDataStore";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const mockGroups = [
   { no: "00001", name: "体验官1群", city: "北京/吉林", wechat: "FLM001", groupNo: "000001", type: "体验官群", ownerStatus: "正常", pushCount: 100, scanCount: 100, memberCount: 100, max: 200 },
@@ -228,7 +211,8 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
 
 // ─── 主组件 ───────────────────────────────────────────────────
 export default function CommunityManagement() {
-  const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">("groups");
+  useThemeSingleton();
+const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">("groups");
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("全部");
   const [cityFilter, setCityFilter] = useState("全部");

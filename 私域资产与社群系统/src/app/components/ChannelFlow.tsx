@@ -1,23 +1,6 @@
 import { useState } from "react";
 import { Plus, X, ArrowRight, Zap, Settings, ChevronRight, Link, Search, Filter, RefreshCw } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const channels = [
   { id: 1, platform: "微信小店", emoji: "🛍️", name: "官方小店", accountId: "eco_shop",
@@ -407,7 +390,8 @@ function TrafficLogTab() {
 const tabs = ["渠道绑定", "分配规则", "流量日志"];
 
 export default function ChannelFlow() {
-  const [activeTab, setActiveTab] = useState("渠道绑定");
+  useThemeSingleton();
+const [activeTab, setActiveTab] = useState("渠道绑定");
 
   return (
     <div style={{ padding: 24, height: "100%", display: "flex", flexDirection: "column", gap: 16, background: S.bg, fontFamily: "monospace" }}>

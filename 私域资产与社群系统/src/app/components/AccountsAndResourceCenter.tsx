@@ -11,40 +11,11 @@ import { useTools, useAccounts, useApprovals } from "../App";
 import type { SystemAccount } from "../data/accountTypes";
 import { createApproval } from "../data/approvalTypes";
 import { getAvatar } from "./Avatar";
+import { S, useThemeSingleton } from "../theme";
 
 // ────────────────────────────────────────────────────────────────
 // 色板：软蓝灰 SaaS 极简风（无黑框、无荧光黄），与微信账号管理统一。
 // ────────────────────────────────────────────────────────────────
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  borderStrong: "rgba(59,130,246,0.30)",
-  primary: "#3b82f6",
-  primaryLight: "rgba(59,130,246,0.08)",
-  primaryMid: "rgba(59,130,246,0.18)",
-  primaryDark: "#2563eb",
-  accent: "#bfdbfe",
-  accentLight: "rgba(59,130,246,0.10)",
-  accentMid: "rgba(59,130,246,0.20)",
-  success: "#16a34a",
-  successBg: "#f0fdf4",
-  warning: "#d97706",
-  warningBg: "#fffbeb",
-  danger: "#dc2626",
-  dangerBg: "#fef2f2",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  hoverBg: "#f1f5f9",
-  ink: "#1d4ed8",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-} as const;
-
 type LogAction = ResourceToolLog["action"];
 type DetailTabKey = "general" | "ops" | "risk" | "log";
 type BrowseMode = "list" | "cards";
@@ -326,8 +297,10 @@ function HeaderActionSlot({ targetId, children }: { targetId?: string; children:
   return target ? createPortal(children, target) : <>{children}</>;
 }
 
-export default function AccountsAndResourceCenter({ initialTopTab = "wechat", embedded = false, controlledViewDimension, hideDimensionControls = false, platformFilter = null, platformFilters, toolTypes, headerActionTargetId, secondaryActionTargetId }: AccountsAndResourceCenterProps) {
-  const { tools, setTools } = useTools();
+export default function AccountsAndResourceCenter({
+ initialTopTab = "wechat", embedded = false, controlledViewDimension, hideDimensionControls = false, platformFilter = null, platformFilters, toolTypes, headerActionTargetId, secondaryActionTargetId }: AccountsAndResourceCenterProps) {
+  useThemeSingleton();
+const { tools, setTools } = useTools();
   const { accounts, setAccounts } = useAccounts();
   const { approvals, setApprovals } = useApprovals();
 

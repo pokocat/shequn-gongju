@@ -10,23 +10,7 @@ import {
 } from "../data/accountTypes";
 import { useInvites, useApprovals } from "../App";
 import { createApproval } from "../data/approvalTypes";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  surfaceSoft: "#fafaf8",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // 基于已有的 roleKeyMeta 合成 identityMeta 列表（保持与 AccountDrawer 一致）
 const identityMeta = (Object.keys(roleKeyMeta) as IdentityRole["roleKey"][]).map((rk) => {
   const m = roleKeyMeta[rk];
@@ -67,13 +51,15 @@ type Props = {
 };
 
 export default function InviteReviewDrawer({
+
   open,
   onClose,
   invite,
   reviewerUid = "acc_chenyuhang",
   reviewerName = "陈宇航",
 }: Props) {
-  const _cls = useStyles();
+  useThemeSingleton();
+const _cls = useStyles();
   const { invites, setInvites } = useInvites();
   const { setApprovals } = useApprovals();
 

@@ -1,24 +1,8 @@
 import { useState } from "react";
 import { TrendingUp, Database, Users2, UserPlus, AlertTriangle, Zap, CheckCircle, Clock, ArrowUp, ArrowDown, MessageCircle, ChevronRight, X } from "lucide-react";
+import { S, useThemeSingleton } from "../theme";
 
 // ─── Soft rounded cyberpunk constants ────────────────────────
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "12px",
-  radiusSm: "8px",
-  radiusLg: "14px",
-};
-
 // ─── Recharts-free charts ────────────────────────────────────
 function SVGLineChart({ data, keys, colors, height = 160 }: { data: any[]; keys: string[]; colors: string[]; height?: number }) {
   const W = 500; const H = height; const PAD = { top: 8, right: 8, bottom: 22, left: 32 };
@@ -134,8 +118,10 @@ interface OverviewProps {
   onNavigate?: (module: string) => void;
 }
 
-export default function Overview({ onNavigate }: OverviewProps = {}) {
-  const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestions);
+export default function Overview({
+ onNavigate }: OverviewProps = {}) {
+  useThemeSingleton();
+const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestions);
   const [todos, setTodos] = useState<TodoItem[]>(initialTodos);
   const [risks] = useState<RiskItem[]>(initialRisks);
   const [toast, setToast] = useState("");

@@ -11,23 +11,7 @@ import {
   createApproval, advanceNode, rejectApproval,
   type Approval, type ApprovalType, type ApprovalStatus, type FlowTemplate,
 } from "../data/approvalTypes";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // 图标映射：字符串 → lucide 组件
 const ICON_MAP: Record<string, React.ComponentType<{ size?: number; className?: string; style?: React.CSSProperties }>> = {
   UserPlus, Building2, Layers, Package, ArrowRightLeft, CreditCard, Shield, RotateCcw,
@@ -46,7 +30,8 @@ const TYPE_COLOR: Record<ApprovalType, { bg: string; color: string }> = {
 };
 
 export default function ApprovalCenter() {
-  const { approvals, setApprovals } = useApprovals();
+  useThemeSingleton();
+const { approvals, setApprovals } = useApprovals();
   // 审批终审通过后自动回写业务数据
   useApprovalWriteback();
 

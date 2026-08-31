@@ -1,23 +1,6 @@
 import { useState } from "react";
 import { Shield, Plus, Check, X, Eye, Edit, Trash2, Download, CheckSquare } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 const roles = [
   { id: 1, name: "创始人", color: S.text, users: ["王总"], desc: "全部权限，包含敏感操作和数据导出" },
   { id: 2, name: "联合创始人", color: S.text, users: ["张副总", "李运营总"], desc: "除财务审批外全部权限" },
@@ -53,7 +36,8 @@ const auditLog = [
 ];
 
 export default function Permissions() {
-  const [selectedRole, setSelectedRole] = useState<string>("客服");
+  useThemeSingleton();
+const [selectedRole, setSelectedRole] = useState<string>("客服");
 
   const role = roles.find(r => r.name === selectedRole)!;
   const perms = permMatrix[selectedRole] || {};

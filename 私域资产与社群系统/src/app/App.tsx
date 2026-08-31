@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext, useContext, type ReactNode } from "react";
-import { Monitor, Smartphone, Globe, Star } from "lucide-react";
+import { Monitor, Smartphone, Globe, Star, Palette } from "lucide-react";
 import PCLayout from "./components/PCLayout";
 import Overview from "./components/Overview";
 import UnifiedAccountManagement from "./components/UnifiedAccountManagement";
@@ -24,6 +24,7 @@ import { CommunicationTool, initialTools } from "./data/communicationTools";
 import { SystemAccount, mockAccounts } from "./data/accountTypes";
 import { InviteRecord, mockInvites } from "./data/inviteRecords";
 import { Approval, mockApprovals } from "./data/approvalTypes";
+import { ThemeProvider, useTheme, type ThemeId } from "./theme";
 
 const moduleMap: Record<string, React.ComponentType> = {
   overview:   Overview,
@@ -147,46 +148,81 @@ export default function App() {
 
   if (view === "landing") {
     return (
-      <div className="size-full relative">
-        <div className="fixed top-4 right-4 z-[100] flex gap-1 p-1 rounded-xl shadow-lg" style={{ background: "rgba(5,9,23,0.8)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}>
-          <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "linear-gradient(135deg, #4361ee, #7c3aed)", color: "white" }}>
-            <Globe size={12} /> 官网
-          </button>
-          <button onClick={() => selectView("pc")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
-            <Monitor size={12} /> PC 后台
-          </button>
-          <button onClick={() => selectView("mobile")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
-            <Smartphone size={12} /> 会员小程序
-          </button>
-          <button onClick={() => selectView("zhuliren")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
-            <Star size={12} /> 主理人公社
-          </button>
+      <ThemeProvider>
+        <div className="size-full relative">
+          <div className="fixed top-4 right-4 z-[100] flex gap-1 p-1 rounded-xl shadow-lg" style={{ background: "rgba(5,9,23,0.8)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}>
+            <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "linear-gradient(135deg, #4361ee, #7c3aed)", color: "white" }}>
+              <Globe size={12} /> 官网
+            </button>
+            <button onClick={() => selectView("pc")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
+              <Monitor size={12} /> PC 后台
+            </button>
+            <button onClick={() => selectView("mobile")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
+              <Smartphone size={12} /> 会员小程序
+            </button>
+            <button onClick={() => selectView("zhuliren")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
+              <Star size={12} /> 主理人公社
+            </button>
+          </div>
+          <LandingPage onEnterApp={() => selectView("pc")} />
         </div>
-        <LandingPage onEnterApp={() => selectView("pc")} />
-      </div>
+      </ThemeProvider>
     );
   }
 
+  return (
+    <ThemeProvider>
+      <AppShell toolsValue={toolsValue} accountsValue={accountsValue} invitesValue={invitesValue} approvalsValue={approvalsValue} view={view} selectView={selectView} activeModule={activeModule} selectModule={selectModule} ActiveComponent={ActiveComponent} />
+    </ThemeProvider>
+  );
+}
+
+function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, view, selectView, activeModule, selectModule, ActiveComponent }: {
+  toolsValue: { tools: CommunicationTool[]; setTools: React.Dispatch<React.SetStateAction<CommunicationTool[]>> };
+  accountsValue: { accounts: SystemAccount[]; setAccounts: React.Dispatch<React.SetStateAction<SystemAccount[]>> };
+  invitesValue: { invites: InviteRecord[]; setInvites: React.Dispatch<React.SetStateAction<InviteRecord[]>> };
+  approvalsValue: { approvals: Approval[]; setApprovals: React.Dispatch<React.SetStateAction<Approval[]>> };
+  view: ViewMode;
+  selectView: (v: ViewMode) => void;
+  activeModule: string;
+  selectModule: (m: string) => void;
+  ActiveComponent: React.ComponentType;
+}) {
+  const { palette, themeId, setThemeId, themes } = useTheme();
+  const S = palette.S;
   return (
     <ToolsProvider value={toolsValue}>
       <AccountsProvider value={accountsValue}>
       <InvitesProvider value={invitesValue}>
       <ApprovalsProvider value={approvalsValue}>
-      <div className="size-full relative" style={{ background: "#f5f6fa" }}>
-        {view !== "zhuliren" && <div className="fixed top-3 right-4 z-50 flex gap-0 p-0" style={{ background: "#000", border: "1px solid #ccff00", borderRadius: 0 }}>
-          <button onClick={() => selectView("landing")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "landing" ? "#ccff00" : "transparent", color: view === "landing" ? "#000" : "#ccff00", borderRadius: 0, borderRight: "1px solid #333" }}>
-            <Globe size={11} /> WEB
-          </button>
-          <button onClick={() => selectView("pc")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "pc" ? "#ccff00" : "transparent", color: view === "pc" ? "#000" : "#ccff00", borderRadius: 0, borderRight: "1px solid #333" }}>
-            <Monitor size={11} /> PC
-          </button>
-          <button onClick={() => selectView("mobile")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "mobile" ? "#ccff00" : "transparent", color: view === "mobile" ? "#000" : "#ccff00", borderRadius: 0, borderRight: "1px solid #333" }}>
-            <Smartphone size={11} /> 会员APP
-          </button>
-          <button onClick={() => selectView("zhuliren")} className="flex items-center gap-1.5 px-3 py-2 text-xs transition-all font-mono font-bold tracking-wider" style={{ background: view === "zhuliren" ? "#ccff00" : "transparent", color: view === "zhuliren" ? "#000" : "#ccff00", borderRadius: 0 }}>
-            <Star size={11} /> 主理人
-          </button>
-        </div>}
+      <div className="size-full relative" style={{ background: S.bg }}>
+        {view !== "zhuliren" && (
+          <div className="fixed top-3 right-3 z-50 flex gap-2 items-start">
+            {/* 主题切换胶囊（潮系·玻璃态渐变） */}
+            <ThemeSwitcher themeId={themeId} setThemeId={setThemeId} themes={themes} palette={palette} />
+            {/* 视图切换 */}
+            <div className="flex gap-0 p-1 rounded-xl" style={{ background: palette.glass, backdropFilter: "blur(10px)", border: `1px solid ${palette.glassBorder}`, boxShadow: S.shadow }}>
+              {([
+                { id: "landing", label: "WEB", icon: Globe },
+                { id: "pc", label: "PC", icon: Monitor },
+                { id: "mobile", label: "APP", icon: Smartphone },
+                { id: "zhuliren", label: "主理人", icon: Star },
+              ] as const).map(v => (
+                <button key={v.id} onClick={() => selectView(v.id)} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] transition-all font-bold"
+                  style={{
+                    background: view === v.id ? palette.gradient : "transparent",
+                    color: view === v.id ? S.onPrimary : S.textSec,
+                    borderRadius: S.radiusSm,
+                    fontFamily: "monospace",
+                    letterSpacing: "0.02em",
+                    border: view === v.id ? "none" : "1px solid transparent",
+                  }}>
+                  <v.icon size={11} /> {v.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {view === "pc" ? (
           <PCLayout activeModule={activeModule} onModuleChange={selectModule}>
@@ -206,5 +242,53 @@ export default function App() {
       </InvitesProvider>
       </AccountsProvider>
     </ToolsProvider>
+  );
+}
+
+function ThemeSwitcher({ themeId, setThemeId, themes, palette }: {
+  themeId: ThemeId;
+  setThemeId: (id: ThemeId) => void;
+  themes: ReturnType<typeof useTheme>["themes"];
+  palette: ReturnType<typeof useTheme>["palette"];
+}) {
+  return (
+    <div className="flex items-center gap-1.5 p-1 rounded-2xl"
+      style={{
+        background: palette.glass,
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        border: `1px solid ${palette.glassBorder}`,
+        boxShadow: palette.S.shadow,
+      }}>
+      <div className="pl-2 pr-1 flex items-center gap-1 text-[10px] font-bold"
+        style={{ color: palette.S.textSec, fontFamily: "monospace", letterSpacing: "0.1em" }}>
+        <Palette size={11} style={{ color: palette.S.primary }} />
+        <span className="hidden md:inline">VIBE</span>
+      </div>
+      {themes.map(t => {
+        const active = t.id === themeId;
+        return (
+          <button key={t.id}
+            type="button"
+            onClick={() => setThemeId(t.id)}
+            title={`${t.name} · ${t.tagline}`}
+            className="relative group flex items-center gap-1 px-2.5 py-1.5 transition-all duration-300"
+            style={{
+              background: active ? t.gradient : "transparent",
+              color: active ? t.S.onPrimary : palette.S.textSec,
+              borderRadius: 999,
+              fontSize: 11,
+              fontWeight: active ? 800 : 500,
+              boxShadow: active ? "0 2px 10px rgba(0,0,0,0.15)" : "none",
+              fontFamily: "monospace",
+              transform: active ? "translateY(-1px)" : "none",
+            }}>
+            <span style={{ lineHeight: 1 }}>{t.emoji}</span>
+            <span>{t.name}</span>
+            <span className="sr-only">{t.tagline}</span>
+          </button>
+        );
+      })}
+    </div>
   );
 }

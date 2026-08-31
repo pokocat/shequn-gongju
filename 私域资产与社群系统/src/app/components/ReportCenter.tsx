@@ -4,24 +4,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid,
 } from "recharts";
 import { TrendingUp, TrendingDown, Download, ArrowUp, ArrowDown } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 const COLORS = [S.accent, "#1e293b", "#808080", "#b0b0b0", "#d0d0d0", "#3d3d3d", "rgba(204,255,0,0.5)"];
 
 const revenueData = [
@@ -463,7 +446,8 @@ function ChannelTab() {
 }
 
 export default function ReportCenter() {
-  const [dateRange, setDateRange] = useState("本月");
+  useThemeSingleton();
+const [dateRange, setDateRange] = useState("本月");
   const [activeTab, setActiveTab] = useState("概览报表");
 
   return (

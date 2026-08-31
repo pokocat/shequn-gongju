@@ -3,24 +3,7 @@ import {
   Plus, X, Clock, CheckCircle, Send, Image, FileText, Users, Calendar, ChevronRight,
   Zap, Copy, Play, Pause, AlertTriangle,
 } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 type TaskStatus = "已完成" | "进行中" | "待发送" | "草稿" | "已暂停";
 
 interface Task {
@@ -536,7 +519,8 @@ function DetailPanel({ task, onClose }: { task: Task; onClose: () => void }) {
 }
 
 export default function PushTasks() {
-  const [activeView, setActiveView] = useState<"任务列表" | "模板库" | "执行日志">("任务列表");
+  useThemeSingleton();
+const [activeView, setActiveView] = useState<"任务列表" | "模板库" | "执行日志">("任务列表");
   const [statusFilter, setStatusFilter] = useState("全部");
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showModal, setShowModal] = useState(false);

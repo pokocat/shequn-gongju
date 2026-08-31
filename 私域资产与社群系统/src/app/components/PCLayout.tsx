@@ -5,25 +5,9 @@ import {
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
   BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen
 } from "lucide-react";
+import { S, useThemeSingleton } from "../theme";
 
 // ─── 软圆角赛博朋克 · 柔和边框 ────────────────────────────────
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
 const navGroups = [
   { label: "工作台", items: [
     { id: "overview",   label: "跨项目工作台",   icon: LayoutDashboard, badge: null },
@@ -59,8 +43,10 @@ interface PCLayoutProps {
   children: ReactNode;
 }
 
-export default function PCLayout({ activeModule, onModuleChange, children }: PCLayoutProps) {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+export default function PCLayout({
+ activeModule, onModuleChange, children }: PCLayoutProps) {
+  useThemeSingleton();
+const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const activeItem = navItems.find(i => i.id === activeModule);
 
   return (

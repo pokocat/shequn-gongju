@@ -3,18 +3,7 @@ import { CalendarDays, Send, UserRound } from "lucide-react";
 import Activities from "./Activities";
 import InfluenceRanking from "./InfluenceRanking";
 import PushTasks from "./PushTasks";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(0,0,0,0.08)",
-  accent: "#3b82f6",
-  text: "#1e293b",
-  muted: "#94a3b8",
-  radius: "10px",
-  radiusSm: "6px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 type WorkbenchView = "members" | "push" | "activities";
 
 const workbenchTabs: Array<{ id: WorkbenchView; label: string; icon: typeof UserRound; badge?: string; description: string }> = [
@@ -24,7 +13,8 @@ const workbenchTabs: Array<{ id: WorkbenchView; label: string; icon: typeof User
 ];
 
 export default function MemberOperationsWorkbench() {
-  const [activeView, setActiveView] = useState<WorkbenchView>("members");
+  useThemeSingleton();
+const [activeView, setActiveView] = useState<WorkbenchView>("members");
 
   return (
     <div className="h-full min-h-0 flex flex-col" style={{ background: S.bg, fontFamily: "monospace" }}>

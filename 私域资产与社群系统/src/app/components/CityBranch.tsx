@@ -2,24 +2,7 @@ import { useState } from "react";
 import { MapPin, Users, TrendingUp, TrendingDown, ArrowUp, ChevronRight, Plus, BarChart2 } from "lucide-react";
 import { getAvatar } from "./Avatar";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 const cities = [
   { id: 1, city: "北京", manager: "吴思远", phone: "138-0012-3456", members: 420, proMembers: 312, groups: 4, wechats: 3, monthlyRevenue: 126000, revenueGrowth: 12, memberGrowth: 8, status: "优秀", monthlyData: [{ m: "4月", r: 98000, m2: 340 }, { m: "5月", r: 112000, m2: 385 }, { m: "6月", r: 118000, m2: 405 }, { m: "7月", r: 126000, m2: 420 }] },
   { id: 2, city: "上海", manager: "林小燕", phone: "139-0012-3457", members: 380, proMembers: 278, groups: 3, wechats: 2, monthlyRevenue: 114000, revenueGrowth: 18, memberGrowth: 15, status: "优秀", monthlyData: [{ m: "4月", r: 76000, m2: 280 }, { m: "5月", r: 94000, m2: 320 }, { m: "6月", r: 102000, m2: 360 }, { m: "7月", r: 114000, m2: 380 }] },
@@ -49,7 +32,8 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 export default function CityBranch() {
-  const [selected, setSelected] = useState<number>(1);
+  useThemeSingleton();
+const [selected, setSelected] = useState<number>(1);
   const detail = cities.find(c => c.id === selected)!;
   const totalRevenue = cities.reduce((s, c) => s + c.monthlyRevenue, 0);
   const totalMembers = cities.reduce((s, c) => s + c.members, 0);

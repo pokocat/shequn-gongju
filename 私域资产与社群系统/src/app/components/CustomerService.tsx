@@ -1,24 +1,7 @@
 import { useLayoutEffect, useState } from "react";
 import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ArrowLeft, Eye, EyeOff, QrCode, ExternalLink, Archive } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 const PAGE_SIZE = 8;
 
 // ─── 模拟数据 ─────────────────────────────────────────────────
@@ -352,7 +335,8 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
 
 // ─── 主列表页 ─────────────────────────────────────────────────
 export default function CustomerService() {
-  const [search, setSearch] = useState("");
+  useThemeSingleton();
+const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
   const [detailStaff, setDetailStaff] = useState<typeof csStaff[0] | null>(null);

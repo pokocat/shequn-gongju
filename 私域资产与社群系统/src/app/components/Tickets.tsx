@@ -1,23 +1,6 @@
 import { useState, useMemo } from "react";
 import { Search, Plus, Clock, CheckCircle, AlertTriangle, X, ChevronRight, User, ChevronLeft, MessageSquare, ArrowUp, FileText } from "lucide-react";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 type TicketStatus = "待处理" | "进行中" | "已解决" | "已升级";
 type Priority = "高" | "中" | "低";
 
@@ -148,7 +131,8 @@ function SlaBar({ hours, total }: { hours: number; total: number }) {
 }
 
 export default function Tickets() {
-  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  useThemeSingleton();
+const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("全部");
   const [statCardFilter, setStatCardFilter] = useState<string | null>(null);

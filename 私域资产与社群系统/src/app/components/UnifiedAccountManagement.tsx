@@ -3,28 +3,13 @@ import { Building2, BriefcaseBusiness, Check, ChevronDown, Code2, MessageCircle,
 import WeChatManagement from "./WeChatManagement";
 import AccountsAndResourceCenter from "./AccountsAndResourceCenter";
 import type { CommunicationToolType } from "../data/communicationTools";
+import { S, useThemeSingleton } from "../theme";
 
 type UnifiedCategory = "all" | "communication" | "content" | "workspace" | "developer" | "business";
 type UnifiedViewDimension = "type" | "project" | "person";
 type Subtype = { key: string; label: string; type: CommunicationToolType | "all"; platform?: string; types?: CommunicationToolType[]; hint?: string };
 
 // 软蓝灰统一色板（与 AccountsAndResourceCenter / WeChatManagement 一致）
-const S = {
-  primary: "#3b82f6",
-  primaryDark: "#2563eb",
-  primaryLight: "rgba(59,130,246,0.08)",
-  primaryMid: "rgba(59,130,246,0.20)",
-  accent: "#bfdbfe",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  radius: 8,
-} as const;
-
 const CATEGORY_TABS: { key: UnifiedCategory; label: string; hint: string; icon: typeof MessageCircle }[] = [
   { key: "all", label: "全部", hint: "查看全部账号资产", icon: Building2 },
   { key: "communication", label: "通讯与身份", hint: "微信、手机号、邮箱等登录身份", icon: MessageCircle },
@@ -84,8 +69,10 @@ interface UnifiedAccountManagementProps {
   initialSubtype?: string;
 }
 
-export default function UnifiedAccountManagement({ initialCategory = "all", initialSubtype }: UnifiedAccountManagementProps = {}) {
-  const initialCategorySubtypes = CATEGORY_SUBTYPES[initialCategory];
+export default function UnifiedAccountManagement({
+ initialCategory = "all", initialSubtype }: UnifiedAccountManagementProps = {}) {
+  useThemeSingleton();
+const initialCategorySubtypes = CATEGORY_SUBTYPES[initialCategory];
   const [activeCategory, setActiveCategory] = useState<UnifiedCategory>(initialCategory);
   const [activeSubtype, setActiveSubtype] = useState(initialSubtype || initialCategorySubtypes[0].key);
   const [selectedSubtypeKeys, setSelectedSubtypeKeys] = useState<string[]>([initialSubtype || initialCategorySubtypes[0].key]);

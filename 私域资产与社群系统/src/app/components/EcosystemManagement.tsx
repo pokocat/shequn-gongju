@@ -11,24 +11,7 @@ import { inviteStatusMeta } from "../data/inviteRecords";
 import { createApproval } from "../data/approvalTypes";
 import InviteDrawer from "./InviteDrawer";
 import InviteReviewDrawer from "./InviteReviewDrawer";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // ─── 四层架构定义（工厂函数，counts 动态联动） ────────────────
 type TierCounts = { eco: number; saas: number; platforms: number; projects: number; users: number; groups: number };
 function buildTiers(c: TierCounts) {
@@ -3036,7 +3019,8 @@ const mockCurrentAccounts: { name: string; role: string; avatar: string }[] = [
   { name: "林峰",  role: "老师", avatar: "林" },
 ];
 export default function EcosystemManagement() {
-  const { accounts, setAccounts } = useAccounts();
+  useThemeSingleton();
+const { accounts, setAccounts } = useAccounts();
   const [activeTier, setActiveTier] = useState("super");
   const [ecoList, setEcoList] = useState<EcoItem[]>(() => ecosystems.map(e => ({ ...e })));
   const [saasList, setSaasList] = useState<SaasItem[]>(() => saasPlatforms.map(p => ({ ...p })));

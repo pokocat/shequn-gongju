@@ -1,24 +1,7 @@
 import { useState } from "react";
 import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { getAvatar } from "./Avatar";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  accent: "#3b82f6",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const taskCategories = [
   { label: "待处理的任务", count: 12, active: true },
@@ -214,7 +197,8 @@ const taskStatusStyle = (status: string) => {
 
 // ─── 主组件 ───────────────────────────────────────────────────
 export default function InfluenceRanking() {
-  const [activeTab, setActiveTab] = useState(rankingTabs[0]);
+  useThemeSingleton();
+const [activeTab, setActiveTab] = useState(rankingTabs[0]);
   const [selectedUser, setSelectedUser] = useState(rankingData[0]);
   const [activeTaskCategory, setActiveTaskCategory] = useState(taskCategories[0].label);
   const [selectedTaskIndex, setSelectedTaskIndex] = useState(0);

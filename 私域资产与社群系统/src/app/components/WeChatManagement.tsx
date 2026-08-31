@@ -4,34 +4,7 @@ import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check } from "lucide-react";
 import { useCommunityData } from "../data/communityDataStore";
 import { defaultGroupTypeRules } from "../data/projectGroupRules";
-
-const S = {
-  bg: "#f8fafc",
-  surface: "#ffffff",
-  border: "rgba(15,23,42,0.06)",
-  borderMed: "rgba(15,23,42,0.12)",
-  primary: "#3b82f6",
-  primaryDark: "#2563eb",
-  primaryLight: "rgba(59,130,246,0.08)",
-  primaryMid: "rgba(59,130,246,0.18)",
-  accent: "#bfdbfe",
-  accentLight: "rgba(59,130,246,0.08)",
-  accentMid: "rgba(59,130,246,0.18)",
-  success: "#16a34a",
-  successBg: "#f0fdf4",
-  warning: "#d97706",
-  warningBg: "#fffbeb",
-  danger: "#dc2626",
-  dangerBg: "#fef2f2",
-  text: "#1e293b",
-  textSec: "#475569",
-  muted: "#94a3b8",
-  mutedLight: "#cbd5e1",
-  radius: "10px",
-  radiusSm: "6px",
-  radiusLg: "14px",
-};
-
+import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const mockWechats = [
   { no: "00001", wechatId: "wx_bj_01", phone: "138-0012-3456", status: "使用中", nickname: "思远", gender: "男", qqNo: "287634521", boundEmail: "wsy@eco-saas.com", opsManager: "吴思远", memberManager: "张明", certified: true, invitedNew: 42, scanCount: 386, friendCount: 1823, city: "北京", project: "北京PRO服务", lastLogin: "2026-07-05", groupCount: 16, isInitiator: true, targetGroup: "北京PRO会员群01", targetGroupCount: 3, credential: "已认证" },
@@ -1513,8 +1486,10 @@ function HeaderActionSlot({ targetId, children }: { targetId?: string; children:
   return target ? createPortal(children, target) : <>{children}</>;
 }
 
-export default function WeChatManagement({ controlledViewDimension, controlledMainTab, onMainTabChange, hideAccountTypeTabs = false, hideDimensionTabs = false, hidePageTitle = false, headerActionTargetId, secondaryActionTargetId, toolbarActionPlacement = "header" }: WeChatManagementProps = {}) {
-  const [search, setSearch] = useState("");
+export default function WeChatManagement({
+ controlledViewDimension, controlledMainTab, onMainTabChange, hideAccountTypeTabs = false, hideDimensionTabs = false, hidePageTitle = false, headerActionTargetId, secondaryActionTargetId, toolbarActionPlacement = "header" }: WeChatManagementProps = {}) {
+  useThemeSingleton();
+const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("全部");
   const [lifecycleFilter, setLifecycleFilter] = useState<"全部" | LifecycleStage>("全部");
   const [lifecycleMenuOpen, setLifecycleMenuOpen] = useState(false);
