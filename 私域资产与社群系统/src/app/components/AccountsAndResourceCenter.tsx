@@ -1043,17 +1043,17 @@ const { tools, setTools } = useTools();
         </div>
       )}
 
-      {/* ── 主区域：按项目 → 双栏(左项目面板 + 右项目详情)；其他 → 列表+详情 ────── */}
+      {/* ── 主区域：按项目 → 三栏(项目面板 + 项目账号列表 + 账号详情)；其他 → 列表+详情 ────── */}
       {viewDimension === "project" ? (
         <div className="flex gap-4 flex-1 min-h-0">
-          {/* 左侧：项目面板 */}
+          {/* 左栏：项目面板 */}
           <ProjectPanel
             projects={initialProjects}
             tools={tools}
             activeId={activeProjectId}
             onSelect={pid => { setActiveProjectId(pid); setSelectedToolId(null); }}
           />
-          {/* 右侧：项目详情 */}
+          {/* 中栏：项目 Banner + KPI + 账号列表 */}
           <div className="flex-1 min-w-0 min-h-0 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
             <ProjectDetail
               projectId={activeProjectId}
@@ -1064,6 +1064,34 @@ const { tools, setTools } = useTools();
               accountNameById={accountNameById}
             />
           </div>
+          {/* 右栏：账号详情（复用 DetailPanel） */}
+          {selectedTool && (
+            <DetailPanel
+              key={selectedTool.id}
+              tool={selectedTool}
+              accountName={accountNameById(selectedTool.boundAccountId)}
+              accountUid={selectedTool.boundAccountId}
+              accounts={accounts}
+              tab={detailTab}
+              setTab={setDetailTab}
+              onRequestHandover={toolId => setHandoverDraft({ toolId, targetUid: accounts[0]?.uid || "" })}
+              onConfirmAction={(toolId, a, label) => setConfirmAction({ toolId, action: a, label })}
+              onMutate={(patch, act, summary) => mutateTool(selectedTool.id, patch, act, summary)}
+              onSwitchProject={() => showToast("🗺 切换项目：已弹出项目多选对话框（示例）")}
+              onSwitchOwner={() => setHandoverDraft({ toolId: selectedTool.id, targetUid: accounts.find(a => a.uid !== selectedTool.boundAccountId)?.uid || accounts[0].uid })}
+              onMediaMatrix={() => showToast("🔗 已打开矩阵配置面板")}
+              onMediaBiz={() => showToast("💼 已创建商单申请")}
+              onToast={showToast}
+            />
+          )}
+          {!selectedTool && (
+            <div className="w-[400px] flex-shrink-0 flex flex-col items-center justify-center text-center p-8"
+              style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusLg, color: S.muted }}>
+              <Package size={32} style={{ marginBottom: 8, color: S.mutedLight }} />
+              <div className="text-sm" style={{ color: S.muted, fontFamily: "monospace" }}>点击中栏任意账号行查看完整详情</div>
+              <div className="text-xs mt-2" style={{ color: S.mutedLight, fontFamily: "monospace" }}>通用 · 运营专属 · 风控 · 操作日志</div>
+            </div>
+          )}
         </div>
       ) : (
       <div className="flex gap-4 flex-1 min-h-0">

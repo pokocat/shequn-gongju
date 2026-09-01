@@ -812,7 +812,6 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
   const [editError, setEditError] = useState("");
   const [qrMenuOpen, setQrMenuOpen] = useState(false);
   const qrMenuRef = useRef<HTMLDivElement | null>(null);
-  const [securityExpanded, setSecurityExpanded] = useState(false);
   useEffect(() => {
     if (!qrMenuOpen) return;
     const onClick = (e: MouseEvent) => {
@@ -885,70 +884,24 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
           </div>
         )}
 
-        {/* 归属与调度卡：浅灰底，6项3列，去掉accentLight蓝底 */}
-        {detailTab === "profile" && <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center gap-1.5 mb-2"><Briefcase size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>归属与调度</div></div><div className="grid grid-cols-3 gap-2">{[["归属项目", saved.project], ["归属员工", saved.opsManager], ["归属大区", saved.region || "—"], ["归属部门", saved.department || "—"], ["服务官", saved.serviceOfficer]].map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}</div></div>}
-
-        {/* 容量与活跃卡：四色进度条 + 下方补充活跃数据 */}
-        {detailTab === "profile" && <div className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <div className="flex items-center gap-1.5"><Activity size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>容量与活跃</div></div>
-          <CapacitySummary primaryLabel="好友数" groupLabel="群数" primaryValue={account.friendCount} primaryMax={2000} primaryWarning={risk.isFriendRisk} groupValue={account.groupCount} groupMax={20} groupWarning={risk.isGroupRisk} />
-          <div className="grid grid-cols-3 gap-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}>{[["正常活粉", account.normalFans], ["扫码次数", account.scanCount], ["推送次数", account.invitedNew]].map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{value}</div></div>)}</div>
-        </div>}
-
-        {/* 编辑态：归属与调度字段集中编辑 */}
+        {/* 账号资料只保留一张账号概览卡；配置、运营明细和安全资料分别进入对应 Tab。 */}
         {detailTab === "profile" && (editing ? (
           <div className="space-y-3 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>编辑调度资料</div>
-            {isStock && <div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, color: S.muted, borderRadius: S.radiusSm }}>未使用养号阶段可暂不设置项目、账号类型、城市和负责人；领用时再补全。</div>}
+            <div className="text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>编辑账号资料</div>
             <DetailInput label="微信昵称" value={draft.nickname} onChange={value => updateDraft("nickname", value)} />
-            <DetailInput label="归属项目" value={draft.project} onChange={value => updateDraft("project", value)} />
-            <label className="block"><span className="block mb-1.5 text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>账号类型</span><select className="w-full px-2.5 py-2 text-xs outline-none" value={draft.accountType} onChange={event => updateDraft("accountType", event.target.value)} style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text, fontFamily: "monospace" }}><option value="待配置">待配置</option><option value="客服号">客服号</option><option value="招商号">招商号</option><option value="运营号">运营号</option></select></label>
-            <div className="grid grid-cols-2 gap-2"><DetailInput label="城市" value={draft.city} onChange={value => updateDraft("city", value)} /><DetailInput label="运营负责人" value={draft.opsManager} onChange={value => updateDraft("opsManager", value)} /></div>
-            <div className="grid grid-cols-2 gap-2"><DetailInput label="会员负责人" value={draft.memberManager} onChange={value => updateDraft("memberManager", value)} /><DetailInput label="目标群" value={draft.targetGroup} onChange={value => updateDraft("targetGroup", value)} /></div>
-            <div className="grid grid-cols-2 gap-2"><DetailInput label="绑定手机" value={draft.phone} onChange={value => updateDraft("phone", value)} /><DetailInput label="QQ号" value={draft.qqNo} onChange={value => updateDraft("qqNo", value)} /></div>
-            <DetailInput label="绑定邮箱" value={draft.boundEmail} onChange={value => updateDraft("boundEmail", value)} />
+            <div className="grid grid-cols-2 gap-2"><DetailInput label="性别" value={draft.gender} onChange={value => updateDraft("gender", value)} /><label className="block"><span className="block mb-1.5 text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>账号类型</span><select className="w-full px-2.5 py-2 text-xs outline-none" value={draft.accountType} onChange={event => updateDraft("accountType", event.target.value)} style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text, fontFamily: "monospace" }}><option value="待配置">待配置</option><option value="客服号">客服号</option><option value="招商号">招商号</option><option value="运营号">运营号</option></select></label></div>
+            <div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }}>项目、地区、负责人和群配置请在“绑定分配”中维护；手机号、邮箱、紧急联系人和安全凭证请在“个人安全”中维护。</div>
             {editError && <div className="text-xs" role="alert" style={{ color: "#c2410c", fontFamily: "monospace" }}>{editError}</div>}
           </div>
         ) : (
-          <>
-          {/* 账号身份卡：微信昵称/二维码缩略图/认证状态/性别，删除微信号（头像卡有） */}
-          <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center gap-1.5 mb-2"><MessageCircle size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>账号身份</div></div>
-            <div className="flex items-start gap-3">
-              <button type="button" title={account.wechatQrName || "查看二维码"} className="w-12 h-12 grid place-items-center flex-shrink-0" style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm, color: S.muted }} onClick={() => onAction(isStock ? `${account.wechatId} 已进入二维码上传流程` : `${account.wechatId} 的二维码查看入口已打开`)}><QrCode size={20} /></button>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 flex-1 min-w-0">
-                {[["微信号", account.wechatId], ["性别", saved.gender], ["账号类型", saved.accountType], ["认证状态", account.certified ? "已认证" : "未认证"], ["微信二维码", account.wechatQrName || "待上传"]].map(([label, value]) => (
-                  <div key={label} className="min-w-0">
-                    <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div>
-                    <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* 联系方式卡：绑定手机/QQ号/绑定邮箱/紧急联系人 */}
-          <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center gap-1.5 mb-2"><Phone size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>联系方式</div></div>
+          <div className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+            <div className="flex items-center justify-between gap-2"><div className="flex items-center gap-1.5"><MessageCircle size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>账号信息</div></div><button type="button" className="text-[10px] font-semibold" style={{ color: S.primary, fontFamily: "monospace" }} onClick={() => setDetailTab("binding")}>前往绑定分配</button></div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-              {[["绑定手机", saved.phone, !!saved.phone && saved.phone !== "—"], ["QQ号", saved.qqNo, !!saved.qqNo && saved.qqNo !== "—"], ["绑定邮箱", saved.boundEmail, !!saved.boundEmail && saved.boundEmail !== "—"], ["紧急联系人", `${account.emergencyContacts.length} 位`, account.emergencyContacts.length > 0]].map(([label, value, bound]) => (
-                <div key={label} className="min-w-0">
-                  <div className="flex items-center gap-1"><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div>{bound ? <Check size={10} style={{ color: S.success }} /> : <span className="text-[9px]" style={{ color: S.muted }}>未绑定</span>}</div>
-                  <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value}</div>
-                </div>
-              ))}
+              {[["微信号", account.wechatId], ["账号类型", saved.accountType], ["微信昵称", saved.nickname], ["性别", saved.gender], ["认证状态", account.certified ? "已认证" : "未认证"], ["二维码状态", account.wechatQrName || "待上传"], ["归属项目", saved.project], ["归属大区", saved.region || "—"], ["归属部门", saved.department || "—"], ["服务官", saved.serviceOfficer || "—"]].map(([label, value]) => <div key={label} className="min-w-0"><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}
             </div>
+            <div className="pt-3" style={{ borderTop: `1px solid ${S.border}` }}><CapacitySummary primaryLabel="好友数" groupLabel="群数" primaryValue={account.friendCount} primaryMax={2000} primaryWarning={risk.isFriendRisk} groupValue={account.groupCount} groupMax={20} groupWarning={risk.isGroupRisk} /></div>
+            <div className="flex items-center justify-between text-xs pt-2" style={{ borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}><span style={{ color: S.muted }}>同步状态</span><span className="px-1.5 py-0.5" style={{ background: syncStyle.bg, color: syncStyle.color, borderRadius: S.radiusSm }}>{syncStatus}</span></div>
           </div>
-
-          {/* 安全凭证折叠区：默认折叠，点击展开（敏感字段脱敏，详细编辑在security Tab） */}
-          <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <button type="button" className="w-full flex items-center justify-between" onClick={() => setSecurityExpanded(v => !v)}>
-              <div className="flex items-center gap-1.5"><LockKeyhole size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>安全与凭证</div></div>
-              <div className="flex items-center gap-2"><span className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>已脱敏 · 点击展开</span><ChevronDown size={12} style={{ color: S.muted, transition: "transform 0.2s", transform: securityExpanded ? "rotate(180deg)" : "none" }} /></div>
-            </button>
-            {securityExpanded && <div className="grid grid-cols-2 gap-x-4 gap-y-2.5 mt-3 pt-3" style={{ borderTop: `1px solid ${S.border}` }}>{[["身份证号", account.idCard], ["银行卡号", account.bankCard], ["支付密码", account.paymentPassword], ["QQ密码", account.qqPassword], ["QQ密保", account.qqSecurity], ["邮箱密码", account.emailPassword], ["邮箱密保", account.emailSecurity]].map(([label, value]) => <div key={label} className="min-w-0"><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value ? (label.includes("密码") ? "••••••••" : value) : "未配置"}</div></div>)}</div>}
-          </div>
-          </>
         ))}
 
         {detailTab === "binding" && <div className="space-y-3">
@@ -1120,17 +1073,7 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
           </div>
         )}
 
-        {/* 归属与调度卡：浅灰底，去掉accentLight蓝底 */}
-        {wecomDetailTab === "profile" && <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center gap-1.5 mb-2"><Briefcase size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>归属与调度</div></div><div className="grid grid-cols-3 gap-2">{attributionInfo.map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}</div></div>}
-
-        {/* 容量与活跃卡：四色进度条 + 下方补充运营数据 */}
-        {wecomDetailTab === "profile" && <div className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <div className="flex items-center gap-1.5"><Activity size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>容量与活跃</div></div>
-          <CapacitySummary primaryLabel="成员数" groupLabel="群数" primaryValue={account.members} primaryMax={account.memberCapacity} primaryWarning={memberRate >= 0.85} groupValue={account.groups.length} groupMax={account.groupCapacity} groupWarning={groupRate >= 0.8} />
-          <div className="grid grid-cols-3 gap-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}>{[["外部客户", account.customers], ["客户联系率", `${Math.round((account.customers / Math.max(1, account.members)) * 100)}%`], ["群容量使用", `${Math.round(groupRate * 100)}%`]].map(([label, value]) => <div key={label}><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{value}</div></div>)}</div>
-        </div>}
-
-        {/* 编辑态：归属与配置字段集中编辑 */}
+        {/* 企业账号资料同样收敛为单一卡片，绑定和运营明细分别进入对应 Tab。 */}
         {wecomDetailTab === "profile" && (editing ? (
           <div className="space-y-3 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
             <div className="text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>编辑配置资料</div>
@@ -1141,26 +1084,15 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
             {editError && <div className="text-xs" role="alert" style={{ color: "#c2410c", fontFamily: "monospace" }}>{editError}</div>}
           </div>
         ) : (
-          <>
-          {/* 企业身份卡：corpId/认证状态/绑定个微/开通时间/联系电话，删除企业ID（头像卡有企微ID） */}
-          <div className="p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center gap-1.5 mb-2"><Building2 size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>企业身份</div></div>
+          <div className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+            <div className="flex items-center justify-between gap-2"><div className="flex items-center gap-1.5"><Building2 size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>企业账号信息</div></div><button type="button" className="text-[10px] font-semibold" style={{ color: S.primary, fontFamily: "monospace" }} onClick={() => setWecomDetailTab("binding")}>前往绑定分配</button></div>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
-              {[["绑定个微", saved.linkedPersonal], ["认证状态", account.verified ? "已认证" : "未认证"], ["开通时间", account.createdAt], ["联系电话", account.phone || "未填写"]].map(([label, value]) => (
-                <div key={label} className="min-w-0">
-                  <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label as string}</div>
-                  <div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{(value as string) || "未配置"}</div>
-                </div>
-              ))}
+              {[["企业 ID", account.corpId], ["账号类型", "企业微信"], ["认证状态", account.verified ? "已认证" : "未认证"], ["开通时间", account.createdAt], ["归属项目", account.project || "—"], ["归属城市", saved.city || "—"], ["运营部门", saved.dept || "—"], ["服务负责人", saved.admin || "—"], ["绑定个微", saved.linkedPersonal || "未绑定"], ["联系电话", account.phone || "未填写"]].map(([label, value]) => <div key={label} className="min-w-0"><div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</div><div className="mt-0.5 text-xs font-medium truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{value || "—"}</div></div>)}
             </div>
+            <div className="pt-3" style={{ borderTop: `1px solid ${S.border}` }}><CapacitySummary primaryLabel="成员数" groupLabel="群数" primaryValue={account.members} primaryMax={account.memberCapacity} primaryWarning={memberRate >= 0.85} groupValue={account.groups.length} groupMax={account.groupCapacity} groupWarning={groupRate >= 0.8} /></div>
+            <div className="flex items-center justify-between text-xs pt-2" style={{ borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}><span style={{ color: S.muted }}>同步状态</span><span className="px-1.5 py-0.5" style={{ background: sync.bg, color: sync.color, borderRadius: S.radiusSm }}>{account.syncStatus}</span></div>
+            {saved.note && <div className="pt-2 text-[10px] leading-relaxed" style={{ color: S.muted, borderTop: `1px solid ${S.border}`, fontFamily: "monospace" }}>运营备注：{saved.note}</div>}
           </div>
-
-          {/* 运营备注卡：提升位置+标题+更好样式 */}
-          <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center gap-1.5 mb-2"><MessageCircle size={12} style={{ color: S.muted }} /><div className="text-[10px] font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>运营备注</div></div>
-            {saved.note ? <div className="text-xs" style={{ color: S.textSec, lineHeight: 1.6, fontFamily: "monospace" }}>{saved.note}</div> : <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>暂无运营备注</div>}
-          </div>
-          </>
         ))}
 
         {wecomDetailTab === "binding" && <div className="space-y-3">
