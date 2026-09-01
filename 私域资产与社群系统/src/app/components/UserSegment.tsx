@@ -171,7 +171,7 @@ const [activeView, setActiveView] = useState<"用户列表" | "RFM分层" | "标
                 <Tag size={14} style={{ color: S.text }} />
                 <span className="text-sm font-bold" style={{ color: S.text }}>标签库</span>
               </div>
-              <button className="w-6 h-6 flex items-center justify-center font-bold" style={{ color: "#ffffff", background: S.accent, borderRadius: S.radiusSm }}>
+              <button className="w-6 h-6 flex items-center justify-center font-bold" style={{ color: S.onPrimary, background: S.accent, borderRadius: S.radiusSm }}>
                 <Plus size={14} />
               </button>
             </div>
@@ -235,7 +235,7 @@ const [activeView, setActiveView] = useState<"用户列表" | "RFM分层" | "标
                   ))}
                   {rfmFilter && (
                     <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-bold"
-                      style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
+                      style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>
                       {rfmFilter}
                       <button onClick={() => setRfmFilter(null)}><X size={10} /></button>
                     </span>
@@ -281,7 +281,7 @@ const [activeView, setActiveView] = useState<"用户列表" | "RFM分层" | "标
                       <td className="px-3 py-3 text-sm" style={{ color: S.textSec }}>{user.city}</td>
                       <td className="px-3 py-3">
                         <span className="text-xs px-2 py-0.5 font-bold"
-                          style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{user.level}</span>
+                          style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>{user.level}</span>
                       </td>
                       <td className="px-3 py-3">
                         <div className="flex flex-wrap gap-1">

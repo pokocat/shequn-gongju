@@ -51,7 +51,7 @@ const [activeView, setActiveView] = useState<WorkbenchView>("members");
               >
                 <Icon size={14} />
                 <span className="text-xs font-bold">{tab.label}</span>
-                {tab.badge && <span className="min-w-4 h-4 px-1 flex items-center justify-center text-[9px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: "999px" }}>{tab.badge}</span>}
+                {tab.badge && <span className="min-w-4 h-4 px-1 flex items-center justify-center text-[9px] font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: "999px" }}>{tab.badge}</span>}
                 <span className="hidden xl:inline text-[10px]" style={{ color: isActive ? "rgba(204,255,0,0.68)" : S.muted }}>{tab.description}</span>
               </button>
             );

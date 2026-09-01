@@ -76,7 +76,7 @@ const [search, setSearch] = useState("");
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <span className="text-lg font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.name}</span>
-                <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{user.identity}</span>
+                <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{user.identity}</span>
                 {user.tags.includes("高价值") && <Star size={14} style={{ color: S.text }} />}
                 {user.tags.includes("退款风险") && <AlertTriangle size={14} style={{ color: "#1e293b" }} />}
               </div>
@@ -88,7 +88,7 @@ const [search, setSearch] = useState("");
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#f1f5f9", color: S.text, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, fontFamily: "monospace" }}>发提醒</button>
-              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", border: "none", borderRadius: S.radius, fontFamily: "monospace" }}>分配群</button>
+              <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, border: "none", borderRadius: S.radius, fontFamily: "monospace" }}>分配群</button>
               <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }}>
                 <Plus size={12} className="inline mr-1" />建工单
               </button>
@@ -200,7 +200,7 @@ const [search, setSearch] = useState("");
                       <div className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.group}</div>
                       <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>服务老师：{user.teacher}</div>
                     </div>
-                    <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>已入群</span>
+                    <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>已入群</span>
                   </div>
                 </div>
               )}

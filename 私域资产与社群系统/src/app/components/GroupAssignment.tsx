@@ -117,7 +117,7 @@ const [selectedUser, setSelectedUser] = useState<number | null>(1);
                     <div className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.name}</div>
                     <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{user.phone}</div>
                   </div>
-                  <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+                  <span className="ml-auto px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                     {user.identity}
                   </span>
                 </div>

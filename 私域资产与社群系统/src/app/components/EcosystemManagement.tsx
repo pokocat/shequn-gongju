@@ -269,7 +269,7 @@ function SuperView({
         <div className="flex items-center gap-2 mb-4">
           <Zap size={16} style={{ color: "#1e293b" }} />
           <span className="text-sm font-bold" style={{ color: S.text }}>超级生态</span>
-          <span className="px-2 py-0.5 text-xs font-bold ml-2" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>最高层级</span>
+          <span className="px-2 py-0.5 text-xs font-bold ml-2" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>最高层级</span>
         </div>
         <p className="text-xs leading-relaxed mb-4 font-mono" style={{ color: S.textSec }}>
           超级生态是整个体系的最顶层。统一管理旗下所有生态、SaaS 系统、平台和具体项目。拥有全局数据视角、最高级权限、多租户管控和生态资源调配能力。
@@ -347,7 +347,7 @@ function SuperView({
                 <div className="flex gap-2">
                   <button type="button" className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasEcoId(e.id)}><Plus size={12} /> 新建 SaaS 系统</button>
                   {["查看平台", "项目列表", "数据报表"].map(a => (
-                    <button key={a} type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{a}</button>
+                    <button key={a} type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>{a}</button>
                   ))}
                 </div>
               </div>
@@ -462,7 +462,7 @@ function EcoView({
             <div className="flex items-center justify-between">
               <span className="px-2 py-0.5 text-xs font-bold" style={{ background: statusCfg[p.status]?.bg, color: statusCfg[p.status]?.color, borderRadius: S.radiusSm }}>{p.status}</span>
               <div className="flex items-center gap-2">
-                <button type="button" className="flex items-center gap-1 px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => setCreatePlatformSaasId(p.id)}><Plus size={10} /> 开平台</button>
+                <button type="button" className="flex items-center gap-1 px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformSaasId(p.id)}><Plus size={10} /> 开平台</button>
               </div>
             </div>
           </div>
@@ -573,7 +573,7 @@ function SaasView({
               ))}
             </div>
             <div className="flex-shrink-0">
-              <button type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => { setActivePlatformId(pf.id); setActivePlatformName(pf.name); setActiveTier && setActiveTier("platform"); }}>进入平台</button>
+              <button type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => { setActivePlatformId(pf.id); setActivePlatformName(pf.name); setActiveTier && setActiveTier("platform"); }}>进入平台</button>
             </div>
           </div>
         ))}
@@ -892,7 +892,7 @@ function ProjectList({
             <div className="flex-shrink-0" style={{ width: 100 }}><b>{p.users.toLocaleString()}</b><span style={{ color: S.muted }}> / {p.groups} 群</span></div><div className="flex-shrink-0" style={{ width: 120, color: S.muted }}>{p.teacher}</div>
             <div className="flex-shrink-0" style={{ width: 150 }}><div className="flex flex-wrap gap-1">{p.cities.map(c => <span key={c} className="px-1.5 py-0.5 font-bold" style={{ background: "#1e293b", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm }}>{c}</span>)}</div></div>
             <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 font-bold" style={{ background: statusCfg[p.status]?.bg, color: statusCfg[p.status]?.color, borderRadius: S.radiusSm }}>{p.status}</span></div>
-            <div className="flex-shrink-0 flex gap-1" style={{ width: 100 }} onClick={e => e.stopPropagation()}><button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => { setSelectedId(p.id); setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}>进入</button><button type="button" className="px-1.5 py-1" title="配置项目" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => { setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}><Settings size={11} /></button></div>
+            <div className="flex-shrink-0 flex gap-1" style={{ width: 100 }} onClick={e => e.stopPropagation()}><button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => { setSelectedId(p.id); setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}>进入</button><button type="button" className="px-1.5 py-1" title="配置项目" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => { setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}><Settings size={11} /></button></div>
           </div>
         ))}
       </div>
@@ -952,7 +952,7 @@ function PlatformView({
             <div className="flex-shrink-0 font-bold" style={{ width: 110, color: S.text }}>{pf.revenue}</div>
             <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 font-bold" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span></div>
             <div className="flex-shrink-0 flex gap-1" style={{ width: 140 }} onClick={e => e.stopPropagation()}>
-              <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => onEnterPlatform(pf.id, pf.name)}>进入平台</button>
+              <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => onEnterPlatform(pf.id, pf.name)}>进入平台</button>
               <button type="button" className="px-1.5 py-1" title="平台配置" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}><Settings size={11} /></button>
             </div>
           </div>
@@ -1783,7 +1783,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
                       <select value={ident.scopeType} style={{ ...fieldStyle, width: 110, padding: "6px 8px", fontSize: 12 }} onChange={e => updateIdentity(idx, { scopeType: e.target.value as IdentityRole["scopeType"] })}>
                         {(["global","eco","saas","platform","project","city"] as IdentityRole["scopeType"][]).map(s => <option key={s} value={s}>{scopeTypeLabelMap[s].label}</option>)}
                       </select>
-                      <span className="px-2 py-1 text-[10px] font-bold font-mono" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{scopeCfg.label} · {ident.scopeIds.length} 已选</span>
+                      <span className="px-2 py-1 text-[10px] font-bold font-mono" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>{scopeCfg.label} · {ident.scopeIds.length} 已选</span>
                     </div>
                     <button type="button" className="text-[10px] font-mono px-2 py-1" style={{ color: "#a22", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => removeIdentity(idx)}>移除</button>
                   </div>
@@ -2490,7 +2490,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                     <div className="flex-shrink-0" style={{ width: 130, color: S.textSec }}>{a.createdAt}</div>
                     <div className="flex-shrink-0 flex items-center gap-1 flex-wrap" style={{ width: 200 }}>
                       <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => setDetailOpen(a)}><Eye size={11} />详情</button>
-                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => setEditing(a)}><Settings size={11} />编辑</button>
+                      <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => setEditing(a)}><Settings size={11} />编辑</button>
                       <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text }} onClick={() => setQuickAssignToolOpen(a)} title="快速分配工具"><ArrowLeftRight size={11} /></button>
                       {a.status !== "active" && <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setStatus(a.uid, "active")}>启用</button>}
                       {a.status === "active" && <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: "#ffffff", color: "#991b1b", border: "1px solid #991b1b", borderRadius: S.radiusSm }} onClick={() => setStatus(a.uid, "disabled", true)}>停用</button>}
@@ -2689,7 +2689,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                       <div>⏳ {inv.expireAt}</div>
                       <div className="text-[10px]" style={{ color: S.muted }}>
                         {inv.status === "expired" ? "邀请链接已失效" : "邀请链接有效中"}
-                        {resendCount != null && resendCount > 0 && <span className="ml-1 px-1" style={{ background: S.accentLight, color: "#ffffff", borderRadius: 3 }}>重发 {resendCount}</span>}
+                        {resendCount != null && resendCount > 0 && <span className="ml-1 px-1" style={{ background: S.accentLight, color: S.onPrimary, borderRadius: 3 }}>重发 {resendCount}</span>}
                       </div>
                     </div>
                     <div className="flex-shrink-0 flex items-center flex-wrap gap-1.5" style={{ width: 200 }}>
@@ -2697,7 +2697,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                         <Eye size={11} /> 查看
                       </button>
                       {inv.status === "submitted" && (
-                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => openReview(inv)}>
+                        <button type="button" className="flex items-center gap-1 px-2 py-1 text-[10px] font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => openReview(inv)}>
                           <CheckCircle size={11} /> 审核
                         </button>
                       )}
@@ -2894,7 +2894,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
             </div>
             <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: "#ffffff", borderTop: `1px solid ${S.border}` }}>
               <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setDetailOpen(null)}>关闭</button>
-              <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }} onClick={() => { const a = detailOpen; setDetailOpen(null); setEditing(a); }}><Settings size={13} />前往编辑</button>
+              <button type="button" className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => { const a = detailOpen; setDetailOpen(null); setEditing(a); }}><Settings size={13} />前往编辑</button>
             </div>
           </aside>
         </div>

@@ -259,7 +259,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
                     {VARIABLES.map(v => (
                       <button key={v} onClick={() => insertVariable(v)}
                         className="text-[10px] px-2 py-0.5 font-bold transition-colors"
-                        style={{ border: `1px solid ${S.border}`, color: "#ffffff", background: S.accent, borderRadius: S.radiusSm }}>
+                        style={{ border: `1px solid ${S.border}`, color: S.onPrimary, background: S.accent, borderRadius: S.radiusSm }}>
                         {v}
                       </button>
                     ))}
@@ -349,7 +349,7 @@ function NewTaskModal({ onClose }: { onClose: () => void }) {
               </button>
             ) : (
               <button onClick={onClose} className="flex items-center gap-2 px-5 py-2 text-sm font-bold font-mono"
-                style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
+                style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>
                 <Send size={14} /> 确认发送
               </button>
             )}
@@ -409,7 +409,7 @@ function TaskCard({ task, onSelect, selected }: { task: Task; onSelect: (t: Task
         <div className="flex flex-col gap-1.5">
           {task.status === "已完成" && (
             <button className="text-xs px-3 py-1.5 font-bold"
-              style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}
+              style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}
               onClick={e => e.stopPropagation()}>查看报告</button>
           )}
           {task.status === "进行中" && (
@@ -435,7 +435,7 @@ function TaskCard({ task, onSelect, selected }: { task: Task; onSelect: (t: Task
           {task.status === "已暂停" && (
             <>
               <button className="flex items-center gap-1 text-xs px-3 py-1.5 font-bold"
-                style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}
+                style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}
                 onClick={e => e.stopPropagation()}><Play size={11} /> 恢复</button>
               <button className="flex items-center gap-1 text-xs px-3 py-1.5 font-bold"
                 style={{ border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}
@@ -488,7 +488,7 @@ function DetailPanel({ task, onClose }: { task: Task; onClose: () => void }) {
         <div className="pt-2 space-y-2 border-t" style={{ borderColor: S.border }}>
           {task.status === "已完成" && (
             <button className="w-full py-2 text-sm font-bold"
-              style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>查看完整报告</button>
+              style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>查看完整报告</button>
           )}
           {task.status === "进行中" && (
             <button className="w-full flex items-center justify-center gap-2 py-2 text-sm font-bold"
@@ -504,7 +504,7 @@ function DetailPanel({ task, onClose }: { task: Task; onClose: () => void }) {
           )}
           {task.status === "已暂停" && (
             <button className="w-full flex items-center justify-center gap-2 py-2 text-sm font-bold"
-              style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
+              style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>
               <Play size={14} /> 恢复任务
             </button>
           )}
@@ -593,7 +593,7 @@ const [activeView, setActiveView] = useState<"任务列表" | "模板库" | "执
           <button className="p-6 flex flex-col items-center justify-center gap-3 border-2 border-dashed transition-colors"
             style={{ borderColor: S.borderMed, minHeight: 180, borderRadius: S.radius }}>
             <div className="w-10 h-10 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-              <Plus size={20} style={{ color: "#ffffff" }} />
+              <Plus size={20} style={{ color: S.onPrimary }} />
             </div>
             <div className="text-sm font-bold" style={{ color: S.textSec }}>创建模板</div>
           </button>
@@ -604,7 +604,7 @@ const [activeView, setActiveView] = useState<"任务列表" | "模板库" | "执
                 <div>
                   <div className="text-sm font-bold" style={{ color: S.text }}>{tpl.name}</div>
                   <span className="text-[10px] px-1.5 py-0.5 mt-1 inline-block font-bold"
-                    style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>{tpl.category}</span>
+                    style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>{tpl.category}</span>
                 </div>
               </div>
               <div className="text-xs leading-relaxed mb-4 line-clamp-3 font-mono" style={{ color: S.muted }}>{tpl.preview}</div>

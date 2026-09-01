@@ -474,7 +474,7 @@ const [tab, setTab] = useState("全部活动");
                   <div style={{ border: `2px dashed ${S.borderMed}`, borderRadius: S.radiusSm, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "24px 0" }}>
                     <div style={{ fontSize: 13, color: S.muted, fontFamily: "monospace" }}>点击或拖拽上传活动海报</div>
                     <div style={{ fontSize: 11, color: S.mutedLight, fontFamily: "monospace" }}>支持 JPG / PNG，建议尺寸 1080×1920</div>
-                    <button style={{ marginTop: 4, padding: "6px 16px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, border: "none", color: "#ffffff", background: S.accent, fontFamily: "monospace", cursor: "pointer" }}>选择文件</button>
+                    <button style={{ marginTop: 4, padding: "6px 16px", borderRadius: S.radiusSm, fontSize: 12, fontWeight: 700, border: "none", color: S.onPrimary, background: S.accent, fontFamily: "monospace", cursor: "pointer" }}>选择文件</button>
                   </div>
                 </>
               )}

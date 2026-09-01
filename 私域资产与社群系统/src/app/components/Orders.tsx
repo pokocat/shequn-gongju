@@ -360,7 +360,7 @@ const [orders, setOrders] = useState<Order[]>(initialOrders);
                       </div>
                     )}
                     <div className="flex gap-2 mt-3">
-                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: o.id, action: "approve" })}>
+                      <button className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: o.id, action: "approve" })}>
                         <CheckCircle size={11} className="inline mr-1" />批准退款
                       </button>
                       <button className="px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: o.id, action: "reject" })}>
@@ -416,13 +416,13 @@ const [orders, setOrders] = useState<Order[]>(initialOrders);
             )}
             <div className="flex flex-col gap-2 mt-auto">
               {detail.status === "待确认" && (
-                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "confirm" })}>
+                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "confirm" })}>
                   确认收款
                 </button>
               )}
               {detail.status === "退款申请" && (
                 <>
-                  <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "approve" })}>批准退款</button>
+                  <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "approve" })}>批准退款</button>
                   <button className="w-full py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => setConfirmAction({ orderId: detail.id, action: "reject" })}>拒绝退款</button>
                 </>
               )}

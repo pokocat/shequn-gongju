@@ -115,7 +115,7 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
         </button>
         <span style={{ color: S.muted }}>›</span>
         <span className="text-sm font-medium" style={{ color: S.text, fontFamily: "monospace" }}>{group.name}</span>
-        <span className="px-2 py-0.5 text-xs uppercase" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>入群人名单</span>
+        <span className="px-2 py-0.5 text-xs uppercase" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>入群人名单</span>
       </div>
 
       <div className="flex items-center gap-6 px-4 py-3 flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
@@ -155,7 +155,7 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
               <div className="flex-shrink-0 text-xs" style={{ width: 110, color: S.muted, fontFamily: "monospace" }}>{m.wechatId}</div>
               <div className="flex-shrink-0 text-xs" style={{ width: 100, color: S.muted, fontFamily: "monospace" }}>{m.city}</div>
               <div className="flex-shrink-0" style={{ width: 80 }}>
-                <span className="px-1.5 py-0.5 text-xs uppercase" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{m.level}</span>
+                <span className="px-1.5 py-0.5 text-xs uppercase" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{m.level}</span>
               </div>
               <div className="flex-shrink-0 text-xs" style={{ width: 120, color: S.muted, fontFamily: "monospace" }}>{m.phone}</div>
               <div className="flex-shrink-0 text-xs" style={{ width: 80, color: S.muted, fontFamily: "monospace" }}>{m.referrer}</div>
@@ -167,7 +167,7 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
                 <span className="text-xs px-1.5 py-0.5 uppercase" style={{ background: m.inGroup ? S.accent : "#fff7ed", color: m.inGroup ? "#ffffff" : "#c2410c", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{m.inGroup ? "已进群" : "待进群"}</span>
               </div>
               <div className="flex-shrink-0" style={{ width: 60 }}>
-                <button className="px-2 py-1 text-xs uppercase font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={event => { event.stopPropagation(); setEditingMemberNo(m.no); }}>修改</button>
+                <button className="px-2 py-1 text-xs uppercase font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={event => { event.stopPropagation(); setEditingMemberNo(m.no); }}>修改</button>
               </div>
             </div>
           ))}
@@ -237,7 +237,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
       </div>
       <div className="flex items-center gap-1 flex-shrink-0" role="tablist" aria-label="微信群管理功能">
         <button type="button" role="tab" aria-selected={false} onClick={() => setActiveWorkspace("groups")} className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Users size={13} />群库管理</button>
-        <button type="button" role="tab" aria-selected className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, border: "1px solid #1e293b", borderRadius: S.radiusSm }}><GitBranch size={13} />分配规则 <span className="px-1.5 py-0.5" style={{ background: S.accent, color: "#ffffff", borderRadius: "999px", fontSize: "9px" }}>8</span></button>
+        <button type="button" role="tab" aria-selected className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, border: "1px solid #1e293b", borderRadius: S.radiusSm }}><GitBranch size={13} />分配规则 <span className="px-1.5 py-0.5" style={{ background: S.accent, color: S.onPrimary, borderRadius: "999px", fontSize: "9px" }}>8</span></button>
       </div>
       <div className="flex-1 min-h-0"><GroupAssignment embedded /></div>
     </div>
@@ -334,7 +334,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
 
       <div className="flex items-center gap-1 flex-shrink-0" role="tablist" aria-label="微信群管理功能">
         <button type="button" role="tab" aria-selected className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, border: "1px solid #1e293b", borderRadius: S.radiusSm }}><Users size={13} />群库管理</button>
-        <button type="button" role="tab" aria-selected={false} onClick={() => setActiveWorkspace("assignment")} className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><GitBranch size={13} />分配规则 <span className="px-1.5 py-0.5" style={{ background: S.accent, color: "#ffffff", borderRadius: "999px", fontSize: "9px" }}>8</span></button>
+        <button type="button" role="tab" aria-selected={false} onClick={() => setActiveWorkspace("assignment")} className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><GitBranch size={13} />分配规则 <span className="px-1.5 py-0.5" style={{ background: S.accent, color: S.onPrimary, borderRadius: "999px", fontSize: "9px" }}>8</span></button>
       </div>
 
       <div className="flex items-center gap-3 flex-shrink-0 flex-wrap">
@@ -416,7 +416,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
                   <div className="flex-shrink-0 text-xs" style={{ width: 80, color: S.textSec, fontFamily: "monospace" }}>{g.scanCount}</div>
                   <div className="flex-shrink-0 text-xs font-medium" style={{ width: 90, color: S.text, fontFamily: "monospace" }}>{g.memberCount} 人</div>
                   <div className="flex-shrink-0 flex items-center gap-1.5" style={{ width: 190 }}>
-                    <button className="px-2 py-1 text-xs uppercase font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={(event) => { event.stopPropagation(); setMemberGroup(g); }}>
+                    <button className="px-2 py-1 text-xs uppercase font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={(event) => { event.stopPropagation(); setMemberGroup(g); }}>
                       <Users size={11} className="inline mr-0.5" />查看名单
                     </button>
                     <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={(event) => { event.stopPropagation(); setEditGroupNo(g.no); }}><Edit3 size={11} className="inline mr-0.5" />编辑</button>
@@ -502,7 +502,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
                   <span className="text-[10px] uppercase" style={{ color: "rgba(255,255,255,0.42)", fontFamily: "monospace" }}>QUICK ACTIONS</span>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5">
-                  <button type="button" className="flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold" style={{ background: S.accent, color: "#ffffff", border: `1px solid ${S.accent}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => announceAction(`${selectedGroup.name} 的群二维码更新任务已创建`)}>
+                  <button type="button" className="flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, border: `1px solid ${S.accent}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => announceAction(`${selectedGroup.name} 的群二维码更新任务已创建`)}>
                     <QrCode size={14} /> 更新群二维码
                   </button>
                   <button type="button" className="flex items-center gap-2 px-3 py-2.5 text-left text-xs font-bold" style={{ background: "rgba(255,255,255,0.08)", color: S.accent, border: "1px solid rgba(204,255,0,0.24)", borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => announceAction(`${selectedGroup.name} 的成员名单同步已排队`)}>

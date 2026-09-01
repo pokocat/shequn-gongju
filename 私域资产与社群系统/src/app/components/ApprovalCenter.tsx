@@ -122,7 +122,7 @@ const { approvals, setApprovals } = useApprovals();
         <div className="flex items-center gap-3">
           <h2 className="font-bold text-base" style={{ color: S.text, fontFamily: "monospace" }}>审批中心</h2>
           {pendingCount > 0 && (
-            <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
+            <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>
               {pendingCount} 待处理
             </span>
           )}
@@ -190,7 +190,7 @@ const { approvals, setApprovals } = useApprovals();
               ? { background: S.accentLight, color: S.text, borderRadius: S.radiusSm, border: `1px solid rgba(204,255,0,0.4)` }
               : { color: S.muted, borderRadius: S.radiusSm, border: "1px solid transparent" }}>
             <Clock size={14} /> <span style={{ fontFamily: "monospace" }}>待处理</span>
-            {pendingCount > 0 && <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5" style={{ background: S.accent, color: "#ffffff", borderRadius: 3 }}>{pendingCount}</span>}
+            {pendingCount > 0 && <span className="ml-auto text-[10px] font-bold px-1.5 py-0.5" style={{ background: S.accent, color: S.onPrimary, borderRadius: 3 }}>{pendingCount}</span>}
           </button>
           <button onClick={() => setBottomTab("history")}
             className="flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors"
@@ -268,7 +268,7 @@ const { approvals, setApprovals } = useApprovals();
                         {canApprove(a) ? (
                           <button onClick={() => handleApprove(a.id)}
                             className="flex items-center gap-1 px-2.5 py-1 text-xs font-bold"
-                            style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>
+                            style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>
                             <Check size={11} /> 同意
                           </button>
                         ) : (
@@ -406,7 +406,7 @@ function DetailPanel({
                 <div className="flex gap-2">
                   <button onClick={onApprove}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-bold"
-                    style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+                    style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
                     <Check size={14} />
                     {a.currentNodeIndex >= template.nodes.length - 1 ? "终审通过" : "同意并流转"}
                   </button>
@@ -453,7 +453,7 @@ function DetailPanel({
                     style={isReject
                       ? { background: "#1e293b", color: "#ff6b6b", borderRadius: S.radiusSm }
                       : h.action === "approve"
-                        ? { background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }
+                        ? { background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }
                         : h.action === "submit"
                           ? { background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }
                           : { background: S.surface, border: `2px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }}>

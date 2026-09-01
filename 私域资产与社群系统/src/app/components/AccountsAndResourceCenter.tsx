@@ -684,7 +684,7 @@ const { tools, setTools } = useTools();
               <button type="button" onClick={() => setHandoverDraft(null)}
                 style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#ffffff", fontSize: 13, cursor: "pointer", color: S.textSec }}>取消</button>
               <button type="button" onClick={confirmHandover}
-                style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: "#ffffff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
+                style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: S.onPrimary, fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
                 <Check size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 推送审批单
               </button>
             </div>
@@ -755,7 +755,7 @@ const { tools, setTools } = useTools();
                 setStatusFilter("未使用");
                 showToast("✅ 注册入库成功：已在『未启用』阶段");
               }}
-              style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: "#ffffff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
+              style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.primary, color: S.onPrimary, fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)" }}>
               {newToolDrawer.step === 1 ? <><ChevronRight size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 下一步</> : <><Check size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 确定注册</>}
             </button>
           </div>
@@ -1025,7 +1025,7 @@ const { tools, setTools } = useTools();
         <div className="flex items-center gap-2 px-3 py-2 flex-shrink-0"
           style={{ background: S.ink, color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>
           <span className="text-xs font-bold">已选 {selectedRows.length} 个资源</span>
-          <button type="button" className="px-2 py-1 text-xs" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}
+          <button type="button" className="px-2 py-1 text-xs" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}
             onClick={() => runBulkAction("批量交接")}>批量交接</button>
           {selectedRows.some(id => tools.find(t => t.id === id && needsNurturing(t.type))) && (
           <button type="button" className="px-2 py-1 text-xs" style={{ background: S.surface, color: S.text, borderRadius: S.radiusSm }}
@@ -1169,7 +1169,7 @@ const { tools, setTools } = useTools();
                     🤷‍♀️ 当前筛选下没有匹配的资源 · 试试清空筛选条件
                     <div style={{ marginTop: 12 }}>
                       <button type="button" onClick={() => { setSearch(""); setStatusFilter("全部"); clearAdvancedFilters(); }}
-                        style={{ padding: "7px 16px", background: S.primary, color: "#ffffff", fontWeight: 600, borderRadius: 7, border: "none", cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)", fontSize: 12 }}>
+                        style={{ padding: "7px 16px", background: S.primary, color: S.onPrimary, fontWeight: 600, borderRadius: 7, border: "none", cursor: "pointer", boxShadow: "0 1px 2px rgba(37,99,235,.15)", fontSize: 12 }}>
                         清空筛选条件
                       </button>
                     </div>
@@ -1638,7 +1638,7 @@ function OpsMedia({ tool }: { tool: Tool }) {
       </CardGrid>
       <div className="grid grid-cols-2 gap-2">
         <Row k="平台认证" v={<>
-          {tool.certifiedType && <span style={{ padding: "1px 6px", background: S.primary, color: "#ffffff", borderRadius: 4, fontSize: 10, fontWeight: 600, marginRight: 4 }}>{tool.certifiedType}</span>}
+          {tool.certifiedType && <span style={{ padding: "1px 6px", background: S.primary, color: S.onPrimary, borderRadius: 4, fontSize: 10, fontWeight: 600, marginRight: 4 }}>{tool.certifiedType}</span>}
           {tool.certifiedSubject || <span style={{ color: S.muted }}>未认证</span>}
         </>} />
         <Row k="创作者中心" v={tool.creatorLevel ? <b>L{tool.creatorLevel.replace(/^L/, "")}</b> : <span style={{ color: S.muted }}>未开通</span>} />

@@ -260,7 +260,7 @@ function NewPhoneModal({ onClose }: { onClose: () => void }) {
                 <label className="block text-xs mb-1.5 uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>身份证正面（人像面）</label>
                 <div className="border-dashed cursor-pointer flex flex-col items-center justify-center gap-2 py-5" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f1f5f9", borderRadius: S.radiusSm }}>
                   <div className="w-10 h-10 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-                    <CreditCard size={18} style={{ color: "#ffffff" }} />
+                    <CreditCard size={18} style={{ color: S.onPrimary }} />
                   </div>
                   <div className="text-center">
                     <div className="text-xs uppercase" style={{ color: S.text, fontFamily: "monospace" }}>点击上传正面</div>
@@ -276,7 +276,7 @@ function NewPhoneModal({ onClose }: { onClose: () => void }) {
                 <label className="block text-xs mb-1.5 uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>身份证反面（国徽面）</label>
                 <div className="border-dashed cursor-pointer flex flex-col items-center justify-center gap-2 py-5" style={{ border: `1px dashed rgba(0,0,0,0.10)`, background: "#f1f5f9", borderRadius: S.radiusSm }}>
                   <div className="w-10 h-10 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-                    <CreditCard size={18} style={{ color: "#ffffff" }} />
+                    <CreditCard size={18} style={{ color: S.onPrimary }} />
                   </div>
                   <div className="text-center">
                     <div className="text-xs uppercase" style={{ color: S.text, fontFamily: "monospace" }}>点击上传反面</div>
@@ -690,7 +690,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
           <div className="flex items-center gap-2 min-w-0">
             <span className="text-lg leading-none">{account.emoji}</span>
             <div className="min-w-0">
-              <div className="flex items-center gap-1.5"><span className="text-xs font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.name}</span>{account.verified && <span className="text-xs px-1" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}>✓</span>}</div>
+              <div className="flex items-center gap-1.5"><span className="text-xs font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.name}</span>{account.verified && <span className="text-xs px-1" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>✓</span>}</div>
               <div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted, fontFamily: "monospace" }}>{account.platform} · {account.manager}</div>
             </div>
           </div>
@@ -724,7 +724,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
               <button key={account.id} type="button" className="w-full flex items-center gap-3 px-3 py-2.5 text-left transition-all" style={{ background: isSelected ? S.accentLight : "transparent", borderBottom: `1px solid ${S.border}`, borderLeft: isSelected ? `3px solid ${S.accent}` : "3px solid transparent", fontFamily: "monospace" }} onClick={() => setSelected(isSelected ? null : account.id)}>
                 <div className="flex items-center gap-2 flex-shrink-0" style={{ width: 240 }}>
                   <span className="text-base">{account.emoji}</span>
-                  <div className="min-w-0"><div className="flex items-center gap-1 text-xs font-bold truncate" style={{ color: S.text }}>{account.name}{account.verified && <span className="px-1 text-[10px]" style={{ background: S.accent, color: "#ffffff", borderRadius: 3 }}>✓</span>}</div><div className="text-[10px] truncate" style={{ color: S.muted }}>{account.platform} · {account.loginId}</div></div>
+                  <div className="min-w-0"><div className="flex items-center gap-1 text-xs font-bold truncate" style={{ color: S.text }}>{account.name}{account.verified && <span className="px-1 text-[10px]" style={{ background: S.accent, color: S.onPrimary, borderRadius: 3 }}>✓</span>}</div><div className="text-[10px] truncate" style={{ color: S.muted }}>{account.platform} · {account.loginId}</div></div>
                 </div>
                 <div className="flex-shrink-0" style={{ width: 78 }}><StatusBadge status={account.status} /></div>
                 <div className="flex-shrink-0 text-xs font-semibold" style={{ width: 90, color: S.text }}>{account.followers}</div>
@@ -784,7 +784,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
             <div className="flex items-center justify-center gap-2 mt-2">
               <StatusBadge status={detail.status} />
               {detail.verified && (
-                <span className="px-1.5 py-0.5 text-xs uppercase" style={{ background: S.accent, color: "#ffffff", fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>✓ 已认证</span>
+                <span className="px-1.5 py-0.5 text-xs uppercase" style={{ background: S.accent, color: S.onPrimary, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>✓ 已认证</span>
               )}
             </div>
           </div>
@@ -843,7 +843,7 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
               <ExternalLink size={11} /> 打开平台后台
             </button>
             {detail.status === "空闲" && (
-              <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace" }}>重启账号运营</button>
+              <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, fontFamily: "monospace" }}>重启账号运营</button>
             )}
           </div>
         </div>

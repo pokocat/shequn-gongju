@@ -292,7 +292,7 @@ function ProjectTab() {
           <div key={p.name} className="p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="flex items-center justify-between mb-4">
               <div className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{p.name}</div>
-              <span className="text-xs px-2 py-0.5 font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{p.growth}</span>
+              <span className="text-xs px-2 py-0.5 font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{p.growth}</span>
             </div>
             <div className="space-y-2">
               <div>

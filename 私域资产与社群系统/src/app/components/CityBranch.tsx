@@ -60,7 +60,7 @@ const [selected, setSelected] = useState<number>(1);
         ].map(s => (
           <div key={s.label} className="px-3 py-3 flex items-center gap-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="w-9 h-9 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-              <s.icon size={18} style={{ color: "#ffffff" }} />
+              <s.icon size={18} style={{ color: S.onPrimary }} />
             </div>
             <div>
               <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{s.label}</div>
@@ -110,7 +110,7 @@ const [selected, setSelected] = useState<number>(1);
                     <div className="text-xs" style={{ color: isSelected ? S.mutedLight : S.muted, fontSize: "10px", fontFamily: "monospace" }}>活跃群</div>
                   </div>
                   <div className="px-2 py-1.5 text-center" style={{ background: S.accent, borderRadius: S.radiusSm, border: `1px solid rgba(15,23,42,0.06)` }}>
-                    <div className="text-xs font-bold" style={{ color: "#ffffff", fontFamily: "monospace" }}>¥{(c.monthlyRevenue / 10000).toFixed(1)}万</div>
+                    <div className="text-xs font-bold" style={{ color: S.onPrimary, fontFamily: "monospace" }}>¥{(c.monthlyRevenue / 10000).toFixed(1)}万</div>
                     <div className="text-xs" style={{ color: "#333", fontSize: "10px", fontFamily: "monospace" }}>本月营收</div>
                   </div>
                 </div>
@@ -166,7 +166,7 @@ const [selected, setSelected] = useState<number>(1);
 
             <div className="mt-4 flex flex-col gap-2">
               <button className="w-full py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>查看分站详情</button>
-              <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>联系负责人</button>
+              <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, border: "none", fontFamily: "monospace" }}>联系负责人</button>
               <button className="w-full py-2 text-xs font-bold" style={{ background: S.surface, color: S.text, borderRadius: S.radius, border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }}>导出月报</button>
             </div>
           </div>

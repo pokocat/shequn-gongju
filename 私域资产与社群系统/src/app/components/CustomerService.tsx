@@ -178,7 +178,7 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
         </button>
         <span style={{ color: S.mutedLight }}>›</span>
         <span className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>客服：{staff.name}</span>
-        <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>绑定微信</span>
+        <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>绑定微信</span>
       </div>
 
       {/* 档案卡 */}
@@ -190,7 +190,7 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
             <div className="flex items-center gap-3 mb-3">
               <span className="font-semibold" style={{ fontSize: "17px", color: S.text, fontFamily: "monospace" }}>{staff.name}</span>
               <span className="px-2 py-0.5 text-xs" style={{ background: staff.gender === "女" ? "#fff0f6" : "#eff8ff", color: staff.gender === "女" ? "#d53f8c" : "#3182ce", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{staff.gender}</span>
-              <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accentMid, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{staff.role}</span>
+              <span className="px-2 py-0.5 text-xs font-bold" style={{ background: S.accentMid, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{staff.role}</span>
             </div>
             {/* 基础信息网格 */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-1.5">
@@ -258,7 +258,7 @@ function StaffDetail({ staff, onBack }: { staff: typeof csStaff[0]; onBack: () =
             </button>
           ))}
           {!hasWechat && <span className="text-xs px-2 py-1.5" style={{ color: "#9a3412", fontFamily: "monospace" }}>尚未配置微信号，请先完成绑定</span>}
-          <button type="button" onClick={openConfig} className="px-3 py-1.5 text-xs font-bold ml-auto" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace", margin: "2px" }}>配置微信</button>
+          <button type="button" onClick={openConfig} className="px-3 py-1.5 text-xs font-bold ml-auto" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace", margin: "2px" }}>配置微信</button>
         </div>
       </div>
 
@@ -421,7 +421,7 @@ const [search, setSearch] = useState("");
                 </div>
                 <div className="flex-shrink-0" style={{ width: 150, color: S.muted, fontFamily: "monospace" }}>{s.area2}</div>
                 <div className="flex-shrink-0" style={{ width: 72 }}>
-                  <span className="px-2 py-0.5 text-xs font-medium" style={{ background: S.accentMid, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{s.role}</span>
+                  <span className="px-2 py-0.5 text-xs font-medium" style={{ background: S.accentMid, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{s.role}</span>
                 </div>
                 <div className="flex-shrink-0 font-medium" style={{ width: 105, color: getAssignedWechatIds(s).length > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{getAssignedWechatIds(s).length > 0 ? `${getAssignedWechatIds(s).length} 个` : "暂无"}</div>
                 <div className="flex-shrink-0 font-medium" style={{ width: 100, color: getManagedGroupCount(s) > 0 ? S.text : S.mutedLight, fontFamily: "monospace" }}>{getManagedGroupCount(s) > 0 ? `${getManagedGroupCount(s)} 个` : "暂无"}</div>

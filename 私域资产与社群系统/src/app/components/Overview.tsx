@@ -208,7 +208,7 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
               {r.delta && <span className="px-1 py-0.5 text-xs font-bold" style={{ background: r.level === "high" ? "rgba(204,0,0,0.2)" : S.accentMid, color: r.level === "high" ? "#ff6b6b" : S.accent, borderRadius: "3px" }}>{r.delta}</span>}
               <button
                 className="text-xs font-bold px-1.5 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ background: S.accent, color: "#ffffff", borderRadius: "3px" }}
+                style={{ background: S.accent, color: S.onPrimary, borderRadius: "3px" }}
                 onClick={() => handleRiskAction(r)}
               >
                 {r.action}
@@ -216,7 +216,7 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
             </div>
           ))}
         </div>
-        <button className="ml-auto text-xs font-mono font-bold px-3 py-1 flex items-center gap-1" style={{ background: S.accent, color: "#ffffff", borderRadius: "6px" }} onClick={handleViewAllRisks}>
+        <button className="ml-auto text-xs font-mono font-bold px-3 py-1 flex items-center gap-1" style={{ background: S.accent, color: S.onPrimary, borderRadius: "6px" }} onClick={handleViewAllRisks}>
           VIEW ALL <ChevronRight size={10} className="inline" />
         </button>
       </div>
@@ -280,7 +280,7 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
         <div className="col-span-2 p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div className="flex items-center gap-2 mb-4">
             <div className="w-5 h-5 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-              <Zap size={12} style={{ color: "#ffffff" }} />
+              <Zap size={12} style={{ color: S.onPrimary }} />
             </div>
             <span className="text-xs font-bold font-mono tracking-wider" style={{ color: S.text }}>// AI_SUGGESTIONS</span>
             <span className="ml-auto text-xs font-mono px-2 py-0.5" style={{ background: "#1e293b", color: S.accent, borderRadius: "6px" }}>{suggestions.length} 待处理</span>

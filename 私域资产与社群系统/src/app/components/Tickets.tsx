@@ -335,7 +335,7 @@ const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
               <textarea className="w-full mt-1 px-3 py-2 text-xs outline-none resize-none" style={{ background: S.bg, border: `1px solid ${S.borderMed}`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" }} rows={3} placeholder="详细描述用户遇到的问题..." value={createForm.desc} onChange={e => setCreateForm({ ...createForm, desc: e.target.value })} />
             </div>
             <div className="flex gap-2 mt-1">
-              <button className="flex-1 py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, border: "none" }} onClick={handleCreateTicket}>创建工单</button>
+              <button className="flex-1 py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, border: "none" }} onClick={handleCreateTicket}>创建工单</button>
               <button className="flex-1 py-2 text-xs font-bold" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={() => setCreateOpen(false)}>取消</button>
             </div>
           </div>
@@ -488,7 +488,7 @@ const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
                       <button className="px-2 py-1 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }} onClick={() => setAssignOpen(t.id)}>指派</button>
                     )}
                     {t.status === "进行中" && (
-                      <button className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(t.id)}>完成</button>
+                      <button className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(t.id)}>完成</button>
                     )}
                     {(t.status === "待处理" || t.status === "进行中") && (
                       <button className="px-2 py-1 text-xs font-bold" style={{ background: "#fff8e1", color: "#b45309", border: `1px solid #3b82f6`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setEscalateOpen(t.id)}>
@@ -611,7 +611,7 @@ const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
                 </button>
               )}
               {detail.status === "进行中" && (
-                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(detail.id)}>
+                <button className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, fontFamily: "monospace", border: "none" }} onClick={() => handleResolve(detail.id)}>
                   <CheckCircle size={12} className="inline mr-1" />标记已解决
                 </button>
               )}

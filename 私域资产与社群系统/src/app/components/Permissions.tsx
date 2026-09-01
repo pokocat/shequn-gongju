@@ -126,7 +126,7 @@ const [selectedRole, setSelectedRole] = useState<string>("客服");
                       <div key={i} className="w-16 flex justify-center">
                         {v ? (
                           <div className="w-5 h-5 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-                            <Check size={11} style={{ color: "#ffffff" }} />
+                            <Check size={11} style={{ color: S.onPrimary }} />
                           </div>
                         ) : (
                           <div className="w-5 h-5 flex items-center justify-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}>

@@ -231,7 +231,7 @@ function ChannelsTab() {
               <button style={{ padding: "7px 0", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 600, border: `1px solid ${S.border}`, background: "#f1f5f9", color: S.text, fontFamily: "monospace", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 4 }}>
                 <RefreshCw size={11} />手动同步
               </button>
-              <button style={{ padding: "7px 0", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 600, border: "none", background: S.accent, color: "#ffffff", fontFamily: "monospace", cursor: "pointer" }}>查看流量</button>
+              <button style={{ padding: "7px 0", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 600, border: "none", background: S.accent, color: S.onPrimary, fontFamily: "monospace", cursor: "pointer" }}>查看流量</button>
             </div>
           </div>
         </div>

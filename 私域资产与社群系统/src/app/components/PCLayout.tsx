@@ -236,7 +236,7 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
         {/* Logo */}
         <div className={isSidebarCollapsed ? "h-14 flex items-center justify-center gap-1 flex-shrink-0" : "h-14 flex items-center px-4 gap-3 flex-shrink-0"} style={{ borderBottom: `1px solid ${S.border}` }}>
           <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, borderRadius: S.radiusSm }}>
-            <Zap size={15} style={{ color: "#ffffff" }} />
+            <Zap size={15} style={{ color: S.onPrimary }} />
           </div>
           {!isSidebarCollapsed && <div className="min-w-0">
             <div className="font-black tracking-wide" style={{ fontSize: "14px", color: S.text, fontFamily: "monospace", letterSpacing: "0.08em" }}>聚域</div>
@@ -348,7 +348,7 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
             <ThemeControls />
             <div className="relative cursor-pointer">
               <Bell size={15} style={{ color: S.muted }} />
-              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: "#ffffff", fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>3</div>
+              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: S.onPrimary, fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>3</div>
             </div>
             <Settings size={15} style={{ color: S.muted, cursor: "pointer" }} />
             <div className="px-3 py-1 font-bold" style={{ background: "#1e293b", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace", letterSpacing: "0.04em" }}>
