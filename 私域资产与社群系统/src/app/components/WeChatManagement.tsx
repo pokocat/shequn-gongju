@@ -1443,6 +1443,7 @@ const [search, setSearch] = useState("");
   const viewDimension = controlledViewDimension ?? internalViewDimension;
   const [expandedProjects, setExpandedProjects] = useState<Record<string, boolean>>({});
   const [expandedPeople, setExpandedPeople] = useState<Record<string, boolean>>({});
+  const [activeProjectName, setActiveProjectName] = useState<string | null>(null);
   const [internalMainTab, setInternalMainTab] = useState<"personal" | "wecom">("personal");
   const mainTab = controlledMainTab ?? internalMainTab;
   const setMainTab = (next: "personal" | "wecom") => { setInternalMainTab(next); onMainTabChange?.(next); setSelectedRow(null); setDetailMode("view"); };
@@ -1810,6 +1811,14 @@ const [search, setSearch] = useState("");
   const toggleProject = (p: string) => setExpandedProjects(prev => ({ ...prev, [p]: prev[p] === false ? true : false }));
   const togglePerson = (p: string) => setExpandedPeople(prev => ({ ...prev, [p]: prev[p] === false ? true : false }));
 
+  // 按项目视图：初始化 activeProjectName
+  useEffect(() => {
+    if (viewDimension === "project" && !activeProjectName && Object.keys(groupedByProject).length > 0) {
+      const first = Object.keys(groupedByProject).find(k => k !== "空闲号池") ?? Object.keys(groupedByProject)[0];
+      setActiveProjectName(first);
+    }
+  }, [viewDimension, groupedByProject, activeProjectName]);
+
   return (
     <div className="p-6 h-full flex flex-col gap-4" style={{ background: S.bg }}>
       {showModal && mainTab === "personal" && <AuthorizedWechatModal onClose={() => setShowModal(false)} onSave={saveNewAccount} />}
@@ -1990,59 +1999,115 @@ const [search, setSearch] = useState("");
             </>
           )}
 
-          {/* ② 按项目视图：项目分组卡片 + 空闲号池独立分区 */}
+          {/* ② 按项目视图：左栏项目列表 + 中栏项目详情（+ 右栏 DetailPanel 由下方 selectedAccount 自动充当第三栏） */}
           {viewDimension === "project" && (
-            <div className="flex-1 min-h-0 overflow-auto space-y-4 pr-1">
-            {Object.entries(groupedByProject).map(([projectName, list]) => {
-              const isIdlePool = projectName === "空闲号池";
-              const open = expandedProjects[projectName] ?? true;
-              const total = list.length;
-              const 发放到人 = list.filter(a => a.lifecycleStage === "assigned_to_person").length;
-              const 待交接 = list.filter(a => a.status === "待交接").length;
-              const 养号达标 = list.filter(a => a.lifecycleStage === "nurturing" && a.nurturing.pass).length;
-              return (
-                <section key={projectName} style={{ background: S.surface, border: `1px solid ${isIdlePool ? "#d1d5db" : S.border}`, borderRadius: S.radius, boxShadow: isIdlePool ? "inset 0 0 0 2px rgba(59,130,246,0.18)" : "none" }}>
-                  <header className="flex flex-wrap items-center gap-3 px-4 py-3" style={{ borderBottom: open ? `1px solid ${S.border}` : "none", background: isIdlePool ? "linear-gradient(180deg, rgba(59,130,246,0.08), transparent)" : "#f8fafc" }}>
-                    <button type="button" onClick={() => toggleProject(projectName)} className="flex items-center gap-2 min-w-0 flex-1 text-left">
-                      {open ? <ChevronDown size={15} style={{ color: S.muted }} /> : <ChevronRight size={15} style={{ color: S.muted }} />}
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className="w-9 h-9 flex items-center justify-center" style={{ background: isIdlePool ? S.successBg : S.primary, color: isIdlePool ? S.success : "#ffffff", borderRadius: S.radiusSm }}>
-                          {isIdlePool ? <ShieldCheck size={16} /> : <Building2 size={16} />}
-                        </div>
-                        <div className="min-w-0">
-                          <div className="text-sm font-bold flex items-center gap-2" style={{ fontFamily: "monospace", color: S.text }}>
-                            {projectName}
-                            {isIdlePool && <span className="px-1.5 py-0.5 text-[10px]" style={{ background: S.accent, color: S.primaryDark, borderRadius: S.radiusSm, fontFamily: "monospace" }}>可领取 · 养号池</span>}
-                          </div>
-                          <div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted, fontFamily: "monospace" }}>
-                            {isIdlePool ? "未被分配到任何项目的账号，养号达标后可一键分配到项目" : `项目下共 ${total} 个微信账号（含 7 天/好友/实名 养号门槛追踪）`}
-                          </div>
+            <div className="w-60 flex-shrink-0 min-h-0 overflow-auto"
+              style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+              <div className="px-3 py-2 text-xs font-bold flex items-center gap-1.5 border-b" style={{ color: S.text, fontFamily: "monospace", borderColor: S.border }}>
+                <Building2 size={13} style={{ color: S.accent }} /> 项目与号池
+              </div>
+              {Object.entries(groupedByProject).map(([projectName, list]) => {
+                const isIdlePool = projectName === "空闲号池";
+                const active = activeProjectName === projectName;
+                return (
+                  <button key={projectName} type="button"
+                    className="w-full text-left px-3 py-2.5 border-b transition-colors last:border-b-0"
+                    style={{
+                      background: active ? S.accentLight : "transparent",
+                      borderColor: S.border,
+                      fontFamily: "monospace",
+                      borderLeft: active ? `2px solid ${S.accent}` : "2px solid transparent",
+                    }}
+                    onClick={() => { setActiveProjectName(projectName); setSelectedRow(null); }}>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-6 h-6 flex items-center justify-center flex-shrink-0"
+                        style={{ background: isIdlePool ? "#ecfdf5" : S.primary, color: isIdlePool ? "#047857" : "#ffffff", borderRadius: S.radiusSm }}>
+                        {isIdlePool ? <ShieldCheck size={12} /> : <Building2 size={12} />}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-xs font-semibold truncate" style={{ color: S.text }}>{projectName}</div>
+                        <div className="text-[10px] truncate" style={{ color: S.muted }}>
+                          {isIdlePool ? "尚未授权给任何项目" : `${list.length} · ${list.filter(a => a.accountType === "个人微信").length}微·${list.filter(a => a.accountType === "企业微信").length}企`}
                         </div>
                       </div>
-                    </button>
-                    <div className="flex items-center gap-2 text-[11px] flex-shrink-0" style={{ fontFamily: "monospace" }}>
-                      {!isIdlePool && <><BadgeKPI label="发放到人" value={发放到人} bg="#ecfdf5" color="#047857" /> <BadgeKPI label="待交接审批" value={待交接} bg="#fffbeb" color="#92400e" /></>}
-                      {isIdlePool && <><BadgeKPI label="养号达标(可分配)" value={养号达标} bg="#ecfdf5" color="#047857" /> <BadgeKPI label="总在池" value={total} bg="#f3f4f6" color="#374151" /></>}
-                      {!isIdlePool && <BadgeKPI label="账号数" value={total} bg="#f3f4f6" color="#374151" />}
+                      <span className="text-[10px] flex-shrink-0 px-1.5 py-0.5"
+                        style={{ background: active ? S.accent : S.borderLight, color: active ? S.primaryDark : S.muted, borderRadius: 99 }}>
+                        {list.length}
+                      </span>
                     </div>
-                  </header>
-                  {open && <div className="p-3 space-y-2">
-                    {list.length === 0 && <div className="py-8 text-center text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>暂无账号</div>}
-                    {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
-                      onToggleSelect={() => toggleRow(a.no)} checked={selectedRows.includes(a.no)}
-                      onAdvance={() => advanceLifecycle(a.no)}
-                      onHandover={() => startHandoverApproval(a.no)}
-                      onRecycle={() => recycleAccount(a.no)}
-                      onArchive={() => archiveAccount(a.no)}
-                      onAllocate={() => setAllocationAccount(a)}
-                      onClickRow={() => selectedRow === a.no ? setSelectedRow(null) : openAccountDetail(a.no)}
-                    />)}
-                  </div>}
-                </section>
-              );
-            })}
-          </div>
+                  </button>
+                );
+              })}
+            </div>
           )}
+
+          {viewDimension === "project" && activeProjectName && (() => {
+            const list = groupedByProject[activeProjectName] || [];
+            const isIdlePool = activeProjectName === "空闲号池";
+            const counts = {
+              total: list.length,
+              using: list.filter(a => a.status === "使用中").length,
+              risk: list.filter(a => getAccountRisk(a).level === "high").length,
+              idle: list.filter(a => a.status === "未使用").length,
+              handover: list.filter(a => a.status === "待交接").length,
+              nurturing: list.filter(a => a.lifecycleStage === "nurturing" && a.nurturing?.pass).length,
+              assigned: list.filter(a => a.lifecycleStage === "assigned_to_person").length,
+            };
+            const selectedAccountForCenter = selectedAccount && list.find(a => a.no === selectedAccount.no) ? selectedAccount : null;
+            return (
+            <div className="flex-1 min-w-0 min-h-0 flex flex-col overflow-hidden"
+              style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+              {/* Banner */}
+              <div className="flex items-start gap-3 px-4 py-3 border-b" style={{ borderColor: S.border, background: isIdlePool ? "linear-gradient(180deg, rgba(59,130,246,0.08), transparent)" : "linear-gradient(180deg, rgba(163,230,53,0.08), transparent)" }}>
+                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
+                  style={{ background: isIdlePool ? "#ecfdf5" : S.primary, color: isIdlePool ? "#047857" : "#ffffff", borderRadius: S.radiusSm }}>
+                  {isIdlePool ? <ShieldCheck size={18} /> : <Building2 size={18} />}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="text-base font-bold" style={{ fontFamily: "monospace", color: S.text }}>{activeProjectName}</div>
+                    {isIdlePool && <span className="px-1.5 py-0.5 text-[10px]" style={{ background: S.accent, color: S.primaryDark, borderRadius: S.radiusSm, fontFamily: "monospace" }}>可领取 · 养号池</span>}
+                  </div>
+                  <div className="text-[11px] mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>
+                    {isIdlePool ? "未被分配到任何项目的账号，养号达标后可一键分配" : `项目下共 ${list.length} 个账号 · 发放到人 ${counts.assigned} · 待交接 ${counts.handover}`}
+                  </div>
+                </div>
+              </div>
+
+              {/* KPI */}
+              <div className="flex items-center gap-2 px-4 py-2 border-b flex-shrink-0" style={{ borderColor: S.border }}>
+                {[
+                  { label: "账号总数", value: counts.total, bg: S.accentLight, color: S.accent },
+                  { label: "使用中", value: counts.using, bg: "#ecfdf5", color: "#047857" },
+                  { label: "风险", value: counts.risk, bg: counts.risk > 0 ? "#fef2f2" : "#f3f4f6", color: counts.risk > 0 ? "#c53030" : "#374151" },
+                  ...(isIdlePool ? [
+                    { label: "养号达标", value: counts.nurturing, bg: "#ecfdf5", color: "#047857" },
+                  ] : []),
+                ].map((k, i) => (
+                  <div key={i} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md" style={{ background: k.bg, fontFamily: "monospace" }}>
+                    <span className="text-[10px]" style={{ color: k.color, opacity: 0.7 }}>{k.label}</span>
+                    <b className="text-xs" style={{ color: k.color }}>{k.value}</b>
+                  </div>
+                ))}
+              </div>
+
+              {/* 账号列表 */}
+              <div className="flex-1 min-h-0 overflow-auto p-3 space-y-2">
+                {list.length === 0 && <div className="py-12 text-center text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>暂无账号</div>}
+                {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
+                  onToggleSelect={() => toggleRow(a.no)} checked={selectedRows.includes(a.no)}
+                  onAdvance={() => advanceLifecycle(a.no)}
+                  onHandover={() => startHandoverApproval(a.no)}
+                  onRecycle={() => recycleAccount(a.no)}
+                  onArchive={() => archiveAccount(a.no)}
+                  onAllocate={() => setAllocationAccount(a)}
+                  onClickRow={() => selectedRow === a.no ? setSelectedRow(null) : openAccountDetail(a.no)}
+                />)}
+              </div>
+            </div>
+          );
+          })()}
+
 
           {/* ③ 按人视图：分组头（账号资产中心人员卡片）+ 展开工具 */}
           {viewDimension === "person" && (
