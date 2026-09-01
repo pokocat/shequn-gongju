@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { S, useThemeSingleton, useTheme, resolvePalette, getTheme, DarkMode, ResolvedMode } from "../theme";
+import { S, useThemeSingleton, useTheme, resolvePalette, getTheme, DarkMode, ResolvedMode, DarkModePicker } from "../theme";
 import { Sun, Moon, Monitor, ArrowRight, CheckCircle, Zap, Users, MessageCircle, Database, Shield, BarChart2, Radio, Star, Play, TrendingUp, Menu, X, Brain, Cpu, GitBranch, AlertTriangle, Target, Layers, ChevronRight, Activity, FileCheck, FolderKanban, Palette, Settings, Receipt, Wrench, LineChart, Home, Sparkles, Rocket, Coins, MapPin, RefreshCw, FileSpreadsheet, Scale } from "lucide-react";
 
 // ══════════════════════════════════════════════════════════════════════════════
@@ -224,52 +224,9 @@ function CTA() {
 function NavBar({ onEnterApp }: { onEnterApp: () => void }) {
   useThemeSingleton();
   const ctx = useTheme();
-  const { darkMode, toggleDarkMode, themeId, resolvedDark } = ctx;
-  const activePalette = resolvePalette(themeId, resolvedDark ? "dark" : "light");
   const S_ = S;
   const cta = CTA();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  // 3 态对应 UI：明亮(☀️) → 自动(🖥️带A徽标) → 暗黑(🌙)
-  const buttonState = (() => {
-    switch (darkMode as DarkMode) {
-      case "light":
-        return {
-          Icon: Sun,
-          aria: "当前为明亮模式 · 点击切换为自动跟随系统",
-          title: "明亮模式（强制）· 点击切换为「自动跟随系统」",
-          bg: S_.surface,
-          color: S_.muted,
-          border: `1px solid ${S_.borderMed}`,
-          shadow: "none",
-          badge: false,
-        };
-      case "auto":
-        return {
-          Icon: Monitor,
-          aria: `当前为自动跟随系统（实际：${resolvedDark ? "暗黑" : "明亮"}）· 点击切换为暗黑模式`,
-          title: `自动跟随系统 · 实际显示${resolvedDark ? "暗黑" : "明亮"} · 点击切换为「强制暗黑」`,
-          bg: `linear-gradient(135deg, ${S_.borderMed} 0%, ${S_.accentMid} 50%, ${S_.border} 100%)`,
-          color: S_.text,
-          border: `1px solid ${S_.primaryMid}`,
-          shadow: S_.accentGlow,
-          badge: true,
-        };
-      case "dark":
-      default:
-        return {
-          Icon: Moon,
-          aria: "当前为暗黑模式 · 点击切换为明亮模式",
-          title: "暗黑模式（强制）· 点击切换为「强制明亮」",
-          bg: getTheme(themeId).gradient,
-          color: activePalette.onPrimary,
-          border: "1px solid transparent",
-          shadow: S_.shadow,
-          badge: false,
-        };
-    }
-  })();
-  const { Icon } = buttonState;
 
   return (
     <nav
@@ -315,38 +272,8 @@ function NavBar({ onEnterApp }: { onEnterApp: () => void }) {
         </div>
 
         <div className="flex items-center gap-3">
-          {/* ── 暗黑模式开关（3 态：明亮 ⇄ 自动 ⇄ 暗黑） ──────────────── */}
-          <button
-            type="button"
-            aria-label={buttonState.aria}
-            title={buttonState.title}
-            onClick={toggleDarkMode}
-            className="w-9 h-9 flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:-translate-y-0.5 relative"
-            style={{
-              background: buttonState.bg,
-              color: buttonState.color,
-              border: buttonState.border,
-              borderRadius: S_.radiusSm,
-              boxShadow: buttonState.shadow,
-              backdropFilter: "blur(10px)",
-            }}
-          >
-            <Icon size={15} />
-            {buttonState.badge && (
-              <span
-                className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 flex items-center justify-center font-black"
-                style={{
-                  background: S_.primary,
-                  color: activePalette.onPrimary,
-                  fontSize: 9,
-                  lineHeight: 1,
-                  borderRadius: 999,
-                  border: `1.5px solid ${S_.surface}`,
-                  fontFamily: "monospace",
-                }}
-              >A</span>
-            )}
-          </button>
+          {/* ── 暗黑模式下拉选择器 ──────────────────────────────────────── */}
+          <DarkModePicker />
           <button
             className="text-sm px-4 py-2 font-mono transition-all"
             style={{ color: S_.textSec, borderRadius: S_.radiusSm, background: "transparent", border: `1px solid ${S_.borderMed}` }}

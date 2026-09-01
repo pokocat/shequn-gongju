@@ -1,10 +1,10 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useRef, useEffect } from "react";
 import {
   LayoutDashboard, Users2,
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
   BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
-  Globe, Monitor, Smartphone
+  Globe, Monitor, Smartphone, ChevronDown, Check
 } from "lucide-react";
 import { S, useThemeSingleton, ThemeControls } from "../theme";
 
@@ -39,6 +39,180 @@ const navGroups = [
   ]},
 ];
 const navItems = navGroups.flatMap(g => g.items);
+
+/* ─────── ViewModePicker —— 视图切换下拉选择器 ───────────────────────
+   数据驱动：4 种视图 Web / PC / App / 主理人
+   交互模式同 ThemePicker：openRef + 单次注册监听，避免 pointerdown/click 竞态
+   ──────────────────────────────────────────────────────────────────── */
+type VMItem = {
+  id: ViewMode;
+  label: string;
+  short: string;          // 触发器上显示的短标签
+  desc: string;           // 菜单里的副标题
+  icon: typeof Globe;
+  accent: string;         // 触发器胶囊的强调色
+};
+const VIEW_MODES: VMItem[] = [
+  { id: "landing",  label: "官网展示", short: "WEB",   desc: "公开官网 · 营销介绍页", icon: Globe,     accent: "#0ea5e9" },
+  { id: "pc",       label: "PC 后台",  short: "PC",    desc: "工作台 · 全功能控制台", icon: Monitor,    accent: S.accent },
+  { id: "mobile",   label: "APP 预览", short: "APP",   desc: "会员小程序 · 私域用户端", icon: Smartphone, accent: "#22c55e" },
+  { id: "zhuliren", label: "主理人",    short: "主理人", desc: "城市主理人 · 合伙人工作台", icon: Star,     accent: "#1e293b" },
+];
+
+function ViewModePicker({
+  view, setView,
+}: { view: ViewMode; setView: (v: ViewMode) => void }) {
+  useThemeSingleton();
+  const current = VIEW_MODES.find(m => m.id === view) ?? VIEW_MODES[1];
+
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const openRef = useRef(false);
+  openRef.current = open;
+
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      if (!openRef.current) return;
+      if (!wrapperRef.current || !wrapperRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (!openRef.current) return;
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  return (
+    <div ref={wrapperRef} className="relative flex-shrink-0">
+      {/* Trigger: 紧凑胶囊 —— 当前视图 icon + 短标签 + 下拉箭头 */}
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls="view-mode-picker-menu"
+        aria-label={`视图：${current.label} · 点击切换`}
+        title="切换视图 · WEB / PC / APP / 主理人"
+        onClick={() => setOpen(o => !o)}
+        className="flex items-center gap-1.5 pr-1 transition-all duration-200 hover:-translate-y-0.5"
+        style={{
+          paddingLeft: 8,
+          paddingTop: 4,
+          paddingBottom: 4,
+          background: S.glass,
+          border: `1px solid ${S.glassBorder}`,
+          borderRadius: "999px",
+          backdropFilter: "blur(14px)",
+          WebkitBackdropFilter: "blur(14px)",
+          boxShadow: S.shadow,
+          cursor: "pointer",
+          lineHeight: 1,
+          fontFamily: "monospace",
+        }}
+      >
+        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: S.muted, userSelect: "none" }}>VIEW</span>
+        <span
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "3px 8px", borderRadius: "999px",
+            background: current.accent, color: "#fff",
+            fontSize: 11, fontWeight: 700,
+            whiteSpace: "nowrap",
+          }}
+        >
+          <current.icon size={11} strokeWidth={2.5} />
+          <span>{current.short}</span>
+        </span>
+        <ChevronDown size={12} style={{ color: S.muted, flexShrink: 0 }} />
+      </button>
+
+      {/* Menu */}
+      {open && (
+        <div
+          id="view-mode-picker-menu"
+          role="listbox"
+          aria-label="选择视图"
+          onClick={e => e.stopPropagation()}
+          style={{
+            position: "absolute",
+            top: `calc(100% + 8px)`,
+            left: 0,
+            minWidth: 210,
+            background: S.surface,
+            border: `1px solid ${S.borderMed}`,
+            borderRadius: S.radiusLg,
+            boxShadow: S.shadow,
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            padding: "6px",
+            zIndex: 1000,
+          }}
+        >
+          {VIEW_MODES.map(m => {
+            const active = view === m.id;
+            return (
+              <button
+                key={m.id}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => { setView(m.id); setOpen(false); }}
+                style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  width: "100%", padding: "9px 10px",
+                  borderRadius: S.radiusSm,
+                  background: active ? S.primaryLight : "transparent",
+                  color: active ? S.primaryDark : S.text,
+                  cursor: "pointer", border: "none",
+                  textAlign: "left",
+                  fontSize: 13, fontWeight: active ? 600 : 500,
+                  lineHeight: 1.35,
+                  transition: "background 120ms",
+                }}
+                onMouseEnter={e => {
+                  if (!active) { (e.currentTarget as HTMLElement).style.background = S.glass; (e.currentTarget as HTMLElement).style.color = S.primary; }
+                }}
+                onMouseLeave={e => {
+                  if (!active) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = S.text; }
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-flex", width: 30, height: 30,
+                    alignItems: "center", justifyContent: "center",
+                    borderRadius: 8,
+                    background: active ? m.accent : S.surface,
+                    border: `1px solid ${active ? "transparent" : S.borderMed}`,
+                    color: active ? "#ffffff" : S.muted,
+                    boxShadow: active ? S.shadow : "none",
+                    flexShrink: 0,
+                  }}
+                >
+                  <m.icon size={14} strokeWidth={2.5} />
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  {m.label}
+                  <span style={{ display: "block", fontSize: 11, fontWeight: 400, color: S.muted, marginTop: 2 }}>
+                    {m.desc}
+                  </span>
+                </span>
+                {active && (
+                  <span style={{ color: S.primary, display: "inline-flex" }}>
+                    <Check size={14} strokeWidth={3} />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
 
 interface PCLayoutProps {
   activeModule: string;
@@ -141,27 +315,8 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <div className="h-14 flex items-center px-6 gap-4 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
-          {/* 视图切换胶囊（WEB/PC/APP/主理人） */}
-          <div className="flex gap-0 p-0.5 flex-shrink-0" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-            {([
-              { id: "landing", label: "WEB", icon: Globe },
-              { id: "pc", label: "PC", icon: Monitor },
-              { id: "mobile", label: "APP", icon: Smartphone },
-              { id: "zhuliren", label: "主理人", icon: Star },
-            ] as const).map(v => (
-              <button key={v.id} onClick={() => selectView(v.id)} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] transition-all font-bold"
-                style={{
-                  background: view === v.id ? (v.id === "zhuliren" ? "#1e293b" : S.accent) : "transparent",
-                  color: view === v.id ? "#ffffff" : S.textSec,
-                  borderRadius: "6px",
-                  fontFamily: "monospace",
-                  letterSpacing: "0.02em",
-                  border: view === v.id ? "none" : "1px solid transparent",
-                }}>
-                <v.icon size={11} /> {v.label}
-              </button>
-            ))}
-          </div>
+          {/* 视图切换：浮动下拉选择器 */}
+          <ViewModePicker view={view} setView={selectView} />
 
           {/* Breadcrumb */}
           <div className="flex items-center gap-1.5 text-xs flex-shrink-0" style={{ fontFamily: "monospace" }}>

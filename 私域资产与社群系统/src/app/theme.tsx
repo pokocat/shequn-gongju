@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { Sun, Moon, Monitor } from "lucide-react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
+import { Sun, Moon, Monitor, Check, ChevronDown } from "lucide-react";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    5 套潮系主题 × 3 种明暗模式 = 10+ 种外观
@@ -417,76 +417,91 @@ export function useTheme(): ThemeCtx {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   ThemeControls —— PC 视图 Header 右上角使用
-   暗黑按钮：☀️明亮 → 🖥️自动 → 🌙暗黑 三态循环
+   DarkModePicker —— 暗黑模式下拉选择器（共用组件）
+   · 触发器：显示当前态 icon + 样式，右侧带下拉 chevron
+   · 菜单：☀️ 强制明亮 / 🖥️ 跟随系统 / 🌙 强制暗黑，当前态打勾
+   · 关闭三条路径：选中 / 点击外部 / Esc
+   · 两处复用：PC ThemeControls + Landing NavBar
    ═══════════════════════════════════════════════════════════════════════════ */
-export function ThemeControls() {
+export function DarkModePicker({
+  className = "",
+  menuAlign = "right", // "left" | "right"
+}: { className?: string; menuAlign?: "left" | "right" }) {
   useThemeSingleton();
   const ctx = useTheme();
-  const { themeId, setThemeId, darkMode, cycleDarkMode, resolvedDark } = ctx;
+  const { themeId, setDarkMode, darkMode, resolvedDark } = ctx;
   const activePalette = resolvePalette(themeId, resolvedDark ? "dark" : "light");
 
-  // 每态对应：图标、tooltip、背景渲染、颜色渲染
-  const buttonState = (() => {
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const openRef = useRef(false);
+  openRef.current = open;
+
+  // ── 关闭三条路径 ──
+  // 挂载时只注册一次，通过 openRef 读取最新 open 状态，
+  // 避免 browser_click 等工具在同一事件序列里先 pointerdown 再 click 导致
+  // "click 触发 setOpen(true) → useEffect 注册新 handler → 后续 pointerdown 被捕获 → 立即关闭" 的竞态问题
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      if (!openRef.current) return;
+      if (!wrapperRef.current || !wrapperRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (!openRef.current) return;
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  // ── 当前触发器外观 ──
+  const trigger = (() => {
     switch (darkMode) {
       case "light":
-        return {
-          Icon: Sun,
-          aria: "当前为明亮模式 · 点击切换为自动跟随系统",
-          title: "明亮模式（强制）· 点击切换为「自动跟随系统」",
-          bg: S.surface,
-          color: S.muted,
-          border: `1px solid ${S.borderMed}`,
-          shadow: "none",
-          badge: false,
-        };
+        return { Icon: Sun, bg: S.surface, color: S.muted, border: `1px solid ${S.borderMed}`, shadow: "none", isAuto: false };
       case "auto":
-        return {
-          Icon: Monitor,
-          aria: `当前为自动跟随系统（实际：${resolvedDark ? "暗黑" : "明亮"}）· 点击切换为暗黑模式`,
-          title: `自动跟随系统 · 实际显示${resolvedDark ? "暗黑" : "明亮"} · 点击切换为「强制暗黑」`,
-          bg: `linear-gradient(135deg, ${S.borderMed} 0%, ${S.accentMid} 50%, ${S.border} 100%)`,
-          color: S.text,
-          border: `1px solid ${S.primaryMid}`,
-          shadow: S.accentGlow,
-          badge: true, // AUTO 显示左下角 A 徽标
-        };
+        return { Icon: Monitor, bg: `linear-gradient(135deg, ${S.borderMed} 0%, ${S.accentMid} 50%, ${S.border} 100%)`, color: S.text, border: `1px solid ${S.primaryMid}`, shadow: S.accentGlow, isAuto: true };
       case "dark":
       default:
-        return {
-          Icon: Moon,
-          aria: "当前为暗黑模式 · 点击切换为明亮模式",
-          title: "暗黑模式（强制）· 点击切换为「强制明亮」",
-          bg: getTheme(themeId).gradient,
-          color: activePalette.onPrimary,
-          border: "1px solid transparent",
-          shadow: S.shadow,
-          badge: false,
-        };
+        return { Icon: Moon, bg: getTheme(themeId).gradient, color: activePalette.onPrimary, border: "1px solid transparent", shadow: S.shadow, isAuto: false };
     }
   })();
-  const { Icon } = buttonState;
+
+  // ── 菜单项数据 ──
+  const items: { value: DarkMode; Icon: typeof Sun; label: string; hint?: string }[] = [
+    { value: "light", Icon: Sun, label: "强制明亮" },
+    { value: "auto", Icon: Monitor, label: "跟随系统", hint: `实际显示${resolvedDark ? "暗黑" : "明亮"}` },
+    { value: "dark", Icon: Moon, label: "强制暗黑" },
+  ];
 
   return (
-    <div className="flex items-center gap-2 flex-shrink-0">
-      {/* ── 暗黑模式开关（3 态：明亮 ⇄ 自动 ⇄ 暗黑） ──────────────── */}
+    <div ref={wrapperRef} className={`relative flex-shrink-0 ${className}`}>
+      {/* Trigger */}
       <button
         type="button"
-        aria-label={buttonState.aria}
-        title={buttonState.title}
-        onClick={cycleDarkMode}
-        className="w-9 h-9 flex items-center justify-center flex-shrink-0 transition-all duration-200 hover:-translate-y-0.5 relative"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls="dark-mode-picker-menu"
+        aria-label={`暗黑模式：${darkMode === "light" ? "强制明亮" : darkMode === "auto" ? `跟随系统（实际${resolvedDark ? "暗黑" : "明亮"}）` : "强制暗黑"} · 点击选择`}
+        title="暗黑模式 · 点击选择 明亮 / 跟随系统 / 暗黑"
+        onClick={() => setOpen(o => !o)}
+        className="w-9 h-9 flex items-center justify-center transition-all duration-200 hover:-translate-y-0.5"
         style={{
-          background: buttonState.bg,
-          color: buttonState.color,
-          border: buttonState.border,
+          background: trigger.bg,
+          color: trigger.color,
+          border: trigger.border,
           borderRadius: S.radiusSm,
-          boxShadow: buttonState.shadow,
+          boxShadow: trigger.shadow,
           backdropFilter: "blur(10px)",
+          WebkitBackdropFilter: "blur(10px)",
         }}
       >
-        <Icon size={15} />
-        {buttonState.badge && (
+        <trigger.Icon size={15} />
+        {trigger.isAuto && (
           <span
             className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 flex items-center justify-center font-black"
             style={{
@@ -502,44 +517,311 @@ export function ThemeControls() {
         )}
       </button>
 
-      {/* ── 主题切换胶囊 ─────────────────────────────────────────────── */}
-      <div
-        className="flex items-center gap-1 px-1.5 py-1 flex-shrink-0"
+      {/* Menu */}
+      {open && (
+        <div
+          id="dark-mode-picker-menu"
+          role="listbox"
+          aria-label="选择暗黑模式"
+          onClick={e => e.stopPropagation()}
+          style={{
+            position: "absolute",
+            top: `calc(100% + 8px)`,
+            [menuAlign === "left" ? "left" : "right"]: 0,
+            minWidth: 188,
+            background: S.surface,
+            border: `1px solid ${S.borderMed}`,
+            borderRadius: S.radiusLg,
+            boxShadow: S.shadow,
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            padding: "6px",
+            zIndex: 1000,
+          }}
+        >
+          {items.map(it => {
+            const active = darkMode === it.value;
+            return (
+              <button
+                key={it.value}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => { setDarkMode(it.value); setOpen(false); }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  width: "100%",
+                  padding: "8px 10px",
+                  borderRadius: S.radiusSm,
+                  background: active ? S.primaryLight : "transparent",
+                  color: active ? S.primaryDark : S.text,
+                  cursor: "pointer",
+                  border: "none",
+                  textAlign: "left",
+                  fontSize: 13,
+                  fontWeight: active ? 600 : 500,
+                  lineHeight: 1.3,
+                  transition: "background 120ms",
+                }}
+                onMouseEnter={e => {
+                  if (!active) { (e.currentTarget as HTMLElement).style.background = S.glass; (e.currentTarget as HTMLElement).style.color = S.primary; }
+                }}
+                onMouseLeave={e => {
+                  if (!active) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = S.text; }
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-flex",
+                    width: 24, height: 24,
+                    alignItems: "center", justifyContent: "center",
+                    borderRadius: 6,
+                    background: active ? S.primary : S.surface,
+                    border: `1px solid ${active ? "transparent" : S.borderMed}`,
+                    color: active ? activePalette.onPrimary : S.muted,
+                    flexShrink: 0,
+                  }}
+                >
+                  <it.Icon size={13} />
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  {it.label}
+                  {it.hint && (
+                    <span style={{ display: "block", fontSize: 11, fontWeight: 400, color: S.muted, marginTop: 1 }}>
+                      {it.hint}
+                    </span>
+                  )}
+                </span>
+                {active && (
+                  <span style={{ color: S.primary, display: "inline-flex" }}>
+                    <Check size={14} strokeWidth={3} />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ThemePicker —— 主题风格下拉选择器
+   · 触发器：当前主题 emoji + 名称 + 下拉箭头
+   · 菜单：emoji + 名称 + tagline，当前项打勾
+   · 关闭三条路径：选中 / 点击外部 / Esc
+   · 关闭事件监听只注册一次，避免 pointerdown/click 竞态
+   ═══════════════════════════════════════════════════════════════════════════ */
+export function ThemePicker({
+  className = "",
+  menuAlign = "right",
+}: { className?: string; menuAlign?: "left" | "right" }) {
+  useThemeSingleton();
+  const ctx = useTheme();
+  const { themeId, setThemeId, resolvedDark } = ctx;
+  const activePalette = resolvePalette(themeId, resolvedDark ? "dark" : "light");
+  const currentTheme = getTheme(themeId);
+
+  const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const openRef = useRef(false);
+  openRef.current = open;
+
+  // ── 关闭三条路径（只注册一次，用 ref 读最新 open） ──
+  useEffect(() => {
+    const onDown = (e: PointerEvent) => {
+      if (!openRef.current) return;
+      if (!wrapperRef.current || !wrapperRef.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (!openRef.current) return;
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
+
+  // ── 触发器：显示 VIBE 标签 + 当前主题 ──
+  const trigger = (
+    <div
+      className="flex items-center gap-1.5 pr-1 transition-all duration-200 hover:-translate-y-0.5"
+      style={{
+        paddingLeft: 8,
+        paddingTop: 4,
+        paddingBottom: 4,
+        background: S.glass,
+        border: `1px solid ${S.glassBorder}`,
+        borderRadius: "999px",
+        backdropFilter: "blur(14px)",
+        WebkitBackdropFilter: "blur(14px)",
+        boxShadow: S.shadow,
+      }}
+    >
+      <span
         style={{
-          background: S.glass,
-          border: `1px solid ${S.glassBorder}`,
-          borderRadius: "999px",
-          backdropFilter: "blur(14px)",
-          WebkitBackdropFilter: "blur(14px)",
-          boxShadow: S.shadow,
+          fontSize: 10,
+          fontWeight: 700,
+          letterSpacing: "0.16em",
+          color: S.muted,
           fontFamily: "monospace",
+          userSelect: "none",
         }}
       >
-        <span className="px-1.5 text-[10px] font-bold tracking-[0.14em] select-none"
-              style={{ color: S.muted }}>VIBE</span>
-        {THEMES.map(t => {
-          const active = t.id === themeId;
-          return (
-            <button
-              key={t.id}
-              type="button"
-              title={`${t.name} · ${t.tagline}`}
-              onClick={() => setThemeId(t.id)}
-              className="w-8 h-8 flex items-center justify-center text-sm transition-all duration-200 relative"
-              style={{
-                borderRadius: "999px",
-                background: active ? t.gradient : "transparent",
-                color: active ? "#fff" : S.textSec,
-                transform: active ? "translateY(-1px) scale(1.05)" : "none",
-                boxShadow: active ? S.shadow : "none",
-                border: active ? "none" : "1px solid transparent",
-              }}
-            >
-              {t.emoji}
-            </button>
-          );
-        })}
-      </div>
+        VIBE
+      </span>
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: 4,
+          padding: "3px 8px",
+          borderRadius: "999px",
+          background: currentTheme.gradient,
+          color: activePalette.onPrimary,
+          fontSize: 12,
+          fontWeight: 700,
+          boxShadow: S.accentGlow,
+          whiteSpace: "nowrap",
+        }}
+      >
+        <span style={{ fontSize: 13, lineHeight: 1 }}>{currentTheme.emoji}</span>
+        <span>{currentTheme.name}</span>
+      </span>
+      <ChevronDown size={12} style={{ color: S.muted, flexShrink: 0 }} />
+    </div>
+  );
+
+  return (
+    <div ref={wrapperRef} className={`relative flex-shrink-0 ${className}`}>
+      {/* Trigger */}
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls="theme-picker-menu"
+        aria-label={`主题风格：${currentTheme.name} · 点击选择`}
+        title="主题风格 · 点击选择 霓虹 / 日落 / 薄荷 / 曜石 / 酸柠"
+        onClick={() => setOpen(o => !o)}
+        style={{
+          padding: 0,
+          border: "none",
+          background: "transparent",
+          cursor: "pointer",
+          lineHeight: 1,
+        }}
+      >
+        {trigger}
+      </button>
+
+      {/* Menu */}
+      {open && (
+        <div
+          id="theme-picker-menu"
+          role="listbox"
+          aria-label="选择主题风格"
+          onClick={e => e.stopPropagation()}
+          style={{
+            position: "absolute",
+            top: `calc(100% + 8px)`,
+            [menuAlign === "left" ? "left" : "right"]: 0,
+            minWidth: 200,
+            background: S.surface,
+            border: `1px solid ${S.borderMed}`,
+            borderRadius: S.radiusLg,
+            boxShadow: S.shadow,
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            padding: "6px",
+            zIndex: 1000,
+          }}
+        >
+          {THEMES.map(t => {
+            const active = themeId === t.id;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                role="option"
+                aria-selected={active}
+                onClick={() => { setThemeId(t.id); setOpen(false); }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 10,
+                  width: "100%",
+                  padding: "8px 10px",
+                  borderRadius: S.radiusSm,
+                  background: active ? S.primaryLight : "transparent",
+                  color: active ? S.primaryDark : S.text,
+                  cursor: "pointer",
+                  border: "none",
+                  textAlign: "left",
+                  fontSize: 13,
+                  fontWeight: active ? 600 : 500,
+                  lineHeight: 1.3,
+                  transition: "background 120ms",
+                }}
+                onMouseEnter={e => {
+                  if (!active) { (e.currentTarget as HTMLElement).style.background = S.glass; (e.currentTarget as HTMLElement).style.color = S.primary; }
+                }}
+                onMouseLeave={e => {
+                  if (!active) { (e.currentTarget as HTMLElement).style.background = "transparent"; (e.currentTarget as HTMLElement).style.color = S.text; }
+                }}
+              >
+                <span
+                  style={{
+                    display: "inline-flex",
+                    width: 28, height: 28,
+                    alignItems: "center", justifyContent: "center",
+                    borderRadius: 8,
+                    background: active ? t.gradient : S.surface,
+                    border: `1px solid ${active ? "transparent" : S.borderMed}`,
+                    color: active ? activePalette.onPrimary : S.muted,
+                    fontSize: 14,
+                    flexShrink: 0,
+                    boxShadow: active ? S.shadow : "none",
+                  }}
+                >
+                  {t.emoji}
+                </span>
+                <span style={{ flex: 1, minWidth: 0 }}>
+                  {t.name}
+                  <span style={{ display: "block", fontSize: 11, fontWeight: 400, color: S.muted, marginTop: 1 }}>
+                    {t.tagline}
+                  </span>
+                </span>
+                {active && (
+                  <span style={{ color: S.primary, display: "inline-flex" }}>
+                    <Check size={14} strokeWidth={3} />
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ThemeControls —— PC 视图 Header 右上角使用
+   ═══════════════════════════════════════════════════════════════════════════ */
+export function ThemeControls() {
+  return (
+    <div className="flex items-center gap-2 flex-shrink-0">
+      {/* ── 暗黑模式下拉选择器 ──────────────────────────────────────── */}
+      <DarkModePicker />
+
+      {/* ── 主题风格下拉选择器 ──────────────────────────────────────── */}
+      <ThemePicker />
     </div>
   );
 }
