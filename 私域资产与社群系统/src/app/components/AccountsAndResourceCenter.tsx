@@ -871,10 +871,10 @@ const { tools, setTools } = useTools();
             const Icon = icons[dimension];
             return <button key={dimension} type="button" aria-pressed={active} onClick={() => switchDimension(dimension)} className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold transition-all" style={{ background: active ? S.ink : S.surface, color: active ? S.accent : S.textSec, border: `1px solid ${active ? S.ink : S.borderMed}`, borderRadius: S.radius, fontFamily: "monospace" }}><Icon size={13} />{labels[dimension]}</button>;
           })}
-          {viewDimension !== "type" && <span className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>点击分组卡片聚焦列表，展开按钮查看组内工具</span>}
+          {viewDimension === "person" && <span className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>点击分组卡片聚焦列表，展开按钮查看组内工具</span>}
         </div>}
 
-        {viewDimension !== "type" && (
+        {viewDimension === "person" && (
           <div className="grid grid-cols-4 gap-2">
             {dimensionGroups.map(group => {
               const active = dimensionGroup === group.key;
