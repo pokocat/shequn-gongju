@@ -225,9 +225,9 @@ const ACID: ThemePalette = {
   },
 };
 
-export const THEMES: ThemePalette[] = [NEON, SUNSET, MINT, OBSIDIAN, ACID];
+export const THEMES: ThemePalette[] = [ACID, NEON, SUNSET, MINT, OBSIDIAN];
 export function getTheme(id: ThemeId): ThemePalette {
-  return THEMES.find(t => t.id === id) ?? SUNSET;
+  return THEMES.find(t => t.id === id) ?? ACID;
 }
 
 /** 读取系统 prefers-color-scheme，SSR / 不可用时返回 light */
@@ -251,13 +251,13 @@ export function resolveUserMode(mode: DarkMode): ResolvedMode {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 // Shared mutable palette object. Always copy fields in, never replace the ref.
-export let S: SPalette = { ...SUNSET.light };
+export let S: SPalette = { ...ACID.light };
 
 // Current state
-let currentId: ThemeId = "sunset";
+let currentId: ThemeId = "acid";
 let currentUserMode: DarkMode = "light";
 let currentResolved: ResolvedMode = "light";
-export let currentTheme: ThemePalette = SUNSET;
+export let currentTheme: ThemePalette = ACID;
 export let isDark: boolean = false;
 
 type Listener = (tid: ThemeId) => void;
