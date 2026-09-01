@@ -6,7 +6,7 @@ import {
   Sparkles, Store, Link2, RefreshCw, Package, List, LayoutGrid, SlidersHorizontal, Eye, QrCode, MessageCircle,
 } from "lucide-react";
 import type { ResourceTool as Tool, CommunicationToolType, ToolHealthStatus, ToolRiskLevel, ResourceToolLog } from "../data/communicationTools";
-import { typeMeta, statusMeta, riskMeta } from "../data/communicationTools";
+import { typeMeta, statusMeta, riskMeta, needsNurturing } from "../data/communicationTools";
 import { useTools, useAccounts, useApprovals } from "../App";
 import type { SystemAccount } from "../data/accountTypes";
 import { createApproval } from "../data/approvalTypes";
@@ -716,7 +716,11 @@ const { tools, setTools } = useTools();
             </div>
             <div style={{ marginTop: 6 }}>入库后状态：
               <span style={{ marginLeft: 6, padding: "2px 6px", background: statusMeta.not_enabled.badgeBg, color: statusMeta.not_enabled.badgeColor, borderRadius: 4, fontSize: 11, fontWeight: 700 }}>未启用</span>
-              <span style={{ fontSize: 11, color: S.muted, marginLeft: 8 }}>后续点「送回养号」→「分配到项目」→「发放到人」逐步推进</span>
+              <span style={{ fontSize: 11, color: S.muted, marginLeft: 8 }}>
+                {needsNurturing((newToolDrawer.draft.type || "wechat") as CommunicationToolType)
+                  ? "后续点「送回养号」→「分配到项目」→「发放到人」逐步推进"
+                  : "直接进入「分配到项目」→「发放到人」，无需养号"}
+              </span>
             </div>
             <div style={{ marginTop: 8, padding: "10px 12px", background: S.primaryLight, borderRadius: 7, border: `1px solid ${S.primaryMid}`, fontSize: 12, color: S.textSec, lineHeight: 1.7 }}>
               💡 也可使用顶部「批量导入」支持：CSV 手机号段、企微席位 XML 备份、微信卡包批量注册、媒体矩阵账号批量接入。
@@ -1023,8 +1027,10 @@ const { tools, setTools } = useTools();
           <span className="text-xs font-bold">已选 {selectedRows.length} 个资源</span>
           <button type="button" className="px-2 py-1 text-xs" style={{ background: S.accent, color: "#ffffff", borderRadius: S.radiusSm }}
             onClick={() => runBulkAction("批量交接")}>批量交接</button>
+          {selectedRows.some(id => tools.find(t => t.id === id && needsNurturing(t.type))) && (
           <button type="button" className="px-2 py-1 text-xs" style={{ background: S.surface, color: S.text, borderRadius: S.radiusSm }}
             onClick={() => runBulkAction("送回养号")}>送回养号</button>
+          )}
           <button type="button" className="px-2 py-1 text-xs" style={{ background: S.surface, color: S.text, borderRadius: S.radiusSm }}
             onClick={() => runBulkAction("标记风控关注")}>标记风控</button>
           <button type="button" className="px-2 py-1 text-xs" style={{ background: S.surface, color: S.text, borderRadius: S.radiusSm }}
@@ -1554,11 +1560,13 @@ function DetailPanel({
           onClick={() => onSwitchOwner()}>
           <User size={12} /> 改归属人
         </button>
+        {needsNurturing(tool.type) && (
         <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
           style={{ background: S.warningBg, color: S.warning, border: `1px solid #fde68a`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
           onClick={() => onConfirmAction(tool.id, "send_nurture", "送回养号")}>
           <Clock size={12} /> 送回养号
         </button>
+        )}
         <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
           style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
           onClick={() => onMutate({} as any, "编辑详情", "手动更新资料（示例）")}>

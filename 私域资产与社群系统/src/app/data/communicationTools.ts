@@ -220,6 +220,16 @@ export const typeMeta: Record<CommunicationToolType, { label: string; short: str
   business: { label: "业务系统", short: "业务", color: "#fff", bg: "#0f766e" },
 };
 
+/**
+ * 只有「有社媒账号安全风控风险」的类型才需要养号：
+ *   ✅ wecom（企业微信） / wechat（个人微信） / media（抖音 · 视频号 · 小红书 · B站 · 快手 等）
+ *   ❌ phone / email / workspace / developer / business —— 没有被封风险，直接可用
+ */
+export const NURTURE_TYPES: Set<CommunicationToolType> = new Set(["wecom", "wechat", "media"]);
+export function needsNurturing(type: CommunicationToolType): boolean {
+  return NURTURE_TYPES.has(type);
+}
+
 // ─── 扩展阶段后的 17 条初始化工具数据 ─────────────────────────
 export const initialTools: ResourceTool[] = [
   // ── 企微 4 条 ──────────────────────────────────────────────
