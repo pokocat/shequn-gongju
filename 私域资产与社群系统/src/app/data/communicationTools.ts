@@ -234,49 +234,49 @@ export function needsNurturing(type: CommunicationToolType): boolean {
 export const initialTools: ResourceTool[] = [
   // ── 企微 4 条 ──────────────────────────────────────────────
   {
-    id: "t_001", type: "wecom", identifier: "corp_beijing_01", name: "北京企业微信-招商",
+    id: "t_001", type: "wecom", identifier: "corp_ai_community_01", name: "AI社群·企微主号",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan",
-    boundProjectIds: ["p_eco_invite"], dailyAddLimit: 50, todayAdded: 12, friendCount: 487, groupCount: 3,
+    boundProjectIds: ["p_ai_community"], dailyAddLimit: 50, todayAdded: 12, friendCount: 487, groupCount: 3,
     lastActiveDate: "2026-08-25", lastLoginDate: "2026-08-25", lastLoginDevice: "MacOS · Wecom客户端",
-    onboardDate: "2026-02-15", corpName: "健康运营（北京）有限公司", enterpriseName: "健康运营（北京）有限公司",
-    department: "生态招商部", chatArchiveEnabled: true, subsidiary: "北京PRO会员服务",
+    onboardDate: "2026-02-15", corpName: "未来AI研究院（北京）有限公司", enterpriseName: "未来AI研究院（北京）有限公司",
+    department: "AI社群运营部", chatArchiveEnabled: true, subsidiary: "AI学习社群",
     last7dMessageCount: 1892, externalContactCount: 487,
     operationLogs: [
       { id: "l1", time: "2026-02-15 10:00", actor: "系统初始化", action: "注册入库", summary: "采购企业微信席位1号，导入为未启用" },
       { id: "l2", time: "2026-02-24 09:00", actor: "系统初始化", action: "养号完成", summary: "养号9天通过，进入空闲号池" },
-      { id: "l3", time: "2026-03-10 14:00", actor: "系统初始化", action: "分配到项目", summary: "分配给生态招商项目" },
+      { id: "l3", time: "2026-03-10 14:00", actor: "系统初始化", action: "分配到项目", summary: "分配给AI学习社群" },
       { id: "l4", time: "2026-04-03 09:10", actor: "陈宇航", action: "发放到人", summary: "绑定给吴思远(acc_wusiyuan)" },
     ],
-    notes: "北京PRO+生态招商双项目归属的主号"
+    notes: "AI学习社群主账号"
   },
   {
-    id: "t_002", type: "wecom", identifier: "corp_shanghai_01", name: "上海企业微信-林小燕",
+    id: "t_002", type: "wecom", identifier: "corp_ai_talent_01", name: "AI艺人·企微主号",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_linxiaoyan",
-    boundProjectIds: ["p_shanghai_exp"], dailyAddLimit: 50, todayAdded: 8, friendCount: 356, groupCount: 2,
+    boundProjectIds: ["p_ai_talent"], dailyAddLimit: 50, todayAdded: 8, friendCount: 356, groupCount: 2,
     lastActiveDate: "2026-08-25", lastLoginDate: "2026-08-25", onboardDate: "2026-02-16",
-    corpName: "健康运营（上海）有限公司", enterpriseName: "健康运营（上海）有限公司",
-    department: "体验官运营部", chatArchiveEnabled: true, subsidiary: "上海体验官项目",
+    corpName: "未来AI数字娱乐（上海）有限公司", enterpriseName: "未来AI数字娱乐（上海）有限公司",
+    department: "AI艺人运营部", chatArchiveEnabled: true, subsidiary: "AI艺人孵化平台",
     last7dMessageCount: 1120, externalContactCount: 356,
     operationLogs: [{ id: "l1", time: "2026-02-16 10:00", actor: "系统初始化", action: "注册入库", summary: "" }],
   },
   {
-    id: "t_003", type: "wecom", identifier: "corp_guangzhou_01", name: "广州企业微信-刘刚",
+    id: "t_003", type: "wecom", identifier: "corp_ai_payk_01", name: "知识付费·企微主号",
     status: "abnormal", riskLevel: "high", boundAccountId: "acc_liugang",
-    boundProjectIds: ["p_guangzhou_train"], dailyAddLimit: 30, todayAdded: 0, friendCount: 234, groupCount: 1,
+    boundProjectIds: ["p_ai_payk"], dailyAddLimit: 30, todayAdded: 0, friendCount: 234, groupCount: 1,
     lastActiveDate: "2026-08-15", lastLoginDate: "2026-08-15", onboardDate: "2026-02-20",
-    corpName: "健康运营（广州）有限公司", enterpriseName: "健康运营（广州）有限公司",
-    department: "代理培训部", chatArchiveEnabled: false, subsidiary: "广州代理培训",
+    corpName: "未来AI知识服务（广州）有限公司", enterpriseName: "未来AI知识服务（广州）有限公司",
+    department: "知识付费运营部", chatArchiveEnabled: false, subsidiary: "AI知识付费平台",
     last7dMessageCount: 0, externalContactCount: 234,
     operationLogs: [{ id: "l1", time: "2026-08-20 02:30", actor: "系统巡检", action: "触发风控", summary: "连续30天未登录，标记异常/高危" }],
     notes: "30天未登录，需立即停用或交接"
   },
   {
-    id: "t_004", type: "wecom", identifier: "corp_chengdu_01", name: "成都企业微信-赵志远",
+    id: "t_004", type: "wecom", identifier: "corp_ai_community_02", name: "AI社群·企微成都号",
     status: "pending_transfer", riskLevel: "warning", boundAccountId: "acc_zhaozhiyuan",
-    boundProjectIds: ["p_chengdu"], dailyAddLimit: 30, todayAdded: 3, friendCount: 67, groupCount: 1,
+    boundProjectIds: ["p_ai_community"], dailyAddLimit: 30, todayAdded: 3, friendCount: 67, groupCount: 1,
     lastActiveDate: "2026-08-20", onboardDate: "2026-03-02",
-    corpName: "健康运营（成都）有限公司", enterpriseName: "健康运营（成都）有限公司",
-    department: "成都分公司运营", chatArchiveEnabled: true, subsidiary: "成都分站",
+    corpName: "未来AI研究院（成都）有限公司", enterpriseName: "未来AI研究院（成都）有限公司",
+    department: "AI社群运营部", chatArchiveEnabled: true, subsidiary: "AI学习社群",
     last7dMessageCount: 210, externalContactCount: 67,
     operationLogs: [{ id: "l1", time: "2026-08-22 15:20", actor: "赵志远", action: "工具交接审批", summary: "申请离职交接，审批中" }],
     notes: "人员离职待交接"
@@ -284,9 +284,9 @@ export const initialTools: ResourceTool[] = [
 
   // ── 个人微信 6 条（引入wechat专属字段）──────────────────────
   {
-    id: "t_005", type: "wechat", identifier: "wx_bj_01", name: "思远",
+    id: "t_005", type: "wechat", identifier: "wx_ai_01", name: "思远",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan",
-    boundProjectIds: ["p_beijing_pro"], dailyAddLimit: 30, todayAdded: 8, friendCount: 1823, groupCount: 16,
+    boundProjectIds: ["p_ai_community"], dailyAddLimit: 30, todayAdded: 8, friendCount: 1823, groupCount: 16,
     lastActiveDate: "2026-08-25", lastLoginDate: "2026-08-25 09:12", lastLoginDevice: "iPhone 15 Pro · WeChat 8.0.48",
     onboardDate: "2026-03-12", boundPhone: "138-0012-3456", nickname: "思远",
     gender: "男", qqNo: "287634521", boundEmail: "wsy@eco-saas.com",
@@ -301,24 +301,24 @@ export const initialTools: ResourceTool[] = [
     operationLogs: [
       { id: "l1", time: "2026-03-12 09:00", actor: "系统初始化", action: "注册入库", summary: "采购手机号卡+注册微信" },
       { id: "l2", time: "2026-03-22 09:00", actor: "系统初始化", action: "养号完成", summary: "10天养号通过" },
-      { id: "l3", time: "2026-04-01 10:00", actor: "系统初始化", action: "分配到项目", summary: "分配给北京PRO" },
+      { id: "l3", time: "2026-04-01 10:00", actor: "系统初始化", action: "分配到项目", summary: "分配给AI学习社群" },
       { id: "l4", time: "2026-04-03 09:10", actor: "陈宇航", action: "发放到人", summary: "绑定吴思远" },
       { id: "l5", time: "2026-08-24 19:10", actor: "吴思远", action: "编辑详情", summary: "更新紧急联系人信息" },
     ],
   },
   {
-    id: "t_006", type: "wechat", identifier: "wx_sh_01", name: "小燕",
+    id: "t_006", type: "wechat", identifier: "wx_ai_02", name: "小燕",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_linxiaoyan",
-    boundProjectIds: ["p_shanghai_exp"], dailyAddLimit: 30, todayAdded: 5, friendCount: 356, groupCount: 2,
+    boundProjectIds: ["p_ai_talent"], dailyAddLimit: 30, todayAdded: 5, friendCount: 356, groupCount: 2,
     lastActiveDate: "2026-08-25", onboardDate: "2026-03-13", boundPhone: "139-0012-3457", nickname: "小燕",
     gender: "女", qqNo: "345782910", boundEmail: "lxy@eco-saas.com",
     certified: true, invitedNew30d: 38, scanCount: 312, last7dFriendsGrowth: 62,
     accountPosition: "客服号", emergencyContacts: [{ name: "吴思远", phone: "138-0012-3456", note: "区域负责人" }],
   },
   {
-    id: "t_007", type: "wechat", identifier: "wx_gz_01", name: "刘刚",
+    id: "t_007", type: "wechat", identifier: "wx_ai_03", name: "刘刚",
     status: "abnormal", riskLevel: "high", boundAccountId: "acc_liugang",
-    boundProjectIds: ["p_guangzhou_train"], dailyAddLimit: 20, todayAdded: 0, friendCount: 234, groupCount: 1,
+    boundProjectIds: ["p_ai_payk"], dailyAddLimit: 20, todayAdded: 0, friendCount: 234, groupCount: 1,
     lastActiveDate: "2026-08-05", onboardDate: "2026-03-18", boundPhone: "138-0012-3458", nickname: "刘刚",
     gender: "男", qqNo: "412893047", boundEmail: "lg@eco-saas.com", certified: false,
     invitedNew30d: 21, scanCount: 187, last7dFriendsGrowth: 0, accountPosition: "客服号",
@@ -326,22 +326,22 @@ export const initialTools: ResourceTool[] = [
     notes: "需尽快回收并重新发放"
   },
   {
-    id: "t_008", type: "wechat", identifier: "wx_cd_01", name: "志远",
+    id: "t_008", type: "wechat", identifier: "wx_ai_04", name: "志远",
     status: "pending_transfer", riskLevel: "warning", boundAccountId: "acc_zhaozhiyuan",
-    boundProjectIds: ["p_chengdu"], dailyAddLimit: 20, todayAdded: 2, friendCount: 67, groupCount: 1,
+    boundProjectIds: ["p_ai_community"], dailyAddLimit: 20, todayAdded: 2, friendCount: 67, groupCount: 1,
     lastActiveDate: "2026-08-22", onboardDate: "2026-03-25", boundPhone: "152-0012-3461", nickname: "志远",
     gender: "男", qqNo: "523019483", certified: false, accountPosition: "客服号",
   },
   {
-    id: "t_009", type: "wechat", identifier: "wx_sz_01", name: "梦华",
+    id: "t_009", type: "wechat", identifier: "wx_ai_05", name: "梦华",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_limenghua",
-    boundProjectIds: ["p_shenzhen"], dailyAddLimit: 30, todayAdded: 6, friendCount: 310, groupCount: 2,
+    boundProjectIds: ["p_ai_edu"], dailyAddLimit: 30, todayAdded: 6, friendCount: 310, groupCount: 2,
     lastActiveDate: "2026-08-25", onboardDate: "2026-03-28", boundPhone: "186-0012-3462", nickname: "梦华",
     gender: "女", certified: true, last7dFriendsGrowth: 44, accountPosition: "招商号",
   },
   // 养号中
   {
-    id: "t_010n", type: "wechat", identifier: "wx_nj_02", name: "待启用·南京2",
+    id: "t_010n", type: "wechat", identifier: "wx_ai_nurturing", name: "AI养号中·7号",
     status: "nurturing", riskLevel: "normal", boundAccountId: null,
     boundProjectIds: [], dailyAddLimit: 10, todayAdded: 0, friendCount: 18, groupCount: 0,
     lastActiveDate: "2026-08-26", onboardDate: "2026-08-20", boundPhone: "151-0012-3478", nickname: "—",
@@ -349,7 +349,7 @@ export const initialTools: ResourceTool[] = [
   },
   // 未启用
   {
-    id: "t_010", type: "wechat", identifier: "wx_bj_02", name: "待分配微信号-北京2",
+    id: "t_010", type: "wechat", identifier: "wx_ai_idle", name: "AI待启用微信号",
     status: "not_enabled", riskLevel: "normal", boundAccountId: null,
     boundProjectIds: [], dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0,
     lastActiveDate: "—", onboardDate: "2026-08-24", boundPhone: "135-0012-3463", nickname: "—",
@@ -358,39 +358,39 @@ export const initialTools: ResourceTool[] = [
 
   // ── 手机号 3 条 ────────────────────────────────────────────
   {
-    id: "t_011", type: "phone", identifier: "phone_138_0012_3456", name: "北京主手机号",
+    id: "t_011", type: "phone", identifier: "phone_138_0012_3456", name: "AI学习社群·主手机号",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan",
-    boundProjectIds: ["p_beijing_pro"], dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0,
+    boundProjectIds: ["p_ai_community"], dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0,
     lastActiveDate: "2026-08-25", onboardDate: "2025-11-10", boundPhone: "138-0012-3456",
     carrier: "移动", realNameStatus: "已实名", realNameDate: "2025-11-10",
     planName: "5G畅享299套餐 · 不限量", callRestriction: "无限制",
     boundWechatCount: 2, lastCallDate: "2026-08-25",
   },
   {
-    id: "t_012", type: "phone", identifier: "phone_139_0012_3457", name: "上海主手机号",
+    id: "t_012", type: "phone", identifier: "phone_139_0012_3457", name: "AI艺人孵化·主手机号",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_linxiaoyan",
-    boundProjectIds: ["p_shanghai_exp"], dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0,
+    boundProjectIds: ["p_ai_talent"], dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0,
     lastActiveDate: "2026-08-25", onboardDate: "2025-11-11", boundPhone: "139-0012-3457",
     carrier: "联通", realNameStatus: "已实名", realNameDate: "2025-11-11",
     planName: "冰激凌239套餐 · 3000分钟", callRestriction: "无限制",
     boundWechatCount: 2, lastCallDate: "2026-08-25",
   },
   {
-    id: "t_012b", type: "phone", identifier: "phone_unused_01", name: "闲置联通号-杭州",
+    id: "t_012b", type: "phone", identifier: "phone_unused_01", name: "闲置联通号",
     status: "idle", riskLevel: "normal", boundAccountId: null, boundProjectIds: [],
     dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0, lastActiveDate: "2026-07-10",
     onboardDate: "2025-12-01", boundPhone: "176-0012-3499",
     carrier: "联通", realNameStatus: "已实名", realNameDate: "2025-12-01",
     planName: "天王星199套餐", callRestriction: "无限制",
     boundWechatCount: 1, lastCallDate: "2026-07-10",
-    notes: "杭州分站编制外闲置号，可批拨"
+    notes: "AI教育平台闲置号，可批拨"
   },
 
   // ── 邮箱 2 条 ─────────────────────────────────────────────
   {
     id: "t_012e", type: "email", identifier: "ops@fenglema.com", name: "运营主邮箱",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan",
-    boundProjectIds: ["p_beijing_pro"], dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0,
+    boundProjectIds: ["p_ai_community"], dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0,
     lastActiveDate: "2026-08-25", lastLoginDate: "2026-08-25", onboardDate: "2025-10-12",
     emailProvider: "企业邮箱", recoveryEmail: "security@fenglema.com", emailVerified: true,
     emailSecurityConfigured: true, notes: "项目通知与账号安全恢复邮箱",
@@ -408,7 +408,7 @@ export const initialTools: ResourceTool[] = [
   {
     id: "t_013", type: "media", identifier: "mp_eco_official", name: "官方公众号",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan",
-    boundProjectIds: ["p_beijing_pro"],
+    boundProjectIds: ["p_ai_community"],
     dailyAddLimit: 0, todayAdded: 0, friendCount: 12800, groupCount: 0,
     lastActiveDate: "2026-08-25", onboardDate: "2025-09-01",
     platform: "公众号", mediaPlatform: "公众号",
@@ -431,7 +431,7 @@ export const initialTools: ResourceTool[] = [
   {
     id: "dy_bj_01", type: "media", identifier: "dy_bj_01", name: "抖音·北京 @eco_beijing",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan",
-    boundProjectIds: ["p_beijing_pro"],
+    boundProjectIds: ["p_ai_community"],
     dailyAddLimit: 0, todayAdded: 0, friendCount: 42180, groupCount: 0,
     lastActiveDate: "2026-08-26", onboardDate: "2025-11-08", lastLoginDate: "2026-08-26 22:10", lastLoginDevice: "iPhone 15 · 抖音 32.5",
     platform: "抖音", mediaPlatform: "抖音",
@@ -473,7 +473,7 @@ export const initialTools: ResourceTool[] = [
   {
     id: "t_015", type: "media", identifier: "xhs_eco_life", name: "eco_life 小红书",
     status: "in_use", riskLevel: "normal", boundAccountId: "acc_linxiaoyan",
-    boundProjectIds: ["p_shanghai_exp"],
+    boundProjectIds: ["p_ai_talent"],
     dailyAddLimit: 0, todayAdded: 0, friendCount: 9300, groupCount: 0,
     lastActiveDate: "2026-08-24", onboardDate: "2026-01-08",
     platform: "小红书", mediaPlatform: "小红书",
@@ -488,7 +488,7 @@ export const initialTools: ResourceTool[] = [
   // ── 内容与微信生态补充 ─────────────────────────────────────
   {
     id: "mini_eco_01", type: "media", identifier: "wxmini_eco_service", name: "聚域服务小程序",
-    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_beijing_pro"],
+    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_ai_community"],
     dailyAddLimit: 0, todayAdded: 0, friendCount: 6300, groupCount: 0, lastActiveDate: "2026-08-27", onboardDate: "2026-01-18",
     platform: "小程序", mediaPlatform: "小程序", certifiedType: "官方认证", certifiedSubject: "聚域私域服务平台",
     matrixGroup: "微信生态·服务入口", contentTags: ["会员服务", "订单查询"], fansCount: 6300, publish30d: 4, play30d: 12000,
@@ -496,13 +496,13 @@ export const initialTools: ResourceTool[] = [
   // ── 协作与 AI ─────────────────────────────────────────────
   {
     id: "work_figma_01", type: "workspace", identifier: "figma_team_eco", name: "聚域设计工作区",
-    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_beijing_pro"],
+    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_ai_community"],
     dailyAddLimit: 0, todayAdded: 0, friendCount: 18, groupCount: 0, lastActiveDate: "2026-08-28", lastLoginDate: "2026-08-28", onboardDate: "2025-12-10",
     platform: "Figma", notes: "团队设计席位，管理员：吴思远", operationLogs: [{ id: "l1", time: "2025-12-10 10:00", actor: "系统初始化", action: "注册入库", summary: "创建团队工作区" }],
   },
   {
     id: "work_chatgpt_01", type: "workspace", identifier: "chatgpt_team_eco", name: "聚域 ChatGPT 团队",
-    status: "in_use", riskLevel: "warning", boundAccountId: "acc_linxiaoyan", boundProjectIds: ["p_shanghai_exp"],
+    status: "in_use", riskLevel: "warning", boundAccountId: "acc_linxiaoyan", boundProjectIds: ["p_ai_talent"],
     dailyAddLimit: 0, todayAdded: 0, friendCount: 12, groupCount: 0, lastActiveDate: "2026-08-27", lastLoginDate: "2026-08-27", onboardDate: "2026-02-04",
     platform: "ChatGPT", notes: "Team 订阅，MFA 已配置，账单由运营负责", operationLogs: [{ id: "l1", time: "2026-02-04 09:00", actor: "系统初始化", action: "注册入库", summary: "订阅团队工作区" }],
   },
@@ -518,29 +518,29 @@ export const initialTools: ResourceTool[] = [
   },
   {
     id: "work_trae_01", type: "workspace", identifier: "trae_eco_dev", name: "聚域 Trae 开发账号",
-    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_beijing_pro"], dailyAddLimit: 0, todayAdded: 0, friendCount: 6, groupCount: 0,
+    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_ai_community"], dailyAddLimit: 0, todayAdded: 0, friendCount: 6, groupCount: 0,
     lastActiveDate: "2026-08-28", onboardDate: "2026-04-12", platform: "Trae", notes: "研发协作账号，绑定北京项目",
   },
   // ── 开发与基础设施 ─────────────────────────────────────────
   {
     id: "dev_github_01", type: "developer", identifier: "github_pokocat", name: "聚域 GitHub 组织",
-    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_beijing_pro"], dailyAddLimit: 0, todayAdded: 0, friendCount: 14, groupCount: 8,
+    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_ai_community"], dailyAddLimit: 0, todayAdded: 0, friendCount: 14, groupCount: 8,
     lastActiveDate: "2026-08-28", lastLoginDate: "2026-08-28", onboardDate: "2025-10-20", platform: "GitHub", notes: "组织含私域系统仓库，部署 Token 由管理员保管",
   },
   {
     id: "dev_domain_01", type: "developer", identifier: "fenglema.com", name: "蜂乐玛主域名",
-    status: "in_use", riskLevel: "warning", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_beijing_pro"], dailyAddLimit: 0, todayAdded: 0, friendCount: 2, groupCount: 0,
+    status: "in_use", riskLevel: "warning", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_ai_community"], dailyAddLimit: 0, todayAdded: 0, friendCount: 2, groupCount: 0,
     lastActiveDate: "2026-08-20", onboardDate: "2025-08-01", platform: "域名", notes: "到期日 2027-08-01，需提前 30 天续费",
   },
   // ── 业务系统 ──────────────────────────────────────────────
   {
     id: "sys_scrm_01", type: "business", identifier: "scrm_eco_console", name: "聚域 SCRM 控制台",
-    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_beijing_pro"], dailyAddLimit: 0, todayAdded: 0, friendCount: 26, groupCount: 0,
+    status: "in_use", riskLevel: "normal", boundAccountId: "acc_wusiyuan", boundProjectIds: ["p_ai_community"], dailyAddLimit: 0, todayAdded: 0, friendCount: 26, groupCount: 0,
     lastActiveDate: "2026-08-29", lastLoginDate: "2026-08-29", onboardDate: "2026-01-01", platform: "SCRM", notes: "超级管理员账号，支持项目级权限分配",
   },
   {
     id: "sys_crm_01", type: "business", identifier: "crm_eco_sales", name: "聚域 CRM 销售系统",
-    status: "pending_transfer", riskLevel: "warning", boundAccountId: "acc_linxiaoyan", boundProjectIds: ["p_shanghai_exp"], dailyAddLimit: 0, todayAdded: 0, friendCount: 9, groupCount: 0,
+    status: "pending_transfer", riskLevel: "warning", boundAccountId: "acc_linxiaoyan", boundProjectIds: ["p_ai_talent"], dailyAddLimit: 0, todayAdded: 0, friendCount: 9, groupCount: 0,
     lastActiveDate: "2026-08-26", onboardDate: "2026-02-14", platform: "CRM", notes: "原管理员岗位调整，等待交接审批",
   },
 ];
@@ -554,7 +554,7 @@ export { initialTools as initialResourceTools };
 export type ProjectStatus = "active" | "preparing" | "archived";
 
 export interface Project {
-  id: string;                    // "p_beijing_pro"
+  id: string;                    // "p_ai_community"
   name: string;                  // "北京 PRO 会员"
   short?: string;                // "FLM-BJ-PRO"
   subtitle?: string;             // "健康运营 · PRO 会员服务线"
@@ -570,60 +570,28 @@ export interface Project {
 
 export const initialProjects: Project[] = [
   {
-    id: "p_beijing_pro", name: "北京 PRO 会员", short: "FLM-BJ-PRO",
-    subtitle: "健康运营 · PRO 会员服务线", location: "北京",
+    id: "p_ai_community", name: "AI学习社群", short: "AI-LEARN",
+    subtitle: "AI 工具使用交流与成长社群", location: "全国",
     owner: "吴思源", ownerUid: "acc_wusiyuan", status: "active",
-    budget: "¥50万/季", createdAt: "2026-01-15",
+    budget: "¥30万/季", createdAt: "2026-01-15",
   },
   {
-    id: "p_shanghai_exp", name: "上海体验官", short: "SH-EXP",
-    subtitle: "上海地区种子用户运营", location: "上海",
+    id: "p_ai_talent", name: "AI艺人孵化平台", short: "AI-TALENT",
+    subtitle: "AI 虚拟艺人孵化与商业化运营", location: "全国",
     owner: "林小燕", ownerUid: "acc_linxiaoyan", status: "active",
-    budget: "¥30万/季", createdAt: "2026-02-01",
+    budget: "¥50万/季", createdAt: "2026-02-01",
   },
   {
-    id: "p_guangzhou_train", name: "广州代理培训", short: "GZ-TRN",
-    subtitle: "华南代理体系搭建", location: "广州",
+    id: "p_ai_payk", name: "AI知识付费平台", short: "AI-PAYK",
+    subtitle: "AI 课程/专栏/读书会等知识付费产品线", location: "全国",
     owner: "刘刚", ownerUid: "acc_liugang", status: "active",
-    budget: "¥20万/季", createdAt: "2026-03-01",
+    budget: "¥40万/季", createdAt: "2026-03-01",
   },
   {
-    id: "p_chengdu", name: "成都分站", short: "CD-BRANCH",
-    subtitle: "西南地区运营中心", location: "成都",
-    owner: "赵志远", ownerUid: "acc_zhaozhiyuan", status: "preparing",
-    budget: "¥15万/季", createdAt: "2026-04-12",
-  },
-  {
-    id: "p_shenzhen", name: "深圳代理", short: "SZ-AGENT",
-    subtitle: "大湾区代理招募", location: "深圳",
-    owner: "李梦华", ownerUid: "acc_limenghua", status: "active",
-    createdAt: "2026-05-01",
-  },
-  {
-    id: "p_eco_invite", name: "生态招商", short: "ECO-INVITE",
-    subtitle: "生态伙伴招商与渠道拓展", location: "全国",
-    owner: "吴思源", ownerUid: "acc_wusiyuan", status: "active",
-    budget: "¥80万/年", createdAt: "2026-02-10",
-  },
-  {
-    id: "p_hangzhou_branch", name: "杭州分站", short: "HZ-BRANCH",
-    subtitle: "华东地区内容中心", location: "杭州",
-    owner: "陈明", ownerUid: "acc_chenming", status: "preparing", createdAt: "2026-06-01",
-  },
-  {
-    id: "p_wuhan_branch", name: "武汉分站", short: "WH-BRANCH",
-    subtitle: "华中地区运营中心", location: "武汉",
-    owner: "王芳", ownerUid: "acc_wangfang", status: "active", createdAt: "2026-05-10",
-  },
-  {
-    id: "p_nanjing_branch", name: "南京分站", short: "NJ-BRANCH",
-    subtitle: "华东地区用户运营", location: "南京",
-    owner: "张磊", ownerUid: "acc_zhanglei", status: "active", createdAt: "2026-05-20",
-  },
-  {
-    id: "p_xian_branch", name: "西安分站", short: "XA-BRANCH",
-    subtitle: "西北地区筹备中", location: "西安",
-    owner: "孙浩", ownerUid: "acc_sunhao", status: "preparing", createdAt: "2026-06-15",
+    id: "p_ai_edu", name: "AI教育平台", short: "AI-EDU",
+    subtitle: "AI 赋能教培机构 · 课程与学员全链路管理", location: "全国",
+    owner: "李梦华", ownerUid: "acc_limenghua", status: "preparing",
+    budget: "¥60万/季", createdAt: "2026-04-12",
   },
 ];
 
