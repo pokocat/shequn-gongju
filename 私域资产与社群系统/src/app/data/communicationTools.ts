@@ -546,3 +546,111 @@ export const initialTools: ResourceTool[] = [
 ];
 
 export { initialTools as initialResourceTools };
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PROJECT · 项目实体（轻量，聚合数据从 tools 动态计算）
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type ProjectStatus = "active" | "preparing" | "archived";
+
+export interface Project {
+  id: string;                    // "p_beijing_pro"
+  name: string;                  // "北京 PRO 会员"
+  short?: string;                // "FLM-BJ-PRO"
+  subtitle?: string;             // "健康运营 · PRO 会员服务线"
+  location?: string;             // "北京"
+  owner?: string;                // "吴思源"
+  ownerUid?: string;             // "acc_wusiyuan"
+  status: ProjectStatus;
+  budget?: string;               // "¥50万/季"
+  createdAt?: string;            // "2026-01-15"
+  /** 可选子项目（层级关系） */
+  children?: string[];
+}
+
+export const initialProjects: Project[] = [
+  {
+    id: "p_beijing_pro", name: "北京 PRO 会员", short: "FLM-BJ-PRO",
+    subtitle: "健康运营 · PRO 会员服务线", location: "北京",
+    owner: "吴思源", ownerUid: "acc_wusiyuan", status: "active",
+    budget: "¥50万/季", createdAt: "2026-01-15",
+  },
+  {
+    id: "p_shanghai_exp", name: "上海体验官", short: "SH-EXP",
+    subtitle: "上海地区种子用户运营", location: "上海",
+    owner: "林小燕", ownerUid: "acc_linxiaoyan", status: "active",
+    budget: "¥30万/季", createdAt: "2026-02-01",
+  },
+  {
+    id: "p_guangzhou_train", name: "广州代理培训", short: "GZ-TRN",
+    subtitle: "华南代理体系搭建", location: "广州",
+    owner: "刘刚", ownerUid: "acc_liugang", status: "active",
+    budget: "¥20万/季", createdAt: "2026-03-01",
+  },
+  {
+    id: "p_chengdu", name: "成都分站", short: "CD-BRANCH",
+    subtitle: "西南地区运营中心", location: "成都",
+    owner: "赵志远", ownerUid: "acc_zhaozhiyuan", status: "preparing",
+    budget: "¥15万/季", createdAt: "2026-04-12",
+  },
+  {
+    id: "p_shenzhen", name: "深圳代理", short: "SZ-AGENT",
+    subtitle: "大湾区代理招募", location: "深圳",
+    owner: "梦华", ownerUid: "acc_limenghua", status: "active",
+    createdAt: "2026-05-01",
+  },
+  {
+    id: "p_eco_invite", name: "生态招商", short: "ECO-INVITE",
+    subtitle: "生态伙伴招商与渠道拓展", location: "全国",
+    owner: "吴思源", ownerUid: "acc_wusiyuan", status: "active",
+    budget: "¥80万/年", createdAt: "2026-02-10",
+  },
+  {
+    id: "p_hangzhou_branch", name: "杭州分站", short: "HZ-BRANCH",
+    subtitle: "华东地区内容中心", location: "杭州",
+    status: "preparing", createdAt: "2026-06-01",
+  },
+];
+
+/** 平台库存（未分配给任何项目的账号）的虚拟项目 ID */
+export const PLATFORM_POOL_ID = "__platform_pool__";
+
+export function projectStatusBadge(status: ProjectStatus) {
+  return {
+    active:    { label: "进行中", color: "#07c160", bg: "#ecfdf5" },
+    preparing: { label: "筹备中", color: "#ff9500", bg: "#fff7ed" },
+    archived:  { label: "已归档", color: "#9ca3af", bg: "#f3f4f6" },
+  }[status];
+}
+
+/** 从 tools 聚合出项目的统计数据（类型分布 / KPI / 风险等） */
+export function aggregateProject(projectId: string, tools: ResourceTool[]) {
+  const projectTools = projectId === PLATFORM_POOL_ID
+    ? tools.filter(t => !(t.boundProjectIds && t.boundProjectIds.length))
+    : tools.filter(t => t.boundProjectIds?.includes(projectId));
+
+  const typeBreakdown: Record<string, number> = {};
+  let inUse = 0, abnormal = 0, pendingTransfer = 0, idle = 0;
+  let todayAdded = 0, friendTotal = 0;
+  let riskHigh = 0, riskWarning = 0;
+
+  for (const t of projectTools) {
+    typeBreakdown[t.type] = (typeBreakdown[t.type] || 0) + 1;
+    if (t.status === "in_use") inUse++;
+    else if (t.status === "abnormal") abnormal++;
+    else if (t.status === "pending_transfer") pendingTransfer++;
+    else if (t.status === "idle" || t.status === "not_enabled" || t.status === "nurturing") idle++;
+    todayAdded += t.todayAdded || 0;
+    friendTotal += t.friendCount || 0;
+    if (t.riskLevel === "high") riskHigh++;
+    else if (t.riskLevel === "warning") riskWarning++;
+  }
+
+  return {
+    toolCount: projectTools.length,
+    inUse, abnormal, pendingTransfer, idle,
+    todayAdded, friendTotal, riskHigh, riskWarning,
+    typeBreakdown,
+    tools: projectTools,
+  };
+}

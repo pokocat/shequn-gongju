@@ -5,8 +5,8 @@ import {
   AlertTriangle, Shield, History, X, Check, Clock, ArrowRightLeft, Archive, Edit3, Trash2,
   Sparkles, Store, Link2, RefreshCw, Package, List, LayoutGrid, SlidersHorizontal, Eye, QrCode, MessageCircle,
 } from "lucide-react";
-import type { ResourceTool as Tool, CommunicationToolType, ToolHealthStatus, ToolRiskLevel, ResourceToolLog } from "../data/communicationTools";
-import { typeMeta, statusMeta, riskMeta, needsNurturing } from "../data/communicationTools";
+import type { ResourceTool as Tool, CommunicationToolType, ToolHealthStatus, ToolRiskLevel, ResourceToolLog, Project } from "../data/communicationTools";
+import { typeMeta, statusMeta, riskMeta, needsNurturing, initialProjects, PLATFORM_POOL_ID, projectStatusBadge, aggregateProject } from "../data/communicationTools";
 import { useTools, useAccounts, useApprovals } from "../App";
 import type { SystemAccount } from "../data/accountTypes";
 import { createApproval } from "../data/approvalTypes";
@@ -343,6 +343,9 @@ const { tools, setTools } = useTools();
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
   const [detailTab, setDetailTab] = useState<DetailTabKey>("ops");
+
+  // ── 按项目 / 按人 视图专用 state ─────────────────────────────
+  const [activeProjectId, setActiveProjectId] = useState<string>(PLATFORM_POOL_ID);
 
   // ── 弹窗状态 ───────────────────────────────────────────────
   const [confirmAction, setConfirmAction] = useState<{ toolId: string; action: "disable" | "archive" | "send_nurture"; label: string } | null>(null);
@@ -1040,7 +1043,29 @@ const { tools, setTools } = useTools();
         </div>
       )}
 
-      {/* ── 主区域：列表/卡片 + 右侧详情面板 ────────────────────── */}
+      {/* ── 主区域：按项目 → 双栏(左项目面板 + 右项目详情)；其他 → 列表+详情 ────── */}
+      {viewDimension === "project" ? (
+        <div className="flex gap-4 flex-1 min-h-0">
+          {/* 左侧：项目面板 */}
+          <ProjectPanel
+            projects={initialProjects}
+            tools={tools}
+            activeId={activeProjectId}
+            onSelect={pid => { setActiveProjectId(pid); setSelectedToolId(null); }}
+          />
+          {/* 右侧：项目详情 */}
+          <div className="flex-1 min-w-0 min-h-0 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+            <ProjectDetail
+              projectId={activeProjectId}
+              projects={initialProjects}
+              tools={tools}
+              selectedToolId={selectedToolId}
+              onSelectTool={id => { setSelectedToolId(id); setDetailTab("ops"); }}
+              accountNameById={accountNameById}
+            />
+          </div>
+        </div>
+      ) : (
       <div className="flex gap-4 flex-1 min-h-0">
         {/* 左侧：列表 / 卡片 */}
         {browseMode === "cards" ? (
@@ -1211,6 +1236,9 @@ const { tools, setTools } = useTools();
           </div>
         )}
       </div>
+      )}
+
+      {/* ── 全局弹窗层（共享） ──────────────────────────────────── */}
     </div>
   );
 }
@@ -1785,6 +1813,314 @@ function Modal({ title, children, onClose, width = 400 }: { title: string; child
           <button type="button" onClick={onClose} title="关闭" style={{ background: "transparent", border: "none", cursor: "pointer", padding: 4, color: S.textSec, borderRadius: 6 }}><X size={16} /></button>
         </div>
         <div className="p-4">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────
+// ProjectPanel · 左侧项目导航面板（240px 固定宽度）
+// ────────────────────────────────────────────────────────────────
+function ProjectPanel({
+  projects, tools, activeId, onSelect,
+}: {
+  projects: Project[];
+  tools: Tool[];
+  activeId: string;
+  onSelect: (id: string) => void;
+}) {
+  // 聚合每个项目的账号数（用于 badge）
+  const poolCount = tools.filter(t => !(t.boundProjectIds && t.boundProjectIds.length)).length;
+  const projectCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    for (const t of tools) {
+      for (const pid of t.boundProjectIds || []) m[pid] = (m[pid] || 0) + 1;
+    }
+    return m;
+  }, [tools]);
+
+  const typeLabelShort = (type: string) => {
+    const map: Record<string, string> = { wecom: "企微", wechat: "微信", phone: "手机", email: "邮箱", media: "媒体", workspace: "协作", developer: "开发", business: "业务" };
+    return map[type] || type;
+  };
+
+  const renderTypeBreakdown = (pid: string) => {
+    const projTools = tools.filter(t => t.boundProjectIds?.includes(pid));
+    if (!projTools.length) return null;
+    const breakdown: Record<string, number> = {};
+    for (const t of projTools) breakdown[t.type] = (breakdown[t.type] || 0) + 1;
+    const top = Object.entries(breakdown).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    return (
+      <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>
+        {top.map(([k, v]) => `${typeLabelShort(k)}${v}`).join(" · ")}
+      </div>
+    );
+  };
+
+  // 项目状态 badge
+  const renderStatusDot = (pid: string) => {
+    const p = projects.find(x => x.id === pid);
+    if (!p) return null;
+    const sb = projectStatusBadge(p.status);
+    return <span style={{ fontSize: 10, color: sb.color, background: sb.bg, padding: "1px 6px", borderRadius: 10, fontFamily: "monospace" }}>{sb.label}</span>;
+  };
+
+  const isActive = activeId === PLATFORM_POOL_ID;
+
+  return (
+    <div className="flex-shrink-0 flex flex-col" style={{ width: 240, background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, overflow: "hidden" }}>
+      {/* 头部 */}
+      <div className="px-4 py-3" style={{ borderBottom: `1px solid ${S.border}`, background: S.bg }}>
+        <div className="flex items-center gap-2 text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>
+          <Building2 size={14} style={{ color: S.primary }} />
+          项目与号池
+        </div>
+        <div className="mt-0.5 text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>PROJECT & POOL</div>
+      </div>
+
+      {/* 平台库存 */}
+      <button type="button" onClick={() => onSelect(PLATFORM_POOL_ID)}
+        className="w-full text-left px-4 py-2.5 flex items-center gap-2 transition-all"
+        style={{
+          background: isActive ? S.accentLight : "transparent",
+          borderLeft: isActive ? `3px solid ${S.accent}` : "3px solid transparent",
+          color: S.text, cursor: "pointer",
+        }}>
+        <Package size={14} style={{ color: isActive ? S.accent : S.muted }} />
+        <div className="flex-1 min-w-0">
+          <div className="text-xs font-medium flex items-center gap-1.5" style={{ fontFamily: "monospace" }}>
+            平台库存
+            <span style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>· {poolCount}</span>
+          </div>
+          <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>尚未授权给任何项目</div>
+        </div>
+        {isActive && <ChevronRight size={14} style={{ color: S.accent }} />}
+      </button>
+
+      <div style={{ height: 1, background: S.border, margin: "2px 12px" }} />
+
+      {/* 项目列表 */}
+      <div className="flex-1 overflow-auto py-1">
+        {projects.map(p => {
+          const active = activeId === p.id;
+          const count = projectCounts[p.id] || 0;
+          return (
+            <button key={p.id} type="button" onClick={() => onSelect(p.id)}
+              className="w-full text-left px-4 py-2.5 flex items-start gap-2 transition-all hover:brightness-95"
+              style={{
+                background: active ? S.accentLight : "transparent",
+                borderLeft: active ? `3px solid ${S.accent}` : "3px solid transparent",
+                color: S.text, cursor: "pointer",
+              }}>
+              <Building2 size={14} style={{ color: active ? S.accent : S.muted, flexShrink: 0, marginTop: 2 }} />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-xs font-medium truncate" style={{ fontFamily: "monospace", color: active ? S.onPrimary : S.text }}>{p.name}</div>
+                  {count > 0 && (
+                    <span style={{ fontSize: 10, color: S.muted, fontFamily: "monospace", flexShrink: 0 }}>{count}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  {renderStatusDot(p.id)}
+                  {p.location && <span style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>{p.location}</span>}
+                </div>
+                {renderTypeBreakdown(p.id)}
+              </div>
+              {active && <ChevronRight size={14} style={{ color: S.accent, flexShrink: 0, marginTop: 2 }} />}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* 底部新建按钮 */}
+      <div className="px-2 py-2" style={{ borderTop: `1px solid ${S.border}` }}>
+        <button type="button"
+          className="w-full px-3 py-2 flex items-center justify-center gap-1.5 rounded transition-all hover:brightness-95"
+          style={{ background: S.accent, color: S.onPrimary, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 500, fontFamily: "monospace" }}>
+          <Plus size={14} /> 新建项目
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ────────────────────────────────────────────────────────────────
+// ProjectDetail · 右侧项目详情（P0 骨架版本）
+// ────────────────────────────────────────────────────────────────
+function ProjectDetail({
+  projectId, projects, tools, selectedToolId, onSelectTool, accountNameById,
+}: {
+  projectId: string;
+  projects: Project[];
+  tools: Tool[];
+  selectedToolId: string | null;
+  onSelectTool: (id: string) => void;
+  accountNameById: (uid?: string) => string;
+}) {
+  const agg = aggregateProject(projectId, tools);
+  const project = projectId === PLATFORM_POOL_ID ? null : projects.find(p => p.id === projectId);
+
+  const KPI_CARDS = [
+    { label: "账号总数", value: agg.toolCount, icon: Package, color: S.primary },
+    { label: "使用中", value: agg.inUse, icon: Check, color: "#07c160" },
+    { label: "风险账号", value: agg.riskHigh + agg.riskWarning, icon: AlertTriangle, color: "#ff9500" },
+    { label: "今日+好友", value: agg.todayAdded, icon: User, color: S.accent },
+  ];
+
+  const typeLabelShort = (type: string) => {
+    const map: Record<string, string> = { wecom: "企业微信", wechat: "个人微信", phone: "手机号", email: "邮箱", media: "媒体账号", workspace: "协作/AI", developer: "开发/基础设施", business: "业务系统" };
+    return map[type] || type;
+  };
+
+  return (
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* ── 顶部 Banner ───────────────────────────────────── */}
+      <div className="px-6 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: S.bg }}>
+        <div className="flex items-start justify-between">
+          <div>
+            <div className="flex items-center gap-3">
+              <Building2 size={20} style={{ color: S.primary }} />
+              <div>
+                <div className="text-base font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>
+                  {project ? project.name : "📊 平台库存"}
+                </div>
+                <div className="text-[11px] mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>
+                  {project
+                    ? `${project.subtitle || ""}${project.location ? ` · ${project.location}` : ""}${project.short ? ` · ${project.short}` : ""}`
+                    : "未授权给任何项目的账号 · 待分配"}
+                </div>
+              </div>
+            </div>
+            {project && (
+              <div className="flex items-center gap-4 mt-2 text-[11px]" style={{ color: S.textSec, fontFamily: "monospace" }}>
+                {project.owner && <span>负责人：{project.owner}</span>}
+                {project.budget && <span>预算：{project.budget}</span>}
+                {project.createdAt && <span>创建：{project.createdAt}</span>}
+                <span style={{
+                  ...(() => { const sb = projectStatusBadge(project.status); return { color: sb.color, background: sb.bg, padding: "1px 8px", borderRadius: 10 }; })()
+                }}>{projectStatusBadge(project.status).label}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button type="button" style={{ padding: "6px 14px", background: S.surface, border: `1px solid ${S.border}`, borderRadius: 6, fontSize: 12, fontFamily: "monospace", cursor: "pointer", color: S.text }}>
+              <Edit3 size={13} style={{ display: "inline", marginRight: 4, verticalAlign: "-2px" }} />编辑项目
+            </button>
+            <button type="button" style={{ padding: "6px 14px", background: S.accent, color: S.onPrimary, border: "none", borderRadius: 6, fontSize: 12, fontFamily: "monospace", cursor: "pointer", fontWeight: 500 }}>
+              <Plus size={13} style={{ display: "inline", marginRight: 4, verticalAlign: "-2px" }} />绑定账号
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── KPI 概览 ────────────────────────────────────────── */}
+      <div className="px-6 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}` }}>
+        <div className="grid grid-cols-4 gap-3">
+          {KPI_CARDS.map(({ label, value, icon: Icon, color }) => (
+            <div key={label} style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, padding: "10px 14px" }}>
+              <div className="flex items-center gap-2">
+                <Icon size={14} style={{ color }} />
+                <span style={{ fontSize: 11, color: S.muted, fontFamily: "monospace" }}>{label}</span>
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 700, color: S.text, fontFamily: "monospace", marginTop: 4 }}>{value}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* 类型分布 */}
+        {Object.keys(agg.typeBreakdown).length > 0 && (
+          <div className="mt-3 flex flex-wrap items-center gap-1.5">
+            <span style={{ fontSize: 11, color: S.muted, fontFamily: "monospace" }}>能力覆盖：</span>
+            {Object.entries(agg.typeBreakdown).sort((a, b) => b[1] - a[1]).map(([t, c]) => {
+              const tm = typeMeta[t as CommunicationToolType];
+              return (
+                <span key={t} style={{
+                  fontSize: 10, padding: "2px 8px", borderRadius: 10, fontFamily: "monospace",
+                  background: tm ? `${tm.bg}33` : S.surface, color: tm ? tm.fg : S.textSec,
+                }}>
+                  {typeLabelShort(t)} × {c}
+                </span>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* ── 项目账号列表 ────────────────────────────────────── */}
+      <div className="flex-1 min-h-0 overflow-auto px-6 py-3">
+        {agg.tools.length === 0 ? (
+          <div className="h-full flex flex-col items-center justify-center" style={{ color: S.muted }}>
+            <Package size={32} style={{ marginBottom: 8, color: S.mutedLight }} />
+            <div style={{ fontSize: 13, fontFamily: "monospace" }}>
+              {project ? "该项目暂未绑定任何账号" : "平台库存为空"}
+            </div>
+            <div style={{ fontSize: 11, marginTop: 4, fontFamily: "monospace" }}>
+              {project ? "点击右上角『绑定账号』添加" : "将闲置账号分配给项目"}
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8, overflow: "hidden" }}>
+            {/* 表头 */}
+            <div className="flex items-center px-3 py-2 text-[11px] font-semibold"
+              style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", fontFamily: "monospace" }}>
+              <div style={{ width: 40 }} />
+              <div className="flex-1">账号</div>
+              <div style={{ width: 70 }}>类型</div>
+              <div style={{ width: 70 }}>状态</div>
+              <div style={{ width: 70 }}>负责人</div>
+              <div style={{ width: 80 }}>今日+好友</div>
+              <div style={{ width: 70 }}>风险</div>
+            </div>
+            {/* 行 */}
+            {agg.tools.map(t => {
+              const active = selectedToolId === t.id;
+              const tm = typeMeta[t.type];
+              const sm = statusMeta[t.status];
+              const rm = riskMeta[t.riskLevel];
+              return (
+                <div key={t.id} role="button" tabIndex={0}
+                  onClick={() => onSelectTool(t.id)}
+                  className="flex items-center px-3 cursor-pointer transition-all"
+                  style={{
+                    background: active ? S.accentLight : "transparent",
+                    borderBottom: `1px solid ${S.border}`,
+                  }}>
+                  {/* 头像 */}
+                  <div style={{ width: 40, padding: "8px 4px" }}>
+                    <div style={{ width: 32, height: 32, borderRadius: 6, background: tm?.bg || S.surface, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {tm?.icon && <span style={{ color: tm.fg, fontSize: 14 }}>{tm.icon}</span>}
+                    </div>
+                  </div>
+                  {/* 账号 */}
+                  <div className="flex-1 py-2 min-w-0">
+                    <div className="text-xs font-medium truncate" style={{ fontFamily: "monospace", color: active ? S.onPrimary : S.text }}>{t.name}</div>
+                    <div className="text-[10px] truncate" style={{ fontFamily: "monospace", color: S.muted }}>{t.identifier}</div>
+                  </div>
+                  {/* 类型 */}
+                  <div style={{ width: 70, fontSize: 10, fontFamily: "monospace", color: S.textSec }}>
+                    {typeLabelShort(t.type)}
+                  </div>
+                  {/* 状态 */}
+                  <div style={{ width: 70 }}>
+                    <span style={{ fontSize: 10, fontFamily: "monospace", padding: "1px 6px", borderRadius: 10, color: sm?.fg, background: sm?.bg }}>{sm?.label}</span>
+                  </div>
+                  {/* 负责人 */}
+                  <div style={{ width: 70, fontSize: 10, fontFamily: "monospace", color: S.textSec }}>
+                    {accountNameById(t.boundAccountId)}
+                  </div>
+                  {/* 今日+ */}
+                  <div style={{ width: 80, fontSize: 11, fontFamily: "monospace", color: t.todayAdded ? S.accent : S.muted }}>
+                    {t.todayAdded ? `+${t.todayAdded}` : "—"}
+                  </div>
+                  {/* 风险 */}
+                  <div style={{ width: 70 }}>
+                    <span style={{ fontSize: 10, fontFamily: "monospace", padding: "1px 6px", borderRadius: 10, color: rm?.fg, background: rm?.bg }}>{rm?.label}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
