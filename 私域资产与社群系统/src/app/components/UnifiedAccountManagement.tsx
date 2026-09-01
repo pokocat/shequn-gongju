@@ -171,7 +171,7 @@ const initialCategorySubtypes = CATEGORY_SUBTYPES[initialCategory];
         {onlyWechatSelected ? (
           <WeChatManagement controlledViewDimension={viewDimension} controlledMainTab={wechatMode} onMainTabChange={setWechatMode} hideAccountTypeTabs hideDimensionTabs hidePageTitle toolbarActionPlacement="toolbar" headerActionTargetId="unified-wechat-register" />
         ) : (
-          <AccountsAndResourceCenter key={selectedSubtypeKeys.join("-")} initialTopTab={selectedToolTypes.length === 1 ? selectedToolTypes[0] : "all"} embedded controlledViewDimension={viewDimension} hideDimensionControls platformFilter={selectedPlatforms.length === 1 ? selectedPlatforms[0] : null} platformFilters={selectedPlatforms.length > 1 ? selectedPlatforms : undefined} toolTypes={selectedToolTypes.length ? selectedToolTypes : undefined} headerActionTargetId="unified-account-header-actions" secondaryActionTargetId="unified-secondary-actions" />
+          <AccountsAndResourceCenter key={selectedSubtypeKeys.join("-")} initialTopTab={selectedToolTypes.length === 1 ? selectedToolTypes[0] : "all"} embedded controlledViewDimension={viewDimension} hideDimensionControls platformFilter={selectedPlatforms.length === 1 ? selectedPlatforms[0] : null} platformFilters={selectedPlatforms.length > 1 ? selectedPlatforms : undefined} registrationPlatform={selectedPlatforms.length === 1 ? selectedPlatforms[0] : null} toolTypes={selectedToolTypes.length ? selectedToolTypes : undefined} headerActionTargetId="unified-account-header-actions" secondaryActionTargetId="unified-secondary-actions" />
         )}
       </div>
     </div>

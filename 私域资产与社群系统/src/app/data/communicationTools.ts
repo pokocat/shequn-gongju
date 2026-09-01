@@ -596,7 +596,7 @@ export const initialProjects: Project[] = [
   {
     id: "p_shenzhen", name: "深圳代理", short: "SZ-AGENT",
     subtitle: "大湾区代理招募", location: "深圳",
-    owner: "梦华", ownerUid: "acc_limenghua", status: "active",
+    owner: "李梦华", ownerUid: "acc_limenghua", status: "active",
     createdAt: "2026-05-01",
   },
   {
@@ -608,7 +608,22 @@ export const initialProjects: Project[] = [
   {
     id: "p_hangzhou_branch", name: "杭州分站", short: "HZ-BRANCH",
     subtitle: "华东地区内容中心", location: "杭州",
-    status: "preparing", createdAt: "2026-06-01",
+    owner: "陈明", ownerUid: "acc_chenming", status: "preparing", createdAt: "2026-06-01",
+  },
+  {
+    id: "p_wuhan_branch", name: "武汉分站", short: "WH-BRANCH",
+    subtitle: "华中地区运营中心", location: "武汉",
+    owner: "王芳", ownerUid: "acc_wangfang", status: "active", createdAt: "2026-05-10",
+  },
+  {
+    id: "p_nanjing_branch", name: "南京分站", short: "NJ-BRANCH",
+    subtitle: "华东地区用户运营", location: "南京",
+    owner: "张磊", ownerUid: "acc_zhanglei", status: "active", createdAt: "2026-05-20",
+  },
+  {
+    id: "p_xian_branch", name: "西安分站", short: "XA-BRANCH",
+    subtitle: "西北地区筹备中", location: "西安",
+    owner: "孙浩", ownerUid: "acc_sunhao", status: "preparing", createdAt: "2026-06-15",
   },
 ];
 

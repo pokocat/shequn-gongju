@@ -61,6 +61,9 @@ const PROJECT_LABEL_MAP: Record<string, string> = {
   p_shenzhen: "深圳代理",
   p_eco_invite: "生态招商",
   p_hangzhou_branch: "杭州分站",
+  p_wuhan_branch: "武汉分站",
+  p_nanjing_branch: "南京分站",
+  p_xian_branch: "西安分站",
 };
 
 const TOP_TABS: { key: TopTabKey; label: string; icon: typeof Users }[] = [
@@ -284,6 +287,8 @@ interface AccountsAndResourceCenterProps {
   platformFilter?: string | null;
   /** 多选平台子标签筛选，由统一资产入口控制 */
   platformFilters?: string[];
+  /** 当前平台子标签用于预填注册入库表单 */
+  registrationPlatform?: string | null;
   /** 汇总视图允许纳入的资源类型 */
   toolTypes?: CommunicationToolType[];
   /** 将操作按钮渲染到统一资产入口的顶部操作区 */
@@ -298,7 +303,7 @@ function HeaderActionSlot({ targetId, children }: { targetId?: string; children:
 }
 
 export default function AccountsAndResourceCenter({
- initialTopTab = "wechat", embedded = false, controlledViewDimension, hideDimensionControls = false, platformFilter = null, platformFilters, toolTypes, headerActionTargetId, secondaryActionTargetId }: AccountsAndResourceCenterProps) {
+ initialTopTab = "wechat", embedded = false, controlledViewDimension, hideDimensionControls = false, platformFilter = null, platformFilters, registrationPlatform = null, toolTypes, headerActionTargetId, secondaryActionTargetId }: AccountsAndResourceCenterProps) {
   useThemeSingleton();
 const { tools, setTools } = useTools();
   const { accounts, setAccounts } = useAccounts();
@@ -350,6 +355,7 @@ const { tools, setTools } = useTools();
   // ── 弹窗状态 ───────────────────────────────────────────────
   const [confirmAction, setConfirmAction] = useState<{ toolId: string; action: "disable" | "archive" | "send_nurture"; label: string } | null>(null);
   const [handoverDraft, setHandoverDraft] = useState<{ toolId: string; targetUid: string } | null>(null);
+  const [projectBindingDraft, setProjectBindingDraft] = useState<{ toolId: string; selectedIds: string[]; newName: string; newCode: string } | null>(null);
   const [newToolDrawer, setNewToolDrawer] = useState<null | { draft: Partial<Tool> & { mode: RegistrationMode; name?: string; identifier?: string; notes?: string }; step: 1 | 2 }>(null);
   const [toast, setToast] = useState("");
 
@@ -362,6 +368,7 @@ const { tools, setTools } = useTools();
   const projectOptions = useMemo(() => {
     const set = new Set<string>();
     tools.forEach(t => (t.boundProjectIds || []).forEach(p => set.add(p)));
+    Object.keys(PROJECT_LABEL_MAP).forEach(id => set.add(id));
     return ["全部项目", ...Array.from(set).map(id => PROJECT_LABEL_MAP[id] || id)];
   }, [tools]);
 
@@ -578,6 +585,28 @@ const { tools, setTools } = useTools();
     setHandoverDraft(null);
   }
 
+  function openProjectBinding(toolId: string) {
+    const tool = tools.find(item => item.id === toolId);
+    if (!tool) return;
+    setProjectBindingDraft({ toolId, selectedIds: [...tool.boundProjectIds], newName: "", newCode: "" });
+  }
+
+  function saveProjectBinding() {
+    if (!projectBindingDraft) return;
+    const tool = tools.find(item => item.id === projectBindingDraft.toolId);
+    if (!tool) return;
+    let selectedIds = [...projectBindingDraft.selectedIds];
+    const name = projectBindingDraft.newName.trim();
+    if (name) {
+      const id = projectBindingDraft.newCode.trim() || `p_custom_${Date.now().toString().slice(-6)}`;
+      PROJECT_LABEL_MAP[id] = name;
+      selectedIds = Array.from(new Set([...selectedIds, id]));
+    }
+    mutateTool(tool.id, { boundProjectIds: selectedIds }, "分配到项目", selectedIds.length ? `绑定项目：${selectedIds.map(id => PROJECT_LABEL_MAP[id] || id).join("、")}` : "已解除全部项目绑定");
+    setProjectBindingDraft(null);
+    showToast(selectedIds.length ? `✅ 已绑定 ${selectedIds.length} 个项目` : "✅ 已解除项目绑定，资源进入空闲号池");
+  }
+
   function doExportFiltered() {
     const rowsCSV = filteredTools.map(t => [
       t.identifier, typeMeta[t.type].short, t.name, statusMeta[t.status].label, riskMeta[t.riskLevel].label,
@@ -698,6 +727,24 @@ const { tools, setTools } = useTools();
         );
       })()}
 
+      {projectBindingDraft && (() => {
+        const tool = tools.find(item => item.id === projectBindingDraft.toolId);
+        return <Modal title={`🗺 绑定项目 · ${tool?.name || ""}`} onClose={() => setProjectBindingDraft(null)} width={460}>
+          <div style={{ fontSize: 12, lineHeight: 1.8, color: S.textSec }}>
+            <div style={{ marginBottom: 8 }}>支持一个账号绑定多个项目，列表第一项为主服务项目。</div>
+            <div style={{ display: "grid", gap: 5, maxHeight: 220, overflowY: "auto", padding: 8, background: S.bg, border: `1px solid ${S.border}`, borderRadius: 7 }}>
+              {Object.entries(PROJECT_LABEL_MAP).map(([id, name]) => <label key={id} className="flex items-center gap-2 px-2 py-1.5 cursor-pointer" style={{ background: projectBindingDraft.selectedIds.includes(id) ? S.primaryLight : "transparent", borderRadius: 5 }}><input type="checkbox" checked={projectBindingDraft.selectedIds.includes(id)} onChange={event => setProjectBindingDraft(draft => draft ? { ...draft, selectedIds: event.target.checked ? [...draft.selectedIds, id] : draft.selectedIds.filter(item => item !== id) } : null)} /><span>{name}</span><span style={{ marginLeft: "auto", color: S.muted, fontFamily: "monospace", fontSize: 10 }}>{id}</span></label>)}
+            </div>
+            <div style={{ marginTop: 10, padding: 8, background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: 7 }}>
+              <div style={{ fontWeight: 700, marginBottom: 5 }}>快速新建项目（最小档案）</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 150px", gap: 6 }}><input value={projectBindingDraft.newName} onChange={event => setProjectBindingDraft(draft => draft ? { ...draft, newName: event.target.value } : null)} placeholder="项目名称" style={{ padding: "6px 8px", border: `1px solid ${S.borderMed}`, borderRadius: 5 }} /><input value={projectBindingDraft.newCode} onChange={event => setProjectBindingDraft(draft => draft ? { ...draft, newCode: event.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "") } : null)} placeholder="项目代码（可选）" style={{ padding: "6px 8px", border: `1px solid ${S.borderMed}`, borderRadius: 5, fontFamily: "monospace" }} /></div>
+              <div style={{ marginTop: 5, fontSize: 10, color: S.muted }}>这里只创建名称和代码；会员等级、群规则等请到“项目与生态”完善。</div>
+            </div>
+          </div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}><button type="button" onClick={() => setProjectBindingDraft(null)} style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#fff", color: S.textSec }}>取消</button><button type="button" onClick={saveProjectBinding} style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.ink, color: S.accent, fontWeight: 700 }}>保存绑定</button></div>
+        </Modal>;
+      })()}
+
       {newToolDrawer && (
         <Modal title={`➕ 注册入库 · ${newToolDrawer.step === 1 ? "选择方式" : "填写资料"}`} onClose={() => setNewToolDrawer(null)} width={520}>
           <div style={{ fontSize: 12, lineHeight: 2 }}>
@@ -732,7 +779,8 @@ const { tools, setTools } = useTools();
               💡 也可使用顶部「批量导入」支持：CSV 手机号段、企微席位 XML 备份、微信卡包批量注册、媒体矩阵账号批量接入。
             </div>
             {newToolDrawer.step === 2 && newToolDrawer.draft.mode === "single" && <div style={{ marginTop: 12, display: "grid", gap: 8 }}>
-              <label>账号名称 *<input value={newToolDrawer.draft.name || ""} onChange={e => setNewToolDrawer({ ...newToolDrawer, draft: { ...newToolDrawer.draft, name: e.target.value } })} placeholder="请输入账号名称" style={{ display: "block", width: "100%", marginTop: 4, padding: "7px 9px", border: `1px solid ${S.borderMed}`, borderRadius: 6 }} /></label>
+              {newToolDrawer.draft.type === "media" && <label>内容平台 *<select value={newToolDrawer.draft.mediaPlatform || ""} onChange={e => setNewToolDrawer({ ...newToolDrawer, draft: { ...newToolDrawer.draft, platform: e.target.value, mediaPlatform: e.target.value } })} style={{ display: "block", width: "100%", marginTop: 4, padding: "7px 9px", border: `1px solid ${S.borderMed}`, borderRadius: 6 }}><option value="">请选择平台</option>{["公众号", "小程序", "视频号", "抖音", "小红书", "快手", "B站"].map(platform => <option key={platform}>{platform}</option>)}</select></label>}
+              <label>{newToolDrawer.draft.type === "media" && newToolDrawer.draft.mediaPlatform === "小程序" ? "小程序名称 *" : "账号名称 *"}<input value={newToolDrawer.draft.name || ""} onChange={e => setNewToolDrawer({ ...newToolDrawer, draft: { ...newToolDrawer.draft, name: e.target.value } })} placeholder="请输入名称" style={{ display: "block", width: "100%", marginTop: 4, padding: "7px 9px", border: `1px solid ${S.borderMed}`, borderRadius: 6 }} /></label>
               <label>账号唯一标识 *<input value={newToolDrawer.draft.identifier || ""} onChange={e => setNewToolDrawer({ ...newToolDrawer, draft: { ...newToolDrawer.draft, identifier: e.target.value } })} placeholder="请输入账号、手机号或邮箱" style={{ display: "block", width: "100%", marginTop: 4, padding: "7px 9px", border: `1px solid ${S.borderMed}`, borderRadius: 6 }} /></label>
             </div>}
             {newToolDrawer.step === 2 && newToolDrawer.draft.mode === "batch" && <div style={{ marginTop: 12, padding: "16px 12px", textAlign: "center", border: `1px dashed ${S.borderMed}`, borderRadius: 7, color: S.muted }}>上传 CSV / XLSX 模板，系统将校验必填字段、重复账号和格式。</div>}
@@ -744,10 +792,13 @@ const { tools, setTools } = useTools();
               onClick={() => {
                 if (newToolDrawer.step === 1) { setNewToolDrawer({ ...newToolDrawer, step: 2 }); return; }
                 const t = newToolDrawer.draft.type || "wechat";
+                if (t === "media" && !newToolDrawer.draft.mediaPlatform) { showToast("⚠️ 请先选择内容平台"); return; }
                 const id = "t_" + Date.now().toString().slice(-5);
                 const identifier = newToolDrawer.draft.identifier || ((t === "wechat" ? "wx_" : t === "wecom" ? "corp_" : t === "phone" ? "phone_" : t === "email" ? "mail_" : t === "media" ? "media_" : t === "workspace" ? "work_" : t === "developer" ? "dev_" : "sys_") + "new_" + id.slice(-3));
                 const newTool: Tool = {
                   id, type: t, identifier, name: newToolDrawer.draft.name || "新入库资源·" + id,
+                  platform: newToolDrawer.draft.platform,
+                  mediaPlatform: newToolDrawer.draft.mediaPlatform,
                   status: "not_enabled", riskLevel: "normal", boundAccountId: null, boundProjectIds: [],
                   dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0, lastActiveDate: "—",
                   onboardDate: new Date().toISOString().slice(0, 10),
@@ -851,7 +902,7 @@ const { tools, setTools } = useTools();
           </button>
           </HeaderActionSlot>
           <button type="button"
-            onClick={() => setNewToolDrawer({ step: 1, draft: { type: topTab === "all" ? "wechat" : topTab, mode: "single", status: "not_enabled", boundAccountId: null, boundProjectIds: [] } })}
+            onClick={() => setNewToolDrawer({ step: 1, draft: { type: topTab === "all" ? "wechat" : topTab, platform: registrationPlatform || undefined, mediaPlatform: registrationPlatform || undefined, mode: "single", status: "not_enabled", boundAccountId: null, boundProjectIds: [] } })}
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold whitespace-nowrap"
             style={{ background: S.ink, color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>
             <Plus size={15} /> 注册入库
@@ -1091,7 +1142,7 @@ const { tools, setTools } = useTools();
               onRequestHandover={toolId => setHandoverDraft({ toolId, targetUid: accounts[0]?.uid || "" })}
               onConfirmAction={(toolId, a, label) => setConfirmAction({ toolId, action: a, label })}
               onMutate={(patch, act, summary) => mutateTool(selectedTool.id, patch, act, summary)}
-              onSwitchProject={() => showToast("🗺 切换项目：已弹出项目多选对话框（示例）")}
+              onSwitchProject={() => openProjectBinding(selectedTool.id)}
               onSwitchOwner={() => setHandoverDraft({ toolId: selectedTool.id, targetUid: accounts.find(a => a.uid !== selectedTool.boundAccountId)?.uid || accounts[0].uid })}
               onMediaMatrix={() => showToast("🔗 已打开矩阵配置面板")}
               onMediaBiz={() => showToast("💼 已创建商单申请")}
@@ -1262,7 +1313,7 @@ const { tools, setTools } = useTools();
             onRequestHandover={toolId => setHandoverDraft({ toolId, targetUid: accounts[0]?.uid || "" })}
             onConfirmAction={(toolId, a, label) => setConfirmAction({ toolId, action: a, label })}
             onMutate={(patch, act, summary) => mutateTool(selectedTool.id, patch, act, summary)}
-            onSwitchProject={() => showToast("🗺 切换项目：已弹出项目多选对话框（示例）")}
+            onSwitchProject={() => openProjectBinding(selectedTool.id)}
             onSwitchOwner={() => setHandoverDraft({ toolId: selectedTool.id, targetUid: accounts.find(a => a.uid !== selectedTool.boundAccountId)?.uid || accounts[0].uid })}
             onMediaMatrix={() => showToast("🔗 已打开矩阵配置面板：选择目标矩阵 + 关系（主号/子号）")}
             onMediaBiz={() => showToast("💼 已创建商单申请：进入审批中心『业务合作类』走审批")}

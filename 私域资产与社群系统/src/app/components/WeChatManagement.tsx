@@ -4,10 +4,11 @@ import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check } from "lucide-react";
 import { useCommunityData } from "../data/communityDataStore";
 import { defaultGroupTypeRules } from "../data/projectGroupRules";
+import { initialProjects, projectStatusBadge } from "../data/communicationTools";
 import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const mockWechats = [
-  { no: "00001", wechatId: "wx_bj_01", phone: "138-0012-3456", status: "使用中", nickname: "思远", gender: "男", qqNo: "287634521", boundEmail: "wsy@eco-saas.com", opsManager: "吴思远", memberManager: "张明", certified: true, invitedNew: 42, scanCount: 386, friendCount: 1823, city: "北京", project: "北京PRO服务", lastLogin: "2026-07-05", groupCount: 16, isInitiator: true, targetGroup: "北京PRO会员群01", targetGroupCount: 3, credential: "已认证" },
+  { no: "00001", wechatId: "wx_bj_01", phone: "138-0012-3456", status: "使用中", nickname: "思远", gender: "男", qqNo: "287634521", boundEmail: "wsy@eco-saas.com", opsManager: "吴思远", memberManager: "张明", certified: true, invitedNew: 42, scanCount: 386, friendCount: 1823, city: "北京", project: "北京 PRO 会员", lastLogin: "2026-07-05", groupCount: 16, isInitiator: true, targetGroup: "北京PRO会员群01", targetGroupCount: 3, credential: "已认证" },
   { no: "00002", wechatId: "wx_sh_01", phone: "139-0012-3457", status: "使用中", nickname: "小燕", gender: "女", qqNo: "345782910", boundEmail: "lxy@eco-saas.com", opsManager: "林小燕", memberManager: "王静", certified: true, invitedNew: 38, scanCount: 312, friendCount: 356, city: "上海", project: "上海体验官", lastLogin: "2026-07-05", groupCount: 2, isInitiator: true, targetGroup: "上海体验官群01", targetGroupCount: 2, credential: "已认证" },
   { no: "00003", wechatId: "wx_gz_01", phone: "138-0012-3458", status: "异常", nickname: "刘刚", gender: "男", qqNo: "412893047", boundEmail: "lg@eco-saas.com", opsManager: "刘刚", memberManager: "陈强", certified: false, invitedNew: 21, scanCount: 187, friendCount: 234, city: "广州", project: "广州代理培训", lastLogin: "2026-06-05", groupCount: 1, isInitiator: false, targetGroup: "广州代理群", targetGroupCount: 1, credential: "未认证" },
   { no: "00004", wechatId: "wx_cd_01", phone: "152-0012-3461", status: "使用中", nickname: "志远", gender: "男", qqNo: "523019483", boundEmail: "zzr@eco-saas.com", opsManager: "赵志远", memberManager: "—", certified: false, invitedNew: 9, scanCount: 67, friendCount: 67, city: "成都", project: "成都分站", lastLogin: "2026-07-01", groupCount: 1, isInitiator: false, targetGroup: "成都分站群", targetGroupCount: 1, credential: "未认证" },
@@ -51,7 +52,7 @@ const assetPeoplePool: Record<string, {
   name: string; role: string; dept: string; phone: string;
   projects: string[]; capacity: number; used: number; avatarIdx: number;
 }> = {
-  acc_wusiyuan: { name: "吴思远", role: "项目负责人", dept: "北京服务中心", phone: "138-0012-3456", projects: ["北京PRO服务"], capacity: 4, used: 1, avatarIdx: 0 },
+  acc_wusiyuan: { name: "吴思远", role: "项目负责人", dept: "北京服务中心", phone: "138-0012-3456", projects: ["北京 PRO 会员"], capacity: 4, used: 1, avatarIdx: 0 },
   acc_linxiaoyan:{ name: "林小燕", role: "运营号/客服", dept: "上海服务中心", phone: "139-0012-3457", projects: ["上海体验官"], capacity: 3, used: 1, avatarIdx: 1 },
   acc_liugang:   { name: "刘刚",   role: "区域运营",   dept: "广州服务中心", phone: "138-0012-3458", projects: ["广州代理培训"], capacity: 3, used: 1, avatarIdx: 2 },
   acc_zhaozhiyuan:{name: "赵志远", role: "区域运营",   dept: "成都服务中心", phone: "152-0012-3461", projects: ["成都分站"], capacity: 3, used: 1, avatarIdx: 3 },
@@ -2006,12 +2007,14 @@ const [search, setSearch] = useState("");
               <div className="px-3 py-2 text-xs font-bold flex items-center gap-1.5 border-b" style={{ color: S.text, fontFamily: "monospace", borderColor: S.border }}>
                 <Building2 size={13} style={{ color: S.accent }} /> 项目与号池
               </div>
-              {Object.entries(groupedByProject).map(([projectName, list]) => {
-                const isIdlePool = projectName === "空闲号池";
+              {/* 空闲号池固定第一 */}
+              {(() => {
+                const projectName = "空闲号池";
+                const list = groupedByProject[projectName] || [];
                 const active = activeProjectName === projectName;
                 return (
                   <button key={projectName} type="button"
-                    className="w-full text-left px-3 py-2.5 border-b transition-colors last:border-b-0"
+                    className="w-full text-left px-3 py-2.5 border-b transition-colors"
                     style={{
                       background: active ? S.accentLight : "transparent",
                       borderColor: S.border,
@@ -2021,13 +2024,51 @@ const [search, setSearch] = useState("");
                     onClick={() => { setActiveProjectName(projectName); setSelectedRow(null); }}>
                     <div className="flex items-center gap-2 min-w-0">
                       <div className="w-6 h-6 flex items-center justify-center flex-shrink-0"
-                        style={{ background: isIdlePool ? "#ecfdf5" : S.primary, color: isIdlePool ? "#047857" : "#ffffff", borderRadius: S.radiusSm }}>
-                        {isIdlePool ? <ShieldCheck size={12} /> : <Building2 size={12} />}
+                        style={{ background: "#ecfdf5", color: "#047857", borderRadius: S.radiusSm }}>
+                        <ShieldCheck size={12} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="text-xs font-semibold truncate" style={{ color: S.text }}>{projectName}</div>
+                        <div className="text-[10px] truncate" style={{ color: S.muted }}>尚未授权给任何项目</div>
+                      </div>
+                      <span className="text-[10px] flex-shrink-0 px-1.5 py-0.5"
+                        style={{ background: active ? S.accent : S.borderLight, color: active ? S.primaryDark : S.muted, borderRadius: 99 }}>
+                        {list.length}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })()}
+              {/* 按 initialProjects 顺序渲染项目 */}
+              {initialProjects.map(p => {
+                const list = groupedByProject[p.name] || [];
+                const active = activeProjectName === p.name;
+                const statusInfo = projectStatusBadge(p.status);
+                return (
+                  <button key={p.id} type="button"
+                    className="w-full text-left px-3 py-2.5 border-b transition-colors"
+                    style={{
+                      background: active ? S.accentLight : "transparent",
+                      borderColor: S.border,
+                      fontFamily: "monospace",
+                      borderLeft: active ? `2px solid ${S.accent}` : "2px solid transparent",
+                    }}
+                    onClick={() => { setActiveProjectName(p.name); setSelectedRow(null); }}>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div className="w-6 h-6 flex items-center justify-center flex-shrink-0"
+                        style={{ background: statusInfo.bg, color: statusInfo.color, borderRadius: S.radiusSm }}>
+                        <Building2 size={12} />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-semibold truncate" style={{ color: S.text }}>{p.name}</span>
+                          <span className="text-[9px] px-1 py-0 rounded flex-shrink-0"
+                            style={{ background: statusInfo.bg, color: statusInfo.color, fontFamily: "monospace" }}>
+                            {statusInfo.label}
+                          </span>
+                        </div>
                         <div className="text-[10px] truncate" style={{ color: S.muted }}>
-                          {isIdlePool ? "尚未授权给任何项目" : `${list.length} · ${list.filter(a => a.accountType === "个人微信").length}微·${list.filter(a => a.accountType === "企业微信").length}企`}
+                          {list.length > 0 ? `${list.filter(a => a.accountType === "个人微信").length}微 · ${list.filter(a => a.accountType === "企业微信").length}企` : "—"}
                         </div>
                       </div>
                       <span className="text-[10px] flex-shrink-0 px-1.5 py-0.5"
@@ -2044,6 +2085,8 @@ const [search, setSearch] = useState("");
           {viewDimension === "project" && activeProjectName && (() => {
             const list = groupedByProject[activeProjectName] || [];
             const isIdlePool = activeProjectName === "空闲号池";
+            const projectMeta = isIdlePool ? null : initialProjects.find(p => p.name === activeProjectName);
+            const statusInfo = projectMeta ? projectStatusBadge(projectMeta.status) : null;
             const counts = {
               total: list.length,
               using: list.filter(a => a.status === "使用中").length,
@@ -2060,16 +2103,23 @@ const [search, setSearch] = useState("");
               {/* Banner */}
               <div className="flex items-start gap-3 px-4 py-3 border-b" style={{ borderColor: S.border, background: isIdlePool ? "linear-gradient(180deg, rgba(59,130,246,0.08), transparent)" : "linear-gradient(180deg, rgba(163,230,53,0.08), transparent)" }}>
                 <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
-                  style={{ background: isIdlePool ? "#ecfdf5" : S.primary, color: isIdlePool ? "#047857" : "#ffffff", borderRadius: S.radiusSm }}>
+                  style={{ background: isIdlePool ? "#ecfdf5" : (statusInfo?.bg ?? S.primary), color: isIdlePool ? "#047857" : (statusInfo?.color ?? "#ffffff"), borderRadius: S.radiusSm }}>
                   {isIdlePool ? <ShieldCheck size={18} /> : <Building2 size={18} />}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
                     <div className="text-base font-bold" style={{ fontFamily: "monospace", color: S.text }}>{activeProjectName}</div>
                     {isIdlePool && <span className="px-1.5 py-0.5 text-[10px]" style={{ background: S.accent, color: S.primaryDark, borderRadius: S.radiusSm, fontFamily: "monospace" }}>可领取 · 养号池</span>}
+                    {statusInfo && <span className="px-1.5 py-0.5 text-[10px] font-semibold" style={{ background: statusInfo.bg, color: statusInfo.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{statusInfo.label}</span>}
                   </div>
                   <div className="text-[11px] mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>
-                    {isIdlePool ? "未被分配到任何项目的账号，养号达标后可一键分配" : `项目下共 ${list.length} 个账号 · 发放到人 ${counts.assigned} · 待交接 ${counts.handover}`}
+                    {isIdlePool ? "未被分配到任何项目的账号，养号达标后可一键分配"
+                      : projectMeta ? `${projectMeta.subtitle}${projectMeta.location ? ` · ${projectMeta.location}` : ""}${projectMeta.owner ? ` · 负责人 ${projectMeta.owner}` : ""}`
+                      : `项目下共 ${list.length} 个账号`}
+                  </div>
+                  <div className="text-[10px] mt-1 flex items-center gap-2 flex-wrap" style={{ color: S.muted, fontFamily: "monospace" }}>
+                    {projectMeta?.short && <span style={{ background: S.borderLight, padding: "1px 6px", borderRadius: 3 }}>{projectMeta.short}</span>}
+                    <span>账号 {list.length} · 发放到人 {counts.assigned} · 待交接 {counts.handover}</span>
                   </div>
                 </div>
               </div>
