@@ -1008,13 +1008,6 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
     return () => window.removeEventListener("mousedown", onClick);
   }, [qrMenuOpen]);
   const lastSync = timeAgo(account.lastSync);
-  const attributionInfo: Array<[string, string]> = [
-    ["归属项目", account.project || "—"],
-    ["归属员工", saved.admin],
-    ["账号类型", "企业微信"],
-    ["归属大区", account.region || "—"],
-    ["归属部门", saved.dept],
-  ];
   const slotTotal = Math.max(account.groupCapacity, account.groups.length);
   const updateDraft = (key: keyof typeof draft, value: string) => setDraft(current => ({ ...current, [key]: value }));
   const cancelEdit = () => { setDraft(saved); setEditError(""); setEditing(false); };

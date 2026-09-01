@@ -399,7 +399,10 @@ const { tools, setTools } = useTools();
   // ── 一级过滤：topTab + status + search + 高级筛选 + 容量 ────
   const filteredTools = useMemo(() => {
     return tools.filter(t => {
-      if (toolTypes ? !toolTypes.includes(t.type) : topTab !== "all" && t.type !== topTab) return false;
+      // 按项目视图时忽略 topTab 类型过滤（项目内混合多类型账号）
+      if (viewDimension !== "project") {
+        if (toolTypes ? !toolTypes.includes(t.type) : topTab !== "all" && t.type !== topTab) return false;
+      }
       if (platformFilters?.length && !platformFilters.includes(t.platform || t.mediaPlatform || "")) return false;
       if (platformFilter && t.platform !== platformFilter && t.mediaPlatform !== platformFilter) return false;
       if (lifecycleFilter !== null && getLifecycleStageIndex(t) !== lifecycleFilter) return false;
@@ -776,25 +779,36 @@ const { tools, setTools } = useTools();
         </div>}
         <HeaderActionSlot targetId={headerActionTargetId}>
         <div className={`flex gap-2 items-center ${embedded ? "ml-auto" : ""}`}>
-          {!embedded && <div className="flex" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, overflow: "hidden" }}>
-            {TOP_TABS.map((tab, i) => {
-              const Icon = tab.icon;
-              const active = topTab === tab.key;
-              return (
-                <button key={tab.key} type="button" title={tab.label}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap"
-                  style={{
-                    background: active ? S.ink : "transparent",
-                    color: active ? S.accent : S.muted,
-                    fontFamily: "monospace",
-                    borderRight: i < TOP_TABS.length - 1 ? `1px solid ${S.border}` : "none",
-                  }}
-                  onClick={() => switchTopTab(tab.key)}>
-                  <Icon size={13} /> {tab.label}
-                </button>
-              );
-            })}
-          </div>}
+          {!embedded && (
+            viewDimension === "project" ? (
+              // 按项目视图：顶部类型 tab 换成提示条（项目内混合多类型，不做全局类型筛选）
+              <div className="flex items-center gap-2 px-3 py-1.5 text-xs"
+                style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radius, fontFamily: "monospace", color: S.textSec }}>
+                <Building2 size={13} style={{ color: S.accent }} />
+                项目视图已包含全部账号类型 · 切换到「按类型」维度可按类型筛选
+              </div>
+            ) : (
+              <div className="flex" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, overflow: "hidden" }}>
+                {TOP_TABS.map((tab, i) => {
+                  const Icon = tab.icon;
+                  const active = topTab === tab.key;
+                  return (
+                    <button key={tab.key} type="button" title={tab.label}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap"
+                      style={{
+                        background: active ? S.ink : "transparent",
+                        color: active ? S.accent : S.muted,
+                        fontFamily: "monospace",
+                        borderRight: i < TOP_TABS.length - 1 ? `1px solid ${S.border}` : "none",
+                      }}
+                      onClick={() => switchTopTab(tab.key)}>
+                      <Icon size={13} /> {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
+            )
+          )}
 
           <HeaderActionSlot targetId={secondaryActionTargetId}>
           {/* 列可见性管理 */}
