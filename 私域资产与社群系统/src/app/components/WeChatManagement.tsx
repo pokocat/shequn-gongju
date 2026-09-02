@@ -2332,40 +2332,36 @@ function AccountRowForGroups({
         <div className="flex-shrink-0" style={columnStyle("sync", { width: 66 })}><span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px]" style={{ background: risk.isSyncRisk ? "#fff7ed" : a.status === "未使用" ? "#f1f5f9" : "#f0fff4", color: syncColor, borderRadius: 999, fontFamily: "monospace" }}>{risk.isSyncRisk && <AlertTriangle size={9} />}{syncLabel}</span></div>
         <div className="flex-shrink-0 text-[10px]" style={columnStyle("updated", { width: 64, color: S.muted, fontFamily: "monospace" })}>{a.lastLogin}</div>
         <div className="flex-shrink-0 flex items-center gap-[3px] whitespace-nowrap" style={columnStyle("action", { width: 128 })}>
-          {/* 阶段 1: registered 注册入库 — 仅 [推进养号]（若无安全配置则不能推进，通过 advanceLifecycle 处理）*/}
-          {a.lifecycleStage === "registered" && (
-            <button type="button" title="进入7天养号期" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
-              style={{ background: S.accentLight, color: S.primaryDark, border: `1px solid ${S.accent}`, fontFamily: "monospace" }}
-              onClick={e => { e.stopPropagation(); onAdvance(); }}>
-              <CheckCircle2 size={10} />推进养号
-            </button>
-          )}
-
-          {/* 阶段 2: nurturing 养号 — 养号未通过显示灰的「养号中XX%」；达标显示 [分配] */}
-          {a.lifecycleStage === "nurturing" && (
-            a.nurturing?.pass
-              ? <button type="button" title="养号达标 · 分配到项目/人" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
+          {/* ═══════ 未发放到人：核心主操作 = [分配] ═══════ */}
+          {(a.lifecycleStage === "registered" || a.lifecycleStage === "nurturing" || a.lifecycleStage === "assigned_to_project") && (
+            <>
+              {/* 养号未通过时显示小字进度提示（只读，系统自动判断） */}
+              {a.lifecycleStage === "nurturing" && !a.nurturing?.pass && (
+                <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px] flex-shrink-0"
+                  style={{ background: "#f3f4f6", color: "#9ca3af", fontFamily: "monospace" }}
+                  title="系统根据注册入库时间自动判断养号期，无需手动操作">
+                  <RefreshCw size={9} style={{ opacity: 0.6 }} />
+                  {a.nurturing?.daysSinceOnboard ?? 0}/7
+                </span>
+              )}
+              {/* assigned_to_project 阶段显示 [发放到人]（作为分配之后的第二步） */}
+              {a.lifecycleStage === "assigned_to_project" ? (
+                <button type="button" title="绑定到具体服务官账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
+                  style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}
+                  onClick={e => { e.stopPropagation(); onAdvance(); }}>
+                  <Users size={10} />发放到人
+                </button>
+              ) : (
+                <button type="button" title="分配到项目/人 — 核心主操作" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
                   style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}
                   onClick={e => { e.stopPropagation(); onAllocate(); }}>
                   <Plus size={10} />分配
                 </button>
-              : <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px]"
-                  style={{ background: "#f3f4f6", color: "#9ca3af", fontFamily: "monospace" }}>
-                  <RefreshCw size={9} className="animate-spin" style={{ animationDuration: "3s" }} />
-                  养号 {a.nurturing?.daysSinceOnboard ?? 0}/7
-                </span>
+              )}
+            </>
           )}
 
-          {/* 阶段 3: assigned_to_project 分配到项目 — [发放到人] */}
-          {a.lifecycleStage === "assigned_to_project" && (
-            <button type="button" title="发放给服务官" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
-              style={{ background: "#ecfeff", color: "#0e7490", border: "1px solid #a5f3fc", fontFamily: "monospace" }}
-              onClick={e => { e.stopPropagation(); onAdvance(); }}>
-              <Users size={10} />发放到人
-            </button>
-          )}
-
-          {/* 阶段 4: assigned_to_person 发放到人 — [交接] [回收] [归档] */}
+          {/* ═══════ 已发放到人：[交接] [回收] [归档] ═══════ */}
           {a.lifecycleStage === "assigned_to_person" && (
             <>
               <button type="button" title="发起交接审批" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
@@ -2386,7 +2382,7 @@ function AccountRowForGroups({
             </>
           )}
 
-          {/* 阶段 5: archived 已归档 — 无按钮 */}
+          {/* ═══════ 已归档：只读 ═══════ */}
           {a.lifecycleStage === "archived" && (
             <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px]"
               style={{ background: "#f3f4f6", color: "#6b7280", fontFamily: "monospace" }}>
