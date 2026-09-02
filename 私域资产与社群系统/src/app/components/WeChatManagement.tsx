@@ -438,34 +438,44 @@ function BrowseTemplatePanel({ projectName, onChangeProject, projectOptions, onA
   onClose?: () => void;
 }) {
   const rules = getGroupRulesForProject(projectName);
-  const [activeCode, setActiveCode] = useState<string | null>(() => rules[0]?.code ?? null);
-  // 切换项目 → 默认激活第一条规则
-  React.useEffect(() => { setActiveCode(rules[0]?.code ?? null); }, [projectName]);
-  const selected = rules.find(r => r.code === activeCode) ?? null;
   return (
-    <div className="p-3 space-y-3 animate-[fadeIn_0.15s_ease-out]"
+    <div className="p-3 space-y-2.5 animate-[fadeIn_0.15s_ease-out]"
       style={{ background: S.bg, border: `1px dashed ${S.borderMed}`, borderRadius: 10 }}>
-      {/* 标题 + 关闭按钮 */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-[11px] font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>
-          🔎 浏览其他项目模板 <span style={{ color: S.muted, fontWeight: 500 }}>· 只读对比 · {projectOptions.length} 个项目可选</span>
+      {/* 标题 + 关闭按钮 + 说明 */}
+      <div className="flex items-center justify-between gap-3 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="inline-flex items-center gap-1.5 px-2 py-0.5 text-[10px] font-semibold"
+            style={{ background: "#fef3c7", color: "#92400e", border: "1px solid #fcd34d", borderRadius: 999, fontFamily: "monospace" }}>
+            📚 规则选型对比
+          </div>
+          <div className="text-[11px]" style={{ color: S.muted, fontFamily: "monospace" }}>
+            只读浏览 · 上方区域不参与表单编辑 · 喜欢某套规则直接点 <b style={{ color: S.text }}>「套用此模板」</b> → 才会出现在下方
+          </div>
         </div>
-        {onClose && (
-          <button type="button" onClick={onClose} className="inline-flex items-center justify-center w-6 h-6 flex-shrink-0"
-            style={{ color: S.muted, borderRadius: 6, background: S.surface }}
-            title="关闭对比">
-            <X size={12} />
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <button type="button" onClick={() => onApply(projectName)}
+            className="px-2 py-1 text-[10px] font-bold inline-flex items-center gap-0.5 flex-shrink-0"
+            style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+            ✅ 套用【{projectName}】整套模板
           </button>
-        )}
+          {onClose && (
+            <button type="button" onClick={onClose} title="收起对比" aria-label="收起对比"
+              className="inline-flex items-center justify-center w-6 h-6 flex-shrink-0"
+              style={{ color: S.muted, borderRadius: 6, background: S.surface }}>
+              <X size={12} />
+            </button>
+          )}
+        </div>
       </div>
+
       {/* 12 项目 Tab 切换条 */}
-      <div className="flex gap-1 overflow-x-auto pb-1" style={{ scrollbarWidth: "thin" }}>
+      <div className="flex gap-1 overflow-x-auto pb-0.5" style={{ scrollbarWidth: "thin" }}>
         {projectOptions.map(name => {
           const active = name === projectName;
           const cnt = getGroupRulesForProject(name).length;
           return (
             <button key={name} type="button" onClick={() => onChangeProject(name)}
-              className="px-2 py-1 text-[10px] whitespace-nowrap flex items-center gap-1 flex-shrink-0"
+              className="px-2 py-0.5 text-[10px] whitespace-nowrap flex items-center gap-1 flex-shrink-0"
               style={{
                 background: active ? S.primary : S.surface,
                 color: active ? S.onPrimary : S.textSec,
@@ -480,102 +490,76 @@ function BrowseTemplatePanel({ projectName, onChangeProject, projectOptions, onA
           );
         })}
       </div>
-      {/* 漏斗层级概览 */}
-      <div className="flex flex-wrap items-center gap-1.5">
+
+      {/* 漏斗层级快速概览 · 只给个分布饼图感的胶囊串，不再画跟下面主预览一样的筛选条 */}
+      <div className="flex flex-wrap items-center gap-1">
+        <span className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>漏斗：</span>
         {(["引流", "培育", "转化", "交付", "服务", "IP私域"] as const).map(tier => {
           const list = rules.filter(r => r.tier === tier);
           if (!list.length) return null;
           const c = tierColorMap[tier];
           return (
-            <span key={tier} className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] flex-shrink-0"
+            <span key={tier} className="inline-flex items-center gap-0.5 px-1.5 py-0 text-[10px] flex-shrink-0"
               style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}`, borderRadius: 999, fontFamily: "monospace" }}>
-              <span style={{ width: 4, height: 4, background: c.dot, borderRadius: 99 }} />{tier} · {list.length}
+              {tier}<b className="ml-0.5">{list.length}</b>
             </span>
           );
         })}
+        <span className="ml-auto text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>
+          共 {rules.length} 条规则 · 6 大漏斗均覆盖
+        </span>
       </div>
-      {/* 胶囊列表（只读点击切换详情）*/}
-      <div className="flex flex-wrap gap-2">
-        {rules.map(rule => {
-          const isActive = rule.code === activeCode;
-          const c = tierColorMap[rule.tier];
+
+      {/* ⚡瘦身版：按漏斗层级分组成条列式（每个层级一行，规则名胶囊 inline 排成一串）*/}
+      <div className="space-y-1.5">
+        {(["引流", "培育", "转化", "交付", "服务", "IP私域"] as const).map(tier => {
+          const list = rules.filter(r => r.tier === tier);
+          if (!list.length) return null;
+          const c = tierColorMap[tier];
           return (
-            <button key={rule.code} type="button"
-              className="px-2.5 py-1.5 text-[11px] flex items-center gap-1.5"
-              onClick={() => setActiveCode(rule.code)}
-              style={{
-                background: isActive ? c.bg : S.surface,
-                color: isActive ? c.color : S.textSec,
-                border: `1px solid ${isActive ? c.border : S.border}`,
-                borderRadius: S.radiusSm,
-                fontWeight: isActive ? 700 : 500,
-              }}>
-              <span style={{ width: 6, height: 6, background: c.dot, borderRadius: 99 }} />
-              <b>{rule.name}</b>
-              <span style={{ opacity: 0.7, fontFamily: "monospace", fontSize: 10 }}>· {rule.code}</span>
-              <span className="text-[9px] px-1 rounded flex-shrink-0"
-                style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>{rule.tier}</span>
-            </button>
+            <div key={tier} className="flex items-start gap-2 text-[10px]" style={{ fontFamily: "monospace" }}>
+              <div className="w-16 flex-shrink-0 px-1.5 py-0.5 text-center font-bold rounded-md"
+                style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}` }}>
+                {tier}
+              </div>
+              <div className="flex-1 min-w-0 flex flex-wrap items-center gap-1">
+                {list.map(rule => {
+                  // 规则名 + 1 行摘要（20字内）：入群条件 / 运营目标 · 适用地区首条
+                  const entry = rule.entryCondition.length > 18 ? rule.entryCondition.slice(0, 17) + "…" : rule.entryCondition;
+                  const goal = rule.retentionGoal.length > 18 ? rule.retentionGoal.slice(0, 17) + "…" : rule.retentionGoal;
+                  const cityFirst = rule.cities[0] ?? "全国";
+                  const title = `${rule.entryCondition}\n群对象：${rule.memberRoles.join("、")}\n容量：${rule.capacity} · 分配：${rule.allocationMode}\n适用：${rule.cities.join("、")}\n命名：${rule.nameTemplate}\n目标：${rule.retentionGoal}\n每周SOP：${rule.weeklyOps}`;
+                  return (
+                    <div key={rule.code} title={title}
+                      className="inline-flex items-center gap-1 px-1.5 py-0.5"
+                      style={{
+                        background: S.surface, color: S.textSec, border: `1px solid ${S.border}`,
+                        borderRadius: 6,
+                      }}>
+                      <span style={{ width: 5, height: 5, background: c.dot, borderRadius: 99 }} />
+                      <b className="text-[10px]" style={{ color: S.text }}>{rule.name}</b>
+                      <span style={{ color: S.muted, fontSize: 9 }}>{rule.code}</span>
+                      <span className="opacity-70" style={{ color: S.muted, fontSize: 9 }}>| {cityFirst} · 容量{rule.capacity}</span>
+                      <span className="opacity-50 hidden md:inline" style={{ color: S.muted, fontSize: 9 }}>| {entry}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           );
         })}
       </div>
-      {/* 规则详情卡 */}
-      {selected && (
-        <div className="p-3 space-y-2.5" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: 10 }}>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="text-[13px] font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{selected.name}</div>
-              <span style={{ fontFamily: "monospace", fontSize: 11, color: S.muted }}>({selected.code})</span>
-              {(() => {
-                const c = tierColorMap[selected.tier as keyof typeof tierColorMap];
-                return <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
-                  style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}`, borderRadius: 999, fontFamily: "monospace" }}>
-                  <span style={{ width: 4, height: 4, background: c.dot, borderRadius: 99 }} />{selected.tier}
-                </span>;
-              })()}
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
-                style={{ background: "#ecfdf5", color: "#065f46", border: "1px solid #6ee7b7", borderRadius: 999, fontFamily: "monospace" }}>
-                👥 单群容量 {selected.capacity}
-              </span>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
-                style={{ background: "#eff6ff", color: "#1e3a8a", border: "1px solid #93c5fd", borderRadius: 999, fontFamily: "monospace" }}>
-                ⚙️ {selected.allocationMode}
-              </span>
-            </div>
-            <button type="button" onClick={() => onApply(projectName)}
-              className="px-2.5 py-1.5 text-[11px] font-bold inline-flex items-center gap-1 flex-shrink-0"
-              style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
-              ✅ 套用此模板（{projectName}）
-            </button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div className="p-2.5 space-y-1" style={{ background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: 8 }}>
-              <div className="text-[10px] font-bold" style={{ color: "#9a3412", fontFamily: "monospace" }}>🚪 入群条件</div>
-              <div className="text-[11px] leading-relaxed" style={{ color: "#7c2d12", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{selected.entryCondition}</div>
-            </div>
-            <div className="p-2.5 space-y-1" style={{ background: "#f3f4f6", border: `1px solid ${S.border}`, borderRadius: 8 }}>
-              <div className="text-[10px] font-bold" style={{ color: S.textSec, fontFamily: "monospace" }}>🎭 群对象 (memberRoles)</div>
-              <div className="flex flex-wrap gap-1">{selected.memberRoles.map(role => <span key={role} className="px-2 py-0.5 text-[10px]" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: 999, fontFamily: "monospace" }}>{role}</span>)}</div>
-            </div>
-            <div className="p-2.5 space-y-1" style={{ background: "#eff6ff", border: "1px solid #bfdbfe", borderRadius: 8 }}>
-              <div className="text-[10px] font-bold" style={{ color: "#1e3a8a", fontFamily: "monospace" }}>📍 适用地区</div>
-              <div className="flex flex-wrap gap-1">{selected.cities.map(city => <span key={city} className="px-2 py-0.5 text-[10px]" style={{ background: "#dbeafe", color: "#1e3a8a", border: "1px solid #93c5fd", borderRadius: 6, fontFamily: "monospace" }}>{city}</span>)}</div>
-            </div>
-            <div className="p-2.5 space-y-1" style={{ background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 8 }}>
-              <div className="text-[10px] font-bold" style={{ color: "#5b21b6", fontFamily: "monospace" }}>📛 命名模板</div>
-              <div className="text-[11px]" style={{ color: "#4c1d95", fontFamily: "monospace" }}>{selected.nameTemplate}</div>
-            </div>
-            <div className="p-2.5 space-y-1" style={{ background: "#ecfdf5", border: "1px solid #6ee7b7", borderRadius: 8 }}>
-              <div className="text-[10px] font-bold" style={{ color: "#065f46", fontFamily: "monospace" }}>🎯 运营目标</div>
-              <div className="text-[11px] leading-relaxed" style={{ color: "#064e3b", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{selected.retentionGoal}</div>
-            </div>
-            <div className="p-2.5 space-y-1" style={{ background: "#fdf2f8", border: "1px solid #f9a8d4", borderRadius: 8 }}>
-              <div className="text-[10px] font-bold" style={{ color: "#9d174d", fontFamily: "monospace" }}>📅 每周 SOP</div>
-              <div className="text-[11px] leading-relaxed" style={{ color: "#831843", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{selected.weeklyOps}</div>
-            </div>
-          </div>
-        </div>
-      )}
+
+      {/* 底部摘要提示：告诉用户想看完整6维卡，去下面主预览区看 */}
+      <div className="pt-2 mt-1 flex items-center justify-between text-[10px]"
+        style={{ color: S.muted, fontFamily: "monospace", borderTop: `1px dashed ${S.border}` }}>
+        <span>ℹ️ 上面是浏览时的紧凑规则列表；完整的六维详情卡（入群条件/运营目标/SOP）在下方「当前生效的模板 · 群类型规则预览」区域展示。</span>
+        <button type="button" onClick={() => onApply(projectName)}
+          className="px-2 py-0.5 text-[10px] font-bold flex-shrink-0"
+          style={{ background: S.primary, color: S.onPrimary, borderRadius: 6, fontFamily: "monospace" }}>
+          ✅ 套用【{projectName}】
+        </button>
+      </div>
     </div>
   );
 }
