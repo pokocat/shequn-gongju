@@ -1769,9 +1769,60 @@ const [search, setSearch] = useState("");
       if (enterprise) runAccountAction(`${enterprise.wechatId} 已完成企业微信分配配置`);
       return;
     }
-    setAccountOverrides(current => ({ ...current, [no]: { ...current[no], ...patch } }));
-    runAccountAction(`${no} 已完成微信号分配`);
+    // ── 根据 patch 自动推进生命周期 ──
+    const hasProject = Boolean(patch.project && patch.project !== "待配置" && patch.project !== "—");
+    const hasPerson = Boolean(patch.serviceOfficer && patch.serviceOfficer !== "—" && patch.opsManager && patch.opsManager !== "—");
+    let nextStage: PersonalAccount["lifecycleStage"] = "nurturing";
+    let stageLabel = lifecycleCfg.nurturing.label;
+    if (hasProject && hasPerson) { nextStage = "assigned_to_person"; stageLabel = lifecycleCfg.assigned_to_person.label; }
+    else if (hasProject)        { nextStage = "assigned_to_project"; stageLabel = lifecycleCfg.assigned_to_project.label; }
+    const finalPatch: Partial<PersonalAccount> = {
+      ...patch,
+      lifecycleStage: nextStage,
+    };
+    setAccountOverrides(current => ({ ...current, [no]: { ...current[no], ...finalPatch } }));
+
+    // ── 按项目视图：自动切到目标项目，高亮该行 ──
+    if (hasProject && viewDimension === "project" && patch.project) {
+      const tgt = typeof patch.project === "string" ? patch.project : "";
+      if (tgt) setActiveProjectName(tgt);
+    }
+    // 短暂的闪烁高亮（3.2s）— 列表行的高亮动画
+    setRecentlyAllocatedNo(no);
+    window.setTimeout(() => setRecentlyAllocatedNo(null), 3200);
+
+    // ── 分配完成 RichToast（账号卡 + 去向 + CTA）──
+    const acc = accounts.find(a => a.no === no);
+    setAllocationResult({
+      account: {
+        no,
+        nickname: acc?.nickname === "—" ? "待配置账号" : (acc?.nickname || "账号"),
+        wechatId: acc?.wechatId || "",
+        accountType: acc?.accountType || patch.accountType || "个人微信",
+        avatarIdx: acc ? (parseInt(acc.no) - 1) : 0,
+      },
+      targetProject: patch.project || "",
+      targetPerson: patch.serviceOfficer || "",
+      targetStage: nextStage,
+      targetStageLabel: stageLabel,
+      groupCount: patch.groupCount || 0,
+      status: patch.status || (hasPerson ? "使用中" : "未使用"),
+    });
+    // 4.5 秒自动消失
+    window.setTimeout(() => setAllocationResult(null), 4500);
   };
+  // 最近一次分配的账号：行闪烁高亮
+  const [recentlyAllocatedNo, setRecentlyAllocatedNo] = useState<string | null>(null);
+  // 分配完成 RichToast：{账号, 去向, 阶段}
+  const [allocationResult, setAllocationResult] = useState<null | {
+    account: { no: string; nickname: string; wechatId: string; accountType: string; avatarIdx: number };
+    targetProject: string;
+    targetPerson: string;
+    targetStage: PersonalAccount["lifecycleStage"];
+    targetStageLabel: string;
+    groupCount: number;
+    status: string;
+  }>(null);
 
   // 构建分组数据（按项目 / 按人）
   const groupByProject = (list: PersonalAccount[]) => {
@@ -1830,6 +1881,126 @@ const [search, setSearch] = useState("");
       {showModal && mainTab === "personal" && <AuthorizedWechatModal onClose={() => setShowModal(false)} onSave={saveNewAccount} />}
       {showWecomCreateModal && mainTab === "wecom" && <AuthorizedWechatModal accountKind="wecom" onClose={() => setShowWecomCreateModal(false)} onSave={() => runAccountAction("企业微信已注册入库，可继续分配项目")} />}
       {allocationAccount && <WechatAllocationModal account={allocationAccount} onClose={() => setAllocationAccount(null)} onSave={patch => saveAllocation(allocationAccount.no, patch)} />}
+
+      {/* 分配完成 RichToast：右下角滑入，4.5 秒自动消失 */}
+      {allocationResult && createPortal(
+        <div className="fixed z-[150] right-5 bottom-6" style={{ width: 360, maxWidth: "calc(100vw - 40px)" }}>
+          <div className="w-full overflow-hidden" style={{
+            background: S.surface,
+            border: `1px solid ${S.accent}`,
+            borderRadius: 14,
+            boxShadow: "0 24px 60px -16px rgba(0,0,0,0.28), 0 0 0 3px rgba(163,230,53,0.18)",
+            animation: "slideUpToast 0.28s cubic-bezier(0.22, 1, 0.36, 1)",
+          }}>
+            {/* 成功条 */}
+            <div className="flex items-center gap-2 px-4 py-2" style={{
+              background: "linear-gradient(90deg, #bef264 0%, #a3e635 100%)",
+              color: "#1a2e05",
+              fontFamily: "monospace",
+            }}>
+              <CheckCircle2 size={14} />
+              <b className="text-[12px]">分配成功</b>
+              <span className="text-[11px] opacity-80 ml-auto">{allocationResult.account.no} · 已推进到「{allocationResult.targetStageLabel}」</span>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {/* 账号卡 */}
+              <div className="flex items-center gap-3">
+                <img src={getAvatar(allocationResult.account.avatarIdx)} alt={allocationResult.account.nickname}
+                  style={{ width: 40, height: 40, borderRadius: 10, objectFit: "cover", border: `2px solid ${S.accent}` }} />
+                <div className="min-w-0 flex-1">
+                  <div className="text-[13px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>
+                    {allocationResult.account.nickname}
+                  </div>
+                  <div className="text-[11px] truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>
+                    {allocationResult.account.accountType} · <span className="font-semibold">{allocationResult.account.wechatId || "—"}</span>
+                  </div>
+                </div>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] flex-shrink-0"
+                  style={{
+                    background: lifecycleCfg[allocationResult.targetStage].bg,
+                    color: lifecycleCfg[allocationResult.targetStage].color,
+                    border: `1px solid ${lifecycleCfg[allocationResult.targetStage].border}`,
+                    borderRadius: 999, fontFamily: "monospace"
+                  }}>
+                  <span style={{ width: 4, height: 4, background: lifecycleCfg[allocationResult.targetStage].dot, borderRadius: 99 }} />
+                  {allocationResult.targetStageLabel}
+                </span>
+              </div>
+
+              {/* 去向流：原位置 → 新项目 → 新负责人 → 状态 */}
+              <div className="grid grid-cols-2 gap-2">
+                <div className="p-2.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 9 }}>
+                  <div className="text-[10px] mb-1" style={{ color: S.muted, fontFamily: "monospace" }}>📂 归属项目</div>
+                  <div className="text-[11px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>
+                    {allocationResult.targetProject || "（空闲号池）"}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 9 }}>
+                  <div className="text-[10px] mb-1" style={{ color: S.muted, fontFamily: "monospace" }}>👤 负责人</div>
+                  <div className="text-[11px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>
+                    {allocationResult.targetPerson || "未绑定"}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 9 }}>
+                  <div className="text-[10px] mb-1" style={{ color: S.muted, fontFamily: "monospace" }}>👥 绑定群位</div>
+                  <div className="text-[11px] font-bold" style={{
+                    color: allocationResult.groupCount > 0 ? "#276749" : S.textSec,
+                    fontFamily: "monospace"
+                  }}>
+                    {allocationResult.groupCount > 0 ? `${allocationResult.groupCount} 个群位` : "未分配群"}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 9 }}>
+                  <div className="text-[10px] mb-1" style={{ color: S.muted, fontFamily: "monospace" }}>📊 账号状态</div>
+                  <div className="text-[11px] font-bold" style={{
+                    color: allocationResult.status === "使用中" ? "#276749" : allocationResult.status === "异常" ? "#b91c1c" : S.textSec,
+                    fontFamily: "monospace"
+                  }}>
+                    {allocationResult.status}
+                  </div>
+                </div>
+              </div>
+
+              {/* CTA 按钮行 */}
+              <div className="flex items-center justify-end gap-2 pt-1" style={{ borderTop: `1px dashed ${S.border}` }}>
+                <button type="button" onClick={() => setAllocationResult(null)}
+                  className="px-3 py-1.5 text-[11px] font-medium rounded-lg flex items-center gap-1"
+                  style={{ color: S.muted, background: "transparent" }}>
+                  知道了
+                </button>
+                <button type="button" onClick={() => {
+                  if (!allocationResult) return;
+                  const no = allocationResult.account.no;
+                  setAllocationResult(null);
+                  openAccountDetail(no);
+                }}
+                  className="px-4 py-1.5 text-[11px] font-bold rounded-lg flex items-center gap-1"
+                  style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}>
+                  <Eye size={12} />查看详情
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Inline keyframes（行闪烁 + Toast 滑入） */}
+      <style>{`
+        @keyframes allocationGlow {
+          0%   { box-shadow: inset 0 0 0 1px rgba(234,179,8,0.15), 0 0 0 0 rgba(250,204,21,0.05); }
+          50%  { box-shadow: inset 0 0 0 1px rgba(234,179,8,0.75), 0 0 0 6px rgba(250,204,21,0.22); }
+          100% { box-shadow: inset 0 0 0 1px rgba(234,179,8,0.15), 0 0 0 0 rgba(250,204,21,0.05); }
+        }
+        @keyframes slideUpToast {
+          from { opacity: 0; transform: translateY(14px) scale(0.98); }
+          to   { opacity: 1; transform: translateY(0)    scale(1); }
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; } to { opacity: 1; }
+        }
+      `}</style>
 
       {/* ── 分配 / 发放到人 二次确认弹窗 ── */}
       {pendingAllocationConfirm && createPortal(
@@ -2118,7 +2289,7 @@ const [search, setSearch] = useState("");
                             );
                           })}
                         </div>
-                        {paged.map(w => <AccountRowForGroups key={w.no} a={w} isSelected={selectedRow === w.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(w)} cols={cols}
+                        {paged.map(w => <AccountRowForGroups key={w.no} a={w} isSelected={selectedRow === w.no} recentlyAllocated={recentlyAllocatedNo === w.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(w)} cols={cols}
                           onToggleSelect={() => toggleRow(w.no)} checked={selectedRows.includes(w.no)}
                           onAdvance={() => w.lifecycleStage === "assigned_to_project"
                             ? setPendingAllocationConfirm({ kind: "assign_to_person", account: w })
@@ -2282,7 +2453,7 @@ const [search, setSearch] = useState("");
               {/* 账号列表 */}
               <div className="flex-1 min-h-0 overflow-auto p-3 space-y-2">
                 {list.length === 0 && <div className="py-12 text-center text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>暂无账号</div>}
-                {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
+                {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} recentlyAllocated={recentlyAllocatedNo === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
                   onToggleSelect={() => toggleRow(a.no)} checked={selectedRows.includes(a.no)}
                   onAdvance={() => a.lifecycleStage === "assigned_to_project"
                     ? setPendingAllocationConfirm({ kind: "assign_to_person", account: a })
@@ -2339,7 +2510,7 @@ const [search, setSearch] = useState("");
                   </header>
                   {open && <div className="p-3 space-y-2">
                     {list.length === 0 && <div className="py-8 text-center text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>暂无账号</div>}
-                    {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
+                    {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} recentlyAllocated={recentlyAllocatedNo === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
                       onToggleSelect={() => toggleRow(a.no)} checked={selectedRows.includes(a.no)}
                       onAdvance={() => a.lifecycleStage === "assigned_to_project"
                         ? setPendingAllocationConfirm({ kind: "assign_to_person", account: a })
@@ -2425,7 +2596,7 @@ function BadgeKPI({ label, value, bg, color }: { label: string; value: number | 
   );
 }
 function AccountRowForGroups({
-  a, isColumnVisible, columnStyle, visibleTableWidth, risk, isSelected, checked,
+  a, isColumnVisible, columnStyle, visibleTableWidth, risk, isSelected, checked, recentlyAllocated = false,
   onToggleSelect, onAdvance, onHandover, onRecycle, onArchive, onAllocate, onClickRow, onEdit = onClickRow,
 }: {
   a: PersonalAccount;
@@ -2435,6 +2606,7 @@ function AccountRowForGroups({
   risk: ReturnType<typeof getAccountRisk>;
   isSelected: boolean;
   checked: boolean;
+  recentlyAllocated?: boolean;
   onToggleSelect: () => void;
   onAdvance: () => void;
   onHandover: () => void;
@@ -2449,10 +2621,14 @@ function AccountRowForGroups({
   const syncColor = risk.isSyncRisk ? "#c2410c" : a.status === "未使用" ? S.muted : "#276749";
   const tint = rowTintByStatus[a.status] || rowTintByStatus["未使用"];
   const selBg = tint.bg === "#f0fff4" ? "#dcfce7" : tint.bg === "#fff0f0" ? "#fee2e2" : tint.bg === "#fffbeb" ? "#fef3c7" : tint.bg === "#f1f5f9" ? "#e9e9e9" : S.accentLight;
-  const rowBg = isSelected ? selBg : tint.bg;
+  const rowBg = isSelected ? selBg : (recentlyAllocated ? "#fef9c3" : tint.bg);
   const rowFontWeight = isSelected ? 700 : 500;
+  const ringStyle = recentlyAllocated ? {
+    animation: "allocationGlow 1.4s ease-out 0s 3",
+    boxShadow: "inset 0 0 0 1px rgba(234,179,8,0.45), 0 0 0 3px rgba(250,204,21,0.18)",
+  } : undefined;
   return (
-    <div role="button" tabIndex={0} className="flex items-center w-full text-left cursor-pointer transition-all" style={{ background: rowBg, borderBottom: `1px solid ${isSelected ? S.accent : S.border}`, borderLeft: isSelected ? `3px solid ${S.accent}` : `3px solid ${tint.dot}`, paddingTop: 15, paddingBottom: 15, paddingLeft: 16, paddingRight: 16, fontWeight: rowFontWeight as any }} onClick={onClickRow} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClickRow(); } }}>
+    <div role="button" tabIndex={0} className="flex items-center w-full text-left cursor-pointer transition-all" style={{ background: rowBg, borderBottom: `1px solid ${isSelected ? S.accent : S.border}`, borderLeft: isSelected ? `3px solid ${S.accent}` : `3px solid ${tint.dot}`, paddingTop: 15, paddingBottom: 15, paddingLeft: 16, paddingRight: 16, fontWeight: rowFontWeight as any, ...ringStyle }} onClick={onClickRow} onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onClickRow(); } }}>
       <div style={{ minWidth: Math.max(680, visibleTableWidth) }} className="w-full flex items-center">
         <div className="flex-shrink-0 flex items-center justify-center" style={columnStyle("select", { width: 24 })}><input type="checkbox" aria-label={`选择 ${a.wechatId}`} checked={checked} onClick={e => e.stopPropagation()} onChange={onToggleSelect} /></div>
         <div className="flex-shrink-0 text-[10px]" style={columnStyle("no", { width: 36, color: S.muted, fontFamily: "monospace" })}>{a.no}</div>
