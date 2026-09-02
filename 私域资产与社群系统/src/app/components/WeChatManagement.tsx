@@ -2332,10 +2332,67 @@ function AccountRowForGroups({
         <div className="flex-shrink-0" style={columnStyle("sync", { width: 66 })}><span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px]" style={{ background: risk.isSyncRisk ? "#fff7ed" : a.status === "未使用" ? "#f1f5f9" : "#f0fff4", color: syncColor, borderRadius: 999, fontFamily: "monospace" }}>{risk.isSyncRisk && <AlertTriangle size={9} />}{syncLabel}</span></div>
         <div className="flex-shrink-0 text-[10px]" style={columnStyle("updated", { width: 64, color: S.muted, fontFamily: "monospace" })}>{a.lastLogin}</div>
         <div className="flex-shrink-0 flex items-center gap-[3px] whitespace-nowrap" style={columnStyle("action", { width: 128 })}>
-          {a.lifecycleStage === "assigned_to_person" && <button type="button" title="发起交接审批" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]" style={{ background: "#fffbeb", color: "#92400e", border: "1px solid #fde68a", fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onHandover(); }}><ArrowRight size={10} />交接</button>}
-          {a.lifecycleStage === "assigned_to_person" && <button type="button" title="一键回收账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]" style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onRecycle(); }}><RotateCcw size={10} />回收</button>}
-          <button type="button" title="归档停用账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-medium rounded-[5px]" style={{ background: S.surface, color: "#4b5563", border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onArchive(); }}><History size={10} />归档</button>
-          <button type="button" title="分配到项目/人" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]" style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }} onClick={e => { e.stopPropagation(); onAllocate(); }}><Plus size={10} />分配</button>
+          {/* 阶段 1: registered 注册入库 — 仅 [推进养号]（若无安全配置则不能推进，通过 advanceLifecycle 处理）*/}
+          {a.lifecycleStage === "registered" && (
+            <button type="button" title="进入7天养号期" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
+              style={{ background: S.accentLight, color: S.primaryDark, border: `1px solid ${S.accent}`, fontFamily: "monospace" }}
+              onClick={e => { e.stopPropagation(); onAdvance(); }}>
+              <CheckCircle2 size={10} />推进养号
+            </button>
+          )}
+
+          {/* 阶段 2: nurturing 养号 — 养号未通过显示灰的「养号中XX%」；达标显示 [分配] */}
+          {a.lifecycleStage === "nurturing" && (
+            a.nurturing?.pass
+              ? <button type="button" title="养号达标 · 分配到项目/人" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
+                  style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}
+                  onClick={e => { e.stopPropagation(); onAllocate(); }}>
+                  <Plus size={10} />分配
+                </button>
+              : <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px]"
+                  style={{ background: "#f3f4f6", color: "#9ca3af", fontFamily: "monospace" }}>
+                  <RefreshCw size={9} className="animate-spin" style={{ animationDuration: "3s" }} />
+                  养号 {a.nurturing?.daysSinceOnboard ?? 0}/7
+                </span>
+          )}
+
+          {/* 阶段 3: assigned_to_project 分配到项目 — [发放到人] */}
+          {a.lifecycleStage === "assigned_to_project" && (
+            <button type="button" title="发放给服务官" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
+              style={{ background: "#ecfeff", color: "#0e7490", border: "1px solid #a5f3fc", fontFamily: "monospace" }}
+              onClick={e => { e.stopPropagation(); onAdvance(); }}>
+              <Users size={10} />发放到人
+            </button>
+          )}
+
+          {/* 阶段 4: assigned_to_person 发放到人 — [交接] [回收] [归档] */}
+          {a.lifecycleStage === "assigned_to_person" && (
+            <>
+              <button type="button" title="发起交接审批" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
+                style={{ background: "#fffbeb", color: "#92400e", border: "1px solid #fde68a", fontFamily: "monospace" }}
+                onClick={e => { e.stopPropagation(); onHandover(); }}>
+                <ArrowRight size={10} />交接
+              </button>
+              <button type="button" title="一键回收账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
+                style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontFamily: "monospace" }}
+                onClick={e => { e.stopPropagation(); onRecycle(); }}>
+                <RotateCcw size={10} />回收
+              </button>
+              <button type="button" title="归档停用账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-medium rounded-[5px]"
+                style={{ background: S.surface, color: "#4b5563", border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }}
+                onClick={e => { e.stopPropagation(); onArchive(); }}>
+                <History size={10} />归档
+              </button>
+            </>
+          )}
+
+          {/* 阶段 5: archived 已归档 — 无按钮 */}
+          {a.lifecycleStage === "archived" && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px]"
+              style={{ background: "#f3f4f6", color: "#6b7280", fontFamily: "monospace" }}>
+              <History size={9} />已归档
+            </span>
+          )}
         </div>
       </div>
     </div>
