@@ -1634,11 +1634,6 @@ const [search, setSearch] = useState("");
   const [createdAccounts, setCreatedAccounts] = useState<PersonalAccount[]>([]);
   const [accountOverrides, setAccountOverrides] = useState<Record<string, Partial<PersonalAccount>>>({});
   const [allocationAccount, setAllocationAccount] = useState<PersonalAccount | null>(null);
-  // 分配 / 发放到人 二次确认弹窗状态
-  const [pendingAllocationConfirm, setPendingAllocationConfirm] = useState<null | {
-    kind: "allocate" | "assign_to_person";
-    account: PersonalAccount;
-  }>(null);
   // ── 列宽拖拽（表头分隔线拖动） ──
   // 防御：cols 在 Vite HMR 场景下偶发 undefined，先用硬编码默认宽度兜底，后续 effect 再同步一次
   const defaultColWidths: Record<string, number> = Object.fromEntries((cols || []).map(c => [c.key, c.w]));
@@ -2180,137 +2175,6 @@ const [search, setSearch] = useState("");
         }
       `}</style>
 
-      {/* ── 分配 / 发放到人 二次确认弹窗 ── */}
-      {pendingAllocationConfirm && createPortal(
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4" style={{ background: "rgba(20, 25, 18, 0.48)", backdropFilter: "blur(3px)" }}
-          onClick={() => setPendingAllocationConfirm(null)}>
-          <div className="w-full max-w-md overflow-hidden animate-[fadeIn_0.15s_ease-out]" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: 14, boxShadow: "0 24px 48px -12px rgba(0,0,0,0.28)" }}
-            onClick={e => e.stopPropagation()}>
-            {/* Header */}
-            <div className="flex items-start justify-between px-5 pt-4 pb-2" style={{ borderBottom: `1px solid ${S.borderLight}` }}>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 flex items-center justify-center flex-shrink-0"
-                  style={{ background: pendingAllocationConfirm.kind === "allocate" ? S.accentLight : "#ecfeff", borderRadius: 10 }}>
-                  {pendingAllocationConfirm.kind === "allocate"
-                    ? <Plus size={18} style={{ color: S.primaryDark }} />
-                    : <Users size={18} style={{ color: "#0e7490" }} />}
-                </div>
-                <div>
-                  <div className="font-bold" style={{ color: S.text, fontFamily: "monospace", fontSize: 14 }}>
-                    {pendingAllocationConfirm.kind === "allocate" ? "确认分配此账号？" : "确认发放到人？"}
-                  </div>
-                  <div className="text-[11px] mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>
-                    {pendingAllocationConfirm.kind === "allocate"
-                      ? "将此账号从当前状态分配到指定项目 / 服务官"
-                      : "将此账号绑定到具体服务官名下，进入「使用中」"}
-                  </div>
-                </div>
-              </div>
-              <button className="flex items-center justify-center w-7 h-7 flex-shrink-0"
-                style={{ color: S.muted, borderRadius: 8 }}
-                onClick={() => setPendingAllocationConfirm(null)}>
-                <X size={14} />
-              </button>
-            </div>
-
-            {/* Body：账号信息卡 */}
-            {(() => {
-              const a = pendingAllocationConfirm.account;
-              const wasProject = a.project && a.project !== "待配置" ? a.project : "（空闲号池 / 未分配）";
-              const wasOwner = a.serviceOfficer && a.serviceOfficer !== "—" ? a.serviceOfficer : "未绑定服务官";
-              return (
-                <div className="px-5 py-4 space-y-3">
-                  {/* 账号主卡 */}
-                  <div className="flex items-center gap-3 p-3"
-                    style={{ background: S.accentLight, border: `1px solid ${S.accent}`, borderRadius: 10 }}>
-                    {a.status === "未使用"
-                      ? <div className="w-10 h-10 grid place-items-center" style={{ background: "#f1f5f9", borderRadius: 8, color: S.muted }}><MessageCircle size={18} /></div>
-                      : <img src={getAvatar(parseInt(a.no) - 1)} alt={a.nickname} style={{ width: 40, height: 40, borderRadius: 8, objectFit: "cover" }} />}
-                    <div className="min-w-0 flex-1">
-                      <div className="text-[13px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>
-                        {a.nickname === "—" ? "待配置账号" : a.nickname}
-                        <span className="ml-2 text-[10px] font-medium" style={{ color: S.muted }}>#{a.no}</span>
-                      </div>
-                      <div className="text-[11px] truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>
-                        {a.accountType} · <span className="font-semibold">{a.wechatId || "—"}</span>
-                      </div>
-                    </div>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] flex-shrink-0"
-                      style={{
-                        background: lifecycleCfg[a.lifecycleStage].bg,
-                        color: lifecycleCfg[a.lifecycleStage].color,
-                        border: `1px solid ${lifecycleCfg[a.lifecycleStage].border}`,
-                        borderRadius: 999, fontFamily: "monospace"
-                      }}>
-                      <span style={{ width: 4, height: 4, background: lifecycleCfg[a.lifecycleStage].dot, borderRadius: 99 }} />
-                      {lifecycleCfg[a.lifecycleStage].label}
-                    </span>
-                  </div>
-
-                  {/* 当前归属（分配时展示对比）*/}
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="p-2.5" style={{ background: S.surface, border: `1px solid ${S.borderLight}`, borderRadius: 8 }}>
-                      <div className="text-[10px] mb-1" style={{ color: S.muted, fontFamily: "monospace" }}>当前项目</div>
-                      <div className="text-[11px] font-semibold truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{wasProject}</div>
-                    </div>
-                    <div className="p-2.5" style={{ background: S.surface, border: `1px solid ${S.borderLight}`, borderRadius: 8 }}>
-                      <div className="text-[10px] mb-1" style={{ color: S.muted, fontFamily: "monospace" }}>当前负责人</div>
-                      <div className="text-[11px] font-semibold truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{wasOwner}</div>
-                    </div>
-                  </div>
-
-                  {/* 提示：发放到人 vs 分配 */}
-                  <div className="p-2.5 text-[10px] leading-relaxed"
-                    style={{ background: pendingAllocationConfirm.kind === "allocate" ? "#fefce8" : "#ecfeff", border: `1px solid ${pendingAllocationConfirm.kind === "allocate" ? S.accent : "#a5f3fc"}`, borderRadius: 8, color: "#78350f", fontFamily: "monospace" }}>
-                    {pendingAllocationConfirm.kind === "allocate"
-                      ? <>
-                          <b>下一步：</b> 打开分配详情，可选择
-                          <b>归属项目</b>（必选）+ <b>负责人</b>（选填，选了即直接进入「使用中」）。
-                          <br />· 养号未通过账号仍可分配（<b>养号达标判定由后台自动完成，不阻塞分配</b>）
-                        </>
-                      : <>
-                          <b>下一步：</b> 打开「发放到人」表单，选择服务官 + 部门 + 地区后确认。
-                          <br />· 确认后该账号进入 <b>「发放到人」</b> 阶段，同时状态更新为「使用中」
-                        </>}
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* Footer 按钮组 */}
-            <div className="flex items-center justify-end gap-2 px-5 py-3"
-              style={{ borderTop: `1px solid ${S.borderLight}`, background: S.bg }}>
-              <button className="px-3 py-1.5 text-[12px] font-medium rounded-lg flex items-center gap-1 flex-shrink-0"
-                style={{ color: S.textSec, background: S.surface, border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }}
-                onClick={() => setPendingAllocationConfirm(null)}>
-                取消
-              </button>
-              <button className="px-4 py-1.5 text-[12px] font-bold rounded-lg flex items-center gap-1 flex-shrink-0"
-                style={{
-                  background: pendingAllocationConfirm.kind === "allocate" ? S.primary : "#0e7490",
-                  color: S.onPrimary, fontFamily: "monospace",
-                  boxShadow: "0 4px 12px -4px rgba(0,0,0,0.18)"
-                }}
-                onClick={() => {
-                  if (!pendingAllocationConfirm) return;
-                  const { kind, account } = pendingAllocationConfirm;
-                  setPendingAllocationConfirm(null);
-                  if (kind === "allocate") {
-                    setAllocationAccount(account);
-                  } else {
-                    // 发放到人（assigned_to_project → assigned_to_person）
-                    advanceLifecycle(account.no);
-                  }
-                }}>
-                <CheckCircle2 size={14} />
-                {pendingAllocationConfirm.kind === "allocate" ? "确认，打开分配" : "确认，发放到人"}
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-
       {/* 页头：三维度总视角 */}
       <div className="flex items-start justify-between flex-shrink-0 gap-4" style={hidePageTitle && headerActionTargetId ? { display: "contents" } : undefined}>
         {!hidePageTitle && <div className="min-w-0">
@@ -2469,13 +2333,11 @@ const [search, setSearch] = useState("");
                         </div>
                         {paged.map(w => <AccountRowForGroups key={w.no} a={w} isSelected={selectedRow === w.no} recentlyAllocated={recentlyAllocatedNo === w.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(w)} cols={cols}
                           onToggleSelect={() => toggleRow(w.no)} checked={selectedRows.includes(w.no)}
-                          onAdvance={() => w.lifecycleStage === "assigned_to_project"
-                            ? setPendingAllocationConfirm({ kind: "assign_to_person", account: w })
-                            : advanceLifecycle(w.no)}
+                          onAdvance={() => advanceLifecycle(w.no)}
                           onHandover={() => startHandoverApproval(w.no)}
                           onRecycle={() => recycleAccount(w.no)}
                           onArchive={() => archiveAccount(w.no)}
-                          onAllocate={() => setPendingAllocationConfirm({ kind: "allocate", account: w })}
+                          onAllocate={() => setAllocationAccount(w)}
                           onClickRow={() => selectedRow === w.no ? setSelectedRow(null) : openAccountDetail(w.no)}
                         />)}
                         {paged.length === 0 && <div className="py-16 text-center text-sm" style={{ color: S.muted, fontFamily: "monospace" }}>暂无匹配账号，请调整筛选条件</div>}
@@ -2633,13 +2495,11 @@ const [search, setSearch] = useState("");
                 {list.length === 0 && <div className="py-12 text-center text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>暂无账号</div>}
                 {list.map(a => <AccountRowForGroups key={a.no} a={a} isSelected={selectedRow === a.no} recentlyAllocated={recentlyAllocatedNo === a.no} isColumnVisible={isColumnVisible} columnStyle={columnStyle} visibleTableWidth={visibleTableWidth} risk={getAccountRisk(a)} cols={cols}
                   onToggleSelect={() => toggleRow(a.no)} checked={selectedRows.includes(a.no)}
-                  onAdvance={() => a.lifecycleStage === "assigned_to_project"
-                    ? setPendingAllocationConfirm({ kind: "assign_to_person", account: a })
-                    : advanceLifecycle(a.no)}
+                  onAdvance={() => advanceLifecycle(a.no)}
                   onHandover={() => startHandoverApproval(a.no)}
                   onRecycle={() => recycleAccount(a.no)}
                   onArchive={() => archiveAccount(a.no)}
-                  onAllocate={() => setPendingAllocationConfirm({ kind: "allocate", account: a })}
+                  onAllocate={() => setAllocationAccount(a)}
                   onClickRow={() => selectedRow === a.no ? setSelectedRow(null) : openAccountDetail(a.no)}
                 />)}
               </div>
@@ -2696,7 +2556,7 @@ const [search, setSearch] = useState("");
                       onHandover={() => startHandoverApproval(a.no)}
                       onRecycle={() => recycleAccount(a.no)}
                       onArchive={() => archiveAccount(a.no)}
-                      onAllocate={() => setPendingAllocationConfirm({ kind: "allocate", account: a })}
+                      onAllocate={() => setAllocationAccount(a)}
                       onClickRow={() => selectedRow === a.no ? setSelectedRow(null) : openAccountDetail(a.no)}
                     />)}
                   </div>}
