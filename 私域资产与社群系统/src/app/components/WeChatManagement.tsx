@@ -644,6 +644,67 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
   };
   const [newGroupType, setNewGroupType] = useState("");
   const [groupTypeOpen, setGroupTypeOpen] = useState(false);
+
+  // ── 群类型规则创建/编辑弹窗（完整版 9 字段）────────────────────────────
+  // 新建：gtEditorOption = null；编辑：gtEditorOption = 被编辑 option 的 code 对应值
+  type GroupRuleForm = {
+    name: string; tier: "引流" | "培育" | "转化" | "交付" | "服务" | "IP私域";
+    capacity: number; allocationMode: "轮巡分配" | "班主任分配" | "统一分配" | "大区分发";
+    memberRoles: string[]; cities: string[]; nameTemplate: string;
+    entryCondition: string; retentionGoal: string; weeklyOps: string;
+  };
+  const [gtEditorOpen, setGtEditorOpen] = useState(false);
+  const [gtEditorEditingCode, setGtEditorEditingCode] = useState<string | null>(null); // null=新建
+  const blankGtForm = (): GroupRuleForm => ({
+    name: "", tier: "培育", capacity: 200, allocationMode: "轮巡分配",
+    memberRoles: ["待配置角色"], cities: ["全国"],
+    nameTemplate: `{project}·{type}·{seq}群`,
+    entryCondition: "", retentionGoal: "", weeklyOps: "",
+  });
+  const [gtForm, setGtForm] = useState<GroupRuleForm>(blankGtForm());
+  const [gtFormNewRole, setGtFormNewRole] = useState("");
+  const openNewGroupRuleEditor = () => {
+    setGtEditorEditingCode(null);
+    setGtForm(blankGtForm());
+    setGtEditorOpen(true);
+    setGroupTypeOpen(false);
+  };
+  const openEditGroupRuleEditor = (option: GroupTypeOption) => {
+    setGtEditorEditingCode(option.code);
+    setGtForm({
+      name: option.name,
+      tier: (option.tier || "培育") as GroupRuleForm["tier"],
+      capacity: option.capacity ?? 200,
+      allocationMode: (option.allocationMode || "轮巡分配") as GroupRuleForm["allocationMode"],
+      memberRoles: [...(option.memberRoles || ["待配置角色"])],
+      cities: [...(option.cities || ["全国"])],
+      nameTemplate: option.nameTemplate || `{project}·{type}·{seq}群`,
+      entryCondition: option.entryCondition || "",
+      retentionGoal: option.retentionGoal || "",
+      weeklyOps: option.weeklyOps || "",
+    });
+    setGtEditorOpen(true);
+    setGroupTypeOpen(false);
+  };
+  const saveGtEditor = () => {
+    const name = gtForm.name.trim();
+    if (!name) return;
+    if (gtEditorEditingCode) {
+      // 编辑模式：更新已有 option
+      setGroupTypeOptions(current => current.map(opt => opt.code === gtEditorEditingCode ? {
+        ...opt, ...gtForm, name
+      } as GroupTypeOption : opt));
+    } else {
+      // 新建模式：生成 code，追加到当前模板下的自定义区
+      const customIndex = groupTypeOptions.filter(o => o.code.startsWith("CUSTOM")).length + 1;
+      const newCode = `CUSTOM${String(customIndex).padStart(2, "0")}`;
+      const newOption: GroupTypeOption = { id: `custom-${Date.now()}`, code: newCode, ...gtForm, name };
+      setGroupTypeOptions(current => [...current, newOption]);
+      set("groupType", name); // 新建后自动选中
+    }
+    setGtEditorOpen(false);
+  };
+
   const [accountTypeOpen, setAccountTypeOpen] = useState(false);
   const [accountTypeOptions, setAccountTypeOptions] = useState(() => ["招商号", "客服号", "运营号"].map((name, index) => ({ id: `system-${index}`, name, system: true })));
   const [newAccountType, setNewAccountType] = useState("");
@@ -694,11 +755,336 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
     onSave({ project: draft.project, opsManager: draft.opsManager, serviceOfficer: draft.opsManager, city: draft.city, region: selectedRegionName, accountType: draft.accountType || "待配置", groupType: draft.groupType, groupCount: selectedCount, groupQrNames: qrNames, status: assigned ? "使用中" : "未使用", targetGroup: assigned ? `${draft.city}${draft.groupType}群01` : "待分配", targetGroupCount: selectedCount });
     onClose();
   };
-  return <div className="fixed inset-0 z-50 flex items-center justify-center p-3" style={{ background: "rgba(0,0,0,0.5)" }}>
+  return <>
+    {/* ── 群类型规则编辑器弹窗（新建/编辑，9 字段完整表单）── */}
+    {gtEditorOpen && createPortal(
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.55)" }}>
+        <div className="w-[min(880px,calc(100vw-32px))] max-h-[92vh] overflow-hidden flex flex-col"
+          style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, boxShadow: "0 24px 70px rgba(0,0,0,0.22)" }}>
+          {/* 标题栏 */}
+          <div className="flex items-center justify-between px-5 py-3.5 flex-shrink-0"
+            style={{ borderBottom: `1px solid ${S.border}`, background: gtEditorEditingCode ? "#fefce8" : "#eff6ff" }}>
+            <div>
+              <div className="text-sm font-bold inline-flex items-center gap-1.5" style={{ fontFamily: "monospace" }}>
+                {gtEditorEditingCode ? (
+                  <span style={{ color: "#854d0e" }}>✎ 编辑群类型规则 · {gtEditorEditingCode}</span>
+                ) : (
+                  <span style={{ color: "#1d4ed8" }}>✚ 新建群类型规则</span>
+                )}
+              </div>
+              <div className="text-[11px] mt-1" style={{ color: S.muted }}>
+                {gtEditorEditingCode
+                  ? "修改已创建的自定义规则（保存后立即生效到分配表单的预览区与详情卡）"
+                  : `填入完整 9 个字段 → 保存后自动追加到【当前模板源：${templateProject || draft.project || "未选择项目"}】下方，并自动设为已选群类型`}
+              </div>
+            </div>
+            <button type="button" aria-label="关闭规则编辑器" onClick={() => setGtEditorOpen(false)}>
+              <X size={16} style={{ color: S.muted }} />
+            </button>
+          </div>
+
+          {/* 表单体 */}
+          <div className="overflow-y-auto p-5 space-y-4">
+            {/* 第 1 行：群名称 + 所属漏斗层级（2 列，必填） */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="block">
+                <span className="block mb-1 text-xs font-semibold" style={{ color: S.text }}>① 群类型名称 <span style={{ color: "#dc2626" }}>*</span></span>
+                <input className="w-full px-3 py-2 text-sm outline-none" value={gtForm.name}
+                  onChange={e => setGtForm(cur => ({ ...cur, name: e.target.value }))}
+                  placeholder="例：618 大促专属转化群 / 老板私董邀约群"
+                  style={{ ...inputStyle, fontWeight: 600, fontFamily: "monospace" }} />
+              </label>
+              <div className="block">
+                <span className="block mb-1 text-xs font-semibold" style={{ color: S.text }}>② 所属漏斗层级 <span style={{ color: "#dc2626" }}>*</span></span>
+                <div className="flex flex-wrap gap-1.5">
+                  {(["引流", "培育", "转化", "交付", "服务", "IP私域"] as const).map(tier => {
+                    const c = tierColorMap[tier];
+                    const active = gtForm.tier === tier;
+                    return (
+                      <button key={tier} type="button"
+                        onClick={() => setGtForm(cur => ({ ...cur, tier }))}
+                        className="px-2.5 py-1.5 text-[11px] inline-flex items-center gap-1"
+                        style={{
+                          background: active ? c.bg : S.surface,
+                          color: active ? c.color : S.textSec,
+                          border: `1px solid ${active ? c.border : S.border}`,
+                          borderRadius: 999,
+                          fontWeight: active ? 700 : 500,
+                          fontFamily: "monospace",
+                        }}>
+                        <span style={{ width: 6, height: 6, background: c.dot, borderRadius: 99 }} />
+                        {tier}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* 第 2 行：单群容量 + 分配方式 */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <label className="block">
+                <span className="block mb-1 text-xs font-semibold" style={{ color: S.text }}>③ 单群容量（人）</span>
+                <input type="number" min={10} max={2000} step={10}
+                  className="w-full px-3 py-2 text-sm outline-none"
+                  value={gtForm.capacity}
+                  onChange={e => setGtForm(cur => ({ ...cur, capacity: Math.max(10, Number(e.target.value) || 0) }))}
+                  style={inputStyle} />
+              </label>
+              <label className="block">
+                <span className="block mb-1 text-xs font-semibold" style={{ color: S.text }}>④ 分配方式</span>
+                <select className="w-full px-3 py-2 text-sm outline-none" style={inputStyle}
+                  value={gtForm.allocationMode}
+                  onChange={e => setGtForm(cur => ({ ...cur, allocationMode: e.target.value as any }))}>
+                  <option>轮巡分配</option>
+                  <option>班主任分配</option>
+                  <option>统一分配</option>
+                  <option>大区分发</option>
+                </select>
+              </label>
+            </div>
+
+            {/* 第 3 行：群对象（memberRoles）—— 动态标签增删 + 适用地区（胶囊多选）*/}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <span className="block mb-1 text-xs font-semibold" style={{ color: S.text }}>⑤ 群对象（memberRoles）</span>
+                <div className="p-2.5 space-y-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                  <div className="flex flex-wrap gap-1">
+                    {gtForm.memberRoles.length === 0 && <span className="text-[11px]" style={{ color: S.muted }}>（还没有群对象标签，下方输入框新增）</span>}
+                    {gtForm.memberRoles.map((role, idx) => (
+                      <span key={role + idx} className="group inline-flex items-center gap-1 px-2 py-0.5 text-[11px]"
+                        style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: 999, fontFamily: "monospace" }}>
+                        {role}
+                        <button type="button" onClick={() => setGtForm(cur => ({ ...cur, memberRoles: cur.memberRoles.filter((_, i) => i !== idx) }))}
+                          className="text-[9px]" title={`删除${role}`} aria-label={`删除${role}`}>
+                          <X size={10} style={{ color: S.muted }} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex gap-1">
+                    <input className="min-w-0 flex-1 px-2 py-1.5 text-[11px] outline-none" style={inputStyle}
+                      placeholder="例：老学员铁粉 / 健身教练用户 / 付费意向客户"
+                      value={gtFormNewRole}
+                      onChange={e => setGtFormNewRole(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key !== "Enter") return;
+                        const v = gtFormNewRole.trim(); if (!v) return;
+                        setGtForm(cur => ({ ...cur, memberRoles: [...cur.memberRoles, v] }));
+                        setGtFormNewRole("");
+                      }} />
+                    <button type="button" className="px-2.5 py-1.5 text-[11px] font-medium flex-shrink-0"
+                      style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accent}`, borderRadius: S.radiusSm }}
+                      onClick={() => {
+                        const v = gtFormNewRole.trim(); if (!v) return;
+                        setGtForm(cur => ({ ...cur, memberRoles: [...cur.memberRoles, v] }));
+                        setGtFormNewRole("");
+                      }}>+</button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <span className="block mb-1 text-xs font-semibold" style={{ color: S.text }}>⑥ 适用地区（常用城市胶囊，点选）</span>
+                <div className="p-2.5 space-y-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                  <div className="flex flex-wrap gap-1">
+                    {gtForm.cities.length === 0 && <span className="text-[11px]" style={{ color: S.muted }}>（还没选地区，建议至少选 1 个）</span>}
+                    {gtForm.cities.map(city => (
+                      <span key={city} className="group inline-flex items-center gap-1 px-2 py-0.5 text-[11px]"
+                        style={{ background: "#dbeafe", color: "#1e3a8a", border: "1px solid #93c5fd", borderRadius: 6, fontFamily: "monospace" }}>
+                        📍 {city}
+                        <button type="button" title={`删除${city}`} aria-label={`删除${city}`}
+                          onClick={() => setGtForm(cur => ({ ...cur, cities: cur.cities.filter(c => c !== city) }))}>
+                          <X size={10} style={{ color: "#1e3a8a" }} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-1 pt-1" style={{ borderTop: `1px dashed ${S.border}` }}>
+                    <span className="text-[10px] py-0.5" style={{ color: S.muted }}>常用：</span>
+                    {["全国", "北京市", "上海市", "广州市", "深圳市", "杭州市", "成都市", "武汉市", "西安市"].map(city => {
+                      const chosen = gtForm.cities.includes(city);
+                      return <button key={city} type="button"
+                        disabled={chosen}
+                        onClick={() => setGtForm(cur => ({ ...cur, cities: [...cur.cities, city] }))}
+                        className="px-2 py-0.5 text-[10px]"
+                        style={{
+                          opacity: chosen ? 0.4 : 1,
+                          background: chosen ? S.surface : "#eff6ff",
+                          color: chosen ? S.muted : "#1e3a8a",
+                          border: `1px solid ${chosen ? S.border : "#bfdbfe"}`,
+                          borderRadius: 6, fontFamily: "monospace",
+                        }}>{chosen ? "✓ " : "+ "}{city}</button>;
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 第 4 行：命名模板 */}
+            <div>
+              <div className="flex items-end justify-between mb-1">
+                <span className="text-xs font-semibold" style={{ color: S.text }}>⑦ 命名模板</span>
+                <span className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>
+                  可用占位符：{`{project}`} 项目 · {`{type}`} 类型名 · {`{teacher}`} 班主任 · {`{city}`} 首地区 · {`{seq}`} 序号
+                </span>
+              </div>
+              <input className="w-full px-3 py-2 text-sm outline-none" style={inputStyle}
+                value={gtForm.nameTemplate}
+                onChange={e => setGtForm(cur => ({ ...cur, nameTemplate: e.target.value }))}
+                placeholder="{project}·{type}·{city}群{seq}" />
+            </div>
+
+            {/* 第 5 行：入群条件（左）/ 运营目标（右）/ 每周 SOP（底满宽） */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <span className="block mb-1 text-xs font-semibold" style={{ color: "#9a3412" }}>⑧·1 🚪 入群条件</span>
+                <textarea rows={3} className="w-full px-3 py-2 text-sm outline-none resize-none"
+                  style={{ ...inputStyle, background: "#fff7ed", borderColor: "#fed7aa" }}
+                  value={gtForm.entryCondition}
+                  placeholder="例：学完至少 2 门正价课 + 分享过 3 次朋友圈 + 愿当种子用户"
+                  onChange={e => setGtForm(cur => ({ ...cur, entryCondition: e.target.value }))} />
+              </div>
+              <div>
+                <span className="block mb-1 text-xs font-semibold" style={{ color: "#065f46" }}>⑧·2 🎯 运营目标</span>
+                <textarea rows={3} className="w-full px-3 py-2 text-sm outline-none resize-none"
+                  style={{ ...inputStyle, background: "#ecfdf5", borderColor: "#6ee7b7" }}
+                  value={gtForm.retentionGoal}
+                  placeholder="例：续费率 ≥ 85% · 转介绍率 ≥ 40% · 投诉率 ≤ 2%"
+                  onChange={e => setGtForm(cur => ({ ...cur, retentionGoal: e.target.value }))} />
+              </div>
+            </div>
+            <div>
+              <span className="block mb-1 text-xs font-semibold" style={{ color: "#9d174d" }}>⑨ 📅 每周 SOP 节奏</span>
+              <textarea rows={3} className="w-full px-3 py-2 text-sm outline-none resize-none"
+                style={{ ...inputStyle, background: "#fdf2f8", borderColor: "#f9a8d4" }}
+                value={gtForm.weeklyOps}
+                placeholder="周一：分享干货；周三：活动报名；周五：抽奖 + 专属福利；周日：复盘内容总结"
+                onChange={e => setGtForm(cur => ({ ...cur, weeklyOps: e.target.value }))} />
+            </div>
+          </div>
+
+          {/* 底部按钮栏 */}
+          <div className="flex items-center justify-between gap-3 px-5 py-3 flex-shrink-0"
+            style={{ borderTop: `1px solid ${S.border}`, background: S.bg }}>
+            <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>
+              {gtEditorEditingCode
+                ? "保存后立即回写到当前分配表单的群类型下拉 / 预览胶囊 / 详情卡"
+                : "保存后立即追加到当前【项目模板：" + (templateProject || "—") + "】的自定义区，并自动设为当前已选群类型"}
+            </div>
+            <div className="flex gap-2">
+              <button type="button" onClick={() => setGtEditorOpen(false)}
+                className="px-4 py-2 text-sm font-medium"
+                style={{ background: S.surface, color: S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}>取消</button>
+              <button type="button" onClick={saveGtEditor}
+                disabled={!gtForm.name.trim()}
+                className="px-5 py-2 text-sm font-bold"
+                style={{
+                  background: gtForm.name.trim() ? S.primary : "#d1d5db",
+                  color: "#ffffff",
+                  borderRadius: S.radius,
+                  opacity: gtForm.name.trim() ? 1 : 0.6,
+                  cursor: gtForm.name.trim() ? "pointer" : "not-allowed",
+                }}>
+                {gtEditorEditingCode ? "✎ 保存修改" : "✚ 创建并选中此规则"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>,
+      document.body
+    )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3" style={{ background: "rgba(0,0,0,0.5)" }}>
     <div className="w-[min(1180px,calc(100vw-24px))] max-h-[94vh] overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, boxShadow: "0 20px 60px rgba(0,0,0,0.18)" }}>
       <div className="flex items-center justify-between px-6 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f1f5f9" }}><div><div className="font-semibold">分配微信号</div><div className="text-xs mt-1" style={{ color: S.muted }}>为 {account.wechatId} 配置项目归属、群类型和微信群位；账号类型与微信群数可暂不设置</div></div><button type="button" aria-label="关闭微信号分配" onClick={onClose}><X size={16} style={{ color: S.muted }} /></button></div>
       <div className="overflow-y-auto p-6 space-y-5">
-        <section className="space-y-3"><div className="flex items-center gap-2 text-sm font-bold border-b pb-2" style={{ borderColor: S.border }}><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />微信号分配</div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"><label className="block"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属项目 *</span><select className="w-full px-2.5 py-2 text-xs outline-none" value={draft.project} onChange={event => set("project", event.target.value)} style={inputStyle}><option value="">请选择</option>{projectOptions.map(value => <option key={value}>{value}</option>)}</select></label><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属员工 *</span><button type="button" className="w-full px-2.5 py-2 text-xs text-left" onClick={() => setEmployeeOpen(value => !value)} style={{ ...inputStyle, color: draft.opsManager ? S.text : S.muted }}>{draft.opsManager || "请选择已启用员工"}</button>{employeeOpen && <div className="absolute left-0 right-0 top-[58px] z-40 p-2 max-h-56 overflow-auto" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 10px 24px rgba(15,23,42,0.12)" }}><div className="flex gap-1 mb-2 overflow-x-auto">{employeeDepartments.map(department => <button key={department} type="button" className="px-2 py-1 text-[10px] whitespace-nowrap" onClick={() => setActiveDepartment(department)} style={{ background: activeDepartment === department ? S.primary : S.bg, color: activeDepartment === department ? "#ffffff" : S.muted, borderRadius: S.radiusSm }}>{department}</button>)}</div>{employeeRecords.filter(record => record.department === activeDepartment).map(record => <button key={record.name} type="button" className="block w-full px-2 py-1.5 text-left text-xs hover:bg-lime-50" onClick={() => { set("opsManager", record.name); setEmployeeOpen(false); }}>{record.name}</button>)}</div>}</div><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属地区 *</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => { setRegionOpen(value => !value); setTemplateOpen(false); }} style={inputStyle}><span className="truncate" style={{ color: draft.city ? S.text : S.muted }}>{draft.city || "请选择地区"}</span><ChevronDown size={13} style={{ color: S.muted, transform: regionOpen ? "rotate(180deg)" : undefined }} /></button>{regionOpen && <div className="absolute left-0 top-[58px] z-40 w-[720px] max-w-[calc(100vw-48px)] p-2" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}><div className="flex gap-2"><div className="w-40 flex-shrink-0 space-y-1">{regionCategories.map(category => <div key={category.id} className="group flex items-center gap-1">{editingRegionId === category.id ? <input autoFocus value={editingRegionName} onChange={event => setEditingRegionName(event.target.value)} onBlur={saveRegionName} onKeyDown={event => { if (event.key === "Enter") saveRegionName(); }} className="min-w-0 flex-1 px-2 py-1.5 text-xs outline-none" style={inputStyle} /> : <button type="button" className="flex-1 px-2 py-1.5 text-left text-xs truncate" onClick={() => { setActiveRegionId(category.id); setTemplateOpen(false); setActiveProvince(category.provinces[0] || provinceOptions[0]); set("city", (regionCitySelections[category.id] || category.provinces).join(" / ")); }} style={{ background: activeRegionId === category.id ? S.primary : S.bg, color: activeRegionId === category.id ? "#ffffff" : S.textSec, borderRadius: S.radiusSm }}>{category.name}</button>}{!category.system && <div className="flex items-center opacity-0 group-hover:opacity-100"><button type="button" title={`编辑${category.name}`} aria-label={`编辑${category.name}`} className="px-1" onClick={() => beginEditRegion(category)}><Edit3 size={11} style={{ color: S.muted }} /></button><button type="button" title={`删除${category.name}`} aria-label={`删除${category.name}`} className="px-1" onClick={() => removeRegion(category.id)}><X size={11} style={{ color: S.muted }} /></button></div>}</div>)}<div className="flex gap-1 pt-1"><input value={newRegionName} onChange={event => setNewRegionName(event.target.value)} placeholder="新增分类" className="min-w-0 flex-1 px-2 py-1 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增地区分类" aria-label="新增地区分类" className="px-2" onClick={addRegion} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>{activeRegionId ? <><div className="w-40 flex-shrink-0 p-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="mb-1 flex items-center justify-between text-[10px] font-semibold" style={{ color: S.muted }}><span>选择省份</span>{!activeRegion.system && <span>{activeRegion.provinces.length} 已选</span>}</div>{activeRegion.system ? <div className="text-[10px] leading-relaxed" style={{ color: S.muted }}>系统分类“{activeRegion.name}”自动接收未匹配地址。</div> : <div className="space-y-1 max-h-52 overflow-auto">{provinceOptions.map(province => { const owner = claimedProvinceOwners[province]; return (<label key={province} className="flex items-start gap-1 text-[10px]" style={{ color: owner ? S.muted : S.textSec, opacity: owner ? 0.72 : 1 }}><input type="checkbox" checked={activeRegion.provinces.includes(province)} disabled={Boolean(owner)} onChange={event => { if (owner) return; updateRegion(activeRegion.id, event.target.checked ? [...activeRegion.provinces, province] : activeRegion.provinces.filter(item => item !== province)); if (event.target.checked) setActiveProvince(province); }} /><span className="min-w-0 flex-1">{province}</span>{owner && <span className="whitespace-nowrap text-[9px]" style={{ color: S.muted }}>已选·{owner}</span>}</label>); })}</div>}</div>{!activeRegion.system && activeProvinceSelected && <div className="flex-1 min-w-0 p-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="mb-1 text-[10px] font-semibold" style={{ color: S.muted }}>选择城市 · {activeProvince}</div><div className="space-y-1 max-h-52 overflow-auto">{(cityOptionsByProvince[activeProvince] || ["全省"]).map(city => <label key={city} className="flex items-center gap-1 text-[10px]" style={{ color: S.textSec }}><input type="checkbox" checked={(regionCitySelections[activeRegion.id] || []).includes(city)} onChange={event => updateRegionCities(activeRegion.id, activeProvince, event.target.checked ? [...(regionCitySelections[activeRegion.id] || []), city] : (regionCitySelections[activeRegion.id] || []).filter(item => item !== city))} />{city}</label>)}</div></div>}</> : null}</div><div className="mt-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}><div className="flex items-center gap-2"><span className="text-[10px] font-semibold" style={{ color: S.muted }}>销售市场模板</span><div className="relative"><button type="button" disabled={!activeRegionId || activeRegion.system} onClick={() => setTemplateOpen(value => !value)} className="flex items-center gap-2 px-2 py-1 text-[10px]" style={{ background: S.bg, border: `1px solid ${S.border}`, color: activeRegionId && !activeRegion.system ? S.textSec : S.muted, borderRadius: S.radiusSm, opacity: !activeRegionId || activeRegion.system ? 0.5 : 1 }}><span>{regionTemplates.find(template => template.id === regionTemplateSelections[activeRegionId || ""])?.name || "选择市场模板"}</span><ChevronDown size={11} style={{ transform: templateOpen ? "rotate(180deg)" : undefined }} /></button>{templateOpen && activeRegionId && !activeRegion.system && <div className="absolute left-0 top-full mt-1 z-50 w-40 p-1" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 10px 24px rgba(0,0,0,0.14)" }}>{regionTemplates.map(template => <button key={template.id} type="button" className="block w-full px-2 py-1.5 text-left text-[10px]" onClick={() => applyRegionTemplate(template)} style={{ background: regionTemplateSelections[activeRegionId] === template.id ? S.accentLight : S.surface, color: S.textSec, borderRadius: S.radiusSm }}>{template.name}</button>)}</div>}</div></div></div></div>}</div><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>微信号类型</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => setAccountTypeOpen(value => !value)} style={inputStyle}><span className="truncate" style={{ color: draft.accountType ? S.text : S.muted }}>{draft.accountType || "暂不设置，领用时配置"}</span><ChevronDown size={13} style={{ color: S.muted, transform: accountTypeOpen ? "rotate(180deg)" : undefined }} /></button>{accountTypeOpen && <div className="absolute left-0 right-0 top-[58px] z-30 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}><button type="button" className="w-full px-3 py-2 text-left text-[10px]" onClick={() => { set("accountType", ""); setAccountTypeOpen(false); }} style={{ color: S.muted, borderBottom: `1px solid ${S.border}` }}>暂不设置，领用时配置</button>{accountTypeOptions.map(option => <div key={option.id} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}><button type="button" className="flex-1 px-3 py-2 text-left text-xs" onClick={() => { set("accountType", option.name); setAccountTypeOpen(false); }} style={{ color: draft.accountType === option.name ? S.text : S.textSec, background: draft.accountType === option.name ? S.accentLight : S.surface }}>{option.name}</button>{!option.system && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-2 opacity-0 group-hover:opacity-100" onClick={() => { setAccountTypeOptions(current => current.filter(item => item.id !== option.id)); if (draft.accountType === option.name) set("accountType", ""); }}><X size={12} style={{ color: S.muted }} /></button>}</div>)}<div className="flex items-center gap-1 p-2" style={{ background: S.bg }}><input value={newAccountType} onChange={event => setNewAccountType(event.target.value)} onKeyDown={event => { if (event.key === "Enter") addAccountType(); }} placeholder="新增微信号类型" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增微信号类型" aria-label="新增微信号类型" className="w-7 h-7 grid place-items-center flex-shrink-0" onClick={addAccountType} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>}</div><label className="block"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>微信群数</span><input type="number" min={0} max={100} value={groupCount} onChange={event => updateGroupCount(Number(event.target.value))} className="w-full px-2.5 py-2 text-xs outline-none" style={inputStyle} /></label><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>群类型 *</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => setGroupTypeOpen(value => !value)} style={inputStyle}><span className="truncate" style={{ color: draft.groupType ? S.text : S.muted }}>{draft.groupType || "请选择群类型"}</span><ChevronDown size={13} style={{ color: S.muted, transform: groupTypeOpen ? "rotate(180deg)" : undefined }} /></button>{groupTypeOpen && <div className="absolute left-0 right-0 top-[58px] z-30 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}>{groupTypeOptions.map(option => <div key={option.code} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}><button type="button" className="flex-1 px-3 py-2 text-left text-xs" onClick={() => { set("groupType", option.name); setGroupTypeOpen(false); }} style={{ color: draft.groupType === option.name ? S.text : S.textSec, background: draft.groupType === option.name ? S.accentLight : S.surface }}>{option.name} · {option.code}</button>{!defaultGroupTypeRules.some(rule => rule.code === option.code) && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-2 opacity-0 group-hover:opacity-100" onClick={() => { setGroupTypeOptions(current => current.filter(item => item.code !== option.code)); if (draft.groupType === option.name) set("groupType", ""); }}><X size={12} style={{ color: S.muted }} /></button>}</div>)}<div className="flex items-center gap-1 p-2" style={{ background: S.bg }}><input value={newGroupType} onChange={event => setNewGroupType(event.target.value)} onKeyDown={event => { if (event.key === "Enter") addGroupType(); }} placeholder="新增群类型" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增群类型" aria-label="新增群类型" className="w-7 h-7 grid place-items-center flex-shrink-0" onClick={addGroupType} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>}</div></div></section>
+        <section className="space-y-3"><div className="flex items-center gap-2 text-sm font-bold border-b pb-2" style={{ borderColor: S.border }}><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />微信号分配</div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"><label className="block"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属项目 *</span><select className="w-full px-2.5 py-2 text-xs outline-none" value={draft.project} onChange={event => set("project", event.target.value)} style={inputStyle}><option value="">请选择</option>{projectOptions.map(value => <option key={value}>{value}</option>)}</select></label><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属员工 *</span><button type="button" className="w-full px-2.5 py-2 text-xs text-left" onClick={() => setEmployeeOpen(value => !value)} style={{ ...inputStyle, color: draft.opsManager ? S.text : S.muted }}>{draft.opsManager || "请选择已启用员工"}</button>{employeeOpen && <div className="absolute left-0 right-0 top-[58px] z-40 p-2 max-h-56 overflow-auto" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 10px 24px rgba(15,23,42,0.12)" }}><div className="flex gap-1 mb-2 overflow-x-auto">{employeeDepartments.map(department => <button key={department} type="button" className="px-2 py-1 text-[10px] whitespace-nowrap" onClick={() => setActiveDepartment(department)} style={{ background: activeDepartment === department ? S.primary : S.bg, color: activeDepartment === department ? "#ffffff" : S.muted, borderRadius: S.radiusSm }}>{department}</button>)}</div>{employeeRecords.filter(record => record.department === activeDepartment).map(record => <button key={record.name} type="button" className="block w-full px-2 py-1.5 text-left text-xs hover:bg-lime-50" onClick={() => { set("opsManager", record.name); setEmployeeOpen(false); }}>{record.name}</button>)}</div>}</div><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属地区 *</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => { setRegionOpen(value => !value); setTemplateOpen(false); }} style={inputStyle}><span className="truncate" style={{ color: draft.city ? S.text : S.muted }}>{draft.city || "请选择地区"}</span><ChevronDown size={13} style={{ color: S.muted, transform: regionOpen ? "rotate(180deg)" : undefined }} /></button>{regionOpen && <div className="absolute left-0 top-[58px] z-40 w-[720px] max-w-[calc(100vw-48px)] p-2" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}><div className="flex gap-2"><div className="w-40 flex-shrink-0 space-y-1">{regionCategories.map(category => <div key={category.id} className="group flex items-center gap-1">{editingRegionId === category.id ? <input autoFocus value={editingRegionName} onChange={event => setEditingRegionName(event.target.value)} onBlur={saveRegionName} onKeyDown={event => { if (event.key === "Enter") saveRegionName(); }} className="min-w-0 flex-1 px-2 py-1.5 text-xs outline-none" style={inputStyle} /> : <button type="button" className="flex-1 px-2 py-1.5 text-left text-xs truncate" onClick={() => { setActiveRegionId(category.id); setTemplateOpen(false); setActiveProvince(category.provinces[0] || provinceOptions[0]); set("city", (regionCitySelections[category.id] || category.provinces).join(" / ")); }} style={{ background: activeRegionId === category.id ? S.primary : S.bg, color: activeRegionId === category.id ? "#ffffff" : S.textSec, borderRadius: S.radiusSm }}>{category.name}</button>}{!category.system && <div className="flex items-center opacity-0 group-hover:opacity-100"><button type="button" title={`编辑${category.name}`} aria-label={`编辑${category.name}`} className="px-1" onClick={() => beginEditRegion(category)}><Edit3 size={11} style={{ color: S.muted }} /></button><button type="button" title={`删除${category.name}`} aria-label={`删除${category.name}`} className="px-1" onClick={() => removeRegion(category.id)}><X size={11} style={{ color: S.muted }} /></button></div>}</div>)}<div className="flex gap-1 pt-1"><input value={newRegionName} onChange={event => setNewRegionName(event.target.value)} placeholder="新增分类" className="min-w-0 flex-1 px-2 py-1 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增地区分类" aria-label="新增地区分类" className="px-2" onClick={addRegion} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>{activeRegionId ? <><div className="w-40 flex-shrink-0 p-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="mb-1 flex items-center justify-between text-[10px] font-semibold" style={{ color: S.muted }}><span>选择省份</span>{!activeRegion.system && <span>{activeRegion.provinces.length} 已选</span>}</div>{activeRegion.system ? <div className="text-[10px] leading-relaxed" style={{ color: S.muted }}>系统分类“{activeRegion.name}”自动接收未匹配地址。</div> : <div className="space-y-1 max-h-52 overflow-auto">{provinceOptions.map(province => { const owner = claimedProvinceOwners[province]; return (<label key={province} className="flex items-start gap-1 text-[10px]" style={{ color: owner ? S.muted : S.textSec, opacity: owner ? 0.72 : 1 }}><input type="checkbox" checked={activeRegion.provinces.includes(province)} disabled={Boolean(owner)} onChange={event => { if (owner) return; updateRegion(activeRegion.id, event.target.checked ? [...activeRegion.provinces, province] : activeRegion.provinces.filter(item => item !== province)); if (event.target.checked) setActiveProvince(province); }} /><span className="min-w-0 flex-1">{province}</span>{owner && <span className="whitespace-nowrap text-[9px]" style={{ color: S.muted }}>已选·{owner}</span>}</label>); })}</div>}</div>{!activeRegion.system && activeProvinceSelected && <div className="flex-1 min-w-0 p-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="mb-1 text-[10px] font-semibold" style={{ color: S.muted }}>选择城市 · {activeProvince}</div><div className="space-y-1 max-h-52 overflow-auto">{(cityOptionsByProvince[activeProvince] || ["全省"]).map(city => <label key={city} className="flex items-center gap-1 text-[10px]" style={{ color: S.textSec }}><input type="checkbox" checked={(regionCitySelections[activeRegion.id] || []).includes(city)} onChange={event => updateRegionCities(activeRegion.id, activeProvince, event.target.checked ? [...(regionCitySelections[activeRegion.id] || []), city] : (regionCitySelections[activeRegion.id] || []).filter(item => item !== city))} />{city}</label>)}</div></div>}</> : null}</div><div className="mt-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}><div className="flex items-center gap-2"><span className="text-[10px] font-semibold" style={{ color: S.muted }}>销售市场模板</span><div className="relative"><button type="button" disabled={!activeRegionId || activeRegion.system} onClick={() => setTemplateOpen(value => !value)} className="flex items-center gap-2 px-2 py-1 text-[10px]" style={{ background: S.bg, border: `1px solid ${S.border}`, color: activeRegionId && !activeRegion.system ? S.textSec : S.muted, borderRadius: S.radiusSm, opacity: !activeRegionId || activeRegion.system ? 0.5 : 1 }}><span>{regionTemplates.find(template => template.id === regionTemplateSelections[activeRegionId || ""])?.name || "选择市场模板"}</span><ChevronDown size={11} style={{ transform: templateOpen ? "rotate(180deg)" : undefined }} /></button>{templateOpen && activeRegionId && !activeRegion.system && <div className="absolute left-0 top-full mt-1 z-50 w-40 p-1" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 10px 24px rgba(0,0,0,0.14)" }}>{regionTemplates.map(template => <button key={template.id} type="button" className="block w-full px-2 py-1.5 text-left text-[10px]" onClick={() => applyRegionTemplate(template)} style={{ background: regionTemplateSelections[activeRegionId] === template.id ? S.accentLight : S.surface, color: S.textSec, borderRadius: S.radiusSm }}>{template.name}</button>)}</div>}</div></div></div></div>}</div><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>微信号类型</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => setAccountTypeOpen(value => !value)} style={inputStyle}><span className="truncate" style={{ color: draft.accountType ? S.text : S.muted }}>{draft.accountType || "暂不设置，领用时配置"}</span><ChevronDown size={13} style={{ color: S.muted, transform: accountTypeOpen ? "rotate(180deg)" : undefined }} /></button>{accountTypeOpen && <div className="absolute left-0 right-0 top-[58px] z-30 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}><button type="button" className="w-full px-3 py-2 text-left text-[10px]" onClick={() => { set("accountType", ""); setAccountTypeOpen(false); }} style={{ color: S.muted, borderBottom: `1px solid ${S.border}` }}>暂不设置，领用时配置</button>{accountTypeOptions.map(option => <div key={option.id} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}><button type="button" className="flex-1 px-3 py-2 text-left text-xs" onClick={() => { set("accountType", option.name); setAccountTypeOpen(false); }} style={{ color: draft.accountType === option.name ? S.text : S.textSec, background: draft.accountType === option.name ? S.accentLight : S.surface }}>{option.name}</button>{!option.system && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-2 opacity-0 group-hover:opacity-100" onClick={() => { setAccountTypeOptions(current => current.filter(item => item.id !== option.id)); if (draft.accountType === option.name) set("accountType", ""); }}><X size={12} style={{ color: S.muted }} /></button>}</div>)}<div className="flex items-center gap-1 p-2" style={{ background: S.bg }}><input value={newAccountType} onChange={event => setNewAccountType(event.target.value)} onKeyDown={event => { if (event.key === "Enter") addAccountType(); }} placeholder="新增微信号类型" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增微信号类型" aria-label="新增微信号类型" className="w-7 h-7 grid place-items-center flex-shrink-0" onClick={addAccountType} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>}</div><label className="block"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>微信群数</span><input type="number" min={0} max={100} value={groupCount} onChange={event => updateGroupCount(Number(event.target.value))} className="w-full px-2.5 py-2 text-xs outline-none" style={inputStyle} /></label>
+{/* 群类型：主交互是 下拉(flex-1) + 新建按钮(显式)，不再藏在下拉底部 */}
+<div className="col-span-1 sm:col-span-2 lg:col-span-1">
+  <div className="flex items-start gap-2">
+    <div className="relative flex-1 min-w-0">
+      <span className="block mb-1.5 text-xs" style={{ color: S.muted }}>群类型 *</span>
+      <button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => setGroupTypeOpen(value => !value)} style={inputStyle}>
+        <span className="truncate" style={{ color: draft.groupType ? S.text : S.muted }}>{draft.groupType || "请选择群类型"}</span>
+        <ChevronDown size={13} style={{ color: S.muted, transform: groupTypeOpen ? "rotate(180deg)" : undefined }} />
+      </button>
+      {groupTypeOpen && (
+        <div className="absolute left-0 right-0 top-[58px] z-30 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}>
+          {/* 顶部：系统内置 / 自定义 两栏分组 + 头部信息 */}
+          <div className="px-2.5 py-1.5 text-[10px] border-b flex items-center justify-between"
+            style={{ background: S.bg, color: S.muted, fontFamily: "monospace", borderColor: S.border }}>
+            <span>共 {groupTypeOptions.length} 条（{groupTypeOptions.filter(o => defaultGroupTypeRules.some(r => r.code === o.code)).length} 系统 + {groupTypeOptions.filter(o => !defaultGroupTypeRules.some(r => r.code === o.code)).length} 自定义）</span>
+            <button type="button" className="font-semibold" onClick={openNewGroupRuleEditor}
+              style={{ color: S.text }}>
+              + 完整创建（9 字段）
+            </button>
+          </div>
+          {groupTypeOptions.map(option => {
+            const isSystem = defaultGroupTypeRules.some(rule => rule.code === option.code);
+            const c = tierColorMap[(option.tier || "培育") as keyof typeof tierColorMap];
+            return (
+              <div key={option.code} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}>
+                <button type="button" className="flex-1 px-3 py-2 text-left text-xs flex items-center gap-1.5"
+                  onClick={() => { set("groupType", option.name); setGroupTypeOpen(false); }}
+                  style={{
+                    color: draft.groupType === option.name ? S.text : S.textSec,
+                    background: draft.groupType === option.name ? S.accentLight : S.surface
+                  }}>
+                  {!isSystem && <span className="px-1.5 py-0.5 text-[9px] font-bold flex-shrink-0 rounded"
+                    style={{ background: "#ecfeff", color: "#0e7490", border: "1px solid #67e8f9", fontFamily: "monospace" }}>
+                    自定义
+                  </span>}
+                  <span style={{ width: 6, height: 6, background: c.dot, borderRadius: 99 }} />
+                  <b>{option.name}</b>
+                  <span className="text-[9px] opacity-70" style={{ fontFamily: "monospace", color: S.muted }}>· {option.code}</span>
+                  <span className="text-[9px] px-1 rounded flex-shrink-0"
+                    style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}`, fontFamily: "monospace" }}>{option.tier || "—"}</span>
+                </button>
+                <div className="flex items-center opacity-0 group-hover:opacity-100 flex-shrink-0">
+                  {!isSystem && (
+                    <>
+                      <button type="button" title={`编辑 ${option.name} 规则`} aria-label={`编辑 ${option.name} 规则`} className="px-1.5 py-1"
+                        onClick={e => { e.stopPropagation(); openEditGroupRuleEditor(option); }}>
+                        <Edit3 size={11} style={{ color: S.muted }} />
+                      </button>
+                      <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-1.5 py-1"
+                        onClick={e => { e.stopPropagation(); setGroupTypeOptions(current => current.filter(item => item.code !== option.code)); if (draft.groupType === option.name) set("groupType", ""); }}>
+                        <X size={11} style={{ color: S.muted }} />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+          {/* ⚡ 快速新增（极简）：只输入名字，其他全走默认值，作为懒人入口 */}
+          <div className="p-2 space-y-1" style={{ background: S.bg }}>
+            <div className="text-[9px] flex items-center gap-1" style={{ color: S.muted, fontFamily: "monospace" }}>
+              ⚡ <b>快速新增</b>：仅填名字（其他字段默认"培育/200人/轮巡/全国"）
+              <span className="ml-auto opacity-70">需要完整规则点右侧 <b>+ 新建群类型规则</b></span>
+            </div>
+            <div className="flex items-center gap-1">
+              <input value={newGroupType} onChange={event => setNewGroupType(event.target.value)}
+                onKeyDown={event => { if (event.key === "Enter") addGroupType(); }} placeholder="例：双十一大促快闪群"
+                className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={inputStyle} />
+              <button type="button" title="快速新增（仅填名字）" aria-label="快速新增（仅填名字）"
+                className="w-7 h-7 grid place-items-center flex-shrink-0" onClick={addGroupType}
+                style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}>
+                <Plus size={12} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+    <button type="button" onClick={openNewGroupRuleEditor}
+      title="新建群类型规则（填完整9字段：层级/容量/分配方式/群对象/地区/命名模板/入群条件/运营目标/每周SOP）"
+      aria-label="新建群类型规则"
+      className="mt-[18px] px-2.5 py-2 text-[11px] font-bold whitespace-nowrap inline-flex items-center gap-0.5 flex-shrink-0"
+      style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+      <Plus size={12} /> 新建
+    </button>
+  </div>
+</div></div></section>
         <section className="space-y-3">
           <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: S.border }}>
             <div className="flex items-center gap-2 text-sm font-bold flex-wrap">
@@ -818,7 +1204,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
             })}
           </div>
 
-          {/* 群类型胶囊网格：点击切换选中，分层级着色 */}
+          {/* 群类型胶囊网格：点击切换选中，分层级着色；自定义规则旁加「✎ 编辑」小标 */}
           <div className="flex flex-wrap gap-2">
             {groupTypeOptions.map(option => {
               const isSelected = draft.groupType === option.name;
@@ -826,7 +1212,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
               const palette = tier ? tierColorMap[tier] : null;
               const isSystem = defaultGroupTypeRules.some(r => r.code === option.code) || rulesForProject.some(r => r.code === option.code);
               return (
-                <div key={option.code} className="group flex items-center gap-1">
+                <div key={option.code} className="group inline-flex items-center gap-0.5">
                   <button type="button" onClick={() => set("groupType", option.name)}
                     className="px-2.5 py-1.5 text-xs flex items-center gap-1.5"
                     style={{
@@ -837,6 +1223,11 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
                       fontWeight: isSelected ? 700 : 500,
                     }}>
                     {palette && <span style={{ width: 6, height: 6, background: palette.dot, borderRadius: 99 }} />}
+                    {!isSystem && <span title="自定义规则（可编辑）" aria-label="自定义规则"
+                      className="px-1 py-0 text-[9px] font-bold flex-shrink-0 rounded"
+                      style={{ background: "#ecfeff", color: "#0e7490", border: "1px solid #67e8f9", fontFamily: "monospace" }}>
+                      ✎
+                    </span>}
                     <span className="font-semibold">{option.name}</span>
                     <span style={{ opacity: 0.7, fontFamily: "monospace", fontSize: 10 }}>· {option.code}</span>
                     {tier && <span className="text-[9px] px-1 rounded flex-shrink-0"
@@ -844,13 +1235,21 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
                       {tier}
                     </span>}
                   </button>
-                  {!isSystem && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="opacity-0 group-hover:opacity-100"
-                    onClick={() => {
-                      setGroupTypeOptions(current => current.filter(item => item.code !== option.code));
-                      if (draft.groupType === option.name) set("groupType", "");
-                    }}>
-                    <X size={12} style={{ color: S.muted }} />
-                  </button>}
+                  {!isSystem && (
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 flex-shrink-0 ml-0.5">
+                      <button type="button" title={`编辑【${option.name}】完整规则`} aria-label={`编辑${option.name}规则`}
+                        className="px-1.5 py-1" onClick={() => openEditGroupRuleEditor(option)}>
+                        <Edit3 size={11} style={{ color: S.muted }} />
+                      </button>
+                      <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-1.5 py-1"
+                        onClick={() => {
+                          setGroupTypeOptions(current => current.filter(item => item.code !== option.code));
+                          if (draft.groupType === option.name) set("groupType", "");
+                        }}>
+                        <X size={11} style={{ color: S.muted }} />
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -949,7 +1348,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
       </div>
       <div className="flex items-center justify-between gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}><span className="text-[10px]" style={{ color: S.muted }}>项目、员工、地区、群类型必填；账号类型和微信群数可暂不设置</span><div className="flex gap-3"><button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold" style={{ background: S.bg, color: S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}>取消</button><button type="button" onClick={save} className="px-6 py-2.5 text-sm font-bold" style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radius }}>确认分配</button></div></div>
     </div>
-  </div>;
+  </div></>;
 }
 
 // ─── 企业微信数据 ─────────────────────────────────────────────
