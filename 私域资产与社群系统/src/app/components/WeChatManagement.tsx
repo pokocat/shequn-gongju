@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { getAvatar } from "./Avatar";
-import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check } from "lucide-react";
+import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check, PencilLine } from "lucide-react";
 import { useCommunityData } from "../data/communityDataStore";
 import { defaultGroupTypeRules } from "../data/projectGroupRules";
 import { initialProjects, projectStatusBadge } from "../data/communicationTools";
@@ -2284,7 +2284,7 @@ function BadgeKPI({ label, value, bg, color }: { label: string; value: number | 
 }
 function AccountRowForGroups({
   a, isColumnVisible, columnStyle, visibleTableWidth, risk, isSelected, checked,
-  onToggleSelect, onAdvance, onHandover, onRecycle, onArchive, onAllocate, onClickRow,
+  onToggleSelect, onAdvance, onHandover, onRecycle, onArchive, onAllocate, onClickRow, onEdit = onClickRow,
 }: {
   a: PersonalAccount;
   isColumnVisible: (key: string) => boolean;
@@ -2300,6 +2300,7 @@ function AccountRowForGroups({
   onArchive: () => void;
   onAllocate: () => void;
   onClickRow: () => void;
+  onEdit?: () => void;
 }) {
   const lc = lifecycleCfg[a.lifecycleStage];
   const syncLabel = risk.isSyncRisk ? "需核查" : a.status === "未使用" ? "未启用" : "正常";
@@ -2332,62 +2333,47 @@ function AccountRowForGroups({
         <div className="flex-shrink-0" style={columnStyle("sync", { width: 66 })}><span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px]" style={{ background: risk.isSyncRisk ? "#fff7ed" : a.status === "未使用" ? "#f1f5f9" : "#f0fff4", color: syncColor, borderRadius: 999, fontFamily: "monospace" }}>{risk.isSyncRisk && <AlertTriangle size={9} />}{syncLabel}</span></div>
         <div className="flex-shrink-0 text-[10px]" style={columnStyle("updated", { width: 64, color: S.muted, fontFamily: "monospace" })}>{a.lastLogin}</div>
         <div className="flex-shrink-0 flex items-center gap-[3px] whitespace-nowrap" style={columnStyle("action", { width: 128 })}>
-          {/* ═══════ 未发放到人：核心主操作 = [分配] ═══════ */}
-          {(a.lifecycleStage === "registered" || a.lifecycleStage === "nurturing" || a.lifecycleStage === "assigned_to_project") && (
-            <>
-              {/* 养号未通过时显示小字进度提示（只读，系统自动判断） */}
-              {a.lifecycleStage === "nurturing" && !a.nurturing?.pass && (
-                <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px] flex-shrink-0"
-                  style={{ background: "#f3f4f6", color: "#9ca3af", fontFamily: "monospace" }}
-                  title="系统根据注册入库时间自动判断养号期，无需手动操作">
-                  <RefreshCw size={9} style={{ opacity: 0.6 }} />
-                  {a.nurturing?.daysSinceOnboard ?? 0}/7
-                </span>
-              )}
-              {/* assigned_to_project 阶段显示 [发放到人]（作为分配之后的第二步） */}
-              {a.lifecycleStage === "assigned_to_project" ? (
-                <button type="button" title="绑定到具体服务官账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
-                  style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}
-                  onClick={e => { e.stopPropagation(); onAdvance(); }}>
-                  <Users size={10} />发放到人
-                </button>
-              ) : (
-                <button type="button" title="分配到项目/人 — 核心主操作" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
-                  style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}
-                  onClick={e => { e.stopPropagation(); onAllocate(); }}>
-                  <Plus size={10} />分配
-                </button>
-              )}
-            </>
+          {/* 养号未通过时显示小字进度提示（只读，系统自动判断） */}
+          {a.lifecycleStage === "nurturing" && !a.nurturing?.pass && (
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px] flex-shrink-0"
+              style={{ background: "#f3f4f6", color: "#9ca3af", fontFamily: "monospace" }}
+              title="系统根据注册入库时间自动判断养号期，无需手动操作">
+              <RefreshCw size={9} style={{ opacity: 0.6 }} />
+              {a.nurturing?.daysSinceOnboard ?? 0}/7
+            </span>
           )}
 
-          {/* ═══════ 已发放到人：[交接] [回收] [归档] ═══════ */}
-          {a.lifecycleStage === "assigned_to_person" && (
-            <>
-              <button type="button" title="发起交接审批" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
-                style={{ background: "#fffbeb", color: "#92400e", border: "1px solid #fde68a", fontFamily: "monospace" }}
-                onClick={e => { e.stopPropagation(); onHandover(); }}>
-                <ArrowRight size={10} />交接
+          {/* ─── 核心按钮 1: 分配（所有未归档阶段都有）─── */}
+          {a.lifecycleStage !== "archived" && (
+            a.lifecycleStage === "assigned_to_project" ? (
+              <button type="button" title="绑定到具体服务官" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
+                style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}
+                onClick={e => { e.stopPropagation(); onAdvance(); }}>
+                <Users size={10} />发放到人
               </button>
-              <button type="button" title="一键回收账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-semibold rounded-[5px]"
-                style={{ background: "#fef2f2", color: "#b91c1c", border: "1px solid #fecaca", fontFamily: "monospace" }}
-                onClick={e => { e.stopPropagation(); onRecycle(); }}>
-                <RotateCcw size={10} />回收
+            ) : (
+              <button type="button" title={a.lifecycleStage === "assigned_to_person" ? "重新分配到其他项目/人" : "分配到项目/人 — 核心主操作"}
+                className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-bold rounded-[5px]"
+                style={{ background: S.primary, color: S.onPrimary, fontFamily: "monospace" }}
+                onClick={e => { e.stopPropagation(); onAllocate(); }}>
+                <Plus size={10} />分配
               </button>
-              <button type="button" title="归档停用账号" className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-medium rounded-[5px]"
-                style={{ background: S.surface, color: "#4b5563", border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }}
-                onClick={e => { e.stopPropagation(); onArchive(); }}>
-                <History size={10} />归档
-              </button>
-            </>
+            )
           )}
 
-          {/* ═══════ 已归档：只读 ═══════ */}
-          {a.lifecycleStage === "archived" && (
+          {/* ─── 核心按钮 2: 编辑 / 已归档标签 ─── */}
+          {a.lifecycleStage === "archived" ? (
             <span className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] rounded-[5px]"
               style={{ background: "#f3f4f6", color: "#6b7280", fontFamily: "monospace" }}>
               <History size={9} />已归档
             </span>
+          ) : (
+            <button type="button" title="打开详情 / 交接 · 回收 · 归档 等所有操作"
+              className="inline-flex items-center gap-0.5 px-1.5 py-[3px] text-[10px] font-medium rounded-[5px]"
+              style={{ background: S.surface, color: "#374151", border: `1px solid ${S.borderMed}`, fontFamily: "monospace" }}
+              onClick={e => { e.stopPropagation(); onEdit(); }}>
+              <PencilLine size={10} />编辑
+            </button>
           )}
         </div>
       </div>
