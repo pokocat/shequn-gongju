@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check, PencilLine } from "lucide-react";
 import { useCommunityData } from "../data/communityDataStore";
-import { defaultGroupTypeRules } from "../data/projectGroupRules";
+import { defaultGroupTypeRules, getGroupRulesForProject, tierColorMap } from "../data/projectGroupRules";
 import { initialProjects, projectStatusBadge } from "../data/communicationTools";
 import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ─────────────────────────────────────────────────
@@ -426,15 +426,38 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
   const normalizeProvince = (value: string) => provinceOptions.find(province => province.startsWith(value) || value.startsWith(province)) || value;
   const initialAccountCities = account.city !== "—" ? account.city.split(" / ") : [];
   const initialAccountProvinces = initialAccountCities.map(normalizeProvince);
-  const projectOptions = Array.from(new Set(["体验官", "PRO会员", ...mockWechats.map(item => item.project).filter(value => value !== "—")]));
+  const projectOptions = Array.from(new Set([...initialProjects.map(p => p.name)]));
   const employeeRecords = Array.from(new Map(mockWechats.filter(item => item.opsManager !== "—").map(item => [item.opsManager, { name: item.opsManager, department: item.department }])).values()).slice(0, 100);
   const employeeDepartments = Array.from(new Set(employeeRecords.map(item => item.department)));
-  const [draft, setDraft] = useState<AllocationDraft>({ project: account.project === "待配置" || account.project === "—" ? "" : account.project, opsManager: account.opsManager === "—" ? "" : account.opsManager, city: account.city === "—" ? "" : account.city, accountType: account.accountType === "待配置" ? "" : account.accountType, groupType: "" });
+  const [draft, setDraft] = useState<AllocationDraft>({ project: account.project === "待配置" || account.project === "—" ? "" : account.project, opsManager: account.opsManager === "—" ? "" : account.opsManager, city: account.city === "—" ? "" : account.city, accountType: account.accountType === "待配置" ? "" : account.accountType, groupType: account.groupType || "" });
   const initialAssigned = Math.min(Math.max(account.groupCount || 0, 0), 20);
   const [groupCount, setGroupCount] = useState(20);
   const [selectedSlots, setSelectedSlots] = useState(() => Array.from({ length: 20 }, (_, index) => index < initialAssigned));
   const [qrNames, setQrNames] = useState(() => Array.from({ length: 20 }, (_, index) => index < initialAssigned ? (account.groupQrNames?.[index] || "已绑定二维码") : ""));
-  const [groupTypeOptions, setGroupTypeOptions] = useState(() => defaultGroupTypeRules.map(rule => ({ name: rule.name, code: rule.code, memberRoles: rule.memberRoles, allocationMode: rule.allocationMode })));
+  // 群类型规则库：跟当前 draft.project 实时联动
+  const rulesForProject = getGroupRulesForProject(draft.project || account.project || "AI学习社群");
+  const [groupTypeOptions, setGroupTypeOptions] = useState(() => rulesForProject.map(rule => ({
+    id: rule.id, tier: rule.tier, name: rule.name, code: rule.code, memberRoles: rule.memberRoles, allocationMode: rule.allocationMode,
+    capacity: rule.capacity, entryCondition: rule.entryCondition, cities: rule.cities,
+    retentionGoal: rule.retentionGoal, weeklyOps: rule.weeklyOps,
+  })));
+  // 项目变更 → 重置群类型库为该项目的默认规则；保留用户已选的自定义项
+  React.useEffect(() => {
+    const newBase = rulesForProject.map(rule => ({
+      id: rule.id, tier: rule.tier, name: rule.name, code: rule.code, memberRoles: rule.memberRoles, allocationMode: rule.allocationMode,
+      capacity: rule.capacity, entryCondition: rule.entryCondition, cities: rule.cities,
+      retentionGoal: rule.retentionGoal, weeklyOps: rule.weeklyOps,
+    }));
+    const knownCodes = new Set(newBase.map(r => r.code));
+    const keepCustoms = groupTypeOptions.filter(o => !knownCodes.has(o.code));
+    setGroupTypeOptions([...newBase, ...keepCustoms]);
+    // 如果当前选中的 groupType 不在新项目的规则库也不在自定义中，则清空
+    setDraft(current => {
+      const allNames = new Set([...newBase, ...keepCustoms].map(r => r.name));
+      if (current.groupType && !allNames.has(current.groupType)) return { ...current, groupType: "" };
+      return current;
+    });
+  }, [draft.project]);
   const [newGroupType, setNewGroupType] = useState("");
   const [groupTypeOpen, setGroupTypeOpen] = useState(false);
   const [accountTypeOpen, setAccountTypeOpen] = useState(false);
@@ -495,7 +518,162 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
       <div className="flex items-center justify-between px-6 py-4 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f1f5f9" }}><div><div className="font-semibold">分配微信号</div><div className="text-xs mt-1" style={{ color: S.muted }}>为 {account.wechatId} 配置项目归属、群类型和微信群位；账号类型与微信群数可暂不设置</div></div><button type="button" aria-label="关闭微信号分配" onClick={onClose}><X size={16} style={{ color: S.muted }} /></button></div>
       <div className="overflow-y-auto p-6 space-y-5">
         <section className="space-y-3"><div className="flex items-center gap-2 text-sm font-bold border-b pb-2" style={{ borderColor: S.border }}><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />微信号分配</div><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"><label className="block"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属项目 *</span><select className="w-full px-2.5 py-2 text-xs outline-none" value={draft.project} onChange={event => set("project", event.target.value)} style={inputStyle}><option value="">请选择</option>{projectOptions.map(value => <option key={value}>{value}</option>)}</select></label><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属员工 *</span><button type="button" className="w-full px-2.5 py-2 text-xs text-left" onClick={() => setEmployeeOpen(value => !value)} style={{ ...inputStyle, color: draft.opsManager ? S.text : S.muted }}>{draft.opsManager || "请选择已启用员工"}</button>{employeeOpen && <div className="absolute left-0 right-0 top-[58px] z-40 p-2 max-h-56 overflow-auto" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 10px 24px rgba(15,23,42,0.12)" }}><div className="flex gap-1 mb-2 overflow-x-auto">{employeeDepartments.map(department => <button key={department} type="button" className="px-2 py-1 text-[10px] whitespace-nowrap" onClick={() => setActiveDepartment(department)} style={{ background: activeDepartment === department ? S.primary : S.bg, color: activeDepartment === department ? "#ffffff" : S.muted, borderRadius: S.radiusSm }}>{department}</button>)}</div>{employeeRecords.filter(record => record.department === activeDepartment).map(record => <button key={record.name} type="button" className="block w-full px-2 py-1.5 text-left text-xs hover:bg-lime-50" onClick={() => { set("opsManager", record.name); setEmployeeOpen(false); }}>{record.name}</button>)}</div>}</div><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>所属地区 *</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => { setRegionOpen(value => !value); setTemplateOpen(false); }} style={inputStyle}><span className="truncate" style={{ color: draft.city ? S.text : S.muted }}>{draft.city || "请选择地区"}</span><ChevronDown size={13} style={{ color: S.muted, transform: regionOpen ? "rotate(180deg)" : undefined }} /></button>{regionOpen && <div className="absolute left-0 top-[58px] z-40 w-[720px] max-w-[calc(100vw-48px)] p-2" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}><div className="flex gap-2"><div className="w-40 flex-shrink-0 space-y-1">{regionCategories.map(category => <div key={category.id} className="group flex items-center gap-1">{editingRegionId === category.id ? <input autoFocus value={editingRegionName} onChange={event => setEditingRegionName(event.target.value)} onBlur={saveRegionName} onKeyDown={event => { if (event.key === "Enter") saveRegionName(); }} className="min-w-0 flex-1 px-2 py-1.5 text-xs outline-none" style={inputStyle} /> : <button type="button" className="flex-1 px-2 py-1.5 text-left text-xs truncate" onClick={() => { setActiveRegionId(category.id); setTemplateOpen(false); setActiveProvince(category.provinces[0] || provinceOptions[0]); set("city", (regionCitySelections[category.id] || category.provinces).join(" / ")); }} style={{ background: activeRegionId === category.id ? S.primary : S.bg, color: activeRegionId === category.id ? "#ffffff" : S.textSec, borderRadius: S.radiusSm }}>{category.name}</button>}{!category.system && <div className="flex items-center opacity-0 group-hover:opacity-100"><button type="button" title={`编辑${category.name}`} aria-label={`编辑${category.name}`} className="px-1" onClick={() => beginEditRegion(category)}><Edit3 size={11} style={{ color: S.muted }} /></button><button type="button" title={`删除${category.name}`} aria-label={`删除${category.name}`} className="px-1" onClick={() => removeRegion(category.id)}><X size={11} style={{ color: S.muted }} /></button></div>}</div>)}<div className="flex gap-1 pt-1"><input value={newRegionName} onChange={event => setNewRegionName(event.target.value)} placeholder="新增分类" className="min-w-0 flex-1 px-2 py-1 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增地区分类" aria-label="新增地区分类" className="px-2" onClick={addRegion} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>{activeRegionId ? <><div className="w-40 flex-shrink-0 p-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="mb-1 flex items-center justify-between text-[10px] font-semibold" style={{ color: S.muted }}><span>选择省份</span>{!activeRegion.system && <span>{activeRegion.provinces.length} 已选</span>}</div>{activeRegion.system ? <div className="text-[10px] leading-relaxed" style={{ color: S.muted }}>系统分类“{activeRegion.name}”自动接收未匹配地址。</div> : <div className="space-y-1 max-h-52 overflow-auto">{provinceOptions.map(province => { const owner = claimedProvinceOwners[province]; return (<label key={province} className="flex items-start gap-1 text-[10px]" style={{ color: owner ? S.muted : S.textSec, opacity: owner ? 0.72 : 1 }}><input type="checkbox" checked={activeRegion.provinces.includes(province)} disabled={Boolean(owner)} onChange={event => { if (owner) return; updateRegion(activeRegion.id, event.target.checked ? [...activeRegion.provinces, province] : activeRegion.provinces.filter(item => item !== province)); if (event.target.checked) setActiveProvince(province); }} /><span className="min-w-0 flex-1">{province}</span>{owner && <span className="whitespace-nowrap text-[9px]" style={{ color: S.muted }}>已选·{owner}</span>}</label>); })}</div>}</div>{!activeRegion.system && activeProvinceSelected && <div className="flex-1 min-w-0 p-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="mb-1 text-[10px] font-semibold" style={{ color: S.muted }}>选择城市 · {activeProvince}</div><div className="space-y-1 max-h-52 overflow-auto">{(cityOptionsByProvince[activeProvince] || ["全省"]).map(city => <label key={city} className="flex items-center gap-1 text-[10px]" style={{ color: S.textSec }}><input type="checkbox" checked={(regionCitySelections[activeRegion.id] || []).includes(city)} onChange={event => updateRegionCities(activeRegion.id, activeProvince, event.target.checked ? [...(regionCitySelections[activeRegion.id] || []), city] : (regionCitySelections[activeRegion.id] || []).filter(item => item !== city))} />{city}</label>)}</div></div>}</> : null}</div><div className="mt-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}><div className="flex items-center gap-2"><span className="text-[10px] font-semibold" style={{ color: S.muted }}>销售市场模板</span><div className="relative"><button type="button" disabled={!activeRegionId || activeRegion.system} onClick={() => setTemplateOpen(value => !value)} className="flex items-center gap-2 px-2 py-1 text-[10px]" style={{ background: S.bg, border: `1px solid ${S.border}`, color: activeRegionId && !activeRegion.system ? S.textSec : S.muted, borderRadius: S.radiusSm, opacity: !activeRegionId || activeRegion.system ? 0.5 : 1 }}><span>{regionTemplates.find(template => template.id === regionTemplateSelections[activeRegionId || ""])?.name || "选择市场模板"}</span><ChevronDown size={11} style={{ transform: templateOpen ? "rotate(180deg)" : undefined }} /></button>{templateOpen && activeRegionId && !activeRegion.system && <div className="absolute left-0 top-full mt-1 z-50 w-40 p-1" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 10px 24px rgba(0,0,0,0.14)" }}>{regionTemplates.map(template => <button key={template.id} type="button" className="block w-full px-2 py-1.5 text-left text-[10px]" onClick={() => applyRegionTemplate(template)} style={{ background: regionTemplateSelections[activeRegionId] === template.id ? S.accentLight : S.surface, color: S.textSec, borderRadius: S.radiusSm }}>{template.name}</button>)}</div>}</div></div></div></div>}</div><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>微信号类型</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => setAccountTypeOpen(value => !value)} style={inputStyle}><span className="truncate" style={{ color: draft.accountType ? S.text : S.muted }}>{draft.accountType || "暂不设置，领用时配置"}</span><ChevronDown size={13} style={{ color: S.muted, transform: accountTypeOpen ? "rotate(180deg)" : undefined }} /></button>{accountTypeOpen && <div className="absolute left-0 right-0 top-[58px] z-30 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}><button type="button" className="w-full px-3 py-2 text-left text-[10px]" onClick={() => { set("accountType", ""); setAccountTypeOpen(false); }} style={{ color: S.muted, borderBottom: `1px solid ${S.border}` }}>暂不设置，领用时配置</button>{accountTypeOptions.map(option => <div key={option.id} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}><button type="button" className="flex-1 px-3 py-2 text-left text-xs" onClick={() => { set("accountType", option.name); setAccountTypeOpen(false); }} style={{ color: draft.accountType === option.name ? S.text : S.textSec, background: draft.accountType === option.name ? S.accentLight : S.surface }}>{option.name}</button>{!option.system && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-2 opacity-0 group-hover:opacity-100" onClick={() => { setAccountTypeOptions(current => current.filter(item => item.id !== option.id)); if (draft.accountType === option.name) set("accountType", ""); }}><X size={12} style={{ color: S.muted }} /></button>}</div>)}<div className="flex items-center gap-1 p-2" style={{ background: S.bg }}><input value={newAccountType} onChange={event => setNewAccountType(event.target.value)} onKeyDown={event => { if (event.key === "Enter") addAccountType(); }} placeholder="新增微信号类型" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增微信号类型" aria-label="新增微信号类型" className="w-7 h-7 grid place-items-center flex-shrink-0" onClick={addAccountType} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>}</div><label className="block"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>微信群数</span><input type="number" min={0} max={100} value={groupCount} onChange={event => updateGroupCount(Number(event.target.value))} className="w-full px-2.5 py-2 text-xs outline-none" style={inputStyle} /></label><div className="relative"><span className="block mb-1.5 text-xs" style={{ color: S.muted }}>群类型 *</span><button type="button" className="w-full flex items-center justify-between gap-2 px-2.5 py-2 text-xs text-left" onClick={() => setGroupTypeOpen(value => !value)} style={inputStyle}><span className="truncate" style={{ color: draft.groupType ? S.text : S.muted }}>{draft.groupType || "请选择群类型"}</span><ChevronDown size={13} style={{ color: S.muted, transform: groupTypeOpen ? "rotate(180deg)" : undefined }} /></button>{groupTypeOpen && <div className="absolute left-0 right-0 top-[58px] z-30 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(0,0,0,0.14)" }}>{groupTypeOptions.map(option => <div key={option.code} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}><button type="button" className="flex-1 px-3 py-2 text-left text-xs" onClick={() => { set("groupType", option.name); setGroupTypeOpen(false); }} style={{ color: draft.groupType === option.name ? S.text : S.textSec, background: draft.groupType === option.name ? S.accentLight : S.surface }}>{option.name} · {option.code}</button>{!defaultGroupTypeRules.some(rule => rule.code === option.code) && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-2 opacity-0 group-hover:opacity-100" onClick={() => { setGroupTypeOptions(current => current.filter(item => item.code !== option.code)); if (draft.groupType === option.name) set("groupType", ""); }}><X size={12} style={{ color: S.muted }} /></button>}</div>)}<div className="flex items-center gap-1 p-2" style={{ background: S.bg }}><input value={newGroupType} onChange={event => setNewGroupType(event.target.value)} onKeyDown={event => { if (event.key === "Enter") addGroupType(); }} placeholder="新增群类型" className="min-w-0 flex-1 px-2 py-1.5 text-[10px] outline-none" style={inputStyle} /><button type="button" title="新增群类型" aria-label="新增群类型" className="w-7 h-7 grid place-items-center flex-shrink-0" onClick={addGroupType} style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={12} /></button></div></div>}</div></div></section>
-        <section className="space-y-3"><div className="flex items-center justify-between border-b pb-2" style={{ borderColor: S.border }}><div className="flex items-center gap-2 text-sm font-bold"><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />群类型规则预览</div><span className="text-xs" style={{ color: S.muted }}>选择后匹配群对象与分配方式</span></div><div className="flex flex-wrap gap-2">{groupTypeOptions.map(option => <div key={option.code} className="group flex items-center gap-1"><button type="button" className="px-2.5 py-1.5 text-xs" onClick={() => set("groupType", option.name)} style={{ background: draft.groupType === option.name ? S.primary : S.bg, color: draft.groupType === option.name ? "#ffffff" : S.textSec, border: `1px solid ${draft.groupType === option.name ? S.primary : S.border}`, borderRadius: S.radiusSm }}>{option.name} · {option.code}</button>{!defaultGroupTypeRules.some(rule => rule.code === option.code) && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="opacity-0 group-hover:opacity-100" onClick={() => { setGroupTypeOptions(current => current.filter(item => item.code !== option.code)); if (draft.groupType === option.name) set("groupType", ""); }}><X size={12} style={{ color: S.muted }} /></button>}</div>)}</div>{selectedRule && <div className="px-3 py-2 text-xs" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>群对象：{selectedRule.memberRoles.join("、")}　·　分配方式：{selectedRule.allocationMode}</div>}</section>
+        <section className="space-y-3">
+          <div className="flex items-center justify-between border-b pb-2" style={{ borderColor: S.border }}>
+            <div className="flex items-center gap-2 text-sm font-bold">
+              <span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />
+              群类型规则预览
+            </div>
+            <div className="flex items-center gap-2 text-[11px]" style={{ color: S.muted }}>
+              <span>共 {groupTypeOptions.length} 条</span>
+              <span>·</span>
+              <span>选择后匹配群对象与分配方式</span>
+              {draft.project && <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded" style={{ background: S.accentLight, color: S.text, fontFamily: "monospace" }}>📂 {draft.project}</span>}
+            </div>
+          </div>
+
+          {/* 漏斗层级快速筛选条 */}
+          <div className="flex flex-wrap items-center gap-1.5">
+            {(["引流", "培育", "转化", "交付", "服务", "IP私域"] as const).map(tier => {
+              const rulesInTier = groupTypeOptions.filter(o => (o as any).tier === tier);
+              if (!rulesInTier.length) return null;
+              const c = tierColorMap[tier];
+              return (
+                <span key={tier} className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] flex-shrink-0"
+                  style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}`, borderRadius: 999, fontFamily: "monospace" }}>
+                  <span style={{ width: 4, height: 4, background: c.dot, borderRadius: 99 }} />
+                  {tier} · {rulesInTier.length}
+                </span>
+              );
+            })}
+          </div>
+
+          {/* 群类型胶囊网格：点击切换选中，分层级着色 */}
+          <div className="flex flex-wrap gap-2">
+            {groupTypeOptions.map(option => {
+              const isSelected = draft.groupType === option.name;
+              const tier = (option as any).tier as keyof typeof tierColorMap | undefined;
+              const palette = tier ? tierColorMap[tier] : null;
+              const isSystem = defaultGroupTypeRules.some(r => r.code === option.code) || rulesForProject.some(r => r.code === option.code);
+              return (
+                <div key={option.code} className="group flex items-center gap-1">
+                  <button type="button" onClick={() => set("groupType", option.name)}
+                    className="px-2.5 py-1.5 text-xs flex items-center gap-1.5"
+                    style={{
+                      background: isSelected ? (palette?.bg || S.primary) : S.bg,
+                      color: isSelected ? (palette?.color || "#ffffff") : S.textSec,
+                      border: `1px solid ${isSelected ? (palette?.border || S.primary) : S.border}`,
+                      borderRadius: S.radiusSm,
+                      fontWeight: isSelected ? 700 : 500,
+                    }}>
+                    {palette && <span style={{ width: 6, height: 6, background: palette.dot, borderRadius: 99 }} />}
+                    <span className="font-semibold">{option.name}</span>
+                    <span style={{ opacity: 0.7, fontFamily: "monospace", fontSize: 10 }}>· {option.code}</span>
+                    {tier && <span className="text-[9px] px-1 rounded flex-shrink-0"
+                      style={{ background: palette?.bg, color: palette?.color, border: `1px solid ${palette?.border}` }}>
+                      {tier}
+                    </span>}
+                  </button>
+                  {!isSystem && <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="opacity-0 group-hover:opacity-100"
+                    onClick={() => {
+                      setGroupTypeOptions(current => current.filter(item => item.code !== option.code));
+                      if (draft.groupType === option.name) set("groupType", "");
+                    }}>
+                    <X size={12} style={{ color: S.muted }} />
+                  </button>}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* 选中规则详细卡 */}
+          {selectedRule && (
+            <div className="p-3.5 space-y-2.5" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: 10 }}>
+              {/* 标题行：名 + 层级胶囊 + 容量 + 分配方式 */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="text-[13px] font-bold" style={{ color: S.text, fontFamily: "monospace" }}>
+                  {selectedRule.name}
+                </div>
+                <span style={{ fontFamily: "monospace", fontSize: 11, color: S.muted }}>({selectedRule.code})</span>
+                {(selectedRule as any).tier && (() => {
+                  const c = tierColorMap[(selectedRule as any).tier as keyof typeof tierColorMap];
+                  return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
+                      style={{ background: c.bg, color: c.color, border: `1px solid ${c.border}`, borderRadius: 999, fontFamily: "monospace" }}>
+                      <span style={{ width: 4, height: 4, background: c.dot, borderRadius: 99 }} />
+                      {(selectedRule as any).tier}
+                    </span>
+                  );
+                })()}
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
+                  style={{ background: "#f1f5f9", color: "#334155", borderRadius: 999, fontFamily: "monospace" }}>
+                  👥 单群容量 <b>{(selectedRule as any).capacity ?? "—"}</b>
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px]"
+                  style={{ background: S.accentLight, color: S.text, borderRadius: 999, fontFamily: "monospace" }}>
+                  🔀 {selectedRule.allocationMode}
+                </span>
+              </div>
+
+              {/* 详情 6 列网格：入群条件 / 群对象 / 适用地区 / 命名模板 / 运营目标 / 每周SOP */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="p-2.5" style={{ background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: 8 }}>
+                  <div className="text-[10px] mb-1 font-semibold" style={{ color: "#9a3412", fontFamily: "monospace" }}>🚪 入群条件</div>
+                  <div className="text-[11px] leading-relaxed" style={{ color: "#7c2d12", fontFamily: "monospace" }}>
+                    {(selectedRule as any).entryCondition || "—"}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: 8 }}>
+                  <div className="text-[10px] mb-1 font-semibold" style={{ color: S.muted, fontFamily: "monospace" }}>🎭 群对象（memberRoles）</div>
+                  <div className="flex flex-wrap gap-1">
+                    {(selectedRule.memberRoles?.length ? selectedRule.memberRoles : ["—"]).map(role => (
+                      <span key={role} className="px-1.5 py-0.5 text-[10px] font-medium"
+                        style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: 4, fontFamily: "monospace" }}>
+                        {role}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: "#f0f9ff", border: "1px solid #bae6fd", borderRadius: 8 }}>
+                  <div className="text-[10px] mb-1 font-semibold" style={{ color: "#075985", fontFamily: "monospace" }}>📍 适用地区</div>
+                  <div className="flex flex-wrap gap-1">
+                    {((selectedRule as any).cities as string[] || []).map(city => (
+                      <span key={city} className="px-1.5 py-0.5 text-[10px]"
+                        style={{ background: "#e0f2fe", color: "#075985", borderRadius: 4, fontFamily: "monospace" }}>
+                        {city}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: "#f5f3ff", border: "1px solid #ddd6fe", borderRadius: 8 }}>
+                  <div className="text-[10px] mb-1 font-semibold" style={{ color: "#5b21b6", fontFamily: "monospace" }}>📛 命名模板</div>
+                  <div className="text-[11px] font-mono break-all" style={{ color: "#4c1d95" }}>
+                    {rulesForProject.find(r => r.name === selectedRule.name)?.nameTemplate || "{project}{type}{city}{seq}群"}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: "#ecfdf5", border: "1px solid #a7f3d0", borderRadius: 8 }}>
+                  <div className="text-[10px] mb-1 font-semibold" style={{ color: "#065f46", fontFamily: "monospace" }}>🎯 运营目标</div>
+                  <div className="text-[11px] leading-relaxed" style={{ color: "#064e3b", fontFamily: "monospace" }}>
+                    {(selectedRule as any).retentionGoal || "—"}
+                  </div>
+                </div>
+                <div className="p-2.5" style={{ background: "#fdf2f8", border: "1px solid #fbcfe8", borderRadius: 8 }}>
+                  <div className="text-[10px] mb-1 font-semibold" style={{ color: "#9d174d", fontFamily: "monospace" }}>📅 每周 SOP</div>
+                  <div className="text-[11px] leading-relaxed" style={{ color: "#831843", fontFamily: "monospace" }}>
+                    {(selectedRule as any).weeklyOps || "—"}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {!selectedRule && (
+            <div className="px-4 py-3 text-xs text-center"
+              style={{ background: S.bg, border: `1px dashed ${S.borderMed}`, borderRadius: 8, color: S.muted, fontFamily: "monospace" }}>
+              请选择上方群类型 → 查看详细规则卡（入群条件 / 容量 / 分配方式 / 每周 SOP 等）
+            </div>
+          )}
+        </section>
         <section className="space-y-2"><div className="flex items-center justify-between"><div className="text-xs font-bold">运营标签与账号类型映射</div><span className="text-[10px]" style={{ color: S.muted }}>客服号→体验官会员群；招商号→全国游客群</span></div><div className="flex flex-wrap gap-2">{tagNames.map(tag => <span key={tag} className="group inline-flex items-center gap-1 px-2 py-1 text-[10px]" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>{tag}<button type="button" title={`删除${tag}`} aria-label={`删除${tag}`} className="opacity-0 group-hover:opacity-100" onClick={() => setTagNames(current => current.filter(item => item !== tag))}><X size={10} style={{ color: S.muted }} /></button></span>)}<input value={newTagName} onChange={event => setNewTagName(event.target.value)} onKeyDown={event => { if (event.key === "Enter") addTag(); }} placeholder="运营新增标签" className="w-28 px-2 py-1 text-[10px] outline-none" style={inputStyle} /></div></section>
         <section className="space-y-3"><div className="flex items-center justify-between border-b pb-2" style={{ borderColor: S.border }}><div className="flex items-center gap-2 text-sm font-bold"><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />微信号绑定群</div><span className="text-xs" style={{ color: S.muted }}>{selectedCount} / {groupCount} 个群位已选择</span></div><div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-2">{selectedSlots.map((selected, index) => <div key={index} className="p-2" style={{ background: selected ? S.accentLight : S.bg, border: `1px ${selected ? "solid" : "dashed"} ${selected ? S.accent : S.borderMed}`, borderRadius: S.radiusSm }}><button type="button" onClick={() => toggleSlot(index)} className="w-full text-left"><div className="h-14 grid place-items-center" style={{ background: S.surface, borderRadius: S.radiusSm, color: selected ? S.text : S.muted }}><QrCode size={22} /></div><div className="mt-1 text-[10px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>FL{String(index + 1).padStart(2, "0")}</div><div className="text-[10px]" style={{ color: selected ? "#276749" : S.muted }}>{selected ? "已使用" : "未使用"}</div></button><label className="mt-1 flex items-center gap-1 cursor-pointer text-[9px]" title="上传群二维码"><Upload size={11} /><span className="truncate">{qrNames[index] || "上传二维码"}</span><input className="sr-only" type="file" accept="image/png,image/jpeg" onChange={event => setQrNames(current => current.map((name, slotIndex) => slotIndex === index ? (event.target.files?.[0]?.name || name) : name))} /></label></div>)}</div></section>
         {error && <div role="alert" className="px-3 py-2 text-xs" style={{ background: "#fff7ed", color: "#c2410c", border: "1px solid #fed7aa", borderRadius: S.radiusSm }}>{error}</div>}
