@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import React, { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
 import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check, PencilLine } from "lucide-react";
@@ -1633,7 +1633,7 @@ const [search, setSearch] = useState("");
   const setViewDimension = (next: WeChatViewDimension) => { setInternalViewDimension(next); setSelectedRow(null); setDetailMode("view"); };
   const [createdAccounts, setCreatedAccounts] = useState<PersonalAccount[]>([]);
   const [accountOverrides, setAccountOverrides] = useState<Record<string, Partial<PersonalAccount>>>({});
-  const [allocationAccount, setAllocationAccount] = useState<PersonalAccount | null>(null);
+  const [allocationAccount, setAllocationAccount] = useState<PersonalAccount | null>(() => null);
   // ── 列宽拖拽（表头分隔线拖动） ──
   // 防御：cols 在 Vite HMR 场景下偶发 undefined，先用硬编码默认宽度兜底，后续 effect 再同步一次
   const defaultColWidths: Record<string, number> = Object.fromEntries((cols || []).map(c => [c.key, c.w]));
