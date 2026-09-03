@@ -10,10 +10,10 @@
  * 选中状态同步到 URL（?proj=&asset=），刷新/分享不丢。
  */
 import { useMemo, useState } from "react";
-import { ArrowUpDown, Building2, ChevronDown, ChevronRight, Download, PackageOpen, Search, Smartphone, MessagesSquare, UserRound, Users } from "lucide-react";
+import { ArrowUpDown, Building2, ChevronRight, Download, PackageOpen, Search, Smartphone, MessagesSquare, UserRound, Users } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 import { initialProjects, PLATFORM_POOL_ID, projectStatusBadge } from "../data/communicationTools";
-import { projectWechats, projectGroups, projectPersons, type GroupSeries, type ProjectGroup, type ProjectPerson, type ProjectWechat } from "../data/projectAssets";
+import { projectWechats, projectGroups, projectPersons, type ProjectGroup, type ProjectPerson, type ProjectWechat } from "../data/projectAssets";
 
 type AssetType = "wechat" | "groups" | "people";
 
@@ -59,9 +59,6 @@ function badge(color: string, bg: string, label: string, extraStyle?: Record<str
   );
 }
 
-/** 微信群按系列分组的顺序（分组折叠视图用） */
-const SERIES_ORDER: Array<GroupSeries> = ["代理群系列", "零售会员类群系列"];
-
 /** 导出当前视图为 CSV（带 UTF-8 BOM，Excel 打开中文不乱码） */
 function exportCsv(filename: string, headers: string[], rows: (string | number)[][]) {
   const esc = (v: string | number) => {
@@ -96,8 +93,6 @@ export default function ProjectAssetList() {
   // 排序
   const [sortKey, setSortKey] = useState("influence");
   const [sortDesc, setSortDesc] = useState(true);
-  // 微信群系列分组折叠（空对象 = 全部展开）
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const setProject = (pid: string) => { setProjectId(pid); syncUrl(pid, asset); };
   const setAssetType = (a: AssetType) => { setAsset(a); syncUrl(projectId, a); };
@@ -370,49 +365,26 @@ export default function ProjectAssetList() {
                   <span style={{ color: S.muted }}>{w.lastLogin}</span>
                 </div>
               ))}
-              {asset === "groups" && SERIES_ORDER.map(series => {
-                const seriesRows = (groups as ProjectGroup[]).filter(g => g.series === series);
-                if (!seriesRows.length) return null;
-                const isCollapsed = !!collapsed[series];
-                const totalMembers = seriesRows.reduce((s, g) => s + g.members, 0);
-                const st = SERIES_STYLES[series];
-                return (
-                  <div key={series}>
-                    {/* 系列分组头：可折叠 */}
-                    <button type="button" onClick={() => setCollapsed(c => ({ ...c, [series]: !c[series] }))} aria-expanded={!isCollapsed}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-left transition-colors hover:bg-slate-50"
-                      style={{ background: "#fafafa", borderBottom: `1px solid ${S.border}` }}>
-                      <span className="w-1.5 h-4 rounded-full flex-shrink-0" style={{ background: st.color }} />
-                      <span className="text-xs font-bold" style={{ color: S.text }}>{series}</span>
-                      <span className="text-[10px] font-bold px-1.5 py-0.5" style={{ background: st.bg, color: st.color, borderRadius: 4 }}>{seriesRows.length} 个群</span>
-                      <span className="text-[10px] ml-1" style={{ color: S.muted }}>合计 {totalMembers.toLocaleString()} 人</span>
-                      <span className="ml-auto flex items-center gap-1 text-[10px]" style={{ color: S.muted }}>
-                        {isCollapsed ? "展开" : "收起"}{isCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
-                      </span>
-                    </button>
-                    {!isCollapsed && seriesRows.map((g, i) => (
-                      <div key={g.no + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.7fr .8fr .6fr .5fr 1.05fr .45fr .45fr .5fr", borderColor: S.border }}>
-                        <span className="min-w-0">
-                          <b className="block truncate" style={{ color: S.text }}>{g.name}</b>
-                          <small className="block truncate" style={{ color: S.muted }}>{g.type} · {g.code}</small>
-                        </span>
-                        <span>{badge(SERIES_STYLES[g.series].color, SERIES_STYLES[g.series].bg, g.series)}</span>
-                        <span className="truncate" style={{ color: S.textSec }}>{g.wechat}</span>
-                        <span style={{ color: S.text }}>{g.city}</span>
-                        <span className="min-w-0">
-                          <b className="block tabular-nums" style={{ color: g.members / g.max >= 0.9 ? "#c2410c" : S.text }}>{g.members} / {g.max}</b>
-                          <span className="mt-1 block h-1 overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}>
-                            <span className="block h-full" style={{ width: `${Math.max((g.members / g.max) * 100, g.members ? 3 : 0)}%`, background: g.members / g.max >= 0.9 ? "#f59e0b" : S.accent, borderRadius: 99 }} />
-                          </span>
-                        </span>
-                        <span className="tabular-nums" style={{ color: S.text }}>{g.push}</span>
-                        <span className="tabular-nums" style={{ color: S.text }}>{g.scan}</span>
-                        <span>{badge(STATUS_STYLES[g.ownerStatus].color, STATUS_STYLES[g.ownerStatus].bg, g.ownerStatus)}</span>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })}
+              {asset === "groups" && (groups as ProjectGroup[]).map((g, i) => (
+                <div key={g.no + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.7fr .8fr .6fr .5fr 1.05fr .45fr .45fr .5fr", borderColor: S.border }}>
+                  <span className="min-w-0">
+                    <b className="block truncate" style={{ color: S.text }}>{g.name}</b>
+                    <small className="block truncate" style={{ color: S.muted }}>{g.type} · {g.code}</small>
+                  </span>
+                  <span>{badge(SERIES_STYLES[g.series].color, SERIES_STYLES[g.series].bg, g.series)}</span>
+                  <span className="truncate" style={{ color: S.textSec }}>{g.wechat}</span>
+                  <span style={{ color: S.text }}>{g.city}</span>
+                  <span className="min-w-0">
+                    <b className="block tabular-nums" style={{ color: g.members / g.max >= 0.9 ? "#c2410c" : S.text }}>{g.members} / {g.max}</b>
+                    <span className="mt-1 block h-1 overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}>
+                      <span className="block h-full" style={{ width: `${Math.max((g.members / g.max) * 100, g.members ? 3 : 0)}%`, background: g.members / g.max >= 0.9 ? "#f59e0b" : S.accent, borderRadius: 99 }} />
+                    </span>
+                  </span>
+                  <span className="tabular-nums" style={{ color: S.text }}>{g.push}</span>
+                  <span className="tabular-nums" style={{ color: S.text }}>{g.scan}</span>
+                  <span>{badge(STATUS_STYLES[g.ownerStatus].color, STATUS_STYLES[g.ownerStatus].bg, g.ownerStatus)}</span>
+                </div>
+              ))}
               {asset === "people" && (persons as ProjectPerson[]).map((p, i) => (
                 <div key={p.wechat + p.role + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.05fr .45fr .55fr .7fr 1fr .6fr .55fr .55fr .6fr .45fr", borderColor: S.border }}>
                   <span className="flex items-center gap-2 min-w-0">
