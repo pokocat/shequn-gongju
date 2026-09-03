@@ -1,0 +1,1185 @@
+{
+  "canvas": {
+    "width": 430,
+    "height": 932
+  },
+  "pages": 41,
+  "screens": [
+    {
+      "slug": "notifications",
+      "name": "notifications",
+      "title": "消息中心",
+      "variant": "",
+      "route": "/pages/notifications/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "notifications--会话详情",
+      "name": "notifications",
+      "title": "消息中心",
+      "variant": "会话详情",
+      "route": "/pages/notifications/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "notifications--游客态",
+      "name": "notifications",
+      "title": "消息中心",
+      "variant": "游客态",
+      "route": "/pages/notifications/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "notifications--搜索无结果",
+      "name": "notifications",
+      "title": "消息中心",
+      "variant": "搜索无结果",
+      "route": "/pages/notifications/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "index",
+      "name": "index",
+      "title": "发现（首页）",
+      "variant": "",
+      "route": "/pages/index/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "index--游客态",
+      "name": "index",
+      "title": "发现（首页）",
+      "variant": "游客态",
+      "route": "/pages/index/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "index--加载骨架",
+      "name": "index",
+      "title": "发现（首页）",
+      "variant": "加载骨架",
+      "route": "/pages/index/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "index--加载失败",
+      "name": "index",
+      "title": "发现（首页）",
+      "variant": "加载失败",
+      "route": "/pages/index/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "group",
+      "name": "group",
+      "title": "微信群",
+      "variant": "",
+      "route": "/pages/group/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "group--社群广场",
+      "name": "group",
+      "title": "微信群",
+      "variant": "社群广场",
+      "route": "/pages/group/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "group--活动详情弹层",
+      "name": "group",
+      "title": "微信群",
+      "variant": "活动详情弹层",
+      "route": "/pages/group/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "group--游客态",
+      "name": "group",
+      "title": "微信群",
+      "variant": "游客态",
+      "route": "/pages/group/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "group--未入群",
+      "name": "group",
+      "title": "微信群",
+      "variant": "未入群",
+      "route": "/pages/group/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "member",
+      "name": "member",
+      "title": "数字会员卡",
+      "variant": "",
+      "route": "/pages/member/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "member--游客态",
+      "name": "member",
+      "title": "数字会员卡",
+      "variant": "游客态",
+      "route": "/pages/member/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "member--未付费",
+      "name": "member",
+      "title": "数字会员卡",
+      "variant": "未付费",
+      "route": "/pages/member/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "mine",
+      "name": "mine",
+      "title": "我的",
+      "variant": "",
+      "route": "/pages/mine/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "mine--游客态",
+      "name": "mine",
+      "title": "我的",
+      "variant": "游客态",
+      "route": "/pages/mine/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "mine--资料编辑弹层",
+      "name": "mine",
+      "title": "我的",
+      "variant": "资料编辑弹层",
+      "route": "/pages/mine/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "login",
+      "name": "login",
+      "title": "登录",
+      "variant": "",
+      "route": "/pages/login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "login--未勾选协议",
+      "name": "login",
+      "title": "登录",
+      "variant": "未勾选协议",
+      "route": "/pages/login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "login--邀请码弹层",
+      "name": "login",
+      "title": "登录",
+      "variant": "邀请码弹层",
+      "route": "/pages/login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "login--邀请码校验失败",
+      "name": "login",
+      "title": "登录",
+      "variant": "邀请码校验失败",
+      "route": "/pages/login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "login--登录中",
+      "name": "login",
+      "title": "登录",
+      "variant": "登录中",
+      "route": "/pages/login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "subscribe",
+      "name": "subscribe",
+      "title": "开通会员",
+      "variant": "",
+      "route": "/pages/subscribe/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "subscribe--iOS 受限",
+      "name": "subscribe",
+      "title": "开通会员",
+      "variant": "iOS 受限",
+      "route": "/pages/subscribe/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "subscribe--加载失败",
+      "name": "subscribe",
+      "title": "开通会员",
+      "variant": "加载失败",
+      "route": "/pages/subscribe/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "payment",
+      "name": "payment",
+      "title": "确认支付",
+      "variant": "",
+      "route": "/pages/payment/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "payment--手机号未绑定",
+      "name": "payment",
+      "title": "确认支付",
+      "variant": "手机号未绑定",
+      "route": "/pages/payment/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "payment--支付中",
+      "name": "payment",
+      "title": "确认支付",
+      "variant": "支付中",
+      "route": "/pages/payment/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "payment--iOS 受限",
+      "name": "payment",
+      "title": "确认支付",
+      "variant": "iOS 受限",
+      "route": "/pages/payment/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "success",
+      "name": "success",
+      "title": "支付成功",
+      "variant": "",
+      "route": "/pages/success/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "success--已入群",
+      "name": "success",
+      "title": "支付成功",
+      "variant": "已入群",
+      "route": "/pages/success/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "member-code",
+      "name": "member-code",
+      "title": "会员码",
+      "variant": "",
+      "route": "/pages/member-code/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "member-code--会员未生效",
+      "name": "member-code",
+      "title": "会员码",
+      "variant": "会员未生效",
+      "route": "/pages/member-code/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "benefits",
+      "name": "benefits",
+      "title": "会员权益",
+      "variant": "",
+      "route": "/pages/benefits/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "benefits--等级对比弹层",
+      "name": "benefits",
+      "title": "会员权益",
+      "variant": "等级对比弹层",
+      "route": "/pages/benefits/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "benefits--未开通会员",
+      "name": "benefits",
+      "title": "会员权益",
+      "variant": "未开通会员",
+      "route": "/pages/benefits/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "benefit-detail",
+      "name": "benefit-detail",
+      "title": "权益详情",
+      "variant": "",
+      "route": "/pages/benefit-detail/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "benefit-detail--规则展开",
+      "name": "benefit-detail",
+      "title": "权益详情",
+      "variant": "规则展开",
+      "route": "/pages/benefit-detail/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "benefit-detail--权益未解锁",
+      "name": "benefit-detail",
+      "title": "权益详情",
+      "variant": "权益未解锁",
+      "route": "/pages/benefit-detail/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "points",
+      "name": "points",
+      "title": "成长值",
+      "variant": "",
+      "route": "/pages/points/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "points--已满级",
+      "name": "points",
+      "title": "成长值",
+      "variant": "已满级",
+      "route": "/pages/points/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "points--还没有明细",
+      "name": "points",
+      "title": "成长值",
+      "variant": "还没有明细",
+      "route": "/pages/points/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "renewal",
+      "name": "renewal",
+      "title": "会员续费",
+      "variant": "",
+      "route": "/pages/renewal/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "renewal--已过期",
+      "name": "renewal",
+      "title": "会员续费",
+      "variant": "已过期",
+      "route": "/pages/renewal/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "group-qr",
+      "name": "group-qr",
+      "title": "入群方式",
+      "variant": "",
+      "route": "/pages/group-qr/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "group-qr--待安置",
+      "name": "group-qr",
+      "title": "入群方式",
+      "variant": "待安置",
+      "route": "/pages/group-qr/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "group-qr--先加顾问",
+      "name": "group-qr",
+      "title": "入群方式",
+      "variant": "先加顾问",
+      "route": "/pages/group-qr/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "group-qr--已入群",
+      "name": "group-qr",
+      "title": "入群方式",
+      "variant": "已入群",
+      "route": "/pages/group-qr/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "advisor",
+      "name": "advisor",
+      "title": "添加服务顾问",
+      "variant": "",
+      "route": "/pages/advisor/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "advisor--活码未就绪",
+      "name": "advisor",
+      "title": "添加服务顾问",
+      "variant": "活码未就绪",
+      "route": "/pages/advisor/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "advisor--未分配顾问",
+      "name": "advisor",
+      "title": "添加服务顾问",
+      "variant": "未分配顾问",
+      "route": "/pages/advisor/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "message",
+      "name": "message",
+      "title": "公告详情",
+      "variant": "",
+      "route": "/pages/message/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "message--班级公告",
+      "name": "message",
+      "title": "公告详情",
+      "variant": "班级公告",
+      "route": "/pages/message/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "message--游客态",
+      "name": "message",
+      "title": "公告详情",
+      "variant": "游客态",
+      "route": "/pages/message/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "invite",
+      "name": "invite",
+      "title": "邀请推荐",
+      "variant": "",
+      "route": "/pages/invite/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "invite--全部展开",
+      "name": "invite",
+      "title": "邀请推荐",
+      "variant": "全部展开",
+      "route": "/pages/invite/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "invite--还没有邀请过",
+      "name": "invite",
+      "title": "邀请推荐",
+      "variant": "还没有邀请过",
+      "route": "/pages/invite/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "invite-poster",
+      "name": "invite-poster",
+      "title": "邀请海报",
+      "variant": "",
+      "route": "/pages/invite-poster/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "invite-poster--生成中",
+      "name": "invite-poster",
+      "title": "邀请海报",
+      "variant": "生成中",
+      "route": "/pages/invite-poster/index",
+      "group": "权益与成长"
+    },
+    {
+      "slug": "training",
+      "name": "training",
+      "title": "我的班级",
+      "variant": "",
+      "route": "/pages/training/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "training--还没有报名",
+      "name": "training",
+      "title": "我的班级",
+      "variant": "还没有报名",
+      "route": "/pages/training/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "training--待安置",
+      "name": "training",
+      "title": "我的班级",
+      "variant": "待安置",
+      "route": "/pages/training/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "training--添加顾问",
+      "name": "training",
+      "title": "我的班级",
+      "variant": "添加顾问",
+      "route": "/pages/training/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "training--加入微信群",
+      "name": "training",
+      "title": "我的班级",
+      "variant": "加入微信群",
+      "route": "/pages/training/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "training--迁群中",
+      "name": "training",
+      "title": "我的班级",
+      "variant": "迁群中",
+      "route": "/pages/training/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "training--加载失败",
+      "name": "training",
+      "title": "我的班级",
+      "variant": "加载失败",
+      "route": "/pages/training/index",
+      "group": "班级与入群"
+    },
+    {
+      "slug": "courses",
+      "name": "courses",
+      "title": "课程（旧入口）",
+      "variant": "",
+      "route": "/pages/courses/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "courses--还没有课程",
+      "name": "courses",
+      "title": "课程（旧入口）",
+      "variant": "还没有课程",
+      "route": "/pages/courses/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "courses--加载失败",
+      "name": "courses",
+      "title": "课程（旧入口）",
+      "variant": "加载失败",
+      "route": "/pages/courses/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "course-list",
+      "name": "course-list",
+      "title": "课程服务",
+      "variant": "",
+      "route": "/pages/course-list/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "course-list--训练营页签",
+      "name": "course-list",
+      "title": "课程服务",
+      "variant": "训练营页签",
+      "route": "/pages/course-list/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "course-list--游客态",
+      "name": "course-list",
+      "title": "课程服务",
+      "variant": "游客态",
+      "route": "/pages/course-list/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "course",
+      "name": "course",
+      "title": "课程详情",
+      "variant": "",
+      "route": "/pages/course/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "course--还没开始学",
+      "name": "course",
+      "title": "课程详情",
+      "variant": "还没开始学",
+      "route": "/pages/course/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "courseware",
+      "name": "courseware",
+      "title": "课件下载",
+      "variant": "",
+      "route": "/pages/courseware/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "courseware--还没有课件",
+      "name": "courseware",
+      "title": "课件下载",
+      "variant": "还没有课件",
+      "route": "/pages/courseware/index",
+      "group": "课程服务"
+    },
+    {
+      "slug": "diagnosis",
+      "name": "diagnosis",
+      "title": "经营诊断",
+      "variant": "",
+      "route": "/pages/diagnosis/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis--诊断记录",
+      "name": "diagnosis",
+      "title": "经营诊断",
+      "variant": "诊断记录",
+      "route": "/pages/diagnosis/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis--有待处理预约",
+      "name": "diagnosis",
+      "title": "经营诊断",
+      "variant": "有待处理预约",
+      "route": "/pages/diagnosis/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis--还没有报告",
+      "name": "diagnosis",
+      "title": "经营诊断",
+      "variant": "还没有报告",
+      "route": "/pages/diagnosis/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis--流程说明展开",
+      "name": "diagnosis",
+      "title": "经营诊断",
+      "variant": "流程说明展开",
+      "route": "/pages/diagnosis/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis-booking",
+      "name": "diagnosis-booking",
+      "title": "预约经营诊断",
+      "variant": "",
+      "route": "/pages/diagnosis-booking/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis-booking--校验未通过",
+      "name": "diagnosis-booking",
+      "title": "预约经营诊断",
+      "variant": "校验未通过",
+      "route": "/pages/diagnosis-booking/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis-booking--次数已用完",
+      "name": "diagnosis-booking",
+      "title": "预约经营诊断",
+      "variant": "次数已用完",
+      "route": "/pages/diagnosis-booking/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "diagnosis-booking--游客态",
+      "name": "diagnosis-booking",
+      "title": "预约经营诊断",
+      "variant": "游客态",
+      "route": "/pages/diagnosis-booking/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "booking-result",
+      "name": "booking-result",
+      "title": "预约结果",
+      "variant": "",
+      "route": "/pages/booking-result/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "booking-result--已出报告",
+      "name": "booking-result",
+      "title": "预约结果",
+      "variant": "已出报告",
+      "route": "/pages/booking-result/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "ticket",
+      "name": "ticket",
+      "title": "在线工单",
+      "variant": "",
+      "route": "/pages/ticket/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "ticket--我的工单",
+      "name": "ticket",
+      "title": "在线工单",
+      "variant": "我的工单",
+      "route": "/pages/ticket/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "ticket--未选分类",
+      "name": "ticket",
+      "title": "在线工单",
+      "variant": "未选分类",
+      "route": "/pages/ticket/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "ticket--还没有工单",
+      "name": "ticket",
+      "title": "在线工单",
+      "variant": "还没有工单",
+      "route": "/pages/ticket/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "ticket-result",
+      "name": "ticket-result",
+      "title": "工单详情",
+      "variant": "",
+      "route": "/pages/ticket-result/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "ticket-result--处理中",
+      "name": "ticket-result",
+      "title": "工单详情",
+      "variant": "处理中",
+      "route": "/pages/ticket-result/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "review",
+      "name": "review",
+      "title": "服务评价",
+      "variant": "",
+      "route": "/pages/review/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "review--已评价过",
+      "name": "review",
+      "title": "服务评价",
+      "variant": "已评价过",
+      "route": "/pages/review/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "review--低分",
+      "name": "review",
+      "title": "服务评价",
+      "variant": "低分",
+      "route": "/pages/review/index",
+      "group": "诊断与工单"
+    },
+    {
+      "slug": "orders",
+      "name": "orders",
+      "title": "我的订单",
+      "variant": "",
+      "route": "/pages/orders/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "orders--还没有订单",
+      "name": "orders",
+      "title": "我的订单",
+      "variant": "还没有订单",
+      "route": "/pages/orders/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "orders--加载失败",
+      "name": "orders",
+      "title": "我的订单",
+      "variant": "加载失败",
+      "route": "/pages/orders/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "refund",
+      "name": "refund",
+      "title": "申请退款",
+      "variant": "",
+      "route": "/pages/refund/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "refund--没有可退订单",
+      "name": "refund",
+      "title": "申请退款",
+      "variant": "没有可退订单",
+      "route": "/pages/refund/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "refund--游客态",
+      "name": "refund",
+      "title": "申请退款",
+      "variant": "游客态",
+      "route": "/pages/refund/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "refund-result",
+      "name": "refund-result",
+      "title": "退款进度",
+      "variant": "",
+      "route": "/pages/refund-result/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "refund-result--审核中",
+      "name": "refund-result",
+      "title": "退款进度",
+      "variant": "审核中",
+      "route": "/pages/refund-result/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "refund-result--已驳回",
+      "name": "refund-result",
+      "title": "退款进度",
+      "variant": "已驳回",
+      "route": "/pages/refund-result/index",
+      "group": "会员与支付"
+    },
+    {
+      "slug": "tasks",
+      "name": "tasks",
+      "title": "我的任务",
+      "variant": "",
+      "route": "/pages/tasks/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "tasks--全部完成",
+      "name": "tasks",
+      "title": "我的任务",
+      "variant": "全部完成",
+      "route": "/pages/tasks/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "tasks--还没有任务",
+      "name": "tasks",
+      "title": "我的任务",
+      "variant": "还没有任务",
+      "route": "/pages/tasks/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "ops-task",
+      "name": "ops-task",
+      "title": "运营任务详情",
+      "variant": "",
+      "route": "/pages/ops-task/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "ops-task--待开始",
+      "name": "ops-task",
+      "title": "运营任务详情",
+      "variant": "待开始",
+      "route": "/pages/ops-task/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "ops-task--已回填待审",
+      "name": "ops-task",
+      "title": "运营任务详情",
+      "variant": "已回填待审",
+      "route": "/pages/ops-task/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "ops-task--已作废",
+      "name": "ops-task",
+      "title": "运营任务详情",
+      "variant": "已作废",
+      "route": "/pages/ops-task/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "ops-task--加载失败",
+      "name": "ops-task",
+      "title": "运营任务详情",
+      "variant": "加载失败",
+      "route": "/pages/ops-task/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "earnings",
+      "name": "earnings",
+      "title": "我的收益",
+      "variant": "",
+      "route": "/pages/earnings/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "earnings--提现表单展开",
+      "name": "earnings",
+      "title": "我的收益",
+      "variant": "提现表单展开",
+      "route": "/pages/earnings/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "earnings--金额校验失败",
+      "name": "earnings",
+      "title": "我的收益",
+      "variant": "金额校验失败",
+      "route": "/pages/earnings/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "earnings--没有可提现金额",
+      "name": "earnings",
+      "title": "我的收益",
+      "variant": "没有可提现金额",
+      "route": "/pages/earnings/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "agent",
+      "name": "agent",
+      "title": "代理工作台",
+      "variant": "",
+      "route": "/pages/agent/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "agent--只看待安置",
+      "name": "agent",
+      "title": "代理工作台",
+      "variant": "只看待安置",
+      "route": "/pages/agent/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "agent--非代理身份",
+      "name": "agent",
+      "title": "代理工作台",
+      "variant": "非代理身份",
+      "route": "/pages/agent/index",
+      "group": "代理与任务"
+    },
+    {
+      "slug": "settings",
+      "name": "settings",
+      "title": "设置",
+      "variant": "",
+      "route": "/pages/settings/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "settings--个人信息清单展开",
+      "name": "settings",
+      "title": "设置",
+      "variant": "个人信息清单展开",
+      "route": "/pages/settings/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "settings--注销账号弹层",
+      "name": "settings",
+      "title": "设置",
+      "variant": "注销账号弹层",
+      "route": "/pages/settings/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "settings--游客态",
+      "name": "settings",
+      "title": "设置",
+      "variant": "游客态",
+      "route": "/pages/settings/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "agreement",
+      "name": "agreement",
+      "title": "协议与政策",
+      "variant": "",
+      "route": "/pages/agreement/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "agreement--用户协议",
+      "name": "agreement",
+      "title": "协议与政策",
+      "variant": "用户协议",
+      "route": "/pages/agreement/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--资料待完善",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "资料待完善",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--资料编辑弹层",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "资料编辑弹层",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--确认中",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "确认中",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--已确认登录",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "已确认登录",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--等待批准",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "等待批准",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--已取消",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "已取消",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--未登录",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "未登录",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--票据失效",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "票据失效",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "scan-login--骨架",
+      "name": "scan-login",
+      "title": "扫码登录确认",
+      "variant": "骨架",
+      "route": "/pages/scan-login/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--手机号已在档",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "手机号已在档",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--提交中",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "提交中",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--已授权",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "已授权",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--已取消",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "已取消",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--授权失败",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "授权失败",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--没有找到授权请求",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "没有找到授权请求",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--未登录",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "未登录",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    },
+    {
+      "slug": "account-onboard--骨架",
+      "name": "account-onboard",
+      "title": "微信号录入授权",
+      "variant": "骨架",
+      "route": "/pages/account-onboard/index",
+      "group": "登录与入驻"
+    }
+  ]
+}

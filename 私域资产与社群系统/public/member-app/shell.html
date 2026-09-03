@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主理人公社 · 会员小程序</title>
+<style>
+:root { color-scheme: light; }
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: radial-gradient(76% 48% at 50% 0%, rgba(185,255,61,.18), transparent 64%), #f4f6ee;
+  color: #252922;
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif;
+  overflow: hidden;
+}
+.sh-stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+/* 页面本身固定 430×932（设计稿画布）。宿主 tab 的高度不固定，所以整机等比缩放，
+   而不是让页面自己去适配——改页面宽度就不再是「所见即设计稿」了。 */
+.sh-phone {
+  width: 430px; height: 932px; flex: 0 0 auto;
+  transform-origin: center center;
+  border-radius: 46px; overflow: hidden; background: #FFF7EC;
+  box-shadow: 0 0 0 9px #fff, 0 0 0 10px rgba(25,33,16,.12), 0 28px 72px rgba(35,45,20,.18);
+}
+.sh-phone iframe { display: block; width: 430px; height: 932px; border: 0; }
+
+.sh-meta {
+  position: fixed; left: 14px; bottom: 14px; z-index: 20;
+  display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  max-width: calc(100% - 120px);
+  padding: 7px 12px; border-radius: 999px;
+  background: rgba(255,255,255,.94); border: 1px solid rgba(25,33,16,.12);
+  box-shadow: 0 8px 22px rgba(45,61,29,.10);
+}
+.sh-meta b { font-size: 12px; color: #20251d; }
+.sh-meta code { font: 10px/1 "SF Mono", Menlo, monospace; color: #79826f; }
+.sh-meta .sh-tag { font-size: 10px; padding: 1px 7px; border-radius: 999px; background: #efffd1; border: 1px solid #cbe99a; color: #4e7700; }
+.sh-meta button {
+  all: unset; cursor: pointer; font-size: 10px; font-weight: 700; letter-spacing: .02em;
+  padding: 3px 9px; border-radius: 999px; border: 1px solid #dce8cb; color: #39452e; background: #fff;
+}
+.sh-meta button.on { background: #b9ff3d; border-color: #b9ff3d; color: #101509; }
+
+.sh-fab {
+  all: unset; cursor: pointer;
+  position: fixed; right: 16px; bottom: 16px; z-index: 30;
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, #b9ff3d, #9bea22); color: #090a0a;
+  box-shadow: 0 8px 22px rgba(154,230,30,.28), inset 0 1px 0 rgba(255,255,255,.72);
+}
+.sh-fab svg { display: block; }
+.sh-fab.open { transform: rotate(45deg); }
+
+.sh-panel {
+  position: fixed; right: 16px; bottom: 74px; z-index: 30;
+  width: 300px; max-height: min(72vh, 620px);
+  display: none; flex-direction: column;
+  border-radius: 16px; overflow: hidden;
+  background: rgba(255,255,255,.97); border: 1px solid rgba(25,33,16,.14);
+  box-shadow: 0 18px 50px rgba(35,45,20,.18);
+}
+.sh-panel.open { display: flex; }
+.sh-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 13px; border-bottom: 1px solid rgba(25,33,16,.1);
+  font-size: 12px; font-weight: 700; color: #090a0a;
+}
+.sh-head span em { font-style: normal; font-weight: 400; color: #79826f; margin-left: 5px; }
+.sh-head button { all: unset; cursor: pointer; width: 22px; height: 22px; text-align: center; color: #687062; font-size: 15px; }
+.sh-search { padding: 9px 13px 0; }
+.sh-search input {
+  width: 100%; padding: 6px 10px; font: inherit; font-size: 12px;
+  border-radius: 9px; border: 1px solid #dce8cb; background: #fbfcf6; color: #252922;
+}
+.sh-scroll { overflow-y: auto; padding: 9px 13px 13px; }
+.sh-scroll::-webkit-scrollbar { width: 6px; }
+.sh-scroll::-webkit-scrollbar-thumb { background: rgba(116,156,21,.42); border-radius: 3px; }
+.sh-grp-t { margin: 11px 0 6px; font-size: 10px; font-weight: 700; letter-spacing: .06em; color: #729d08; }
+.sh-grp:first-child .sh-grp-t { margin-top: 2px; }
+.sh-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.sh-item {
+  all: unset; cursor: pointer;
+  padding: 5px 9px; border-radius: 8px; font-size: 11.5px;
+  color: #4b5148; background: #fbfcf6; border: 1px solid rgba(25,33,16,.1);
+}
+.sh-item.on { color: #090a0a; background: #b9ff3d; border-color: #9bea22; font-weight: 700; }
+.sh-item i { font-style: normal; color: #79826f; }
+.sh-item.on i { color: #3c5200; }
+.sh-empty { padding: 14px 2px; font-size: 12px; color: #79826f; }
+</style>
+</head><body>
+
+<div class="sh-stage"><div class="sh-phone" id="phone"><iframe id="frame" title="会员小程序页面"></iframe></div></div>
+
+<div class="sh-meta">
+  <b id="curTitle">—</b><span class="sh-tag" id="curVariant" hidden></span><code id="curRoute"></code>
+  <button id="toggleFull" type="button">整页</button>
+</div>
+
+<button class="sh-fab" id="fab" type="button" aria-label="跳转到页面">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+</button>
+
+<div class="sh-panel" id="panel">
+  <div class="sh-head"><span>跳转到页面<em id="count"></em></span><button id="close" type="button" aria-label="关闭">×</button></div>
+  <div class="sh-search"><input id="q" type="search" placeholder="搜页面名或状态" autocomplete="off"></div>
+  <div class="sh-scroll" id="list"></div>
+</div>
+
+<script>
+var GROUPS = [{"name":"主导航（TabBar）","items":[{"slug":"notifications","title":"消息中心","variant":"","route":"/pages/notifications/index"},{"slug":"notifications--会话详情","title":"消息中心","variant":"会话详情","route":"/pages/notifications/index"},{"slug":"notifications--游客态","title":"消息中心","variant":"游客态","route":"/pages/notifications/index"},{"slug":"notifications--搜索无结果","title":"消息中心","variant":"搜索无结果","route":"/pages/notifications/index"},{"slug":"index","title":"发现（首页）","variant":"","route":"/pages/index/index"},{"slug":"index--游客态","title":"发现（首页）","variant":"游客态","route":"/pages/index/index"},{"slug":"index--加载骨架","title":"发现（首页）","variant":"加载骨架","route":"/pages/index/index"},{"slug":"index--加载失败","title":"发现（首页）","variant":"加载失败","route":"/pages/index/index"},{"slug":"group","title":"微信群","variant":"","route":"/pages/group/index"},{"slug":"group--社群广场","title":"微信群","variant":"社群广场","route":"/pages/group/index"},{"slug":"group--活动详情弹层","title":"微信群","variant":"活动详情弹层","route":"/pages/group/index"},{"slug":"group--游客态","title":"微信群","variant":"游客态","route":"/pages/group/index"},{"slug":"group--未入群","title":"微信群","variant":"未入群","route":"/pages/group/index"},{"slug":"member","title":"数字会员卡","variant":"","route":"/pages/member/index"},{"slug":"member--游客态","title":"数字会员卡","variant":"游客态","route":"/pages/member/index"},{"slug":"member--未付费","title":"数字会员卡","variant":"未付费","route":"/pages/member/index"},{"slug":"mine","title":"我的","variant":"","route":"/pages/mine/index"},{"slug":"mine--游客态","title":"我的","variant":"游客态","route":"/pages/mine/index"},{"slug":"mine--资料编辑弹层","title":"我的","variant":"资料编辑弹层","route":"/pages/mine/index"}]},{"name":"登录与入驻","items":[{"slug":"login","title":"登录","variant":"","route":"/pages/login/index"},{"slug":"login--未勾选协议","title":"登录","variant":"未勾选协议","route":"/pages/login/index"},{"slug":"login--邀请码弹层","title":"登录","variant":"邀请码弹层","route":"/pages/login/index"},{"slug":"login--邀请码校验失败","title":"登录","variant":"邀请码校验失败","route":"/pages/login/index"},{"slug":"login--登录中","title":"登录","variant":"登录中","route":"/pages/login/index"},{"slug":"settings","title":"设置","variant":"","route":"/pages/settings/index"},{"slug":"settings--个人信息清单展开","title":"设置","variant":"个人信息清单展开","route":"/pages/settings/index"},{"slug":"settings--注销账号弹层","title":"设置","variant":"注销账号弹层","route":"/pages/settings/index"},{"slug":"settings--游客态","title":"设置","variant":"游客态","route":"/pages/settings/index"},{"slug":"agreement","title":"协议与政策","variant":"","route":"/pages/agreement/index"},{"slug":"agreement--用户协议","title":"协议与政策","variant":"用户协议","route":"/pages/agreement/index"},{"slug":"scan-login","title":"扫码登录确认","variant":"","route":"/pages/scan-login/index"},{"slug":"scan-login--资料待完善","title":"扫码登录确认","variant":"资料待完善","route":"/pages/scan-login/index"},{"slug":"scan-login--资料编辑弹层","title":"扫码登录确认","variant":"资料编辑弹层","route":"/pages/scan-login/index"},{"slug":"scan-login--确认中","title":"扫码登录确认","variant":"确认中","route":"/pages/scan-login/index"},{"slug":"scan-login--已确认登录","title":"扫码登录确认","variant":"已确认登录","route":"/pages/scan-login/index"},{"slug":"scan-login--等待批准","title":"扫码登录确认","variant":"等待批准","route":"/pages/scan-login/index"},{"slug":"scan-login--已取消","title":"扫码登录确认","variant":"已取消","route":"/pages/scan-login/index"},{"slug":"scan-login--未登录","title":"扫码登录确认","variant":"未登录","route":"/pages/scan-login/index"},{"slug":"scan-login--票据失效","title":"扫码登录确认","variant":"票据失效","route":"/pages/scan-login/index"},{"slug":"scan-login--骨架","title":"扫码登录确认","variant":"骨架","route":"/pages/scan-login/index"},{"slug":"account-onboard","title":"微信号录入授权","variant":"","route":"/pages/account-onboard/index"},{"slug":"account-onboard--手机号已在档","title":"微信号录入授权","variant":"手机号已在档","route":"/pages/account-onboard/index"},{"slug":"account-onboard--提交中","title":"微信号录入授权","variant":"提交中","route":"/pages/account-onboard/index"},{"slug":"account-onboard--已授权","title":"微信号录入授权","variant":"已授权","route":"/pages/account-onboard/index"},{"slug":"account-onboard--已取消","title":"微信号录入授权","variant":"已取消","route":"/pages/account-onboard/index"},{"slug":"account-onboard--授权失败","title":"微信号录入授权","variant":"授权失败","route":"/pages/account-onboard/index"},{"slug":"account-onboard--没有找到授权请求","title":"微信号录入授权","variant":"没有找到授权请求","route":"/pages/account-onboard/index"},{"slug":"account-onboard--未登录","title":"微信号录入授权","variant":"未登录","route":"/pages/account-onboard/index"},{"slug":"account-onboard--骨架","title":"微信号录入授权","variant":"骨架","route":"/pages/account-onboard/index"}]},{"name":"会员与支付","items":[{"slug":"subscribe","title":"开通会员","variant":"","route":"/pages/subscribe/index"},{"slug":"subscribe--iOS 受限","title":"开通会员","variant":"iOS 受限","route":"/pages/subscribe/index"},{"slug":"subscribe--加载失败","title":"开通会员","variant":"加载失败","route":"/pages/subscribe/index"},{"slug":"payment","title":"确认支付","variant":"","route":"/pages/payment/index"},{"slug":"payment--手机号未绑定","title":"确认支付","variant":"手机号未绑定","route":"/pages/payment/index"},{"slug":"payment--支付中","title":"确认支付","variant":"支付中","route":"/pages/payment/index"},{"slug":"payment--iOS 受限","title":"确认支付","variant":"iOS 受限","route":"/pages/payment/index"},{"slug":"success","title":"支付成功","variant":"","route":"/pages/success/index"},{"slug":"success--已入群","title":"支付成功","variant":"已入群","route":"/pages/success/index"},{"slug":"member-code","title":"会员码","variant":"","route":"/pages/member-code/index"},{"slug":"member-code--会员未生效","title":"会员码","variant":"会员未生效","route":"/pages/member-code/index"},{"slug":"renewal","title":"会员续费","variant":"","route":"/pages/renewal/index"},{"slug":"renewal--已过期","title":"会员续费","variant":"已过期","route":"/pages/renewal/index"},{"slug":"orders","title":"我的订单","variant":"","route":"/pages/orders/index"},{"slug":"orders--还没有订单","title":"我的订单","variant":"还没有订单","route":"/pages/orders/index"},{"slug":"orders--加载失败","title":"我的订单","variant":"加载失败","route":"/pages/orders/index"},{"slug":"refund","title":"申请退款","variant":"","route":"/pages/refund/index"},{"slug":"refund--没有可退订单","title":"申请退款","variant":"没有可退订单","route":"/pages/refund/index"},{"slug":"refund--游客态","title":"申请退款","variant":"游客态","route":"/pages/refund/index"},{"slug":"refund-result","title":"退款进度","variant":"","route":"/pages/refund-result/index"},{"slug":"refund-result--审核中","title":"退款进度","variant":"审核中","route":"/pages/refund-result/index"},{"slug":"refund-result--已驳回","title":"退款进度","variant":"已驳回","route":"/pages/refund-result/index"}]},{"name":"权益与成长","items":[{"slug":"benefits","title":"会员权益","variant":"","route":"/pages/benefits/index"},{"slug":"benefits--等级对比弹层","title":"会员权益","variant":"等级对比弹层","route":"/pages/benefits/index"},{"slug":"benefits--未开通会员","title":"会员权益","variant":"未开通会员","route":"/pages/benefits/index"},{"slug":"benefit-detail","title":"权益详情","variant":"","route":"/pages/benefit-detail/index"},{"slug":"benefit-detail--规则展开","title":"权益详情","variant":"规则展开","route":"/pages/benefit-detail/index"},{"slug":"benefit-detail--权益未解锁","title":"权益详情","variant":"权益未解锁","route":"/pages/benefit-detail/index"},{"slug":"points","title":"成长值","variant":"","route":"/pages/points/index"},{"slug":"points--已满级","title":"成长值","variant":"已满级","route":"/pages/points/index"},{"slug":"points--还没有明细","title":"成长值","variant":"还没有明细","route":"/pages/points/index"},{"slug":"invite","title":"邀请推荐","variant":"","route":"/pages/invite/index"},{"slug":"invite--全部展开","title":"邀请推荐","variant":"全部展开","route":"/pages/invite/index"},{"slug":"invite--还没有邀请过","title":"邀请推荐","variant":"还没有邀请过","route":"/pages/invite/index"},{"slug":"invite-poster","title":"邀请海报","variant":"","route":"/pages/invite-poster/index"},{"slug":"invite-poster--生成中","title":"邀请海报","variant":"生成中","route":"/pages/invite-poster/index"}]},{"name":"班级与入群","items":[{"slug":"group-qr","title":"入群方式","variant":"","route":"/pages/group-qr/index"},{"slug":"group-qr--待安置","title":"入群方式","variant":"待安置","route":"/pages/group-qr/index"},{"slug":"group-qr--先加顾问","title":"入群方式","variant":"先加顾问","route":"/pages/group-qr/index"},{"slug":"group-qr--已入群","title":"入群方式","variant":"已入群","route":"/pages/group-qr/index"},{"slug":"advisor","title":"添加服务顾问","variant":"","route":"/pages/advisor/index"},{"slug":"advisor--活码未就绪","title":"添加服务顾问","variant":"活码未就绪","route":"/pages/advisor/index"},{"slug":"advisor--未分配顾问","title":"添加服务顾问","variant":"未分配顾问","route":"/pages/advisor/index"},{"slug":"message","title":"公告详情","variant":"","route":"/pages/message/index"},{"slug":"message--班级公告","title":"公告详情","variant":"班级公告","route":"/pages/message/index"},{"slug":"message--游客态","title":"公告详情","variant":"游客态","route":"/pages/message/index"},{"slug":"training","title":"我的班级","variant":"","route":"/pages/training/index"},{"slug":"training--还没有报名","title":"我的班级","variant":"还没有报名","route":"/pages/training/index"},{"slug":"training--待安置","title":"我的班级","variant":"待安置","route":"/pages/training/index"},{"slug":"training--添加顾问","title":"我的班级","variant":"添加顾问","route":"/pages/training/index"},{"slug":"training--加入微信群","title":"我的班级","variant":"加入微信群","route":"/pages/training/index"},{"slug":"training--迁群中","title":"我的班级","variant":"迁群中","route":"/pages/training/index"},{"slug":"training--加载失败","title":"我的班级","variant":"加载失败","route":"/pages/training/index"}]},{"name":"课程服务","items":[{"slug":"courses","title":"课程（旧入口）","variant":"","route":"/pages/courses/index"},{"slug":"courses--还没有课程","title":"课程（旧入口）","variant":"还没有课程","route":"/pages/courses/index"},{"slug":"courses--加载失败","title":"课程（旧入口）","variant":"加载失败","route":"/pages/courses/index"},{"slug":"course-list","title":"课程服务","variant":"","route":"/pages/course-list/index"},{"slug":"course-list--训练营页签","title":"课程服务","variant":"训练营页签","route":"/pages/course-list/index"},{"slug":"course-list--游客态","title":"课程服务","variant":"游客态","route":"/pages/course-list/index"},{"slug":"course","title":"课程详情","variant":"","route":"/pages/course/index"},{"slug":"course--还没开始学","title":"课程详情","variant":"还没开始学","route":"/pages/course/index"},{"slug":"courseware","title":"课件下载","variant":"","route":"/pages/courseware/index"},{"slug":"courseware--还没有课件","title":"课件下载","variant":"还没有课件","route":"/pages/courseware/index"}]},{"name":"诊断与工单","items":[{"slug":"diagnosis","title":"经营诊断","variant":"","route":"/pages/diagnosis/index"},{"slug":"diagnosis--诊断记录","title":"经营诊断","variant":"诊断记录","route":"/pages/diagnosis/index"},{"slug":"diagnosis--有待处理预约","title":"经营诊断","variant":"有待处理预约","route":"/pages/diagnosis/index"},{"slug":"diagnosis--还没有报告","title":"经营诊断","variant":"还没有报告","route":"/pages/diagnosis/index"},{"slug":"diagnosis--流程说明展开","title":"经营诊断","variant":"流程说明展开","route":"/pages/diagnosis/index"},{"slug":"diagnosis-booking","title":"预约经营诊断","variant":"","route":"/pages/diagnosis-booking/index"},{"slug":"diagnosis-booking--校验未通过","title":"预约经营诊断","variant":"校验未通过","route":"/pages/diagnosis-booking/index"},{"slug":"diagnosis-booking--次数已用完","title":"预约经营诊断","variant":"次数已用完","route":"/pages/diagnosis-booking/index"},{"slug":"diagnosis-booking--游客态","title":"预约经营诊断","variant":"游客态","route":"/pages/diagnosis-booking/index"},{"slug":"booking-result","title":"预约结果","variant":"","route":"/pages/booking-result/index"},{"slug":"booking-result--已出报告","title":"预约结果","variant":"已出报告","route":"/pages/booking-result/index"},{"slug":"ticket","title":"在线工单","variant":"","route":"/pages/ticket/index"},{"slug":"ticket--我的工单","title":"在线工单","variant":"我的工单","route":"/pages/ticket/index"},{"slug":"ticket--未选分类","title":"在线工单","variant":"未选分类","route":"/pages/ticket/index"},{"slug":"ticket--还没有工单","title":"在线工单","variant":"还没有工单","route":"/pages/ticket/index"},{"slug":"ticket-result","title":"工单详情","variant":"","route":"/pages/ticket-result/index"},{"slug":"ticket-result--处理中","title":"工单详情","variant":"处理中","route":"/pages/ticket-result/index"},{"slug":"review","title":"服务评价","variant":"","route":"/pages/review/index"},{"slug":"review--已评价过","title":"服务评价","variant":"已评价过","route":"/pages/review/index"},{"slug":"review--低分","title":"服务评价","variant":"低分","route":"/pages/review/index"}]},{"name":"代理与任务","items":[{"slug":"tasks","title":"我的任务","variant":"","route":"/pages/tasks/index"},{"slug":"tasks--全部完成","title":"我的任务","variant":"全部完成","route":"/pages/tasks/index"},{"slug":"tasks--还没有任务","title":"我的任务","variant":"还没有任务","route":"/pages/tasks/index"},{"slug":"ops-task","title":"运营任务详情","variant":"","route":"/pages/ops-task/index"},{"slug":"ops-task--待开始","title":"运营任务详情","variant":"待开始","route":"/pages/ops-task/index"},{"slug":"ops-task--已回填待审","title":"运营任务详情","variant":"已回填待审","route":"/pages/ops-task/index"},{"slug":"ops-task--已作废","title":"运营任务详情","variant":"已作废","route":"/pages/ops-task/index"},{"slug":"ops-task--加载失败","title":"运营任务详情","variant":"加载失败","route":"/pages/ops-task/index"},{"slug":"earnings","title":"我的收益","variant":"","route":"/pages/earnings/index"},{"slug":"earnings--提现表单展开","title":"我的收益","variant":"提现表单展开","route":"/pages/earnings/index"},{"slug":"earnings--金额校验失败","title":"我的收益","variant":"金额校验失败","route":"/pages/earnings/index"},{"slug":"earnings--没有可提现金额","title":"我的收益","variant":"没有可提现金额","route":"/pages/earnings/index"},{"slug":"agent","title":"代理工作台","variant":"","route":"/pages/agent/index"},{"slug":"agent--只看待安置","title":"代理工作台","variant":"只看待安置","route":"/pages/agent/index"},{"slug":"agent--非代理身份","title":"代理工作台","variant":"非代理身份","route":"/pages/agent/index"}]}];
+var ALL = GROUPS.reduce(function (a, g) { return a.concat(g.items); }, []);
+var frame = document.getElementById("frame");
+var phone = document.getElementById("phone");
+var panel = document.getElementById("panel");
+var fab = document.getElementById("fab");
+var full = false;
+var current = "";
+
+function scale() {
+  // 舞台留 28px 余量；只缩不放，桌面上宽裕时保持 1:1（1:1 时量到的数才是设计稿的数）
+  var k = Math.min(1, (innerHeight - 28) / 932, (innerWidth - 28) / 430);
+  phone.style.transform = "scale(" + k + ")";
+}
+addEventListener("resize", scale);
+
+function show(slug, push) {
+  var item = ALL.filter(function (i) { return i.slug === slug; })[0] || ALL[0];
+  if (!item) return;
+  current = item.slug;
+  frame.src = "pages/" + encodeURIComponent(item.slug) + ".html?embed=1" + (full ? "&full=1" : "");
+  document.getElementById("curTitle").textContent = item.title;
+  document.getElementById("curRoute").textContent = item.route;
+  var v = document.getElementById("curVariant");
+  v.textContent = item.variant; v.hidden = !item.variant;
+  document.title = item.title + (item.variant ? " · " + item.variant : "") + " · 会员小程序";
+  if (push !== false) {
+    var url = new URL(location.href);
+    url.searchParams.set("screen", item.slug);
+    history.replaceState({ screen: item.slug }, "", url);
+  }
+  render();
+}
+
+function render() {
+  var kw = document.getElementById("q").value.trim().toLowerCase();
+  var host = document.getElementById("list");
+  var shown = 0;
+  host.innerHTML = GROUPS.map(function (g) {
+    var items = g.items.filter(function (i) {
+      if (!kw) return true;
+      return (i.title + " " + i.variant + " " + i.route + " " + i.slug).toLowerCase().indexOf(kw) >= 0;
+    });
+    shown += items.length;
+    if (!items.length) return "";
+    return '<div class="sh-grp"><div class="sh-grp-t">' + g.name + "</div><div class=\"sh-list\">" +
+      items.map(function (i) {
+        return '<button class="sh-item' + (i.slug === current ? " on" : "") + '" data-slug="' +
+          i.slug.replace(/"/g, "&quot;") + '">' + i.title +
+          (i.variant ? " <i>· " + i.variant + "</i>" : "") + "</button>";
+      }).join("") + "</div></div>";
+  }).join("") || '<div class="sh-empty">没有匹配的页面</div>';
+  document.getElementById("count").textContent = kw ? shown + " / " + ALL.length + " 屏" : ALL.length + " 屏";
+}
+
+document.getElementById("list").addEventListener("click", function (e) {
+  var b = e.target.closest(".sh-item");
+  if (b) { show(b.dataset.slug); panel.classList.remove("open"); fab.classList.remove("open"); }
+});
+document.getElementById("q").addEventListener("input", render);
+fab.addEventListener("click", function () {
+  panel.classList.toggle("open"); fab.classList.toggle("open");
+  if (panel.classList.contains("open")) document.getElementById("q").focus();
+});
+document.getElementById("close").addEventListener("click", function () {
+  panel.classList.remove("open"); fab.classList.remove("open");
+});
+document.getElementById("toggleFull").addEventListener("click", function () {
+  full = !full;
+  this.classList.toggle("on", full);
+  this.textContent = full ? "一屏" : "整页";
+  show(current, false);
+});
+addEventListener("keydown", function (e) {
+  if (e.key === "Escape") { panel.classList.remove("open"); fab.classList.remove("open"); }
+});
+
+scale();
+show(new URLSearchParams(location.search).get("screen") || ALL[0].slug, false);
+</script>
+</body></html>

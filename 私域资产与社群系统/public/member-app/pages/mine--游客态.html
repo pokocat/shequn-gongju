@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>我的 · 游客态</title>
+<link rel="stylesheet" href="../css/app.css">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.profile{ display: flex; align-items: center; gap: 13.76px; padding: 16.053px; }
+.profile-main{ min-width: 0; }
+.profile-name{ font-size: 24.08px; font-weight: 700; color: var(--ink-900); }
+.profile-tier{ font-size: var(--fs-sec); font-weight: 700; color: var(--signal-800); }
+.mc-role{
+  display: inline-block; margin-top: 5.733px;
+  font-size: var(--fs-meta); color: var(--signal-800);
+  padding: 2.867px 12.04px; border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.5); border: 0.573px solid var(--line-strong);
+}
+
+
+.class-link{ display: flex; }
+.class-link-cell{
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 8.027px;
+  padding: 13.76px 11.467px; border-left: 0.573px solid var(--line-soft);
+}
+.class-link-cell:first-child{ border-left: none; }
+.class-link-t{ display: block; font-size: var(--fs-tiny); color: var(--ink-600); }
+.class-link-d{
+  display: block; margin-top: 2.867px; font-size: var(--fs-sec); font-weight: 700; color: var(--ink-900);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+
+
+.stat-row{ display: flex; }
+.stat-cell{
+  flex: 1; min-width: 0; padding: 16.053px 4.587px; text-align: center;
+  border-left: 0.573px solid var(--line-soft);
+}
+.stat-cell:first-child{ border-left: none; }
+.stat-v{
+  display: block; font-size: 20.067px; font-weight: 700; color: var(--ink-900); line-height: 1.1;
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+.stat-l{ display: block; margin-top: 5.16px; font-size: var(--fs-tiny); color: var(--ink-600); }
+
+
+.mates{ display: flex; justify-content: space-between; }
+.mate{ flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; }
+.mate-n{
+  margin-top: 5.733px; max-width: 100%; font-size: var(--fs-tiny); color: var(--ink-800);
+  overflow: hidden; white-space: nowrap; text-overflow: ellipsis;
+}
+
+.mate-me{
+  margin-top: 2.867px; padding: 1.147px 6.88px; border-radius: var(--r-pill);
+  background: var(--sunk-3); border: 0.573px solid var(--line-brand);
+  font-size: var(--fs-micro); color: var(--signal-800);
+}
+.mate-more{
+  width: 48.16px; height: 48.16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sunk); border: 0.573px solid var(--line);
+}
+
+.upsell{ display: flex; align-items: center; gap: 8.027px; padding: 10.32px 13.76px; }
+.upsell-t{ display: block; font-size: var(--fs-h4); font-weight: 700; color: var(--on-signal); }
+.upsell-d{ display: block; font-size: var(--fs-tiny); color: var(--on-signal-2); margin-top: 2.867px; }
+.upsell-btn{
+  flex-shrink: 0; display: flex; align-items: center; gap: 4.587px;
+  height: 33.253px; padding: 0 13.76px; border-radius: var(--r-pill);
+  background: var(--on-signal-wash);
+  color: var(--on-signal); font-size: var(--fs-sec); font-weight: 700;
+}
+
+.rows{ display: flex; flex-direction: column; gap: 8.027px; }
+.row-t{ font-size: var(--fs-h3); font-weight: 700; color: var(--ink-900); }
+
+.contact{ display: flex; align-items: center; gap: 10.32px; padding: 13.76px; }
+.contact-t{ font-size: var(--fs-h4); font-weight: 700; color: var(--on-signal); }
+.contact-d{ display: block; font-size: var(--fs-tiny); color: var(--on-signal-2); margin-top: 2.867px; }
+.contact-btn{
+  flex-shrink: 0; height: 33.253px; padding: 0 13.76px; border-radius: var(--r-pill);
+  display: flex; align-items: center;
+  background: var(--on-signal-wash);
+  color: var(--on-signal); font-size: var(--fs-sec); font-weight: 700;
+}
+
+.logout{
+  display: flex; align-items: center; justify-content: center; gap: 8.027px;
+  padding: 16.053px;
+}
+.logout-t{ font-size: var(--fs-h4); color: var(--ink-900); }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>我的 · 游客态</h1>
+    <code>/pages/mine/index</code>
+    <span class="mp-tag">游客态</span>
+  </div>
+  <p class="mp-note">TabBar 第 5 格。个人档案 + 班级归属 + 待办 + 功能行。未登录时设置与三份协议入口仍在卡外可用。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+      
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-apphead"><div class="apphead wx-view" style="padding-top:53.893px;"><div class="app-head wx-view" style="padding-right:94.027px;"><div class="app-logo wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:22.933px;height:22.933px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23DDC5FF%22%20stroke-width%3D%221.529%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="app-brand wx-view"><div class="app-brand-row wx-view"><span class="app-name wx-text">主理人公社</span></div><span class="app-sub wx-text">班级、课程与会员服务</span></div></div></div></div><div class="wxc wxc-guest"><div class="card card-pad wx-view"><div class="blank wx-view"><div class="blank-mark wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M19%2021v-2a4%204%200%200%200-4-4H9a4%204%200%200%200-4%204v2%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="blank-title wx-text">登录后查看你的资料与记录</span><span class="blank-hint wx-text">资料、成长值、我的班级、订单与工单都属于你的账号，登录后显示。不登录也可以在「消息」看公告，在「发现」浏览课程与会员方案。</span><div class="btn-grad mt-16 wx-view">微信登录</div><span class="gs-note wx-text">登录只获取微信身份，可随时取消返回</span></div></div></div><div class="rows gap wx-view"><div class="card set-row wx-view"><div class="set-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2357189E%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M9.671%204.136a2.34%202.34%200%200%201%204.659%200%202.34%202.34%200%200%200%203.319%201.915%202.34%202.34%200%200%201%202.33%204.033%202.34%202.34%200%200%200%200%203.831%202.34%202.34%200%200%201-2.33%204.033%202.34%202.34%200%200%200-3.319%201.915%202.34%202.34%200%200%201-4.659%200%202.34%202.34%200%200%200-3.32-1.915%202.34%202.34%200%200%201-2.33-4.033%202.34%202.34%200%200%200%200-3.831A2.34%202.34%200%200%201%206.35%206.051a2.34%202.34%200%200%200%203.319-1.915%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="row-t wx-text">设置</span><span class="t-meta mt-4 block wx-text">协议、隐私指引、缓存与版本</span></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:16.053px;height:16.053px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="card set-row wx-view"><div class="set-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="row-t wx-text">隐私政策</span><span class="t-meta mt-4 block wx-text">我们收集什么、怎么用、如何撤回</span></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:16.053px;height:16.053px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="card set-row wx-view"><div class="set-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236D28D9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M6%2022a2%202%200%200%201-2-2V4a2%202%200%200%201%202-2h8a2.4%202.4%200%200%201%201.704.706l3.588%203.588A2.4%202.4%200%200%201%2020%208v12a2%202%200%200%201-2%202z%22%20%2F%3E%3Cpath%20d%3D%22M14%202v5a1%201%200%200%200%201%201h5%22%20%2F%3E%3Cpath%20d%3D%22M10%209H8%22%20%2F%3E%3Cpath%20d%3D%22M16%2013H8%22%20%2F%3E%3Cpath%20d%3D%22M16%2017H8%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="row-t wx-text">用户协议</span><span class="t-meta mt-4 block wx-text">服务范围与双方责任</span></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:16.053px;height:16.053px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><div class="ta-c mt-16 wx-view"><span class="t-micro wx-text">1.4.2</span></div></div></div>
+      <div class="tabbar wx-view"><div class="tab wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M22%2017a2%202%200%200%201-2%202H6.828a2%202%200%200%200-1.414.586l-2.202%202.202A.71.71%200%200%201%202%2021.286V5a2%202%200%200%201%202-2h16a2%202%200%200%201%202%202z%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div><span class="tab-badge wx-text">3</span></div><span class="tab-label wx-text">消息</span></div><div class="tab wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">微信群</span></div><div class="tab  tab--center wx-view"><div class="tab-knob-box wx-view"><div class="tab-knob wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222.235%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div></div><span class="tab-label wx-text">会员</span></div><div class="tab wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3Cpath%20d%3D%22M3%2015h18%22%20%2F%3E%3Cpath%20d%3D%22M9%203v18%22%20%2F%3E%3Cpath%20d%3D%22M15%203v18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">发现</span></div><div class="tab tab--on wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236D28D9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M19%2021v-2a4%204%200%200%200-4-4H9a4%204%200%200%200-4%204v2%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">我的</span></div></div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+</body></html>

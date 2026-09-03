@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>微信群 · 社群广场</title>
+<link rel="stylesheet" href="../css/app.css">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.class-hero{ padding: 13.76px; overflow: hidden; }
+.class-name{
+  font-size: 28.093px; font-weight: 700;
+  max-width: 217.867px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.class-count{ display: block; font-size: 20.067px; font-weight: 700; color: var(--ink-900); margin-top: 2.293px; }
+.mini-t{ display: block; font-size: var(--fs-sec); font-weight: 700; color: var(--ink-900); }
+.mini-d{ display: block; font-size: var(--fs-tiny); color: var(--ink-600); margin-top: 1.147px; }
+
+
+.class-meta{
+  display: grid; grid-template-columns: 103.2px minmax(0, 1fr); gap: 6.88px;
+  align-items: stretch;
+}
+.class-count-box{ padding: 9.173px 10.32px; }
+.class-contacts{ min-width: 0; padding: 6.88px 10.32px; display: flex; flex-direction: column; justify-content: center; }
+.class-contact{ min-width: 0; display: flex; align-items: center; gap: 6.88px; }
+.class-contact--second{ margin-top: 5.733px; padding-top: 5.733px; border-top: 0.573px solid var(--line-soft); }
+
+
+.gs-row{ gap: 6.88px; padding-top: 8.6px; padding-bottom: 8.6px; }
+.gs-v{ font-size: var(--fs-sec); font-weight: 700; }
+
+
+.big-action{
+  position: relative; border-radius: var(--r-card); padding: 16.053px 13.76px;
+  min-height: 91.733px; display: flex; flex-direction: column; gap: 10.32px;
+  box-sizing: border-box;
+}
+.big-action--grad{
+  background: var(--grad-primary-d);
+  border: 0.573px solid var(--line-signal);
+  box-shadow: var(--sh-signal-sm);
+}
+.big-action--ghost{
+  background: rgba(255, 247, 236, 0.9);
+  border: 0.573px solid rgba(247, 182, 92, 0.4);
+}
+.ba-t{ display: block; font-size: 17.2px; font-weight: 700; color: var(--ink-900); }
+.ba-d{ display: block; font-size: var(--fs-tiny); color: var(--ink-700); margin-top: 2.867px; }
+.ba-t--on{ color: var(--on-signal); }
+.ba-d--on{ color: var(--on-signal-2); }
+
+
+.roster{ display: flex; gap: 13.76px; overflow-x: auto; padding-bottom: 4.587px; }
+.roster-i{ flex: 0 0 auto; width: 55.04px; text-align: center; }
+.roster-n{
+  display: block; margin-top: 5.16px; font-size: var(--fs-tiny); color: var(--ink-900);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.me-pill{
+  display: inline-block; margin-top: 2.867px;
+  font-size: var(--fs-micro); color: var(--signal-600);
+  padding: 1.147px 6.88px; border-radius: 5.16px;
+  background: rgba(124, 58, 237, 0.12); border: 0.573px solid var(--line-brand);
+}
+
+.more-disc{
+  
+  width: 48.16px; height: 48.16px; margin: 0 auto; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--sunk-2); border: 0.573px solid var(--line-brand);
+}
+
+
+
+.sq-hero{ padding: 16.053px; display: flex; align-items: flex-start; gap: 11.467px; }
+
+.sq-title{ display: block; font-size: 29.813px; font-weight: 800; line-height: 1.2; }
+.sq-tools{ display: flex; flex-wrap: wrap; gap: 6.88px; }
+
+.sq-post-t{ font-size: 17.2px; font-weight: 700; color: var(--ink-900); line-height: 1.4; }
+
+.sq-note{
+  display: flex; align-items: flex-start; gap: 6.88px;
+  padding: 11.467px 13.76px; border-radius: 9.173px;
+  background: var(--sunk); border: 0.573px solid var(--line-soft);
+  font-size: var(--fs-tiny); line-height: 1.6; color: var(--ink-600);
+}
+
+.group-boundary{ margin-bottom: 10.32px; }
+
+
+.roster-note{
+  display: flex; align-items: flex-start; gap: 5.733px;
+  margin-top: 8.027px;
+  font-size: var(--fs-tiny); line-height: 1.5; color: var(--ink-600);
+}
+
+
+.task-t{ display: block; font-size: var(--fs-body); font-weight: 600; color: var(--ink-900); }
+.task-st{ font-size: var(--fs-meta); font-weight: 700; }
+
+
+.act-row{
+  display: grid; grid-template-columns: 100.333px minmax(0, 1fr);
+  align-items: start; gap: 8.027px 12.04px;
+}
+.act-thumb{
+  position: relative; width: 100.333px; height: 84.28px; border-radius: 10.32px;
+  padding: 10.32px; box-sizing: border-box;
+  display: flex; align-items: flex-end;
+  background: var(--grad-thumb); border: 0.573px solid var(--line-strong);
+}
+.act-badge{ position: absolute; left: 5.733px; top: 5.733px; }
+.act-cover{ font-size: var(--fs-meta); font-weight: 700; color: var(--signal-800); line-height: 1.3; }
+.act-main{ min-width: 0; }
+.act-t{ display: block; font-size: var(--fs-h4); font-weight: 700; color: var(--ink-900); }
+.act-side{
+  grid-column: 2; display: flex; align-items: center; justify-content: flex-start;
+  flex-wrap: wrap; gap: 4.587px 6.88px; text-align: left;
+}
+.act-cd{ font-size: var(--fs-sec); font-weight: 700; color: var(--ink-900); }
+
+
+
+.act-sheet-t{ display: block; font-size: 24.08px; font-weight: 700; color: var(--ink-900); line-height: 1.3; }
+.info-line{
+  display: flex; align-items: flex-start; gap: 8.027px;
+  padding: 8.027px 0; border-bottom: 0.573px solid var(--line-soft);
+  font-size: var(--fs-sec); color: var(--ink-700); line-height: 1.5;
+}
+.info-line:last-child{ border-bottom: none; }
+
+
+.sq-stats{ flex: 0 0 108.933px; display: flex; flex-direction: column; gap: 4.587px; }
+.sq-stat{
+  padding: 5.733px 9.173px; border-radius: 8.027px;
+  background: var(--sunk-2); border: 0.573px solid var(--line-brand);
+}
+.sq-stat-v{ display: block; font-size: var(--fs-h4); font-weight: 700; color: var(--ink-900); }
+.sq-stat-l{ display: block; margin-top: 1.147px; font-size: var(--fs-micro); color: var(--ink-600); }
+
+
+.sq-post{
+  display: flex; gap: 10.32px; align-items: flex-start;
+  padding: 12.613px 0; border-top: 0.573px solid var(--line-soft);
+}
+.sq-post:first-of-type{ border-top: none; padding-top: 2.293px; }
+
+.sq-post-top{ gap: 6.88px; }
+.sq-name{ flex: none; font-size: var(--fs-sec); font-weight: 700; color: var(--ink-900); }
+.sq-group{ min-width: 0; font-size: var(--fs-tiny); color: var(--signal-800); }
+.sq-topic{ font-size: var(--fs-tiny); font-weight: 700; color: var(--signal-600); }
+
+
+.act-cancel{ font-size: var(--fs-tiny); color: var(--ink-600); text-decoration: underline; }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>微信群 · 社群广场</h1>
+    <code>/pages/group/index</code>
+    <span class="mp-tag">社群广场</span>
+  </div>
+  <p class="mp-note">TabBar 第 2 格。两个页签：我的微信群（班级群 + 成员 + 任务 + 活动）/ 社群广场（跨班动态）。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+      
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-apphead"><div class="apphead wx-view" style="padding-top:53.893px;"><div class="app-head wx-view" style="padding-right:94.027px;"><div class="app-logo wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:22.933px;height:22.933px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23DDC5FF%22%20stroke-width%3D%221.529%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="app-brand wx-view"><div class="app-brand-row wx-view"><span class="app-name wx-text">主理人公社</span></div><span class="app-sub wx-text">班级、课程与会员服务</span></div></div></div></div><div class="topseg wx-view"><div class="topseg-item wx-view">我的微信群</div><div class="topseg-item topseg-item--on wx-view"><span class="wx-text">公告与活动</span><span class="seg-badge wx-text">3</span></div></div><div class="card card--hero sq-hero wx-view"><div class="f-1 wx-view"><span class="tag tag--purple tag--round wx-text">班级信息</span><span class="title-grad sq-title mt-8 wx-text">班级公告与活动</span><span class="t-sec mt-6 block wx-text">这里汇总你所在班级的公告和活动报名信息。</span></div><div class="sq-stats wx-view"><div class="sq-stat wx-view"><span class="sq-stat-v mono wx-text">18</span><span class="sq-stat-l wx-text">活跃微信群</span></div><div class="sq-stat wx-view"><span class="sq-stat-v mono wx-text">1,264</span><span class="sq-stat-l wx-text">在营会员</span></div><div class="sq-stat wx-view"><span class="sq-stat-v mono wx-text">37</span><span class="sq-stat-l wx-text">本周动态</span></div></div></div><div class="sq-note gap wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:14.907px;height:14.907px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2394795E%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%2016v-4%22%20%2F%3E%3Cpath%20d%3D%22M12%208h.01%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="f-1 wx-text">小程序只汇总公告与活动，不提供群聊，也不读取或同步微信群聊天内容。群聊请在微信内进行。</span></div><div class="sq-tools gap wx-view"><div class="chip chip--on wx-view">全部</div><div class="chip wx-view">公告</div><div class="chip wx-view">活动</div><div class="chip wx-view">班级动态</div></div><div class="card card-pad gap wx-view"><div class="f-between mb-12 wx-view"><span class="col-h wx-text">公告与活动</span><span class="t-tiny mono wx-text">4 条</span></div><div class="sq-post wx-view"><div class="wxc wxc-avatar"><div class="avatar wx-view" style="width:36.693px;height:36.693px;"><span class="avatar-ini wx-text" style="font-size:15.48px;">赵</span></div></div><div class="f-1 wx-view"><div class="f sq-post-top wx-view"><span class="sq-name wx-text">赵一川</span><span class="sq-group f-1 truncate wx-text">CA1 班班</span><span class="t-tiny mono wx-text">2 小时前</span></div><span class="sq-topic mt-6 block wx-text"># 班级动态</span><span class="sq-post-t mt-6 block wx-text">本周三直播前记得提交作业</span><span class="t-meta mt-6 clamp-2 block wx-text">《社群冷启动》课后作业请在周三 18:00 前提交，我会在直播里挑 3 份来讲。</span><div class="f-between mt-10 wx-view"><div class="f f-wrap wx-view" style="gap:4.587px;"><span class="tag tag--amber wx-text">作业</span><span class="tag tag--amber wx-text">直播</span></div><div class="btn-sm wx-view">查看详情</div></div></div></div><div class="sq-post wx-view"><div class="wxc wxc-avatar"><div class="avatar wx-view" style="width:36.693px;height:36.693px;"><span class="avatar-ini wx-text" style="font-size:15.48px;">主</span></div></div><div class="f-1 wx-view"><div class="f sq-post-top wx-view"><span class="sq-name wx-text">主理人公社</span><span class="sq-group f-1 truncate wx-text">平台公告</span><span class="t-tiny mono wx-text">今天 09:00</span></div><span class="sq-topic mt-6 block wx-text"># 公告</span><span class="sq-post-t mt-6 block wx-text">9 月新课表已发布</span><span class="t-meta mt-6 clamp-2 block wx-text">本月新增《私域选品实操》《社群续费设计》两门课程，闭门会名额有限。</span><div class="f-between mt-10 wx-view"><div class="f f-wrap wx-view" style="gap:4.587px;"><span class="tag tag--amber wx-text">课程</span><span class="tag tag--red wx-text">重要</span></div><div class="btn-sm wx-view">查看全文</div></div></div></div><div class="sq-post wx-view"><div class="wxc wxc-avatar"><div class="avatar wx-view" style="width:36.693px;height:36.693px;"><span class="avatar-ini wx-text" style="font-size:15.48px;">运</span></div></div><div class="f-1 wx-view"><div class="f sq-post-top wx-view"><span class="sq-name wx-text">运营组</span><span class="sq-group f-1 truncate wx-text">活动</span><span class="t-tiny mono wx-text">昨天 18:30</span></div><span class="sq-topic mt-6 block wx-text"># 活动</span><span class="sq-post-t mt-6 block wx-text">杭州站线下闭门会开放报名</span><span class="t-meta mt-6 clamp-2 block wx-text">9 月 20 日 14:00，湖滨银泰 in77，限 30 人，年卡会员优先。</span><div class="f-between mt-10 wx-view"><div class="f f-wrap wx-view" style="gap:4.587px;"><span class="tag tag--amber wx-text">闭门会</span><span class="tag tag--amber wx-text">杭州</span></div><div class="btn-sm wx-view">去报名</div></div></div></div><div class="sq-post wx-view"><div class="wxc wxc-avatar"><div class="avatar wx-view" style="width:36.693px;height:36.693px;"><span class="avatar-ini wx-text" style="font-size:15.48px;">陈</span></div></div><div class="f-1 wx-view"><div class="f sq-post-top wx-view"><span class="sq-name wx-text">陈书言</span><span class="sq-group f-1 truncate wx-text">CB2 班级</span><span class="t-tiny mono wx-text">前天</span></div><span class="sq-topic mt-6 block wx-text"># 班级动态</span><span class="sq-post-t mt-6 block wx-text">首单破 100 的三个动作</span><span class="t-meta mt-6 clamp-2 block wx-text">把选品收敛到 3 个 SKU、群内做一次限时、让老客带新客——这周跑通了。</span><div class="f-between mt-10 wx-view"><div class="f f-wrap wx-view" style="gap:4.587px;"><span class="tag tag--amber wx-text">选品</span><span class="tag tag--amber wx-text">复盘</span></div><div class="btn-sm wx-view">查看详情</div></div></div></div></div></div></div>
+      <div class="tabbar wx-view"><div class="tab wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M22%2017a2%202%200%200%201-2%202H6.828a2%202%200%200%200-1.414.586l-2.202%202.202A.71.71%200%200%201%202%2021.286V5a2%202%200%200%201%202-2h16a2%202%200%200%201%202%202z%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div><span class="tab-badge wx-text">3</span></div><span class="tab-label wx-text">消息</span></div><div class="tab tab--on wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236D28D9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">微信群</span></div><div class="tab  tab--center wx-view"><div class="tab-knob-box wx-view"><div class="tab-knob wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222.235%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div></div><span class="tab-label wx-text">会员</span></div><div class="tab wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3Cpath%20d%3D%22M3%2015h18%22%20%2F%3E%3Cpath%20d%3D%22M9%203v18%22%20%2F%3E%3Cpath%20d%3D%22M15%203v18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">发现</span></div><div class="tab wx-view"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M19%2021v-2a4%204%200%200%200-4-4H9a4%204%200%200%200-4%204v2%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">我的</span></div></div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+</body></html>
