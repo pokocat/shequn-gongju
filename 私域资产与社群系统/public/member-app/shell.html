@@ -125,23 +125,35 @@ function scale() {
 }
 addEventListener("resize", scale);
 
-function show(slug, push) {
-  var item = ALL.filter(function (i) { return i.slug === slug; })[0] || ALL[0];
-  if (!item) return;
+// 页面内点出去的跳转由 iframe 自己完成（见页面里的 data-nav 脚本），shell 只跟着更新
+// 标题条与清单高亮 —— 否则点了几层之后底部那条信息就是错的，而错的比没有更糟。
+function setCurrent(slug) {
+  var item = ALL.filter(function (i) { return i.slug === slug; })[0];
+  if (!item) return null;
   current = item.slug;
-  frame.src = "pages/" + encodeURIComponent(item.slug) + ".html?embed=1" + (full ? "&full=1" : "");
   document.getElementById("curTitle").textContent = item.title;
   document.getElementById("curRoute").textContent = item.route;
   var v = document.getElementById("curVariant");
   v.textContent = item.variant; v.hidden = !item.variant;
   document.title = item.title + (item.variant ? " · " + item.variant : "") + " · 会员小程序";
-  if (push !== false) {
-    var url = new URL(location.href);
-    url.searchParams.set("screen", item.slug);
-    history.replaceState({ screen: item.slug }, "", url);
-  }
+  var url = new URL(location.href);
+  url.searchParams.set("screen", item.slug);
+  history.replaceState({ screen: item.slug }, "", url);
   render();
+  return item;
 }
+
+function show(slug) {
+  var item = setCurrent(slug) || setCurrent(ALL[0].slug);
+  if (!item) return;
+  frame.src = "pages/" + encodeURIComponent(item.slug) + ".html?embed=1" + (full ? "&full=1" : "");
+}
+
+addEventListener("message", function (e) {
+  var d = e.data || {};
+  if (d.mpScreen) setCurrent(d.mpScreen);
+  if (d.mpBack) { panel.classList.add("open"); fab.classList.add("open"); document.getElementById("q").focus(); }
+});
 
 function render() {
   var kw = document.getElementById("q").value.trim().toLowerCase();
@@ -180,13 +192,13 @@ document.getElementById("toggleFull").addEventListener("click", function () {
   full = !full;
   this.classList.toggle("on", full);
   this.textContent = full ? "一屏" : "整页";
-  show(current, false);
+  show(current);
 });
 addEventListener("keydown", function (e) {
   if (e.key === "Escape") { panel.classList.remove("open"); fab.classList.remove("open"); }
 });
 
 scale();
-show(new URLSearchParams(location.search).get("screen") || ALL[0].slug, false);
+show(new URLSearchParams(location.search).get("screen") || ALL[0].slug);
 </script>
 </body></html>

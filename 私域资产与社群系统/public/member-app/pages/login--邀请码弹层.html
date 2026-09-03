@@ -203,4 +203,25 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
     </div>
   </div>
 </div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "login--邀请码弹层";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
 </body></html>

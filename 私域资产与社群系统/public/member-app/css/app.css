@@ -119,6 +119,10 @@ img { display: inline-block; width: 320px; height: 240px; overflow: hidden; bord
 .wx-canvas-note { font-size: 11px; color: rgba(122,82,54,.6); }
 a { color: inherit; text-decoration: none; }
 
+/* 能跳的地方给个指针。刻意不加 :active 反馈——页面自己的 .cta:active 已经有
+   transform + filter，再叠一层会把它压掉，那是设计的一部分。 */
+[data-nav] { cursor: pointer; }
+
 
 /* ===== app.wxss ===== */
 .mp-page{
