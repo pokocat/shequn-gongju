@@ -657,7 +657,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
   const [gtEditorEditingCode, setGtEditorEditingCode] = useState<string | null>(null); // null=新建
   const blankGtForm = (): GroupRuleForm => ({
     name: "", tier: "培育", capacity: 200, allocationMode: "轮巡分配",
-    memberRoles: ["待配置角色"], cities: ["全国"],
+    memberRoles: [], cities: ["全国"],
     nameTemplate: `{project}·{type}·{seq}群`,
     entryCondition: "", retentionGoal: "", weeklyOps: "",
   });
@@ -676,7 +676,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
       tier: (option.tier || "培育") as GroupRuleForm["tier"],
       capacity: option.capacity ?? 200,
       allocationMode: (option.allocationMode || "轮巡分配") as GroupRuleForm["allocationMode"],
-      memberRoles: [...(option.memberRoles || ["待配置角色"])],
+      memberRoles: [...(option.memberRoles || [])],
       cities: [...(option.cities || ["全国"])],
       nameTemplate: option.nameTemplate || `{project}·{type}·{seq}群`,
       entryCondition: option.entryCondition || "",
@@ -774,8 +774,8 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
               </div>
               <div className="text-[11px] mt-1" style={{ color: S.muted }}>
                 {gtEditorEditingCode
-                  ? "修改已创建的自定义规则（保存后立即生效到分配表单的预览区与详情卡）"
-                  : `填入完整 9 个字段 → 保存后自动追加到【当前模板源：${templateProject || draft.project || "未选择项目"}】下方，并自动设为已选群类型`}
+                  ? "保存后立即回写到分配表单的群类型下拉 / 预览胶囊 / 详情卡"
+                  : `保存后追加到【${templateProject || draft.project || "未选择项目"}】自定义区，自动选中`}
               </div>
             </div>
             <button type="button" aria-label="关闭规则编辑器" onClick={() => setGtEditorOpen(false)}>
@@ -807,10 +807,13 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
                         style={{
                           background: active ? c.bg : S.surface,
                           color: active ? c.color : S.textSec,
-                          border: `1px solid ${active ? c.border : S.border}`,
+                          border: `${active ? 2 : 1}px solid ${active ? c.border : S.border}`,
                           borderRadius: 999,
                           fontWeight: active ? 700 : 500,
                           fontFamily: "monospace",
+                          boxShadow: active ? `0 0 0 2px ${c.border}33` : "none",
+                          transform: active ? "translateY(-1px)" : "none",
+                          transition: "all 0.12s ease",
                         }}>
                         <span style={{ width: 6, height: 6, background: c.dot, borderRadius: 99 }} />
                         {tier}
@@ -903,19 +906,42 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
                     <span className="text-[10px] py-0.5" style={{ color: S.muted }}>常用：</span>
                     {["全国", "北京市", "上海市", "广州市", "深圳市", "杭州市", "成都市", "武汉市", "西安市"].map(city => {
                       const chosen = gtForm.cities.includes(city);
+                      const hasNationwide = gtForm.cities.includes("全国");
+                      const nationBtn = city === "全国";
+                      // 互斥逻辑：选「全国」时只能有它；选具体城市时自动取消全国
+                      const onClick = () => {
+                        if (nationBtn) {
+                          // 点全国 → 切换（选中就设为 ["全国"]，取消就清空）
+                          setGtForm(cur => ({ ...cur, cities: chosen ? [] : ["全国"] }));
+                        } else {
+                          // 点具体城市 → 先去掉全国，再 toggle 这个城市
+                          setGtForm(cur => ({
+                            ...cur,
+                            cities: cur.cities.filter(c => c !== "全国").includes(city)
+                              ? cur.cities.filter(c => c !== city)
+                              : [...cur.cities.filter(c => c !== "全国"), city],
+                          }));
+                        }
+                      };
+                      const disabled = nationBtn ? false : chosen; // 全国永远可点（toggle），已选城市禁用防误点
                       return <button key={city} type="button"
-                        disabled={chosen}
-                        onClick={() => setGtForm(cur => ({ ...cur, cities: [...cur.cities, city] }))}
+                        disabled={disabled}
+                        onClick={onClick}
+                        title={hasNationwide && !nationBtn ? "已选「全国」（不限制地区），取消后可逐个选城市" : ""}
                         className="px-2 py-0.5 text-[10px]"
                         style={{
-                          opacity: chosen ? 0.4 : 1,
-                          background: chosen ? S.surface : "#eff6ff",
-                          color: chosen ? S.muted : "#1e3a8a",
-                          border: `1px solid ${chosen ? S.border : "#bfdbfe"}`,
+                          opacity: disabled || (hasNationwide && !nationBtn) ? 0.4 : 1,
+                          background: chosen ? "#dbeafe" : "#eff6ff",
+                          color: chosen ? "#1e3a8a" : "#1e40af",
+                          border: `1px solid ${chosen ? "#93c5fd" : "#bfdbfe"}`,
                           borderRadius: 6, fontFamily: "monospace",
+                          cursor: disabled ? "not-allowed" : "pointer",
                         }}>{chosen ? "✓ " : "+ "}{city}</button>;
                     })}
                   </div>
+                  {gtForm.cities.includes("全国") && gtForm.cities.length === 1 && (
+                    <div className="text-[10px] mt-0.5" style={{ color: S.muted }}>ℹ️ 已选「全国」= 不限制地区，想指定城市先点掉全国</div>
+                  )}
                 </div>
               </div>
             </div>
@@ -964,30 +990,24 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
           </div>
 
           {/* 底部按钮栏 */}
-          <div className="flex items-center justify-between gap-3 px-5 py-3 flex-shrink-0"
+          <div className="flex items-center justify-end gap-2 px-5 py-3 flex-shrink-0"
             style={{ borderTop: `1px solid ${S.border}`, background: S.bg }}>
-            <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>
-              {gtEditorEditingCode
-                ? "保存后立即回写到当前分配表单的群类型下拉 / 预览胶囊 / 详情卡"
-                : "保存后立即追加到当前【项目模板：" + (templateProject || "—") + "】的自定义区，并自动设为当前已选群类型"}
-            </div>
-            <div className="flex gap-2">
               <button type="button" onClick={() => setGtEditorOpen(false)}
                 className="px-4 py-2 text-sm font-medium"
                 style={{ background: S.surface, color: S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}>取消</button>
               <button type="button" onClick={saveGtEditor}
                 disabled={!gtForm.name.trim()}
+                title={!gtForm.name.trim() ? "请先填写「群类型名称」" : ""}
                 className="px-5 py-2 text-sm font-bold"
                 style={{
                   background: gtForm.name.trim() ? S.primary : "#d1d5db",
                   color: "#ffffff",
                   borderRadius: S.radius,
-                  opacity: gtForm.name.trim() ? 1 : 0.6,
+                  opacity: gtForm.name.trim() ? 1 : 0.55,
                   cursor: gtForm.name.trim() ? "pointer" : "not-allowed",
                 }}>
                 {gtEditorEditingCode ? "✎ 保存修改" : "✚ 创建并选中此规则"}
               </button>
-            </div>
           </div>
         </div>
       </div>,
