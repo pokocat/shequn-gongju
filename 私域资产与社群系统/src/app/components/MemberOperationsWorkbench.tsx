@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { CalendarDays, Send, UserRound } from "lucide-react";
 import Activities from "./Activities";
-import ProjectAssetList from "./ProjectAssetList";
+import InfluenceRanking from "./InfluenceRanking";
 import PushTasks from "./PushTasks";
 import { S, useThemeSingleton } from "../theme";
 type WorkbenchView = "members" | "push" | "activities";
 
 const workbenchTabs: Array<{ id: WorkbenchView; label: string; icon: typeof UserRound; badge?: string; description: string }> = [
-  { id: "members", label: "会员运营", icon: UserRound, description: "按项目查看微信号、微信群与代理会员" },
+  { id: "members", label: "会员运营", icon: UserRound, description: "会员任务、画像、关系链与订单服务" },
   { id: "push", label: "推送任务", icon: Send, badge: "3", description: "触达计划、模板与执行日志" },
   { id: "activities", label: "活动运营", icon: CalendarDays, description: "活动、课程与报名运营" },
 ];
@@ -25,7 +25,7 @@ const [activeView, setActiveView] = useState<WorkbenchView>("members");
               <h1 className="m-0 text-base font-bold" style={{ color: S.text }}>会员运营工作台</h1>
               <span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: "rgba(204,255,0,0.22)", color: "#4f6500", borderRadius: "999px" }}>日常运营</span>
             </div>
-            <p className="m-0 mt-1 text-[11px]" style={{ color: S.muted }}>按项目维度查看并运营微信号、微信群与代理会员</p>
+            <p className="m-0 mt-1 text-[11px]" style={{ color: S.muted }}>围绕会员执行触达、活动与持续运营</p>
           </div>
           <span className="hidden lg:block text-[10px] whitespace-nowrap" style={{ color: S.muted }}>当前项目 · 会员项目</span>
         </div>
@@ -60,7 +60,7 @@ const [activeView, setActiveView] = useState<WorkbenchView>("members");
       </header>
 
       <div className="flex-1 min-h-0 overflow-hidden">
-        {activeView === "members" && <ProjectAssetList />}
+        {activeView === "members" && <InfluenceRanking />}
         {activeView === "push" && <div className="h-full overflow-auto"><PushTasks /></div>}
         {activeView === "activities" && <Activities />}
       </div>
