@@ -6,6 +6,43 @@ import { useCommunityData } from "../data/communityDataStore";
 import { defaultGroupTypeRules, getGroupRulesForProject, tierColorMap } from "../data/projectGroupRules";
 import { initialProjects, projectStatusBadge } from "../data/communicationTools";
 import { S, useThemeSingleton } from "../theme";
+
+/** 群类型模板：AIF01~AIF05 对应 引流/培育/转化/交付/IP私域（与群类型规则预览一致） */
+const GROUP_TYPE_TEMPLATES: Array<{
+  code: string; tier: string; label: string; short: string;
+}> = [
+  { code: "AIF01", tier: "引流", label: "流量营",   short: "引流" },
+  { code: "AIF02", tier: "培育", label: "体验营",   short: "培育" },
+  { code: "AIF03", tier: "转化", label: "选课群",   short: "转化" },
+  { code: "AIF04", tier: "交付", label: "正价班级", short: "交付" },
+  { code: "AIF05", tier: "IP私域", label: "讲师私域", short: "IP" },
+];
+/** 项目名 → 群名前缀短码（避免卡面截断太厉害） */
+const PROJECT_SHORT: Record<string, string> = {
+  "AI学习社群":     "AI学",
+  "AI艺人孵化平台": "AI艺",
+  "AI知识付费平台": "AI知",
+  "AI教育平台":     "AI教",
+};
+/**
+ * 根据账号的归属项目 + groupCount 推导已应用群位的真实群名：
+ * {短项目}·{标签} {AIFXX} {2位序号}群[-第N轮]。未使用/无群数返回空数组。
+ * 注意：本函数在下方 mockWechats.map 的顶层执行中被同步调用，因此其依赖
+ * 的 GROUP_TYPE_TEMPLATES / PROJECT_SHORT 常量必须先于 map 初始化。
+ */
+function buildAssignedGroupNames(item: { status: string; project: string; groupCount: number }): string[] {
+  if (item.status !== "使用中" || !item.groupCount || item.groupCount <= 0) return [];
+  const short = PROJECT_SHORT[item.project] || item.project || "群";
+  const n = Math.min(Math.max(0, item.groupCount), 20);
+  return Array.from({ length: n }, (_, i) => {
+    const tpl = GROUP_TYPE_TEMPLATES[i % GROUP_TYPE_TEMPLATES.length];
+    const round = Math.floor(i / GROUP_TYPE_TEMPLATES.length) + 1; // 第几轮
+    const seqNo = String(i + 1).padStart(2, "0");
+    const roundTag = round >= 2 ? `-第${round}轮` : "";
+    return `${short}·${tpl.label} ${tpl.code} ${seqNo}群${roundTag}`;
+  });
+}
+
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const mockWechats = [
   { no: "00001", wechatId: "wx_ai_01", phone: "138-0012-3456", status: "使用中", nickname: "思远", gender: "男", qqNo: "287634521", boundEmail: "wsy@eco-saas.com", opsManager: "吴思远", memberManager: "张明", certified: true, invitedNew: 42, scanCount: 386, friendCount: 1823, city: "全国", project: "AI学习社群", lastLogin: "2026-07-05", groupCount: 16, isInitiator: true, targetGroup: "AI学习社群·早鸟群", targetGroupCount: 3, credential: "已认证" },
@@ -46,45 +83,6 @@ const mockWechats = [
   wechatQrName: item.status === "未使用" ? "" : "微信二维码已同步",
   groupType: item.targetGroup.includes("体验官") ? "体验官" : item.targetGroup.includes("代理") ? "游客" : item.targetGroup === "—" ? "" : "会员群",
 }));
-
-/**
- * 根据账号的归属项目 + targetGroup 推导出：该账号 20 个群位中已经"被应用"的那些
- * 真实群名（不再是写死的"已绑定二维码"占位符）。
- *
- * 命名规则按群类型模板（用户截图上的胶囊：流量营 AIF01 引流 / 体验营 AIF02 培育 /
- * 选课群 AIF03 转化 / 正价班级 AIF04 交付 / 讲师私域 AIF05 IP私域）+ 项目短码 + 序号
- * （{项目}{AIFXX}-{2 位序号}群）。例如 wx_ai_01 属于"AI学习社群"，会按 5 种群类型
- * 循环铺满其 groupCount=16 个群位。异常 / 账号未分配（status!=使用中）返回空数组。
- */
-const GROUP_TYPE_TEMPLATES: Array<{
-  code: string; tier: string; label: string; short: string;
-}> = [
-  { code: "AIF01", tier: "引流", label: "流量营",   short: "引流" },
-  { code: "AIF02", tier: "培育", label: "体验营",   short: "培育" },
-  { code: "AIF03", tier: "转化", label: "选课群",   short: "转化" },
-  { code: "AIF04", tier: "交付", label: "正价班级", short: "交付" },
-  { code: "AIF05", tier: "IP私域", label: "讲师私域", short: "IP" },
-];
-// 项目名 → 群名前缀短码（避免"AI学习社群-流量营…"太长，卡面截断太厉害）
-const PROJECT_SHORT: Record<string, string> = {
-  "AI学习社群":     "AI学",
-  "AI艺人孵化平台": "AI艺",
-  "AI知识付费平台": "AI知",
-  "AI教育平台":     "AI教",
-};
-function buildAssignedGroupNames(item: (typeof mockWechats)[number]): string[] {
-  if (item.status !== "使用中" || !item.groupCount || item.groupCount <= 0) return [];
-  const short = PROJECT_SHORT[item.project] || item.project || "群";
-  const n = Math.min(Math.max(0, item.groupCount), 20);
-  return Array.from({ length: n }, (_, i) => {
-    const tpl = GROUP_TYPE_TEMPLATES[i % GROUP_TYPE_TEMPLATES.length];
-    const round = Math.floor(i / GROUP_TYPE_TEMPLATES.length) + 1; // 第几轮
-    const seqNo = String(i + 1).padStart(2, "0");
-    // 规则：{短项目}·{标签} {AIFXX} {序号}群 ；round>=2 时末尾加 "-第N轮" 避免重名
-    const roundTag = round >= 2 ? `-第${round}轮` : "";
-    return `${short}·${tpl.label} ${tpl.code} ${seqNo}群${roundTag}`;
-  });
-}
 
 // ─── 模拟账号资产中心人员池（按人视图所需：角色/容量/负责项目）────
 const assetPeoplePool: Record<string, {
