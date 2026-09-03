@@ -1,0 +1,1528 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主理人公社 · 会员小程序页面总览</title>
+<style>
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #17110c; color: #e8dccb;
+  font: 13px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", sans-serif; padding: 36px 32px 80px; }
+header.top { max-width: 1500px; margin: 0 auto 30px; }
+h1 { margin: 0 0 8px; font-size: 26px; color: #fff; letter-spacing: 1px; }
+.sub { margin: 0; color: #a89179; max-width: 900px; }
+.sub b { color: #e2c79c; font-weight: 600; }
+.g-h { max-width: 1500px; margin: 44px auto 18px; font-size: 14px; color: #e2c79c; font-weight: 700;
+  letter-spacing: 1px; border-bottom: 1px solid #33251a; padding-bottom: 10px; }
+.g-h em { font-style: normal; font-weight: 400; color: #8c7355; font-size: 11px; margin-left: 6px; }
+.grid { max-width: 1500px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(258px, 1fr)); gap: 30px 24px; }
+.g-card { margin: 0; }
+.g-thumb { display: block; position: relative; width: 100%; aspect-ratio: 430 / 932;
+  border-radius: 22px; overflow: hidden; background: #FFF7EC;
+  box-shadow: 0 0 0 1px #3a2b1c, 0 14px 30px rgba(0,0,0,.45); }
+.g-thumb iframe { position: absolute; top: 0; left: 0; width: 430px; height: 932px;
+  border: 0; transform-origin: 0 0; }
+.g-hit { position: absolute; inset: 0; }
+.g-thumb:hover { box-shadow: 0 0 0 2px #7C3AED, 0 18px 36px rgba(0,0,0,.55); }
+figcaption { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+figcaption b { color: #fff; font-size: 13px; }
+figcaption code { font: 10px/1 "SF Mono", Menlo, monospace; color: #8c7355; }
+.g-tag { font-size: 10px; padding: 1px 7px; border-radius: 999px; background: #3b2a1a; color: #e2c79c; }
+.hint { max-width: 1500px; margin: 0 auto 26px; padding: 14px 18px; border-radius: 12px;
+  background: #201710; border: 1px solid #382a1b; color: #b79a74; font-size: 12px; }
+.hint code { color: #e2c79c; }
+</style>
+</head><body>
+<header class="top">
+  <h1>主理人公社 · 会员小程序</h1>
+  <p class="sub">共 <b>147</b> 屏，画布 <b>430 × 932</b>（iPhone 14 Pro Max，与设计稿同尺寸）。
+  由 <code>apps/member-app/miniprogram</code> 的真实 WXML / WXSS 自动导出，样式与线上一致；
+  文字与数字是<b>演示数据</b>。点缩略图看单屏，单屏里可切「整页 / 一屏」。</p>
+</header>
+<div class="hint">
+  灰底 iframe 或空白缩略图 = 浏览器拦了本地 <code>file://</code> 内嵌。
+  在 <code>design-export/</code> 里跑一次 <code>python3 -m http.server 8000</code>，再开 <code>http://localhost:8000</code> 即可。
+</div>
+<section><h2 class="g-h">主导航（TabBar） <em>19 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/notifications.html">
+        <iframe src="pages/notifications.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>消息中心</b>
+        <code>/pages/notifications/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/notifications--%E4%BC%9A%E8%AF%9D%E8%AF%A6%E6%83%85.html">
+        <iframe src="pages/notifications--%E4%BC%9A%E8%AF%9D%E8%AF%A6%E6%83%85.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>消息中心</b><span class="g-tag">会话详情</span>
+        <code>/pages/notifications/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/notifications--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/notifications--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>消息中心</b><span class="g-tag">游客态</span>
+        <code>/pages/notifications/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/notifications--%E6%90%9C%E7%B4%A2%E6%97%A0%E7%BB%93%E6%9E%9C.html">
+        <iframe src="pages/notifications--%E6%90%9C%E7%B4%A2%E6%97%A0%E7%BB%93%E6%9E%9C.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>消息中心</b><span class="g-tag">搜索无结果</span>
+        <code>/pages/notifications/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/index.html">
+        <iframe src="pages/index.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>发现（首页）</b>
+        <code>/pages/index/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/index--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/index--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>发现（首页）</b><span class="g-tag">游客态</span>
+        <code>/pages/index/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/index--%E5%8A%A0%E8%BD%BD%E9%AA%A8%E6%9E%B6.html">
+        <iframe src="pages/index--%E5%8A%A0%E8%BD%BD%E9%AA%A8%E6%9E%B6.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>发现（首页）</b><span class="g-tag">加载骨架</span>
+        <code>/pages/index/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/index--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/index--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>发现（首页）</b><span class="g-tag">加载失败</span>
+        <code>/pages/index/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group.html">
+        <iframe src="pages/group.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信群</b>
+        <code>/pages/group/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group--%E7%A4%BE%E7%BE%A4%E5%B9%BF%E5%9C%BA.html">
+        <iframe src="pages/group--%E7%A4%BE%E7%BE%A4%E5%B9%BF%E5%9C%BA.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信群</b><span class="g-tag">社群广场</span>
+        <code>/pages/group/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group--%E6%B4%BB%E5%8A%A8%E8%AF%A6%E6%83%85%E5%BC%B9%E5%B1%82.html">
+        <iframe src="pages/group--%E6%B4%BB%E5%8A%A8%E8%AF%A6%E6%83%85%E5%BC%B9%E5%B1%82.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信群</b><span class="g-tag">活动详情弹层</span>
+        <code>/pages/group/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/group--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信群</b><span class="g-tag">游客态</span>
+        <code>/pages/group/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group--%E6%9C%AA%E5%85%A5%E7%BE%A4.html">
+        <iframe src="pages/group--%E6%9C%AA%E5%85%A5%E7%BE%A4.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信群</b><span class="g-tag">未入群</span>
+        <code>/pages/group/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/member.html">
+        <iframe src="pages/member.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>数字会员卡</b>
+        <code>/pages/member/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/member--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/member--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>数字会员卡</b><span class="g-tag">游客态</span>
+        <code>/pages/member/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/member--%E6%9C%AA%E4%BB%98%E8%B4%B9.html">
+        <iframe src="pages/member--%E6%9C%AA%E4%BB%98%E8%B4%B9.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>数字会员卡</b><span class="g-tag">未付费</span>
+        <code>/pages/member/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/mine.html">
+        <iframe src="pages/mine.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的</b>
+        <code>/pages/mine/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/mine--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/mine--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的</b><span class="g-tag">游客态</span>
+        <code>/pages/mine/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/mine--%E8%B5%84%E6%96%99%E7%BC%96%E8%BE%91%E5%BC%B9%E5%B1%82.html">
+        <iframe src="pages/mine--%E8%B5%84%E6%96%99%E7%BC%96%E8%BE%91%E5%BC%B9%E5%B1%82.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的</b><span class="g-tag">资料编辑弹层</span>
+        <code>/pages/mine/index</code>
+      </figcaption>
+    </figure></div></section><section><h2 class="g-h">登录与入驻 <em>30 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/login.html">
+        <iframe src="pages/login.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>登录</b>
+        <code>/pages/login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/login--%E6%9C%AA%E5%8B%BE%E9%80%89%E5%8D%8F%E8%AE%AE.html">
+        <iframe src="pages/login--%E6%9C%AA%E5%8B%BE%E9%80%89%E5%8D%8F%E8%AE%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>登录</b><span class="g-tag">未勾选协议</span>
+        <code>/pages/login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/login--%E9%82%80%E8%AF%B7%E7%A0%81%E5%BC%B9%E5%B1%82.html">
+        <iframe src="pages/login--%E9%82%80%E8%AF%B7%E7%A0%81%E5%BC%B9%E5%B1%82.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>登录</b><span class="g-tag">邀请码弹层</span>
+        <code>/pages/login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/login--%E9%82%80%E8%AF%B7%E7%A0%81%E6%A0%A1%E9%AA%8C%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/login--%E9%82%80%E8%AF%B7%E7%A0%81%E6%A0%A1%E9%AA%8C%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>登录</b><span class="g-tag">邀请码校验失败</span>
+        <code>/pages/login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/login--%E7%99%BB%E5%BD%95%E4%B8%AD.html">
+        <iframe src="pages/login--%E7%99%BB%E5%BD%95%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>登录</b><span class="g-tag">登录中</span>
+        <code>/pages/login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/settings.html">
+        <iframe src="pages/settings.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>设置</b>
+        <code>/pages/settings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/settings--%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF%E6%B8%85%E5%8D%95%E5%B1%95%E5%BC%80.html">
+        <iframe src="pages/settings--%E4%B8%AA%E4%BA%BA%E4%BF%A1%E6%81%AF%E6%B8%85%E5%8D%95%E5%B1%95%E5%BC%80.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>设置</b><span class="g-tag">个人信息清单展开</span>
+        <code>/pages/settings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/settings--%E6%B3%A8%E9%94%80%E8%B4%A6%E5%8F%B7%E5%BC%B9%E5%B1%82.html">
+        <iframe src="pages/settings--%E6%B3%A8%E9%94%80%E8%B4%A6%E5%8F%B7%E5%BC%B9%E5%B1%82.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>设置</b><span class="g-tag">注销账号弹层</span>
+        <code>/pages/settings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/settings--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/settings--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>设置</b><span class="g-tag">游客态</span>
+        <code>/pages/settings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/agreement.html">
+        <iframe src="pages/agreement.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>协议与政策</b>
+        <code>/pages/agreement/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/agreement--%E7%94%A8%E6%88%B7%E5%8D%8F%E8%AE%AE.html">
+        <iframe src="pages/agreement--%E7%94%A8%E6%88%B7%E5%8D%8F%E8%AE%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>协议与政策</b><span class="g-tag">用户协议</span>
+        <code>/pages/agreement/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login.html">
+        <iframe src="pages/scan-login.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E8%B5%84%E6%96%99%E5%BE%85%E5%AE%8C%E5%96%84.html">
+        <iframe src="pages/scan-login--%E8%B5%84%E6%96%99%E5%BE%85%E5%AE%8C%E5%96%84.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">资料待完善</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E8%B5%84%E6%96%99%E7%BC%96%E8%BE%91%E5%BC%B9%E5%B1%82.html">
+        <iframe src="pages/scan-login--%E8%B5%84%E6%96%99%E7%BC%96%E8%BE%91%E5%BC%B9%E5%B1%82.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">资料编辑弹层</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E7%A1%AE%E8%AE%A4%E4%B8%AD.html">
+        <iframe src="pages/scan-login--%E7%A1%AE%E8%AE%A4%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">确认中</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E5%B7%B2%E7%A1%AE%E8%AE%A4%E7%99%BB%E5%BD%95.html">
+        <iframe src="pages/scan-login--%E5%B7%B2%E7%A1%AE%E8%AE%A4%E7%99%BB%E5%BD%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">已确认登录</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E7%AD%89%E5%BE%85%E6%89%B9%E5%87%86.html">
+        <iframe src="pages/scan-login--%E7%AD%89%E5%BE%85%E6%89%B9%E5%87%86.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">等待批准</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E5%B7%B2%E5%8F%96%E6%B6%88.html">
+        <iframe src="pages/scan-login--%E5%B7%B2%E5%8F%96%E6%B6%88.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">已取消</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E6%9C%AA%E7%99%BB%E5%BD%95.html">
+        <iframe src="pages/scan-login--%E6%9C%AA%E7%99%BB%E5%BD%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">未登录</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E7%A5%A8%E6%8D%AE%E5%A4%B1%E6%95%88.html">
+        <iframe src="pages/scan-login--%E7%A5%A8%E6%8D%AE%E5%A4%B1%E6%95%88.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">票据失效</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/scan-login--%E9%AA%A8%E6%9E%B6.html">
+        <iframe src="pages/scan-login--%E9%AA%A8%E6%9E%B6.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>扫码登录确认</b><span class="g-tag">骨架</span>
+        <code>/pages/scan-login/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard.html">
+        <iframe src="pages/account-onboard.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E6%89%8B%E6%9C%BA%E5%8F%B7%E5%B7%B2%E5%9C%A8%E6%A1%A3.html">
+        <iframe src="pages/account-onboard--%E6%89%8B%E6%9C%BA%E5%8F%B7%E5%B7%B2%E5%9C%A8%E6%A1%A3.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">手机号已在档</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E6%8F%90%E4%BA%A4%E4%B8%AD.html">
+        <iframe src="pages/account-onboard--%E6%8F%90%E4%BA%A4%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">提交中</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E5%B7%B2%E6%8E%88%E6%9D%83.html">
+        <iframe src="pages/account-onboard--%E5%B7%B2%E6%8E%88%E6%9D%83.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">已授权</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E5%B7%B2%E5%8F%96%E6%B6%88.html">
+        <iframe src="pages/account-onboard--%E5%B7%B2%E5%8F%96%E6%B6%88.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">已取消</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E6%8E%88%E6%9D%83%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/account-onboard--%E6%8E%88%E6%9D%83%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">授权失败</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E6%B2%A1%E6%9C%89%E6%89%BE%E5%88%B0%E6%8E%88%E6%9D%83%E8%AF%B7%E6%B1%82.html">
+        <iframe src="pages/account-onboard--%E6%B2%A1%E6%9C%89%E6%89%BE%E5%88%B0%E6%8E%88%E6%9D%83%E8%AF%B7%E6%B1%82.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">没有找到授权请求</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E6%9C%AA%E7%99%BB%E5%BD%95.html">
+        <iframe src="pages/account-onboard--%E6%9C%AA%E7%99%BB%E5%BD%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">未登录</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/account-onboard--%E9%AA%A8%E6%9E%B6.html">
+        <iframe src="pages/account-onboard--%E9%AA%A8%E6%9E%B6.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>微信号录入授权</b><span class="g-tag">骨架</span>
+        <code>/pages/account-onboard/index</code>
+      </figcaption>
+    </figure></div></section><section><h2 class="g-h">会员与支付 <em>22 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/subscribe.html">
+        <iframe src="pages/subscribe.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>开通会员</b>
+        <code>/pages/subscribe/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/subscribe--iOS%20%E5%8F%97%E9%99%90.html">
+        <iframe src="pages/subscribe--iOS%20%E5%8F%97%E9%99%90.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>开通会员</b><span class="g-tag">iOS 受限</span>
+        <code>/pages/subscribe/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/subscribe--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/subscribe--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>开通会员</b><span class="g-tag">加载失败</span>
+        <code>/pages/subscribe/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/payment.html">
+        <iframe src="pages/payment.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>确认支付</b>
+        <code>/pages/payment/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/payment--%E6%89%8B%E6%9C%BA%E5%8F%B7%E6%9C%AA%E7%BB%91%E5%AE%9A.html">
+        <iframe src="pages/payment--%E6%89%8B%E6%9C%BA%E5%8F%B7%E6%9C%AA%E7%BB%91%E5%AE%9A.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>确认支付</b><span class="g-tag">手机号未绑定</span>
+        <code>/pages/payment/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/payment--%E6%94%AF%E4%BB%98%E4%B8%AD.html">
+        <iframe src="pages/payment--%E6%94%AF%E4%BB%98%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>确认支付</b><span class="g-tag">支付中</span>
+        <code>/pages/payment/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/payment--iOS%20%E5%8F%97%E9%99%90.html">
+        <iframe src="pages/payment--iOS%20%E5%8F%97%E9%99%90.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>确认支付</b><span class="g-tag">iOS 受限</span>
+        <code>/pages/payment/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/success.html">
+        <iframe src="pages/success.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>支付成功</b>
+        <code>/pages/success/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/success--%E5%B7%B2%E5%85%A5%E7%BE%A4.html">
+        <iframe src="pages/success--%E5%B7%B2%E5%85%A5%E7%BE%A4.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>支付成功</b><span class="g-tag">已入群</span>
+        <code>/pages/success/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/member-code.html">
+        <iframe src="pages/member-code.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>会员码</b>
+        <code>/pages/member-code/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/member-code--%E4%BC%9A%E5%91%98%E6%9C%AA%E7%94%9F%E6%95%88.html">
+        <iframe src="pages/member-code--%E4%BC%9A%E5%91%98%E6%9C%AA%E7%94%9F%E6%95%88.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>会员码</b><span class="g-tag">会员未生效</span>
+        <code>/pages/member-code/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/renewal.html">
+        <iframe src="pages/renewal.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>会员续费</b>
+        <code>/pages/renewal/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/renewal--%E5%B7%B2%E8%BF%87%E6%9C%9F.html">
+        <iframe src="pages/renewal--%E5%B7%B2%E8%BF%87%E6%9C%9F.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>会员续费</b><span class="g-tag">已过期</span>
+        <code>/pages/renewal/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/orders.html">
+        <iframe src="pages/orders.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的订单</b>
+        <code>/pages/orders/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/orders--%E8%BF%98%E6%B2%A1%E6%9C%89%E8%AE%A2%E5%8D%95.html">
+        <iframe src="pages/orders--%E8%BF%98%E6%B2%A1%E6%9C%89%E8%AE%A2%E5%8D%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的订单</b><span class="g-tag">还没有订单</span>
+        <code>/pages/orders/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/orders--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/orders--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的订单</b><span class="g-tag">加载失败</span>
+        <code>/pages/orders/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/refund.html">
+        <iframe src="pages/refund.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>申请退款</b>
+        <code>/pages/refund/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/refund--%E6%B2%A1%E6%9C%89%E5%8F%AF%E9%80%80%E8%AE%A2%E5%8D%95.html">
+        <iframe src="pages/refund--%E6%B2%A1%E6%9C%89%E5%8F%AF%E9%80%80%E8%AE%A2%E5%8D%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>申请退款</b><span class="g-tag">没有可退订单</span>
+        <code>/pages/refund/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/refund--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/refund--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>申请退款</b><span class="g-tag">游客态</span>
+        <code>/pages/refund/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/refund-result.html">
+        <iframe src="pages/refund-result.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>退款进度</b>
+        <code>/pages/refund-result/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/refund-result--%E5%AE%A1%E6%A0%B8%E4%B8%AD.html">
+        <iframe src="pages/refund-result--%E5%AE%A1%E6%A0%B8%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>退款进度</b><span class="g-tag">审核中</span>
+        <code>/pages/refund-result/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/refund-result--%E5%B7%B2%E9%A9%B3%E5%9B%9E.html">
+        <iframe src="pages/refund-result--%E5%B7%B2%E9%A9%B3%E5%9B%9E.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>退款进度</b><span class="g-tag">已驳回</span>
+        <code>/pages/refund-result/index</code>
+      </figcaption>
+    </figure></div></section><section><h2 class="g-h">权益与成长 <em>14 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/benefits.html">
+        <iframe src="pages/benefits.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>会员权益</b>
+        <code>/pages/benefits/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/benefits--%E7%AD%89%E7%BA%A7%E5%AF%B9%E6%AF%94%E5%BC%B9%E5%B1%82.html">
+        <iframe src="pages/benefits--%E7%AD%89%E7%BA%A7%E5%AF%B9%E6%AF%94%E5%BC%B9%E5%B1%82.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>会员权益</b><span class="g-tag">等级对比弹层</span>
+        <code>/pages/benefits/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/benefits--%E6%9C%AA%E5%BC%80%E9%80%9A%E4%BC%9A%E5%91%98.html">
+        <iframe src="pages/benefits--%E6%9C%AA%E5%BC%80%E9%80%9A%E4%BC%9A%E5%91%98.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>会员权益</b><span class="g-tag">未开通会员</span>
+        <code>/pages/benefits/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/benefit-detail.html">
+        <iframe src="pages/benefit-detail.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>权益详情</b>
+        <code>/pages/benefit-detail/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/benefit-detail--%E8%A7%84%E5%88%99%E5%B1%95%E5%BC%80.html">
+        <iframe src="pages/benefit-detail--%E8%A7%84%E5%88%99%E5%B1%95%E5%BC%80.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>权益详情</b><span class="g-tag">规则展开</span>
+        <code>/pages/benefit-detail/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/benefit-detail--%E6%9D%83%E7%9B%8A%E6%9C%AA%E8%A7%A3%E9%94%81.html">
+        <iframe src="pages/benefit-detail--%E6%9D%83%E7%9B%8A%E6%9C%AA%E8%A7%A3%E9%94%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>权益详情</b><span class="g-tag">权益未解锁</span>
+        <code>/pages/benefit-detail/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/points.html">
+        <iframe src="pages/points.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>成长值</b>
+        <code>/pages/points/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/points--%E5%B7%B2%E6%BB%A1%E7%BA%A7.html">
+        <iframe src="pages/points--%E5%B7%B2%E6%BB%A1%E7%BA%A7.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>成长值</b><span class="g-tag">已满级</span>
+        <code>/pages/points/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/points--%E8%BF%98%E6%B2%A1%E6%9C%89%E6%98%8E%E7%BB%86.html">
+        <iframe src="pages/points--%E8%BF%98%E6%B2%A1%E6%9C%89%E6%98%8E%E7%BB%86.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>成长值</b><span class="g-tag">还没有明细</span>
+        <code>/pages/points/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/invite.html">
+        <iframe src="pages/invite.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>邀请推荐</b>
+        <code>/pages/invite/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/invite--%E5%85%A8%E9%83%A8%E5%B1%95%E5%BC%80.html">
+        <iframe src="pages/invite--%E5%85%A8%E9%83%A8%E5%B1%95%E5%BC%80.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>邀请推荐</b><span class="g-tag">全部展开</span>
+        <code>/pages/invite/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/invite--%E8%BF%98%E6%B2%A1%E6%9C%89%E9%82%80%E8%AF%B7%E8%BF%87.html">
+        <iframe src="pages/invite--%E8%BF%98%E6%B2%A1%E6%9C%89%E9%82%80%E8%AF%B7%E8%BF%87.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>邀请推荐</b><span class="g-tag">还没有邀请过</span>
+        <code>/pages/invite/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/invite-poster.html">
+        <iframe src="pages/invite-poster.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>邀请海报</b>
+        <code>/pages/invite-poster/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/invite-poster--%E7%94%9F%E6%88%90%E4%B8%AD.html">
+        <iframe src="pages/invite-poster--%E7%94%9F%E6%88%90%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>邀请海报</b><span class="g-tag">生成中</span>
+        <code>/pages/invite-poster/index</code>
+      </figcaption>
+    </figure></div></section><section><h2 class="g-h">班级与入群 <em>17 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group-qr.html">
+        <iframe src="pages/group-qr.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>入群方式</b>
+        <code>/pages/group-qr/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group-qr--%E5%BE%85%E5%AE%89%E7%BD%AE.html">
+        <iframe src="pages/group-qr--%E5%BE%85%E5%AE%89%E7%BD%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>入群方式</b><span class="g-tag">待安置</span>
+        <code>/pages/group-qr/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group-qr--%E5%85%88%E5%8A%A0%E9%A1%BE%E9%97%AE.html">
+        <iframe src="pages/group-qr--%E5%85%88%E5%8A%A0%E9%A1%BE%E9%97%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>入群方式</b><span class="g-tag">先加顾问</span>
+        <code>/pages/group-qr/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/group-qr--%E5%B7%B2%E5%85%A5%E7%BE%A4.html">
+        <iframe src="pages/group-qr--%E5%B7%B2%E5%85%A5%E7%BE%A4.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>入群方式</b><span class="g-tag">已入群</span>
+        <code>/pages/group-qr/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/advisor.html">
+        <iframe src="pages/advisor.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>添加服务顾问</b>
+        <code>/pages/advisor/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/advisor--%E6%B4%BB%E7%A0%81%E6%9C%AA%E5%B0%B1%E7%BB%AA.html">
+        <iframe src="pages/advisor--%E6%B4%BB%E7%A0%81%E6%9C%AA%E5%B0%B1%E7%BB%AA.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>添加服务顾问</b><span class="g-tag">活码未就绪</span>
+        <code>/pages/advisor/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/advisor--%E6%9C%AA%E5%88%86%E9%85%8D%E9%A1%BE%E9%97%AE.html">
+        <iframe src="pages/advisor--%E6%9C%AA%E5%88%86%E9%85%8D%E9%A1%BE%E9%97%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>添加服务顾问</b><span class="g-tag">未分配顾问</span>
+        <code>/pages/advisor/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/message.html">
+        <iframe src="pages/message.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>公告详情</b>
+        <code>/pages/message/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/message--%E7%8F%AD%E7%BA%A7%E5%85%AC%E5%91%8A.html">
+        <iframe src="pages/message--%E7%8F%AD%E7%BA%A7%E5%85%AC%E5%91%8A.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>公告详情</b><span class="g-tag">班级公告</span>
+        <code>/pages/message/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/message--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/message--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>公告详情</b><span class="g-tag">游客态</span>
+        <code>/pages/message/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/training.html">
+        <iframe src="pages/training.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的班级</b>
+        <code>/pages/training/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/training--%E8%BF%98%E6%B2%A1%E6%9C%89%E6%8A%A5%E5%90%8D.html">
+        <iframe src="pages/training--%E8%BF%98%E6%B2%A1%E6%9C%89%E6%8A%A5%E5%90%8D.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的班级</b><span class="g-tag">还没有报名</span>
+        <code>/pages/training/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/training--%E5%BE%85%E5%AE%89%E7%BD%AE.html">
+        <iframe src="pages/training--%E5%BE%85%E5%AE%89%E7%BD%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的班级</b><span class="g-tag">待安置</span>
+        <code>/pages/training/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/training--%E6%B7%BB%E5%8A%A0%E9%A1%BE%E9%97%AE.html">
+        <iframe src="pages/training--%E6%B7%BB%E5%8A%A0%E9%A1%BE%E9%97%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的班级</b><span class="g-tag">添加顾问</span>
+        <code>/pages/training/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/training--%E5%8A%A0%E5%85%A5%E5%BE%AE%E4%BF%A1%E7%BE%A4.html">
+        <iframe src="pages/training--%E5%8A%A0%E5%85%A5%E5%BE%AE%E4%BF%A1%E7%BE%A4.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的班级</b><span class="g-tag">加入微信群</span>
+        <code>/pages/training/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/training--%E8%BF%81%E7%BE%A4%E4%B8%AD.html">
+        <iframe src="pages/training--%E8%BF%81%E7%BE%A4%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的班级</b><span class="g-tag">迁群中</span>
+        <code>/pages/training/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/training--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/training--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的班级</b><span class="g-tag">加载失败</span>
+        <code>/pages/training/index</code>
+      </figcaption>
+    </figure></div></section><section><h2 class="g-h">课程服务 <em>10 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/courses.html">
+        <iframe src="pages/courses.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程（旧入口）</b>
+        <code>/pages/courses/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/courses--%E8%BF%98%E6%B2%A1%E6%9C%89%E8%AF%BE%E7%A8%8B.html">
+        <iframe src="pages/courses--%E8%BF%98%E6%B2%A1%E6%9C%89%E8%AF%BE%E7%A8%8B.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程（旧入口）</b><span class="g-tag">还没有课程</span>
+        <code>/pages/courses/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/courses--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/courses--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程（旧入口）</b><span class="g-tag">加载失败</span>
+        <code>/pages/courses/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/course-list.html">
+        <iframe src="pages/course-list.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程服务</b>
+        <code>/pages/course-list/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/course-list--%E8%AE%AD%E7%BB%83%E8%90%A5%E9%A1%B5%E7%AD%BE.html">
+        <iframe src="pages/course-list--%E8%AE%AD%E7%BB%83%E8%90%A5%E9%A1%B5%E7%AD%BE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程服务</b><span class="g-tag">训练营页签</span>
+        <code>/pages/course-list/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/course-list--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/course-list--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程服务</b><span class="g-tag">游客态</span>
+        <code>/pages/course-list/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/course.html">
+        <iframe src="pages/course.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程详情</b>
+        <code>/pages/course/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/course--%E8%BF%98%E6%B2%A1%E5%BC%80%E5%A7%8B%E5%AD%A6.html">
+        <iframe src="pages/course--%E8%BF%98%E6%B2%A1%E5%BC%80%E5%A7%8B%E5%AD%A6.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课程详情</b><span class="g-tag">还没开始学</span>
+        <code>/pages/course/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/courseware.html">
+        <iframe src="pages/courseware.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课件下载</b>
+        <code>/pages/courseware/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/courseware--%E8%BF%98%E6%B2%A1%E6%9C%89%E8%AF%BE%E4%BB%B6.html">
+        <iframe src="pages/courseware--%E8%BF%98%E6%B2%A1%E6%9C%89%E8%AF%BE%E4%BB%B6.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>课件下载</b><span class="g-tag">还没有课件</span>
+        <code>/pages/courseware/index</code>
+      </figcaption>
+    </figure></div></section><section><h2 class="g-h">诊断与工单 <em>20 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis.html">
+        <iframe src="pages/diagnosis.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>经营诊断</b>
+        <code>/pages/diagnosis/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis--%E8%AF%8A%E6%96%AD%E8%AE%B0%E5%BD%95.html">
+        <iframe src="pages/diagnosis--%E8%AF%8A%E6%96%AD%E8%AE%B0%E5%BD%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>经营诊断</b><span class="g-tag">诊断记录</span>
+        <code>/pages/diagnosis/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis--%E6%9C%89%E5%BE%85%E5%A4%84%E7%90%86%E9%A2%84%E7%BA%A6.html">
+        <iframe src="pages/diagnosis--%E6%9C%89%E5%BE%85%E5%A4%84%E7%90%86%E9%A2%84%E7%BA%A6.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>经营诊断</b><span class="g-tag">有待处理预约</span>
+        <code>/pages/diagnosis/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis--%E8%BF%98%E6%B2%A1%E6%9C%89%E6%8A%A5%E5%91%8A.html">
+        <iframe src="pages/diagnosis--%E8%BF%98%E6%B2%A1%E6%9C%89%E6%8A%A5%E5%91%8A.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>经营诊断</b><span class="g-tag">还没有报告</span>
+        <code>/pages/diagnosis/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis--%E6%B5%81%E7%A8%8B%E8%AF%B4%E6%98%8E%E5%B1%95%E5%BC%80.html">
+        <iframe src="pages/diagnosis--%E6%B5%81%E7%A8%8B%E8%AF%B4%E6%98%8E%E5%B1%95%E5%BC%80.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>经营诊断</b><span class="g-tag">流程说明展开</span>
+        <code>/pages/diagnosis/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis-booking.html">
+        <iframe src="pages/diagnosis-booking.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>预约经营诊断</b>
+        <code>/pages/diagnosis-booking/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis-booking--%E6%A0%A1%E9%AA%8C%E6%9C%AA%E9%80%9A%E8%BF%87.html">
+        <iframe src="pages/diagnosis-booking--%E6%A0%A1%E9%AA%8C%E6%9C%AA%E9%80%9A%E8%BF%87.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>预约经营诊断</b><span class="g-tag">校验未通过</span>
+        <code>/pages/diagnosis-booking/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis-booking--%E6%AC%A1%E6%95%B0%E5%B7%B2%E7%94%A8%E5%AE%8C.html">
+        <iframe src="pages/diagnosis-booking--%E6%AC%A1%E6%95%B0%E5%B7%B2%E7%94%A8%E5%AE%8C.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>预约经营诊断</b><span class="g-tag">次数已用完</span>
+        <code>/pages/diagnosis-booking/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/diagnosis-booking--%E6%B8%B8%E5%AE%A2%E6%80%81.html">
+        <iframe src="pages/diagnosis-booking--%E6%B8%B8%E5%AE%A2%E6%80%81.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>预约经营诊断</b><span class="g-tag">游客态</span>
+        <code>/pages/diagnosis-booking/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/booking-result.html">
+        <iframe src="pages/booking-result.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>预约结果</b>
+        <code>/pages/booking-result/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/booking-result--%E5%B7%B2%E5%87%BA%E6%8A%A5%E5%91%8A.html">
+        <iframe src="pages/booking-result--%E5%B7%B2%E5%87%BA%E6%8A%A5%E5%91%8A.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>预约结果</b><span class="g-tag">已出报告</span>
+        <code>/pages/booking-result/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ticket.html">
+        <iframe src="pages/ticket.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>在线工单</b>
+        <code>/pages/ticket/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ticket--%E6%88%91%E7%9A%84%E5%B7%A5%E5%8D%95.html">
+        <iframe src="pages/ticket--%E6%88%91%E7%9A%84%E5%B7%A5%E5%8D%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>在线工单</b><span class="g-tag">我的工单</span>
+        <code>/pages/ticket/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ticket--%E6%9C%AA%E9%80%89%E5%88%86%E7%B1%BB.html">
+        <iframe src="pages/ticket--%E6%9C%AA%E9%80%89%E5%88%86%E7%B1%BB.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>在线工单</b><span class="g-tag">未选分类</span>
+        <code>/pages/ticket/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ticket--%E8%BF%98%E6%B2%A1%E6%9C%89%E5%B7%A5%E5%8D%95.html">
+        <iframe src="pages/ticket--%E8%BF%98%E6%B2%A1%E6%9C%89%E5%B7%A5%E5%8D%95.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>在线工单</b><span class="g-tag">还没有工单</span>
+        <code>/pages/ticket/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ticket-result.html">
+        <iframe src="pages/ticket-result.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>工单详情</b>
+        <code>/pages/ticket-result/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ticket-result--%E5%A4%84%E7%90%86%E4%B8%AD.html">
+        <iframe src="pages/ticket-result--%E5%A4%84%E7%90%86%E4%B8%AD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>工单详情</b><span class="g-tag">处理中</span>
+        <code>/pages/ticket-result/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/review.html">
+        <iframe src="pages/review.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>服务评价</b>
+        <code>/pages/review/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/review--%E5%B7%B2%E8%AF%84%E4%BB%B7%E8%BF%87.html">
+        <iframe src="pages/review--%E5%B7%B2%E8%AF%84%E4%BB%B7%E8%BF%87.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>服务评价</b><span class="g-tag">已评价过</span>
+        <code>/pages/review/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/review--%E4%BD%8E%E5%88%86.html">
+        <iframe src="pages/review--%E4%BD%8E%E5%88%86.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>服务评价</b><span class="g-tag">低分</span>
+        <code>/pages/review/index</code>
+      </figcaption>
+    </figure></div></section><section><h2 class="g-h">代理与任务 <em>15 屏</em></h2><div class="grid">
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/tasks.html">
+        <iframe src="pages/tasks.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的任务</b>
+        <code>/pages/tasks/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/tasks--%E5%85%A8%E9%83%A8%E5%AE%8C%E6%88%90.html">
+        <iframe src="pages/tasks--%E5%85%A8%E9%83%A8%E5%AE%8C%E6%88%90.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的任务</b><span class="g-tag">全部完成</span>
+        <code>/pages/tasks/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/tasks--%E8%BF%98%E6%B2%A1%E6%9C%89%E4%BB%BB%E5%8A%A1.html">
+        <iframe src="pages/tasks--%E8%BF%98%E6%B2%A1%E6%9C%89%E4%BB%BB%E5%8A%A1.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的任务</b><span class="g-tag">还没有任务</span>
+        <code>/pages/tasks/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ops-task.html">
+        <iframe src="pages/ops-task.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>运营任务详情</b>
+        <code>/pages/ops-task/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ops-task--%E5%BE%85%E5%BC%80%E5%A7%8B.html">
+        <iframe src="pages/ops-task--%E5%BE%85%E5%BC%80%E5%A7%8B.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>运营任务详情</b><span class="g-tag">待开始</span>
+        <code>/pages/ops-task/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ops-task--%E5%B7%B2%E5%9B%9E%E5%A1%AB%E5%BE%85%E5%AE%A1.html">
+        <iframe src="pages/ops-task--%E5%B7%B2%E5%9B%9E%E5%A1%AB%E5%BE%85%E5%AE%A1.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>运营任务详情</b><span class="g-tag">已回填待审</span>
+        <code>/pages/ops-task/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ops-task--%E5%B7%B2%E4%BD%9C%E5%BA%9F.html">
+        <iframe src="pages/ops-task--%E5%B7%B2%E4%BD%9C%E5%BA%9F.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>运营任务详情</b><span class="g-tag">已作废</span>
+        <code>/pages/ops-task/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/ops-task--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/ops-task--%E5%8A%A0%E8%BD%BD%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>运营任务详情</b><span class="g-tag">加载失败</span>
+        <code>/pages/ops-task/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/earnings.html">
+        <iframe src="pages/earnings.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的收益</b>
+        <code>/pages/earnings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/earnings--%E6%8F%90%E7%8E%B0%E8%A1%A8%E5%8D%95%E5%B1%95%E5%BC%80.html">
+        <iframe src="pages/earnings--%E6%8F%90%E7%8E%B0%E8%A1%A8%E5%8D%95%E5%B1%95%E5%BC%80.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的收益</b><span class="g-tag">提现表单展开</span>
+        <code>/pages/earnings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/earnings--%E9%87%91%E9%A2%9D%E6%A0%A1%E9%AA%8C%E5%A4%B1%E8%B4%A5.html">
+        <iframe src="pages/earnings--%E9%87%91%E9%A2%9D%E6%A0%A1%E9%AA%8C%E5%A4%B1%E8%B4%A5.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的收益</b><span class="g-tag">金额校验失败</span>
+        <code>/pages/earnings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/earnings--%E6%B2%A1%E6%9C%89%E5%8F%AF%E6%8F%90%E7%8E%B0%E9%87%91%E9%A2%9D.html">
+        <iframe src="pages/earnings--%E6%B2%A1%E6%9C%89%E5%8F%AF%E6%8F%90%E7%8E%B0%E9%87%91%E9%A2%9D.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>我的收益</b><span class="g-tag">没有可提现金额</span>
+        <code>/pages/earnings/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/agent.html">
+        <iframe src="pages/agent.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>代理工作台</b>
+        <code>/pages/agent/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/agent--%E5%8F%AA%E7%9C%8B%E5%BE%85%E5%AE%89%E7%BD%AE.html">
+        <iframe src="pages/agent--%E5%8F%AA%E7%9C%8B%E5%BE%85%E5%AE%89%E7%BD%AE.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>代理工作台</b><span class="g-tag">只看待安置</span>
+        <code>/pages/agent/index</code>
+      </figcaption>
+    </figure>
+    <figure class="g-card">
+      <a class="g-thumb" href="pages/agent--%E9%9D%9E%E4%BB%A3%E7%90%86%E8%BA%AB%E4%BB%BD.html">
+        <iframe src="pages/agent--%E9%9D%9E%E4%BB%A3%E7%90%86%E8%BA%AB%E4%BB%BD.html?embed=1" loading="lazy" scrolling="no" tabindex="-1"></iframe>
+        <span class="g-hit"></span>
+      </a>
+      <figcaption>
+        <b>代理工作台</b><span class="g-tag">非代理身份</span>
+        <code>/pages/agent/index</code>
+      </figcaption>
+    </figure></div></section>
+<script>
+// 缩略图按容器宽度等比缩放 430px 的真实渲染，不改页面样式（改样式就不是所见即所得了）
+function fit() {
+  document.querySelectorAll('.g-thumb').forEach(function (t) {
+    var f = t.querySelector('iframe');
+    if (f) f.style.transform = 'scale(' + (t.clientWidth / 430) + ')';
+  });
+}
+addEventListener('resize', fit); fit();
+</script>
+</body></html>
