@@ -10,10 +10,10 @@
  * 选中状态同步到 URL（?proj=&asset=），刷新/分享不丢。
  */
 import { useMemo, useState } from "react";
-import { ArrowUpDown, Building2, ChevronRight, PackageOpen, Search, Smartphone, MessagesSquare, UserRound, Users } from "lucide-react";
+import { ArrowUpDown, Building2, ChevronDown, ChevronRight, Download, PackageOpen, Search, Smartphone, MessagesSquare, UserRound, Users } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 import { initialProjects, PLATFORM_POOL_ID, projectStatusBadge } from "../data/communicationTools";
-import { projectWechats, projectGroups, projectPersons, type ProjectGroup, type ProjectPerson, type ProjectWechat } from "../data/projectAssets";
+import { projectWechats, projectGroups, projectPersons, type GroupSeries, type ProjectGroup, type ProjectPerson, type ProjectWechat } from "../data/projectAssets";
 
 type AssetType = "wechat" | "groups" | "people";
 
@@ -59,6 +59,25 @@ function badge(color: string, bg: string, label: string, extraStyle?: Record<str
   );
 }
 
+/** 微信群按系列分组的顺序（分组折叠视图用） */
+const SERIES_ORDER: Array<GroupSeries> = ["代理群系列", "零售会员类群系列"];
+
+/** 导出当前视图为 CSV（带 UTF-8 BOM，Excel 打开中文不乱码） */
+function exportCsv(filename: string, headers: string[], rows: (string | number)[][]) {
+  const esc = (v: string | number) => {
+    const s = String(v ?? "");
+    return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = "\uFEFF" + [headers, ...rows].map(r => r.map(esc).join(",")).join("\r\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export default function ProjectAssetList() {
   useThemeSingleton();
   const initialParams = new URLSearchParams(window.location.search);
@@ -77,6 +96,8 @@ export default function ProjectAssetList() {
   // 排序
   const [sortKey, setSortKey] = useState("influence");
   const [sortDesc, setSortDesc] = useState(true);
+  // 微信群系列分组折叠（空对象 = 全部展开）
+  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({});
 
   const setProject = (pid: string) => { setProjectId(pid); syncUrl(pid, asset); };
   const setAssetType = (a: AssetType) => { setAsset(a); syncUrl(projectId, a); };
@@ -156,6 +177,26 @@ export default function ProjectAssetList() {
     : asset === "groups"
       ? { title: projectId === PLATFORM_POOL_ID ? "库存池不包含微信群" : "该项目暂无微信群", sub: "在账号资产中心为微信号分配群位后自动出现在这里", href: "?view=pc&module=wechat", cta: "去分配群位" }
       : { title: projectId === PLATFORM_POOL_ID ? "库存池不包含人员" : "该项目暂无代理 / 会员", sub: "会员入群或代理开卡后自动出现在这里", href: "?view=pc&module=members", cta: "去会员档案" };
+
+  // —— 导出 CSV 配置（导出当前筛选+排序后的数据）——
+  const exportConfig = asset === "wechat"
+    ? {
+        name: "微信号",
+        headers: ["账号", "类型", "昵称", "归属项目", "服务负责人", "状态", "好友数", "群数", "认证", "最近登录"],
+        rows: (wechats as ProjectWechat[]).map(w => [w.account, w.kind === "wechat" ? "个人微信" : "企业微信", w.nickname === "—" ? "未激活" : w.nickname, projectNames(w.projectId), w.owner, w.status, w.friendCount, w.groupCount, w.certified ? "已认证" : "未认证", w.lastLogin]),
+      }
+    : asset === "groups"
+      ? {
+          name: "微信群",
+          headers: ["群编号", "群名", "系列", "群类型", "编码", "群主微信号", "城市", "人数", "容量", "推送", "扫码", "状态"],
+          rows: (groups as ProjectGroup[]).map(g => [g.no, g.name, g.series, g.type, g.code, g.wechat, g.city, g.members, g.max, g.push, g.scan, g.ownerStatus]),
+        }
+      : {
+          name: "代理会员",
+          headers: ["姓名", "身份", "等级", "微信号", "归属项目", "上级推荐人", "团队人数", "影响力", "收益", "入群状态"],
+          rows: (persons as ProjectPerson[]).map(p => [p.name, p.role, p.level, p.wechat, projectNames(p.projectId), p.referrer, p.teamCount, p.influence, p.revenue, p.inGroup ? "已入群" : "待入群"]),
+        };
+  const exportFileName = `${selectedProject ? selectedProject.name : "全部项目"}-${exportConfig.name}-${new Date().toISOString().slice(0, 10)}.csv`;
 
   return (
     <div className="h-full flex" style={{ background: S.bg, fontFamily: "monospace" }}>
@@ -276,6 +317,13 @@ export default function ProjectAssetList() {
                 {sortOptions.map(([k, label]) => <option key={k} value={k}>{label}{sortKey === k ? (sortDesc ? " ↓" : " ↑") : ""}</option>)}
               </select>
             </div>
+            <button type="button" onClick={() => exportCsv(exportFileName, exportConfig.headers, exportConfig.rows)}
+              title={`导出当前视图为 CSV（共 ${activeRows.length} 条）`}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-bold transition-all hover:brightness-95"
+              style={{ background: "#fff", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <Download size={13} style={{ color: S.muted }} />
+              导出 CSV
+            </button>
           </div>
         </div>
 
@@ -289,26 +337,26 @@ export default function ProjectAssetList() {
               <a href={emptyHint.href} className="inline-block mt-4 px-4 py-2 text-xs font-bold" style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radiusSm }}>{emptyHint.cta}</a>
             </div>
           ) : (
-            <div className="mt-2" style={{ background: "#fff", border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+            <div className="mt-2" style={{ background: "#fff", border: `1px solid ${S.border}`, borderRadius: S.radius, minWidth: asset === "wechat" ? 900 : asset === "groups" ? 960 : 1060 }}>
               {/* 表头 */}
               {asset === "wechat" && (
-                <div className="grid items-center px-4 py-2.5 text-xs font-semibold border-b gap-2" style={{ gridTemplateColumns: "1.35fr .8fr .7fr .55fr .5fr .4fr .55fr .7fr", color: S.textSec, background: "#f1f5f9", borderColor: S.border }}>
+                <div className="grid items-center px-4 py-2.5 text-xs font-semibold border-b gap-2" style={{ gridTemplateColumns: "1.4fr .75fr .65fr .55fr .5fr .4fr .55fr .65fr", color: S.textSec, background: "#f1f5f9", borderColor: S.border }}>
                   <span>账号</span><span>归属项目</span><span>服务负责人</span><span>状态</span><span>好友数</span><span>群数</span><span>认证</span><span>最近登录</span>
                 </div>
               )}
               {asset === "groups" && (
-                <div className="grid items-center px-4 py-2.5 text-xs font-semibold border-b gap-2" style={{ gridTemplateColumns: "1.7fr .85fr .55fr .5fr 1.05fr .45fr .45fr .5fr", color: S.textSec, background: "#f1f5f9", borderColor: S.border }}>
+                <div className="grid items-center px-4 py-2.5 text-xs font-semibold border-b gap-2" style={{ gridTemplateColumns: "1.7fr .8fr .6fr .5fr 1.05fr .45fr .45fr .5fr", color: S.textSec, background: "#f1f5f9", borderColor: S.border }}>
                   <span>群名</span><span>系列</span><span>群主微信号</span><span>城市</span><span>人数 / 容量</span><span>推送</span><span>扫码</span><span>状态</span>
                 </div>
               )}
               {asset === "people" && (
-                <div className="grid items-center px-4 py-2.5 text-xs font-semibold border-b gap-2" style={{ gridTemplateColumns: "1.1fr .45fr .55fr .7fr 1.05fr .6fr .55fr .55fr .55fr", color: S.textSec, background: "#f1f5f9", borderColor: S.border }}>
-                  <span>姓名</span><span>身份</span><span>等级</span><span>微信号</span><span>归属项目</span><span>上级推荐人</span><span>团队人数</span><span>影响力</span><span>收益 / 入群</span>
+                <div className="grid items-center px-4 py-2.5 text-xs font-semibold border-b gap-2" style={{ gridTemplateColumns: "1.05fr .45fr .55fr .7fr 1fr .6fr .55fr .55fr .6fr .45fr", color: S.textSec, background: "#f1f5f9", borderColor: S.border }}>
+                  <span>姓名</span><span>身份</span><span>等级</span><span>微信号</span><span>归属项目</span><span>上级推荐人</span><span>团队人数</span><span>影响力</span><span>收益</span><span>入群</span>
                 </div>
               )}
               {/* 行 */}
               {asset === "wechat" && (wechats as ProjectWechat[]).map((w, i) => (
-                <div key={w.account + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.35fr .8fr .7fr .55fr .5fr .4fr .55fr .7fr", borderColor: S.border }}>
+                <div key={w.account + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.4fr .75fr .65fr .55fr .5fr .4fr .55fr .65fr", borderColor: S.border }}>
                   <span className="flex items-center gap-2 min-w-0">
                     {w.kind === "wechat" ? <Smartphone size={14} style={{ color: "#16a34a" }} /> : <Building2 size={14} style={{ color: "#2563eb" }} />}
                     <span className="min-w-0"><b className="block truncate" style={{ color: S.text }}>{w.account}</b><small className="block truncate" style={{ color: S.muted }}>{w.nickname === "—" ? "未激活" : w.nickname}</small></span>
@@ -322,28 +370,51 @@ export default function ProjectAssetList() {
                   <span style={{ color: S.muted }}>{w.lastLogin}</span>
                 </div>
               ))}
-              {asset === "groups" && (groups as ProjectGroup[]).map((g, i) => (
-                <div key={g.no + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.7fr .85fr .55fr .5fr 1.05fr .45fr .45fr .5fr", borderColor: S.border }}>
-                  <span className="min-w-0">
-                    <b className="block truncate" style={{ color: S.text }}>{g.name}</b>
-                    <small className="block truncate" style={{ color: S.muted }}>{g.type} · {g.code}</small>
-                  </span>
-                  <span>{badge(SERIES_STYLES[g.series].color, SERIES_STYLES[g.series].bg, g.series)}</span>
-                  <span className="truncate" style={{ color: S.textSec }}>{g.wechat}</span>
-                  <span style={{ color: S.text }}>{g.city}</span>
-                  <span className="min-w-0">
-                    <b className="block tabular-nums" style={{ color: g.members / g.max >= 0.9 ? "#c2410c" : S.text }}>{g.members} / {g.max}</b>
-                    <span className="mt-1 block h-1 overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}>
-                      <span className="block h-full" style={{ width: `${Math.max((g.members / g.max) * 100, g.members ? 3 : 0)}%`, background: g.members / g.max >= 0.9 ? "#f59e0b" : S.accent, borderRadius: 99 }} />
-                    </span>
-                  </span>
-                  <span className="tabular-nums" style={{ color: S.text }}>{g.push}</span>
-                  <span className="tabular-nums" style={{ color: S.text }}>{g.scan}</span>
-                  <span>{badge(STATUS_STYLES[g.ownerStatus].color, STATUS_STYLES[g.ownerStatus].bg, g.ownerStatus)}</span>
-                </div>
-              ))}
+              {asset === "groups" && SERIES_ORDER.map(series => {
+                const seriesRows = (groups as ProjectGroup[]).filter(g => g.series === series);
+                if (!seriesRows.length) return null;
+                const isCollapsed = !!collapsed[series];
+                const totalMembers = seriesRows.reduce((s, g) => s + g.members, 0);
+                const st = SERIES_STYLES[series];
+                return (
+                  <div key={series}>
+                    {/* 系列分组头：可折叠 */}
+                    <button type="button" onClick={() => setCollapsed(c => ({ ...c, [series]: !c[series] }))} aria-expanded={!isCollapsed}
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-left transition-colors hover:bg-slate-50"
+                      style={{ background: "#fafafa", borderBottom: `1px solid ${S.border}` }}>
+                      <span className="w-1.5 h-4 rounded-full flex-shrink-0" style={{ background: st.color }} />
+                      <span className="text-xs font-bold" style={{ color: S.text }}>{series}</span>
+                      <span className="text-[10px] font-bold px-1.5 py-0.5" style={{ background: st.bg, color: st.color, borderRadius: 4 }}>{seriesRows.length} 个群</span>
+                      <span className="text-[10px] ml-1" style={{ color: S.muted }}>合计 {totalMembers.toLocaleString()} 人</span>
+                      <span className="ml-auto flex items-center gap-1 text-[10px]" style={{ color: S.muted }}>
+                        {isCollapsed ? "展开" : "收起"}{isCollapsed ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
+                      </span>
+                    </button>
+                    {!isCollapsed && seriesRows.map((g, i) => (
+                      <div key={g.no + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.7fr .8fr .6fr .5fr 1.05fr .45fr .45fr .5fr", borderColor: S.border }}>
+                        <span className="min-w-0">
+                          <b className="block truncate" style={{ color: S.text }}>{g.name}</b>
+                          <small className="block truncate" style={{ color: S.muted }}>{g.type} · {g.code}</small>
+                        </span>
+                        <span>{badge(SERIES_STYLES[g.series].color, SERIES_STYLES[g.series].bg, g.series)}</span>
+                        <span className="truncate" style={{ color: S.textSec }}>{g.wechat}</span>
+                        <span style={{ color: S.text }}>{g.city}</span>
+                        <span className="min-w-0">
+                          <b className="block tabular-nums" style={{ color: g.members / g.max >= 0.9 ? "#c2410c" : S.text }}>{g.members} / {g.max}</b>
+                          <span className="mt-1 block h-1 overflow-hidden" style={{ background: "#eeeeea", borderRadius: 99 }}>
+                            <span className="block h-full" style={{ width: `${Math.max((g.members / g.max) * 100, g.members ? 3 : 0)}%`, background: g.members / g.max >= 0.9 ? "#f59e0b" : S.accent, borderRadius: 99 }} />
+                          </span>
+                        </span>
+                        <span className="tabular-nums" style={{ color: S.text }}>{g.push}</span>
+                        <span className="tabular-nums" style={{ color: S.text }}>{g.scan}</span>
+                        <span>{badge(STATUS_STYLES[g.ownerStatus].color, STATUS_STYLES[g.ownerStatus].bg, g.ownerStatus)}</span>
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
               {asset === "people" && (persons as ProjectPerson[]).map((p, i) => (
-                <div key={p.wechat + p.role + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.1fr .45fr .55fr .7fr 1.05fr .6fr .55fr .55fr .55fr", borderColor: S.border }}>
+                <div key={p.wechat + p.role + i} className="grid items-center gap-2 px-4 py-3 text-xs border-b transition-colors hover:bg-slate-50" style={{ gridTemplateColumns: "1.05fr .45fr .55fr .7fr 1fr .6fr .55fr .55fr .6fr .45fr", borderColor: S.border }}>
                   <span className="flex items-center gap-2 min-w-0">
                     <span className="w-6 h-6 flex-shrink-0 grid place-items-center text-[10px] font-bold rounded" style={{ background: S.accentLight, color: S.text }}>{p.avatar}</span>
                     <span className="truncate font-bold" style={{ color: S.text }}>{p.name}</span>
@@ -355,10 +426,8 @@ export default function ProjectAssetList() {
                   <span className="truncate" style={{ color: S.muted }}>{p.referrer}</span>
                   <span className="tabular-nums" style={{ color: S.text }}>{p.teamCount.toLocaleString()}</span>
                   <span className="tabular-nums font-bold" style={{ color: S.text }}>{p.influence.toLocaleString()}</span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="tabular-nums" style={{ color: S.text }}>¥{p.revenue.toLocaleString()}</span>
-                    <span>{p.inGroup ? badge("#15803d", "#f0fdf4", "已入群") : badge("#f59e0b", "#fffbeb", "待入群")}</span>
-                  </span>
+                  <span className="tabular-nums" style={{ color: S.text }}>¥{p.revenue.toLocaleString()}</span>
+                  <span>{p.inGroup ? badge("#15803d", "#f0fdf4", "已入群") : badge("#f59e0b", "#fffbeb", "待入群")}</span>
                 </div>
               ))}
               <div className="px-4 py-2 text-[10px]" style={{ color: S.muted }}>共 {activeRows.length} 条 · 切换左侧项目或上方资产类型查看其他列表</div>
