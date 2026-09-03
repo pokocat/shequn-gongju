@@ -42,10 +42,49 @@ const mockWechats = [
     { wechatId: index === 0 ? "wx_hz_01" : "", name: index === 0 ? "陈明" : "区域负责人", phone: index === 0 ? "158-0012-3464" : "", note: "账号异常与登录告警", qr: true, avatarIndex: 5 },
     { wechatId: "", name: index === 0 ? "王总" : "平台管理员", phone: "", note: "最终安全审批", qr: true, avatarIndex: 0 },
   ],
-  groupQrNames: item.status === "使用中" ? Array.from({ length: item.groupCount }, () => "已绑定二维码") : [],
+  groupQrNames: item.status === "使用中" ? buildAssignedGroupNames(item) : [],
   wechatQrName: item.status === "未使用" ? "" : "微信二维码已同步",
   groupType: item.targetGroup.includes("体验官") ? "体验官" : item.targetGroup.includes("代理") ? "游客" : item.targetGroup === "—" ? "" : "会员群",
 }));
+
+/**
+ * 根据账号的归属项目 + targetGroup 推导出：该账号 20 个群位中已经"被应用"的那些
+ * 真实群名（不再是写死的"已绑定二维码"占位符）。
+ *
+ * 命名规则按群类型模板（用户截图上的胶囊：流量营 AIF01 引流 / 体验营 AIF02 培育 /
+ * 选课群 AIF03 转化 / 正价班级 AIF04 交付 / 讲师私域 AIF05 IP私域）+ 项目短码 + 序号
+ * （{项目}{AIFXX}-{2 位序号}群）。例如 wx_ai_01 属于"AI学习社群"，会按 5 种群类型
+ * 循环铺满其 groupCount=16 个群位。异常 / 账号未分配（status!=使用中）返回空数组。
+ */
+const GROUP_TYPE_TEMPLATES: Array<{
+  code: string; tier: string; label: string; short: string;
+}> = [
+  { code: "AIF01", tier: "引流", label: "流量营",   short: "引流" },
+  { code: "AIF02", tier: "培育", label: "体验营",   short: "培育" },
+  { code: "AIF03", tier: "转化", label: "选课群",   short: "转化" },
+  { code: "AIF04", tier: "交付", label: "正价班级", short: "交付" },
+  { code: "AIF05", tier: "IP私域", label: "讲师私域", short: "IP" },
+];
+// 项目名 → 群名前缀短码（避免"AI学习社群-流量营…"太长，卡面截断太厉害）
+const PROJECT_SHORT: Record<string, string> = {
+  "AI学习社群":     "AI学",
+  "AI艺人孵化平台": "AI艺",
+  "AI知识付费平台": "AI知",
+  "AI教育平台":     "AI教",
+};
+function buildAssignedGroupNames(item: (typeof mockWechats)[number]): string[] {
+  if (item.status !== "使用中" || !item.groupCount || item.groupCount <= 0) return [];
+  const short = PROJECT_SHORT[item.project] || item.project || "群";
+  const n = Math.min(Math.max(0, item.groupCount), 20);
+  return Array.from({ length: n }, (_, i) => {
+    const tpl = GROUP_TYPE_TEMPLATES[i % GROUP_TYPE_TEMPLATES.length];
+    const round = Math.floor(i / GROUP_TYPE_TEMPLATES.length) + 1; // 第几轮
+    const seqNo = String(i + 1).padStart(2, "0");
+    // 规则：{短项目}·{标签} {AIFXX} {序号}群 ；round>=2 时末尾加 "-第N轮" 避免重名
+    const roundTag = round >= 2 ? `-第${round}轮` : "";
+    return `${short}·${tpl.label} ${tpl.code} ${seqNo}群${roundTag}`;
+  });
+}
 
 // ─── 模拟账号资产中心人员池（按人视图所需：角色/容量/负责项目）────
 const assetPeoplePool: Record<string, {
@@ -1363,7 +1402,51 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
             </div>
           )}
         </section>
-        <section className="space-y-3"><div className="flex items-center justify-between border-b pb-2" style={{ borderColor: S.border }}><div className="flex items-center gap-2 text-sm font-bold"><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />微信号绑定群</div><span className="text-xs" style={{ color: S.muted }}>{selectedCount} / {groupCount} 个群位已选择</span></div><div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-2">{selectedSlots.map((selected, index) => <div key={index} className="p-2" style={{ background: selected ? S.accentLight : S.bg, border: `1px ${selected ? "solid" : "dashed"} ${selected ? S.accent : S.borderMed}`, borderRadius: S.radiusSm }}><button type="button" onClick={() => toggleSlot(index)} className="w-full text-left"><div className="h-14 grid place-items-center" style={{ background: S.surface, borderRadius: S.radiusSm, color: selected ? S.text : S.muted }}><QrCode size={22} /></div><div className="mt-1 text-[10px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>FL{String(index + 1).padStart(2, "0")}</div><div className="text-[10px]" style={{ color: selected ? "#276749" : S.muted }}>{selected ? "已使用" : "未使用"}</div></button><label className="mt-1 flex items-center gap-1 cursor-pointer text-[9px]" title="上传群二维码"><Upload size={11} /><span className="truncate">{qrNames[index] || "上传二维码"}</span><input className="sr-only" type="file" accept="image/png,image/jpeg" onChange={event => setQrNames(current => current.map((name, slotIndex) => slotIndex === index ? (event.target.files?.[0]?.name || name) : name))} /></label></div>)}</div></section>
+        <section className="space-y-3"><div className="flex items-center justify-between border-b pb-2" style={{ borderColor: S.border }}><div className="flex items-center gap-2 text-sm font-bold"><span style={{ width: 3, height: 15, background: S.accent, borderRadius: 99 }} />微信号绑定群</div><span className="text-xs" style={{ color: S.muted }}>{selectedCount} / {groupCount} 个群位已选择</span></div><div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-2">{selectedSlots.map((selected, index) => {
+            const groupName = qrNames[index] || "";
+            const tpl = GROUP_TYPE_TEMPLATES[index % GROUP_TYPE_TEMPLATES.length];
+            const hasName = selected && Boolean(groupName) && groupName !== "已绑定二维码";
+            // —— 群位卡头部：有群名则显示群类型彩色方块（AIF01-AIF05 五套调色板），否则继续灰色 QR 占位
+            const header = hasName ? (
+              <div className="w-full h-14 rounded-md overflow-hidden flex flex-col items-center justify-center gap-0.5 px-1.5 text-center select-none" style={{
+                background: (tierColorMap as Record<string, string>)[tpl.tier] || "#e9d5ff",
+                color: "#0f172a",
+              }}>
+                <div className="text-[10px] font-extrabold leading-none" style={{ fontFamily: "monospace" }}>{tpl.code}</div>
+                <div className="text-[9px] leading-none mt-0.5 truncate w-full" style={{ fontFamily: "monospace" }}>{tpl.label}·{tpl.tier}</div>
+              </div>
+            ) : (
+              <div className="h-14 grid place-items-center" style={{ background: S.surface, borderRadius: S.radiusSm, color: selected ? S.text : S.muted }}><QrCode size={22} /></div>
+            );
+            return (
+              <div key={index} className="p-2 transition-all hover:-translate-y-0.5" title={hasName ? groupName : (selected ? "已绑定微信群位 FL" + String(index + 1).padStart(2, "0") : "未分配群位")} style={{ background: selected ? S.accentLight : S.bg, border: `1px ${selected ? "solid" : "dashed"} ${selected ? S.accent : S.borderMed}`, borderRadius: S.radiusSm }}>
+                <button type="button" onClick={() => toggleSlot(index)} className="w-full text-left">
+                  {header}
+                  <div className="mt-1 text-[10px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>FL{String(index + 1).padStart(2, "0")}</div>
+                  <div className="text-[10px]" style={{ color: selected ? "#276749" : S.muted }}>{selected ? "已使用" : "未使用"}</div>
+                </button>
+                {/* —— 群位卡底部：① 有真实群名 → 大号 9px 群名（两行截断）+ 小"QR"按钮取代原本整行；② 没群名 → 保持原来的上传二维码 label */}
+                {hasName ? (
+                  <div className="mt-1 pt-1" style={{ borderTop: `1px dashed ${S.border}` }}>
+                    <div className="text-[9px] font-semibold leading-tight line-clamp-2 break-all" title={groupName} style={{ color: "#1e293b", fontFamily: "monospace", minHeight: 22 }}>
+                      {groupName}
+                    </div>
+                    <label className="mt-1 flex items-center gap-1 cursor-pointer text-[9px] justify-between" title={"替换 FL" + String(index + 1).padStart(2, "0") + " 的群二维码：" + groupName}>
+                      <Upload size={11} />
+                      <span className="truncate flex-1 text-right" style={{ color: S.muted }}>换二维码</span>
+                      <input className="sr-only" type="file" accept="image/png,image/jpeg" onChange={event => setQrNames(current => current.map((name, slotIndex) => slotIndex === index ? (event.target.files?.[0]?.name || name) : name))} />
+                    </label>
+                  </div>
+                ) : (
+                  <label className="mt-1 flex items-center gap-1 cursor-pointer text-[9px]" title={selected ? ("已绑定 FL" + String(index + 1).padStart(2, "0")) : "上传群二维码"}>
+                    <Upload size={11} />
+                    <span className="truncate">{qrNames[index] || "上传二维码"}</span>
+                    <input className="sr-only" type="file" accept="image/png,image/jpeg" onChange={event => setQrNames(current => current.map((name, slotIndex) => slotIndex === index ? (event.target.files?.[0]?.name || name) : name))} />
+                  </label>
+                )}
+              </div>
+            );
+          })}</div></section>
         {error && <div role="alert" className="px-3 py-2 text-xs" style={{ background: "#fff7ed", color: "#c2410c", border: "1px solid #fed7aa", borderRadius: S.radiusSm }}>{error}</div>}
       </div>
       <div className="flex items-center justify-between gap-3 px-6 py-4 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}><span className="text-[10px]" style={{ color: S.muted }}>项目、员工、地区、群类型必填；账号类型和微信群数可暂不设置</span><div className="flex gap-3"><button type="button" onClick={onClose} className="px-5 py-2.5 text-sm font-bold" style={{ background: S.bg, color: S.muted, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}>取消</button><button type="button" onClick={save} className="px-6 py-2.5 text-sm font-bold" style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radius }}>确认分配</button></div></div>
