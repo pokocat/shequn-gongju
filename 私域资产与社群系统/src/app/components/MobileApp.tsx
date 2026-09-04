@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Home, Users, CheckSquare, TrendingUp, User, Bell, ChevronRight, QrCode, Star, ArrowUp, Clock, CheckCircle, Gift, MessageCircle, Wallet, Search, ArrowDown, Plus, Settings, Shield, FileText, Package, Heart, BadgeCheck, ShieldCheck, TrendingDown, Sparkles, CircleAlert, ShieldQuestion, Megaphone, BookOpen, Lightbulb, LayoutList, UserPlus } from "lucide-react";
+import { Home, Users, CheckSquare, TrendingUp, User, Bell, ChevronRight, QrCode, Star, ArrowUp, Clock, CheckCircle, Gift, MessageCircle, Wallet, Search, ArrowDown, Plus, Settings, Shield, FileText, Package, Heart } from "lucide-react";
 
 // ─── 颜色系统（白底黄绿黑移动端） ────────────────────────────────
 const M = {
@@ -493,285 +493,18 @@ function ProfileTab() {
   );
 }
 
-// ─── 消息页（主理人小程序 · 参考图片设计，沿用现有黄绿浅色 token） ─────────
-function MessagesTab() {
-  const [activeCategory, setActiveCategory] = useState("全部");
-  const categories = ["全部", "待办", "通知", "公告", "财务", "成长"];
-
-  const quickCards = [
-    { icon: Bell,           label: "服务通知",   count: 19, sub: "项待处理",     accent: "purple" },
-    { icon: BadgeCheck,     label: "待确认权益", count: 12, sub: "项待处理",     accent: "indigo" },
-    { icon: UserPlus,       label: "入群审批",   count: 5,  sub: "项待处理",     accent: "blue"   },
-  ];
-
-  // 快速卡的 accent → 颜色（复用现有 M token，仅深浅区分系列，不用图中的暗色）
-  const accentColor = (k: string) => {
-    switch (k) {
-      case "purple": return { dot: "#8b5cf6", bg: "rgba(139,92,246,0.10)", text: "#6d28d9", border: "rgba(139,92,246,0.25)" };
-      case "indigo": return { dot: "#6366f1", bg: "rgba(99,102,241,0.10)", text: "#4338ca", border: "rgba(99,102,241,0.25)" };
-      default:       return { dot: "#3b82f6", bg: "rgba(59,130,246,0.10)", text: "#1d4ed8", border: "rgba(59,130,246,0.25)" };
-    }
-  };
-
-  const messages = [
-    {
-      name: "Ava Lin",
-      avatar: "A",
-      avatarColor: M.primaryLight,
-      avatarText:  M.primary,
-      tag: { label: "财务官", color: M.primaryLight, text: M.primary },
-      time: "08:30",
-      unread: true,
-      title: "昨日收益已到账，请核对",
-      detail: [
-        { label: "收益", color: M.primary, value: "+18.6%" },
-        { label: "已为你标记", value: "3 笔高利润订单" },
-        { label: "建议", value: "优先复盘今日选品策略" },
-      ],
-      category: ["全部", "财务"],
-    },
-    {
-      name: "Mia Zhou",
-      avatar: "M",
-      avatarColor: "rgba(59,130,246,0.12)",
-      avatarText:  "#1d4ed8",
-      tag: { label: "系统通知", color: "rgba(59,130,246,0.12)", text: "#1d4ed8" },
-      time: "09:45",
-      unread: false,
-      title: "今日日程安排已更新",
-      detail: [
-        { label: "经营", value: "3 项" },
-        { label: "上午", value: "处理招商授权" },
-        { label: "下午", value: "跟进 2 个供应链异常" },
-      ],
-      category: ["全部", "通知", "待办"],
-    },
-    {
-      name: "平台公告",
-      avatar: "公",
-      avatarColor: "rgba(139,92,246,0.12)",
-      avatarText:  "#6d28d9",
-      tag: { label: "公告", color: "rgba(139,92,246,0.12)", text: "#6d28d9" },
-      time: "10:05",
-      unread: true,
-      title: "服务体系升级说明",
-      detail: [
-        { label: "升级", value: "必读" },
-        { label: "调整范围", value: "主理人公社服务权益与学习路径" },
-      ],
-      category: ["全部", "公告"],
-    },
-    {
-      name: "课程通知",
-      avatar: "课",
-      avatarColor: "rgba(249,115,22,0.12)",
-      avatarText:  "#c2410c",
-      tag: { label: "通知·课程", color: "rgba(249,115,22,0.12)", text: "#c2410c" },
-      time: "10:20",
-      unread: false,
-      title: "高阶增长策略私享课开课",
-      detail: [
-        { label: "时间", value: "今晚 20:00" },
-        { label: "建议", value: "提前完成课前诊断与资料准备" },
-      ],
-      category: ["全部", "通知", "成长"],
-    },
-    {
-      name: "Dr. Chen",
-      avatar: "D",
-      avatarColor: "rgba(16,185,129,0.12)",
-      avatarText:  "#047857",
-      tag: { label: "成长教练", color: "rgba(16,185,129,0.12)", text: "#047857" },
-      time: "10:50",
-      unread: true,
-      title: "今日成长计划已生成",
-      detail: [
-        { label: "成长", value: "2 课题" },
-        { label: "今日建议", value: "一次商品复盘 + 一次成交话术录播" },
-      ],
-      category: ["全部", "成长", "待办"],
-    },
-    {
-      name: "Yuki Mai",
-      avatar: "Y",
-      avatarColor: "rgba(236,72,153,0.12)",
-      avatarText:  "#be185d",
-      tag: { label: "选品官", color: "rgba(236,72,153,0.12)", text: "#be185d" },
-      time: "11:15",
-      unread: false,
-      title: "请先完成供应商入驻申请",
-      detail: [
-        { label: "选品", value: "3 款" },
-        { label: "热销品类", value: "3 个已进入候选池" },
-        { label: "待", value: "供应商资质确认" },
-      ],
-      category: ["全部", "待办"],
-    },
-    {
-      name: "活动公告",
-      avatar: "活",
-      avatarColor: "rgba(234,179,8,0.14)",
-      avatarText:  "#a16207",
-      tag: { label: "公告·活动", color: "rgba(234,179,8,0.14)", text: "#a16207" },
-      time: "11:40",
-      unread: false,
-      title: "增长闭门私享会报名开启",
-      detail: [
-        { label: "限额", value: "华东增长班 A1 优先报名" },
-        { label: "后续", value: "名额满后进入候补" },
-      ],
-      category: ["全部", "公告"],
-    },
-    {
-      name: "Leo Xu",
-      avatar: "L",
-      avatarColor: M.primaryLight,
-      avatarText:  M.primary,
-      tag: { label: "天赋分析", color: M.primaryLight, text: M.primary },
-      time: "12:02",
-      unread: true,
-      title: "测一测，自己做什么更赚钱",
-      detail: [
-        { label: "策略", value: "4 条" },
-        { label: "基于", value: "你的社群数据，已生成新的优势定位建议" },
-      ],
-      category: ["全部", "成长"],
-    },
-  ];
-
-  const filtered = messages.filter(m => m.category.includes(activeCategory));
-  const unreadCount = messages.filter(m => m.unread).length;
-
-  return (
-    <div className="flex flex-col h-full overflow-hidden" style={{ background: M.bg }}>
-      {/* 顶部区域（状态栏留白 + 搜索 + 待办卡 + 未读提示 + 分类 Tab） */}
-      <div className="flex-shrink-0">
-        <div className="px-5 pt-12 pb-2">
-          {/* 搜索消息 / 课程 / 服务 */}
-          <div className="flex items-center gap-2 px-3 py-2.5" style={{ background: M.surface2, border: `1px solid ${M.borderDim}`, borderRadius: "10px" }}>
-            <Search size={16} style={{ color: M.muted }} />
-            <span style={{ color: M.muted, fontSize: "13px", fontFamily: "monospace" }}>搜索消息、课程或服务</span>
-          </div>
-
-          {/* 3 张待办快捷卡 */}
-          <div className="grid grid-cols-3 gap-2 mt-4">
-            {quickCards.map((c, i) => {
-              const a = accentColor(c.accent);
-              return (
-                <button key={c.label} className="flex flex-col items-start gap-1.5 px-3 py-3 text-left" style={{ background: a.bg, border: `1px solid ${a.border}`, borderRadius: "12px" }}>
-                  <div className="w-8 h-8 flex items-center justify-center" style={{ background: "#ffffff", borderRadius: "8px", boxShadow: `inset 0 0 0 1px ${a.border}` }}>
-                    <c.icon size={16} style={{ color: a.text }} />
-                  </div>
-                  <div style={{ fontSize: "13px", fontWeight: 700, color: M.text }}>{c.label}</div>
-                  <div className="flex items-center gap-1" style={{ fontSize: "11px", color: M.textSec, fontFamily: "monospace" }}>
-                    <span style={{ color: a.text, fontWeight: 700 }}>{c.count}</span>
-                    <span>{c.sub}</span>
-                    <ChevronRight size={12} style={{ color: M.muted, marginLeft: "auto" }} />
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* 未读提示 与 已全部读取 */}
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "#ef4444" }} />
-              <span style={{ fontSize: "12px", color: M.textSec, fontFamily: "monospace" }}>
-                暂无未读消息
-              </span>
-            </div>
-            <button className="px-3 py-1.5" style={{ background: M.surface2, border: `1px solid ${M.border}`, borderRadius: "999px", fontSize: "12px", color: M.textSec, fontFamily: "monospace" }}>
-              已全部读取
-            </button>
-          </div>
-
-          {/* 分类 Tab（全部/待办/通知/公告/财务/成长） */}
-          <div className="flex items-center gap-2 mt-3 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
-            {categories.map(cat => {
-              const active = cat === activeCategory;
-              return (
-                <button key={cat} onClick={() => setActiveCategory(cat)} className="flex-shrink-0 px-3.5 py-1.5" style={{
-                  background: active ? M.text : M.surface2,
-                  color: active ? "#ffffff" : M.textSec,
-                  border: `1px solid ${active ? M.text : M.border}`,
-                  borderRadius: "999px",
-                  fontSize: "12px",
-                  fontFamily: "monospace",
-                  fontWeight: active ? 700 : 500,
-                }}>
-                  {cat}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-
-      {/* 消息列表 */}
-      <div className="flex-1 overflow-y-auto px-5 pb-4 space-y-3" style={{ scrollbarWidth: "none" }}>
-        {filtered.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20" style={{ color: M.muted, fontSize: "13px", fontFamily: "monospace" }}>
-            <LayoutList size={36} style={{ opacity: 0.5 }} />
-            <div className="mt-3">该分类暂无消息</div>
-          </div>
-        ) : filtered.map((m, i) => (
-          <div key={i} className="p-3.5 flex gap-3" style={{
-            background: M.surface,
-            border: `1px solid ${M.border}`,
-            borderRadius: "14px",
-            boxShadow: m.unread ? `inset 0 0 0 1.5px ${M.primaryLight}` : "none",
-          }}>
-            {/* 头像 */}
-            <div className="relative flex-shrink-0">
-              <div className="w-11 h-11 flex items-center justify-center font-bold" style={{ background: m.avatarColor, color: m.avatarText, borderRadius: "50%", fontSize: "15px" }}>
-                {m.avatar}
-              </div>
-              {m.unread && (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full" style={{ background: "#ef4444", boxShadow: "0 0 0 2px #ffffff" }} />
-              )}
-            </div>
-            {/* 主体 */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-start justify-between gap-2">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span style={{ color: M.text, fontWeight: 700, fontSize: "15px" }}>{m.name}</span>
-                  <span className="flex-shrink-0 px-2 py-0.5" style={{ background: m.tag.color, color: m.tag.text, borderRadius: "999px", fontSize: "10.5px", fontWeight: 600, fontFamily: "monospace" }}>
-                    {m.tag.label}
-                  </span>
-                </div>
-                <span className="flex-shrink-0" style={{ color: M.muted, fontSize: "11px", fontFamily: "monospace" }}>{m.time}</span>
-              </div>
-              <div className="mt-1.5 truncate" style={{ color: M.textSec, fontSize: "13px", fontWeight: 600 }}>{m.title}</div>
-              <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5" style={{ fontSize: "11px", color: M.muted, fontFamily: "monospace" }}>
-                {m.detail.map((d, j) => (
-                  <span key={j} className="flex items-center gap-1">
-                    <span style={{ color: d.color || M.textSec, fontWeight: 600 }}>{d.label}·</span>
-                    <span style={{ color: d.color || M.muted, fontWeight: d.color ? 700 : 400 }}>{d.value}</span>
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
 // ─── 主组件 ───────────────────────────────────────────────────
 const tabs = [
-  { id: "messages",  label: "消息", icon: MessageCircle, component: MessagesTab },
-  { id: "community", label: "社群", icon: Users,         component: CommunityTab },
-  { id: "center",    label: "发",    icon: Plus,          component: null, center: true },
-  { id: "home",      label: "首页", icon: Home,          component: HomeTab },
-  { id: "profile",   label: "我的", icon: User,          component: ProfileTab },
+  { id: "home",      label: "首页", icon: Home,        component: HomeTab },
+  { id: "community", label: "社群", icon: Users,       component: CommunityTab },
+  { id: "tasks",     label: "任务", icon: CheckSquare, component: TaskTab },
+  { id: "earnings",  label: "收益", icon: TrendingUp,  component: EarningsTab },
+  { id: "profile",   label: "我的", icon: User,        component: ProfileTab },
 ];
 
 export default function MobileApp() {
-  const [activeTab, setActiveTab] = useState("messages");
-  const ActiveTab = tabs.find(t => t.id === activeTab)!;
-  const ActiveComponent = ActiveTab?.component || MessagesTab;
+  const [activeTab, setActiveTab] = useState("home");
+  const ActiveComponent = tabs.find(t => t.id === activeTab)!.component;
 
   return (
     <div className="flex items-center justify-center h-full py-6" style={{ background: "#f1f5f9" }}>
@@ -786,37 +519,14 @@ export default function MobileApp() {
             <ActiveComponent />
           </div>
 
-          {/* Tab bar（5 项：消息 / 社群 / 中间发 / 首页 / 我的） */}
-          <div className="relative flex-shrink-0 pb-6 pt-2" style={{ background: M.surface, borderTop: `1px solid ${M.borderDim}` }}>
-            <div className="flex items-end justify-between relative z-10">
+          {/* Tab bar */}
+          <div className="flex-shrink-0 pb-6 pt-2" style={{ background: M.surface, borderTop: `1px solid ${M.borderDim}` }}>
+            <div className="flex">
               {tabs.map(t => {
                 const isActive = activeTab === t.id;
-                if (t.center) {
-                  // 中间凸起的 + 按钮
-                  return (
-                    <button
-                      key={t.id}
-                      onClick={() => setActiveTab("messages")}
-                      className="relative flex-1 flex items-center justify-center"
-                      style={{ marginBottom: "10px" }}
-                    >
-                      <div
-                        className="w-14 h-14 flex items-center justify-center"
-                        style={{
-                          background: `linear-gradient(135deg, ${M.primaryFill}, ${M.primary})`,
-                          color: "#ffffff",
-                          borderRadius: "50%",
-                          boxShadow: "0 8px 20px rgba(102,140,0,0.35), inset 0 0 0 3px #ffffff",
-                        }}
-                      >
-                        <Plus size={24} strokeWidth={2.5} />
-                      </div>
-                    </button>
-                  );
-                }
                 return (
                   <button key={t.id} className="flex-1 flex flex-col items-center gap-1 py-1.5 transition-all" onClick={() => setActiveTab(t.id)}>
-                    <div className="w-8 h-8 flex items-center justify-center transition-all" style={{ background: isActive ? M.primaryLight : "transparent", borderRadius: "8px" }}>
+                      <div className="w-8 h-8 flex items-center justify-center transition-all" style={{ background: isActive ? M.primaryLight : "transparent", borderRadius: "8px" }}>
                       <t.icon size={19} style={{ color: isActive ? M.primary : M.muted }} />
                     </div>
                     <span style={{ fontSize: "10px", color: isActive ? M.primary : M.muted, fontWeight: isActive ? 700 : 400, fontFamily: "monospace" }}>{t.label}</span>
