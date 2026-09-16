@@ -7,9 +7,17 @@ import type { Approval, ApprovalPayload } from "../data/approvalTypes";
 import type { SystemAccount, BindingStatus } from "../data/accountTypes";
 import type { CommunicationTool } from "../data/communicationTools";
 
-// 状态优先级（与 CommunicationToolManagement 一致）
+// 工具状态 → 账号 bindingStatus 的占用优先级（取账号名下所有工具的最高档）。
+// ToolHealthStatus 有 8 个值，此前只列了 4 个，其余（养号中 / 未启用 / 已停用 / 已归档）都撞
+// `?? 1` 被当成「空闲」——其中「养号中」明明是账号正被占用，却被算成空闲、低报了状态。
+// 这里把 8 个值全部显式列出：养号中=占用（in_use 档），未启用/已停用/已归档=不活跃（空闲档），
+// `?? 1` 只兜真正未知的将来值。目标 BindingStatus 只有 idle/in_use/pending_transfer/abnormal 四档。
 const statusRank: Record<string, number> = {
+  not_enabled: 1,
+  disabled: 1,
+  archived: 1,
   idle: 1,
+  nurturing: 2,
   in_use: 2,
   pending_transfer: 3,
   abnormal: 4,

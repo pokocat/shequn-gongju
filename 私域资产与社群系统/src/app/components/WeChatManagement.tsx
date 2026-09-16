@@ -1069,10 +1069,14 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
       {/* 顶部分类统计条 */}
       <div className="px-2.5 py-1.5 text-[10px] border-b flex items-center justify-between"
         style={{ background: S.bg, color: S.muted, fontFamily: "monospace", borderColor: S.border }}>
-        <span>共 {groupTypeOptions.length} 条（{groupTypeOptions.filter(o => defaultGroupTypeRules.some(r => r.code === o.code)).length} 系统 + {groupTypeOptions.filter(o => !defaultGroupTypeRules.some(r => r.code === o.code)).length} 自定义）</span>
+        <span>共 {groupTypeOptions.length} 条（{groupTypeOptions.filter(o => defaultGroupTypeRules.some(r => r.code === o.code) || rulesForProject.some(r => r.code === o.code)).length} 系统 + {groupTypeOptions.filter(o => !(defaultGroupTypeRules.some(r => r.code === o.code) || rulesForProject.some(r => r.code === o.code))).length} 自定义）</span>
       </div>
       {groupTypeOptions.map(option => {
-        const isSystem = defaultGroupTypeRules.some(rule => rule.code === option.code);
+        // 系统规则 = 内置默认规则集 ∪ 当前项目模板自带规则（与下方胶囊网格 line ~1272 同口径）。
+        // 此前这里漏了 rulesForProject 那一半：非「AI学习社群」项目的内置规则会被误判为「自定义」，
+        // 进而挂上可删除按钮 —— 用户能删掉本该受保护的内置群类型规则。
+        const isSystem = defaultGroupTypeRules.some(rule => rule.code === option.code)
+          || rulesForProject.some(rule => rule.code === option.code);
         const c = tierColorMap[(option.tier || "培育") as keyof typeof tierColorMap];
         return (
           <div key={option.code} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}>
@@ -1409,7 +1413,10 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
             // —— 群位卡头部：有群名则显示群类型彩色方块（AIF01-AIF05 五套调色板），否则继续灰色 QR 占位
             const header = hasName ? (
               <div className="w-full h-14 rounded-md overflow-hidden flex flex-col items-center justify-center gap-0.5 px-1.5 text-center select-none" style={{
-                background: (tierColorMap as Record<string, string>)[tpl.tier] || "#e9d5ff",
+                // tierColorMap[tier] 是对象 { bg,color,border,dot }，不是字符串：要取 .bg。
+                // 此前把整个对象塞进 background → React 转成 "[object Object]" → 浏览器丢弃该值，
+                // 群位卡失去按层级着色（本次提交的核心功能），且 `|| 兜底` 因对象恒真而永不生效。
+                background: (tierColorMap as Record<string, { bg: string }>)[tpl.tier]?.bg || "#e9d5ff",
                 color: "#0f172a",
               }}>
                 <div className="text-[10px] font-extrabold leading-none" style={{ fontFamily: "monospace" }}>{tpl.code}</div>

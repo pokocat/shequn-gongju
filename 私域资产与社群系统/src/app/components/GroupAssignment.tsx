@@ -35,10 +35,13 @@ function getRecommendedGroup(user: (typeof pendingUsers)[0]) {
   return availableGroups
     .filter(g => g.city === user.city && (g.type === user.identity || (user.identity === "游客" && g.type === "游客")))
     .sort((a, b) => {
-      const aPct = a.capacity / a.max;
-      const bPct = b.capacity / b.max;
-      if (aPct >= 0.98) return 1;
-      if (bPct >= 0.98) return -1;
+      // 「快满的群沉到底、其余按匹配分从高到低」。满度必须作为**双方都算**的主键：
+      // 老写法 `if (aPct>=0.98) return 1` 只看 a，一旦有群到 98%，compare(a,b) 与 compare(b,a)
+      // 会同时返回 1（违反反对称性），排序结果变得依赖引擎实现——一个已满的群可能被排到
+      // idx 0、被标成「最佳推荐」并预高亮，把运营导去分配进一个没位置的群。
+      const aFull = a.capacity / a.max >= 0.98;
+      const bFull = b.capacity / b.max >= 0.98;
+      if (aFull !== bFull) return aFull ? 1 : -1;
       return b.score - a.score;
     })
     .slice(0, 3);
