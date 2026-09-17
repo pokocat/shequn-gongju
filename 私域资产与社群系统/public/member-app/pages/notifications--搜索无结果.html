@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>消息中心 · 搜索无结果</title>
-<link rel="stylesheet" href="../css/app.css">
+<link rel="stylesheet" href="../css/app.css?v=20260917">
 <script>
 var q = location.search;
 if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
@@ -30,8 +30,10 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 
 .todo-rail{
   white-space: nowrap; margin-bottom: 10.32px;
-  display: flex; gap: 8.027px;
+  display: flex; gap: 8.027px; align-items: stretch;
+  overflow-x: auto;
 }
+.todo-rail::-webkit-scrollbar{ display: none; }
 .todo-card{
   flex: 0 0 auto; display: flex; align-items: center; gap: 6.88px;
   min-width: 172px; padding: 9.173px 11.467px; box-sizing: border-box;

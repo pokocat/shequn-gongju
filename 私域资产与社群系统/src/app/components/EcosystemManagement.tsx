@@ -2246,7 +2246,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
           账号管理
           <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full" style={{
             background: subTab === "accounts" ? S.accent : S.accentLight,
-            color: "#ffffff",
+            color: S.onAccent,
           }}>{accounts.length}</span>
         </button>
         <button
@@ -2262,7 +2262,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
           邀请审核
           <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full" style={{
             background: subTab === "invites" ? S.accent : S.accentLight,
-            color: "#ffffff",
+            color: S.onAccent,
           }}>{invSubmitted > 0 ? `${invites.length} · 待审${invSubmitted}` : invites.length}</span>
         </button>
       </div>
@@ -2291,7 +2291,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
           {/* 第二排统计卡（领用分档） */}
           <div className="grid grid-cols-4 gap-3">
             {[
-              { label: "领用·使用中", value: bindInUse, bg: S.accent, color: "#ffffff", Icon: Eye, preset: { bf: "in_use" as BindingStatus } },
+              { label: "领用·使用中", value: bindInUse, bg: S.accent, color: S.onAccent, Icon: Eye, preset: { bf: "in_use" as BindingStatus } },
               { label: "领用·空闲", value: bindIdle, bg: "#f1f5f9", color: "#475569", Icon: EyeOff, preset: { bf: "idle" as BindingStatus } },
               { label: "领用·待交接", value: bindPending, bg: "#3b82f6", color: "#ffffff", Icon: Clock, preset: { bf: "pending_transfer" as BindingStatus } },
               { label: "领用·异常", value: bindAbnormal, bg: "#ff6b6b", color: "#ffffff", Icon: AlertTriangle, preset: { bf: "abnormal" as BindingStatus } },
@@ -2653,7 +2653,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
                       <div className="text-[10px] truncate" style={{ color: S.muted }}>✉ {inv.inviteeEmail}</div>
                     </div>
                     <div className="flex-shrink-0" style={{ width: 120 }}>
-                      <div className="inline-flex items-center px-2 py-1 font-bold" style={{ fontFamily: "ui-monospace, Menlo, monospace", background: S.surfaceSoft, border: `1px solid ${S.border}`, color: "#ffffff", borderRadius: S.radiusSm, letterSpacing: 1 }}>
+                      <div className="inline-flex items-center px-2 py-1 font-bold" style={{ fontFamily: "ui-monospace, Menlo, monospace", background: S.surfaceSoft, border: `1px solid ${S.border}`, color: S.text, borderRadius: S.radiusSm, letterSpacing: 1 }}>
                         {inv.inviteCode}
                       </div>
                     </div>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主理人公社 One&Co · 品牌架构平台</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7;
+    --line:#EFE9DE; --ok:#7A9B5E; --warn:#C99A3C; --radius:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:1100px;margin:0 auto;padding:48px 22px 80px}
+  .eyebrow{letter-spacing:.4em;font-size:12px;color:var(--gold-deep);font-weight:600;text-align:center}
+  h1{font-size:38px;font-weight:800;margin:10px 0 6px;text-align:center;letter-spacing:.03em}
+  .slogan{color:var(--sub);font-size:14.5px;text-align:center;margin-bottom:12px}
+  .tagline{display:inline-block;background:var(--gold-soft);color:#8A6A1F;font-size:13px;padding:5px 16px;border-radius:99px;font-weight:600}
+
+  .card{background:var(--paper);border-radius:var(--radius);padding:28px;margin-bottom:24px}
+  h2{font-size:20px;font-weight:800;margin-bottom:6px}
+  h2 .num{color:var(--gold-deep);font-family:Georgia,serif;font-style:italic;margin-right:6px}
+  .desc{color:var(--sub);font-size:13.5px;margin-bottom:20px}
+
+  /* 层级行 */
+  .lv-row{margin-bottom:6px}
+  .lv-label{font-size:12px;color:var(--gold-deep);font-weight:800;letter-spacing:.25em;margin:14px 0 8px}
+  .brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+  .brand{background:#fff;border-radius:14px;padding:18px;border-top:3px solid var(--gold);transition:transform .2s}
+  .brand:hover{transform:translateY(-3px)}
+  .brand .en{font-size:11px;color:#A39B8E;letter-spacing:.12em;font-weight:700}
+  .brand b{display:block;font-size:17px;margin:2px 0 6px}
+  .brand p{font-size:12px;color:var(--sub);line-height:1.6}
+  .brand .status{display:inline-block;font-size:10.5px;border-radius:99px;padding:2px 10px;margin-top:8px;font-weight:700}
+  .st-done{background:#EDF3E8;color:var(--ok)}
+  .st-wait{background:var(--gold-soft);color:var(--warn)}
+
+  /* 架构图 */
+  .arch{display:flex;flex-direction:column;gap:8px}
+  .layer{display:grid;grid-template-columns:130px 1fr;border-radius:12px;overflow:hidden;background:#fff}
+  .layer .ln{background:var(--gold-soft);color:#6E5314;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;letter-spacing:.2em;padding:12px 8px;text-align:center}
+  .layer .lc{padding:12px 18px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .chip{background:var(--paper);border-radius:99px;padding:4px 13px;font-size:12.5px;font-weight:600}
+  .chip.gold{background:var(--gold-soft);color:#8A6A1F}
+  .chip.ghost{color:var(--sub)}
+  .arrow-down{text-align:center;color:var(--gold-deep);font-size:14px;font-weight:800}
+
+  /* 物料库 */
+  .cat{margin-bottom:20px}
+  .cat h3{font-size:15px;font-weight:800;margin-bottom:10px}
+  .cat h3 .badge{font-size:11px;background:var(--gold-soft);color:#8A6A1F;border-radius:99px;padding:2px 10px;margin-left:8px;vertical-align:2px;font-weight:700}
+  .docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+  .doc{display:flex;align-items:center;gap:10px;background:#fff;border-radius:12px;padding:12px 16px;text-decoration:none;color:var(--ink);border:1px solid var(--line);transition:all .2s}
+  .doc:hover{border-color:var(--gold);background:#FFFDF8}
+  .doc .ico{width:34px;height:34px;border-radius:9px;background:var(--gold-soft);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+  .doc .t{font-size:13px;font-weight:700;line-height:1.4}
+  .doc .m{font-size:11px;color:#A39B8E;display:block;font-weight:400}
+  .doc.note{border-style:dashed;color:var(--sub);cursor:default}
+
+  /* 决策清单 */
+  .todo{display:flex;flex-direction:column;gap:8px}
+  .t-item{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 16px;font-size:13.5px}
+  .t-item .box{width:18px;height:18px;border-radius:5px;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--gold-deep);font-size:12px;font-weight:800}
+  .t-item .box.done{background:var(--ok);border-color:var(--ok);color:#fff}
+  .t-item b{min-width:130px}
+
+  .legal{font-size:11.5px;color:#A39B8E;margin-top:30px;border-top:1px solid var(--line);padding-top:16px;text-align:center}
+  .stamp{display:inline-block;margin-top:8px;border:2px solid rgba(201,154,60,.5);color:var(--gold-deep);font-size:11px;padding:3px 12px;border-radius:6px;letter-spacing:.3em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">ONE PERSON COMPANY · BRAND PLATFORM</div>
+  <h1>主理人公社 · 品牌架构平台</h1>
+  <div class="slogan">OPC 是壳，善意是魂 —— 全品牌 · 全物料 · 一站查阅</div>
+  <div style="text-align:center"><span class="tagline">用善意经济学经营一人公司</span></div>
+
+  <!-- 品牌矩阵 -->
+  <div class="card">
+    <h2><span class="num">01</span>品牌矩阵 · 分层查阅</h2>
+    <div class="desc">思想定魂 → 母牌定名 → 子牌定事 → 人物定传播</div>
+
+    <div class="lv-row"><div class="lv-label">思 想 层</div>
+      <div class="brands">
+        <div class="brand"><div class="en">BENECONOMY</div><b>善意经济学</b><p>善意 → 价值 → 信任 → 回报。双身份：独立思想 IP + 社群操作系统。</p><span class="status st-done">✓ 已定案</span></div>
+      </div>
+    </div>
+
+    <div class="lv-row"><div class="lv-label">母 品 牌</div>
+      <div class="brands">
+        <div class="brand"><div class="en">ONE PERSON COMPANY COMMUNE</div><b>主理人公社</b><p>培养超级个体 / 一人公司创始人的组织。主体：主理人公社（杭州）传媒科技有限公司。</p><span class="status st-done">✓ 中文名定案</span></div>
+        <div class="brand"><div class="en">英文商标 · 30 选 1</div><b>One&Co 家族 / OPC 家族</b><p>候选：One&Co CLUB · OPC Planet · OPC Lab · GO-OPC · NEO-OPC · OPC CLUB · S-OPC。</p><span class="status st-wait">待选（见第 03 节）</span></div>
+      </div>
+    </div>
+
+    <div class="lv-row"><div class="lv-label">子 品 牌</div>
+      <div class="brands">
+        <div class="brand"><div class="en">ZHADNZA</div><b>王炸社</b><p>招商席位品牌：1 折 500 席 · 四级代理 · 涨价三铁律。收钱。</p><span class="status st-done">✓ 已确认</span></div>
+        <div class="brand"><div class="en">入口名待选</div><b>上线夜校（候选）</b><p>AI 学习社群：7 天 AI 普及计划 · 0 元可学完 · 随心付。引流量。</p><span class="status st-wait">候选：上线夜校 等</span></div>
+        <div class="brand"><div class="en">LANTERN PROJECT</div><b>掌灯计划</b><p>公益发声矩阵：为非遗 / 老字号 / 实体发声（陈彬彬 × 漫姐联合发起）。</p><span class="status st-done">✓ 已设计</span></div>
+        <div class="brand"><div class="en">OPC BASE</div><b>充电站</b><p>城市节点：市代授权场地 · 一日营 / 城市发布会举办地。</p><span class="status st-done">✓ 已设计</span></div>
+      </div>
+    </div>
+
+    <div class="lv-row"><div class="lv-label">活 动 I P</div>
+      <div class="brands">
+        <div class="brand"><div class="en">STAR PICKING</div><b>摘星计划</b><p>城市合伙人招商专场（代理=摘星人）。</p><span class="status st-done">✓ 已设计</span></div>
+        <div class="brand"><div class="en">MOUNTAIN MOVING</div><b>移山计划</b><p>战略项目发布（一代人，移一座山）。</p><span class="status st-done">✓ 已设计</span></div>
+        <div class="brand"><div class="en">THE CHOSEN NIGHT</div><b>天选之夜</b><p>年度盛典：M9 收官 · 1,000 席满员礼 · 年度善意账单。</p><span class="status st-wait">✓ 已确认 · 地点待定</span></div>
+      </div>
+    </div>
+
+    <div class="lv-row"><div class="lv-label">人 物 层</div>
+      <div class="brands">
+        <div class="brand"><div class="en">艺名待选</div><b>创始人 IP</b><p>艺名弃用天选姐，从 30 套方案选：一姐 / 星主 / 所长 / 队长 / Neo 姐 / 超姐。</p><span class="status st-wait">待选（见第 03 节）</span></div>
+        <div class="brand"><div class="en">AI FOUNDER</div><b>AI 数字人创始人</b><p>基于陈彬彬真实原型 · 三套方案（真身分身 / 原生传人 / 双生）· 名待选：蔻蔻 / 小星 / 阿博 / 小G / 妮奥。</p><span class="status st-wait">三套方案待选</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 三层架构 -->
+  <div class="card">
+    <h2><span class="num">02</span>三层架构 · 关系总图</h2>
+    <div class="arch">
+      <div class="layer"><div class="ln">思想层</div><div class="lc"><span class="chip gold">善意经济学</span><span class="chip ghost">Beneconomy · 演讲/出书/课程/咨询</span></div></div>
+      <div class="arrow-down">▼ 落地为</div>
+      <div class="layer"><div class="ln">品牌层</div><div class="lc"><span class="chip gold">主理人公社</span><span class="chip">王炸社 · 招商</span><span class="chip">夜校 · 引流</span><span class="chip">掌灯 · 公益</span><span class="chip">天选之夜 · 盛典</span><span class="chip">充电站 · 节点</span></div></div>
+      <div class="arrow-down">▼ 产品化</div>
+      <div class="layer"><div class="ln">产品层</div><div class="lc"><span class="chip gold">随心付四步</span><span class="chip">0 元可学完 → 7 天课 → 雷达分层 → 升单</span><span class="chip ghost">= 善意飞轮实证</span></div></div>
+    </div>
+    <div style="text-align:center;margin-top:18px;font-size:15px;font-weight:800">「一人公司的护城河，不是资本，是善意。」<div style="font-size:12px;color:var(--sub);font-weight:400;margin-top:4px">One Person Company's moat is not capital, but goodwill.</div></div>
+  </div>
+
+  <!-- 方案库 -->
+  <div class="card">
+    <h2><span class="num">03</span>命名方案库 · 待选入口</h2>
+    <div class="cat">
+      <div class="docs">
+        <a class="doc" href="20260917_品牌包装30套方案_切换查看页.html"><div class="ico">30</div><div><span class="t">品牌包装 30 套 · 切换查看页</span><span class="m">7 家族 Tab × 30 套 × 艺名/数字人/善意机制 —— 交互浏览</span></div></a>
+        <a class="doc" href="20260917_善意经济×One&Co品牌架构总览.html"><div class="ico">架</div><div><span class="t">善意经济 × One&Co 架构总览</span><span class="m">关系公式 · 三层架构 · 双身份定案</span></div></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 物料库 -->
+  <div class="card">
+    <h2><span class="num">04</span>全套物料库 · 点击查阅</h2>
+    <div class="desc">以下物料均可点击打开（本地 8092 服务）· 文档类为知识库 Markdown</div>
+
+    <div class="cat"><h3>🛡 战略层<span class="badge">决策依据</span></h3>
+      <div class="docs">
+        <a class="doc" href="20260917_招商运营总蓝图_V1.md"><div class="ico">蓝</div><div><span class="t">招商运营总蓝图 V1（已确认）</span><span class="m">9 个月 · 1,000 市代 · 各级回本模型 · 总盘子测算</span></div></a>
+        <a class="doc" href="20260916_四级代理体系_团长至省分公司.md"><div class="ico">系</div><div><span class="t">四级代理体系 V2</span><span class="m">团长 1 万→县代 3 万→市代 12 万→分公司 50 万</span></div></a>
+        <a class="doc" href="20260916_AI普惠计划_随心付分账方案_V2.md"><div class="ico">善</div><div><span class="t">AI 普惠计划 · 随心付 V2</span><span class="m">0 元可学完 · 团长 50% · 雷达 T0–T4</span></div></a>
+        <a class="doc" href="20260916_升单课程与变现承接体系.md"><div class="ico">升</div><div><span class="t">升单课程与变现承接体系</span><span class="m">八层触发 · 线上/线下/师徒/项目四线</span></div></a>
+        <a class="doc" href="20260916_门槛阶梯定价_内邀与涨价逼单策略.md"><div class="ico">价</div><div><span class="t">门槛阶梯定价 V6（已拍板）</span><span class="m">9 个月时间进度表 · 50/20/10/10/5/5 分布</span></div></a>
+      </div>
+    </div>
+
+    <div class="cat"><h3>💰 招商层<span class="badge">成交物料</span></h3>
+      <div class="docs">
+        <a class="doc" href="20260917_王炸社创始席位价格公示页.html"><div class="ico">公示</div><div><span class="t">席位价格公示页</span><span class="m">常价四档锚定 · 1 折 500 席阶梯 · 涨价三铁律</span></div></a>
+        <a class="doc" href="20260917_王炸社招商手册_对外版.html"><div class="ico">手册</div><div><span class="t">招商手册 · 对外版</span><span class="m">三问三答 · 模式图 · 回本模型 · 意向金 CTA</span></div></a>
+        <a class="doc" href="20260917_王炸社招商路演PPT_对外版.html"><div class="ico">PPT</div><div><span class="t">招商路演 PPT · 对外版</span><span class="m">13 页 16:9 · 四路导航 · 天选姐概念图封面</span></div></a>
+        <a class="doc" href="20260917_创始席位意向金协议_V1.md"><div class="ico">协</div><div><span class="t">创始席位意向金协议 V1</span><span class="m">1,000 · 优先资格 · 全额抵扣 · 30 天可退</span></div></a>
+        <a class="doc" href="20260917_代理合作协议_V1_四级分层.md"><div class="ico">合</div><div><span class="t">代理合作协议 V1（四级）</span><span class="m">卡位期 · 升级账户 · 团队计酬红线 · 3 天冷静期</span></div></a>
+      </div>
+    </div>
+
+    <div class="cat"><h3>⚙ 运营层<span class="badge">执行手册</span></h3>
+      <div class="docs">
+        <a class="doc" href="20260917_团长SOP手册_开营7天_V1.md"><div class="ico">SOP</div><div><span class="t">团长 SOP · 开营 7 天</span><span class="m">每日三动作 · 8 组话术 · 随心付三底线 · 七不准</span></div></a>
+        <a class="doc" href="20260917_AI普及计划_7天课程详细设计_V1.md"><div class="ico">课</div><div><span class="t">7 天课程详细设计</span><span class="m">教学目标 · 单课结构 · AI 老师角色 · 课件清单</span></div></a>
+        <a class="doc" href="20260916_种子团长招募营销包_V4.md"><div class="ico">募</div><div><span class="t">种子团长招募营销包 V4</span><span class="m">1,000 上车卡启动 · 长文/朋友圈/私聊/口播全套</span></div></a>
+        <a class="doc" href="20260917_M1起盘发布会流程脚本_V1.md"><div class="ico">发</div><div><span class="t">M1 起盘发布会脚本</span><span class="m">90 分钟时间轴 · 首日 100 单 · 异议库五问</span></div></a>
+        <a class="doc" href="20260917_招商后台进度看板字段表_V1.md"><div class="ico">看板</div><div><span class="t">后台看板字段表</span><span class="m">8 张核心表 · 闸门触发器 · 公示单源输出</span></div></a>
+      </div>
+    </div>
+
+    <div class="cat"><h3>🎨 品牌视觉<span class="badge">视觉资产</span></h3>
+      <div class="docs">
+        <a class="doc" href="tianxuanjie_visual_main.jpg"><div class="ico">①</div><div><span class="t">概念图 · 白金主视觉</span><span class="m">纯白+香槟金 · 白西装金骰星印</span></div></a>
+        <a class="doc" href="tianxuanjie_visual_cinnabar.jpg"><div class="ico">②</div><div><span class="t">概念图 · 朱砂公域版</span><span class="m">新中式 · 锦囊祥云篆印</span></div></a>
+        <a class="doc" href="tianxuanjie_visual_gold.jpg"><div class="ico">③</div><div><span class="t">概念图 · 鎏金高端版</span><span class="m">墨绿丝绒 · 伦勃朗光</span></div></a>
+        <a class="doc" href="tianxuanjie_poster_baijin.jpg"><div class="ico">④</div><div><span class="t">海报 · 直播预告（白金）</span><span class="m">每晚 20:00 · 扫码入群</span></div></a>
+        <a class="doc" href="tianxuanjie_poster_zhusha.jpg"><div class="ico">⑤</div><div><span class="t">海报 · 天选锦囊（朱砂）</span><span class="m">转发锦鲤，不如自己成为</span></div></a>
+        <a class="doc" href="tianxuanjie_poster_liujin.jpg"><div class="ico">⑥</div><div><span class="t">海报 · 邀请函（鎏金）</span><span class="m">12.31 · 仅限 101 位</span></div></a>
+      </div>
+    </div>
+
+    <div class="cat"><h3>🧭 命名与决策档案<span class="badge">过程留痕</span></h3>
+      <div class="docs">
+        <a class="doc" href="20260917_品牌包装30套方案_V1.md"><div class="ico">名</div><div><span class="t">品牌包装 30 套方案（文档版）</span><span class="m">7 家族逐套详述</span></div></a>
+        <a class="doc" href="20260917_AI数字人创始人_三套方案_V1.md"><div class="ico">AI</div><div><span class="t">AI 数字人创始人 · 三套方案</span><span class="m">真身分身 / 原生传人 / 双生</span></div></a>
+        <a class="doc" href="20260917_品牌架构决策_公司主体与社群命名_V1.md"><div class="ico">构</div><div><span class="t">品牌架构决策 V2</span><span class="m">女王城堡关系 · 公司版图检索 · 英文命名</span></div></a>
+        <a class="doc" href="20260917_OPC英文组词与善意经济融合_V1.md"><div class="ico">融</div><div><span class="t">OPC 组词与善意经济融合</span><span class="m">14 组词 · 艺名策略 · 关系定案</span></div></a>
+      </div>
+    </div>
+  </div>
+
+  <!-- 决策清单 -->
+  <div class="card">
+    <h2><span class="num">05</span>待拍板清单 · 当前状态</h2>
+    <div class="todo">
+      <div class="t-item"><div class="box done">✓</div><b>商业体系</b>四级代理 · 随心付 · 9 个月节奏 · 招商运营总蓝图 V1（已确认）</div>
+      <div class="t-item"><div class="box done">✓</div><b>善意经济关系</b>双身份定案（独立思想 IP + 社群操作系统）</div>
+      <div class="t-item"><div class="box done">✓</div><b>中文社群名</b>主理人公社（公司主体同名自洽）</div>
+      <div class="t-item"><div class="box"></div><b>英文商标</b>One&Co 家族 / OPC 家族 —— 30 套方案待选（或多商标矩阵）</div>
+      <div class="t-item"><div class="box"></div><b>艺名</b>一姐 / 星主 / 所长 / 队长 / Neo 姐 / 超姐</div>
+      <div class="t-item"><div class="box"></div><b>数字人方案</b>A 真身分身 / B 原生传人 / C 双生（推荐 B→A→C）</div>
+      <div class="t-item"><div class="box"></div><b>入口社群名</b>上线夜校（候选）</div>
+      <div class="t-item"><div class="box"></div><b>天选之夜地点</b>M9 盛典城市</div>
+      <div class="t-item"><div class="box"></div><b>商标检索</b>「主理人公社」35/41/42 类 + 英文商标 + Beneconomy 送检</div>
+    </div>
+  </div>
+
+  <div class="legal">
+    主理人公社（杭州）传媒科技有限公司 · 品牌架构平台 · 2026-09-17<br>
+    女王城堡为前作资产 · 商标持有：海南女王城堡网络科技（2019）
+    <div class="stamp">主 理 人 公 社</div>
+  </div>
+</div>
+</body>
+</html>

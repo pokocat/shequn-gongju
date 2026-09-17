@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>王炸社 · 城市创始席位招募（路演版）</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7;
+    --line:#EFE9DE; --off:#E9E4DA;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{background:var(--off)}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;color:var(--ink)}
+  #canvas{position:fixed;top:50%;left:50%;width:1280px;height:720px;background:var(--bg);box-shadow:0 10px 60px rgba(0,0,0,.16),0 2px 8px rgba(0,0,0,.08);transform:translate(-50%,-50%) scale(1);transform-origin:center}
+  .slide{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .5s cubic-bezier(.2,.7,.2,1),visibility .5s;padding:64px 76px}
+  .slide.active{opacity:1;visibility:visible}
+  /* chrome */
+  .chrome-top{position:absolute;top:0;left:0;right:0;height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 32px;font-size:11.5px;color:var(--sub);letter-spacing:.18em}
+  .chrome-top b{color:var(--gold-deep);letter-spacing:.22em;font-weight:700}
+  .chrome-bot{position:absolute;bottom:0;left:0;right:0;height:40px;display:flex;justify-content:space-between;align-items:center;padding:0 32px;font-size:11px;color:#A39B8E;letter-spacing:.14em}
+  .dots{position:absolute;bottom:46px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:9}
+  .dot{width:8px;height:8px;border-radius:99px;background:var(--line);cursor:pointer;transition:background .3s}
+  .dot.on{background:var(--gold-deep)}
+  /* typography */
+  .kicker{font-size:12px;letter-spacing:.42em;color:var(--gold-deep);font-weight:700}
+  .h-display{font-size:52px;font-weight:800;letter-spacing:.03em;color:var(--ink)}
+  .h-1{font-size:36px;font-weight:800;color:var(--ink)}
+  .h-2{font-size:20px;font-weight:800;color:var(--ink)}
+  .lead{font-size:15px;color:var(--sub);line-height:1.8}
+  .gold{color:var(--gold-deep)}
+  .tag{display:inline-block;background:var(--gold-soft);color:#8A6A1F;font-size:12.5px;padding:4px 14px;border-radius:99px;font-weight:600;letter-spacing:.06em}
+  .num{font-family:Georgia,serif;font-style:italic;color:var(--gold-deep)}
+  /* cards & grids */
+  .card{background:var(--paper);border-radius:16px;padding:22px 22px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .mini{background:#fff;border-radius:14px;padding:18px;border-bottom:3px solid var(--gold)}
+  .mini b{display:block;font-size:15px;margin-bottom:6px;color:var(--ink)}
+  .mini span{font-size:12px;color:var(--sub);line-height:1.6}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:12px;overflow:hidden}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:12px 8px;font-size:13px}
+  td{padding:11px 8px;text-align:center;border-top:1px solid var(--line)}
+  td.l{text-align:left;font-weight:600}
+  .disc{font-size:11.5px;color:var(--sub);margin-top:10px}
+  /* cover split */
+  .cover{display:grid;grid-template-columns:1.15fr .85fr;height:100%;gap:0;padding:0}
+  .cover-l{padding:80px 20px 64px 76px;display:flex;flex-direction:column;justify-content:center}
+  .cover-img{position:relative;overflow:hidden}
+  .cover-img img{width:100%;height:100%;object-fit:cover}
+  .cover-img::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(255,255,255,0) 26%)}
+  /* flow */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;text-align:center}
+  .step{background:#fff;border-radius:14px;padding:16px 8px;border-bottom:3px solid var(--gold)}
+  .step .t{font-weight:800;font-size:15px;margin-bottom:3px;color:var(--ink)}
+  .step .s{font-size:11px;color:var(--sub);line-height:1.5}
+  .arrow{text-align:center;color:var(--gold-deep);font-size:16px;font-weight:800;margin:8px 0}
+  /* list */
+  ul.cl{list-style:none;font-size:14px}
+  ul.cl li{padding:6px 0 6px 26px;position:relative;color:var(--ink)}
+  ul.cl li::before{content:"✓";position:absolute;left:2px;color:var(--gold-deep);font-weight:800}
+  ul.x{list-style:none;font-size:14px}
+  ul.x li{padding:6px 0 6px 26px;position:relative;color:var(--sub)}
+  ul.x li::before{content:"✕";position:absolute;left:2px;color:#B8B2A6;font-weight:800}
+  /* timeline */
+  .tl{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px}
+  .tl .ph{background:#fff;border-radius:14px;padding:16px 14px;border-top:3px solid var(--gold)}
+  .tl .ph b{display:block;font-size:14px;margin-bottom:6px;color:var(--ink)}
+  .tl .ph span{font-size:11.5px;color:var(--sub);line-height:1.6;display:block}
+  .tl .ph em{font-style:normal;color:var(--gold-deep);font-weight:700}
+  /* intent */
+  .intent{background:linear-gradient(150deg,#FFFDF8,var(--gold-soft));border-radius:18px;padding:30px 34px;display:flex;gap:30px;align-items:center}
+  .amt{font-size:48px;font-weight:800;color:var(--gold-deep);font-family:Georgia,serif;white-space:nowrap}
+  .amt small{font-size:14px;color:var(--sub);font-family:inherit}
+  .cta{display:inline-block;background:var(--gold-deep);color:#fff;font-size:16px;font-weight:700;padding:13px 44px;border-radius:99px;letter-spacing:.12em}
+  .stamp{display:inline-block;border:2px solid rgba(201,154,60,.5);color:var(--gold-deep);font-size:13px;padding:6px 18px;border-radius:8px;letter-spacing:.4em}
+  /* stagger */
+  .st{opacity:0;transform:translateY(14px);transition:opacity .6s ease,transform .6s ease}
+  .slide.active .st{opacity:1;transform:none}
+  .slide.active .st:nth-child(1){transition-delay:.05s}
+  .slide.active .d1{transition-delay:.08s}.slide.active .d2{transition-delay:.18s}
+  .slide.active .d3{transition-delay:.28s}.slide.active .d4{transition-delay:.38s}
+  .slide.active .d5{transition-delay:.48s}.slide.active .d6{transition-delay:.58s}
+</style>
+</head>
+<body>
+<div id="canvas">
+
+  <!-- S1 封面 -->
+  <section class="slide active">
+    <div class="cover">
+      <div class="cover-l">
+        <div class="kicker st d1">WANGZHA COMMUNITY · CITY PARTNER</div>
+        <div class="h-display st d2" style="margin:18px 0 10px">王炸社<br>城市创始席位</div>
+        <div class="lead st d3" style="margin-bottom:26px">人生王炸，今晚开打<br>首批 1,000 席 · 9 个月 · 一座城市一个席位集群</div>
+        <div class="st d4"><span class="tag">1 折创始批 · 500 席 · 售罄即涨 · 每月公示</span></div>
+      </div>
+      <div class="cover-img"><img src="tianxuanjie_visual_main.jpg" alt="天选姐白金主视觉"></div>
+    </div>
+  </section>
+
+  <!-- S2 三问 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="height:100%;display:flex;flex-direction:column;justify-content:center;max-height:582px;overflow:hidden;align-content:center">
+      <div class="kicker st d1">OPENING · 开始之前</div>
+      <div class="h-1 st d2" style="margin:14px 0 30px">三个问题，先说清楚</div>
+      <div class="grid3">
+        <div class="card st d3"><div class="h-2" style="margin-bottom:10px">AI 是不是已经<br>把普通人甩下了？</div><div class="lead" style="font-size:13.5px"><b class="gold">没有，只是没人正经教。</b>市场上要么是 9.9 的碎片课，要么是几万的大师班——「认真把普通人教会」这一层，就是王炸社的位置。</div></div>
+        <div class="card st d4"><div class="h-2" style="margin-bottom:10px">现在入场，<br>是不是已经晚了？</div><div class="lead" style="font-size:13.5px"><b class="gold">最不晚的方式，是成为教的人。</b>每个城市都有人问「去哪学 AI」——你把班开到自己的城市，你就是答案。</div></div>
+        <div class="card st d5"><div class="h-2" style="margin-bottom:10px">没人脉没资源，<br>能做吗？</div><div class="lead" style="font-size:13.5px"><b class="gold">普惠班就是从 0 开始的验证场。</b>你的朋友圈就是第一批学员来源，7 天课总部全包，1,000 元上车卡先验证再决定。</div></div>
+      </div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>02 / 13</span></div>
+  </section>
+
+  <!-- S3 模式一页图 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">MODEL · 王炸社是什么</div>
+      <div class="h-1 st d2" style="margin:12px 0 26px">普惠入口 + 四级体系，一台 <span class="num">AI</span> 普及商业体</div>
+      <div class="flow st d3">
+        <div class="step"><div class="t">普惠班</div><div class="s">7 天课 · 0 元起<br>随心付 · 城市圈层入口</div></div>
+        <div class="step"><div class="t">社群团长</div><div class="s">开班运营<br>随心付分账 50%</div></div>
+        <div class="step"><div class="t">区县代理</div><div class="s">一区一位<br>发展团长 · 陪跑</div></div>
+        <div class="step"><div class="t">市代理</div><div class="s">一城 3 席<br>市域招商 · 活动主办</div></div>
+      </div>
+      <div class="arrow st d4">↓</div>
+      <div class="flow st d5">
+        <div class="step"><div class="t">上线会员</div><div class="s">99/月 · AI 军师</div></div>
+        <div class="step"><div class="t">实战营</div><div class="s">399–1,980 · 三大主题</div></div>
+        <div class="step"><div class="t">师徒制</div><div class="s">掌灯门徒 · 天选门徒</div></div>
+        <div class="step"><div class="t">项目承接</div><div class="s">数字人 · 代运营 · 方案</div></div>
+      </div>
+      <div class="lead st d6" style="text-align:center;margin-top:24px;font-size:13.5px">公益普惠做入口与信任 → 四级代理做体系与扩张 → 产品与项目做承接与变现</div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>03 / 13</span></div>
+  </section>
+
+  <!-- S4 产品阶梯 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">PRODUCT · 产品线</div>
+      <div class="h-1 st d2" style="margin:12px 0 26px">从 0 元到高客单，一条完整的承接阶梯</div>
+      <div class="grid4">
+        <div class="mini st d3"><b>普惠班</b><span>7 天 AI 普及课<br>0 元可学完 · 随心付<br><span class="gold" style="font-weight:700">流量与信任入口</span></span></div>
+        <div class="mini st d4"><b>会员体系</b><span>上线会员 99/月<br>天选会员 699/年<br><span class="gold" style="font-weight:700">AI 军师工具订阅</span></span></div>
+        <div class="mini st d5"><b>实战营系列</b><span>AI 办公 / 短视频 / 私域<br>399–1,980 · 操盘手营 2,980<br><span class="gold" style="font-weight:700">技能进阶</span></span></div>
+        <div class="mini st d6"><b>师徒制与项目</b><span>掌灯门徒 19,800/年<br>天选门徒 49,800（限 9 席）<br><span class="gold" style="font-weight:700">高客单深度服务</span></span></div>
+      </div>
+      <div class="card st d6" style="margin-top:20px;padding:16px 22px"><span class="lead" style="font-size:13.5px">每一层都有明码标价、都有真实交付——<b class="gold">代理卖的不是承诺，是看得见的产品。</b></span></div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>04 / 13</span></div>
+  </section>
+
+  <!-- S5 回本模型 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">RETURN · 怎么挣钱</div>
+      <div class="h-1 st d2" style="margin:12px 0 24px">四级收入构成与回本模型</div>
+      <table class="st d3">
+        <tr><th style="text-align:left">档位</th><th>门槛（常价）</th><th>月收入构成</th><th>回本周期*</th></tr>
+        <tr><td class="l">社群团长</td><td class="gold" style="font-weight:800">1 万</td><td>随心付 50% + 课程 30% + 进阶 20%</td><td>中位约 4 个月</td></tr>
+        <tr><td class="l">区县代理</td><td class="gold" style="font-weight:800">3 万</td><td>自营 + 团长陪跑年卡 + 推荐费</td><td>中位约 5 个月</td></tr>
+        <tr><td class="l">市代理</td><td class="gold" style="font-weight:800">12 万</td><td>自营 + 县代陪跑 + 推荐费 + 活动主办</td><td>1 折进场 1–2 个月</td></tr>
+        <tr><td class="l">省市分公司</td><td class="gold" style="font-weight:800">50 万</td><td>体系年卡 + 大项目联营 + 线下联办</td><td>12–18 个月</td></tr>
+      </table>
+      <div class="grid3" style="margin-top:18px">
+        <div class="mini st d4"><b>结构四级，钱一层</b><span>所有代理与总部直签，结算永远一层——推荐费定额、单层、年封顶 2 万</span></div>
+        <div class="mini st d5"><b>服务挣的钱</b><span>陪跑年卡是明码自愿购买的服务产品，不与代理资格捆绑</span></div>
+        <div class="mini st d6"><b>升级账户</b><span>所有已付款项全额累计抵扣升级——随时补差、随时停，没有沉没成本</span></div>
+      </div>
+      <div class="disc st d6">* 回本周期为模型推算值，不构成任何收益承诺。经营成果取决于个人投入与圈子质量。</div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>05 / 13</span></div>
+  </section>
+
+  <!-- S6 价格阶梯 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">SEATS · 创始席位</div>
+      <div class="h-1 st d2" style="margin:12px 0 24px">市代理价格阶梯 · 共 <span class="num">1,000</span> 席</div>
+      <table class="st d3">
+        <tr><th>批次</th><th>折扣</th><th>席位</th><th>单席价格</th><th>结构</th></tr>
+        <tr style="background:#FFF9EC"><td class="l">创始批</td><td class="gold" style="font-weight:800">1 折</td><td style="font-weight:700">500 席</td><td class="gold" style="font-weight:800">¥12,000</td><td>50% 大部队 · 招募中</td></tr>
+        <tr><td class="l">第二批</td><td>2 折</td><td>200 席</td><td>¥24,000</td><td>20%</td></tr>
+        <tr><td class="l">第三批</td><td>3 折</td><td>100 席</td><td>¥36,000</td><td>10%</td></tr>
+        <tr><td class="l">第四批</td><td>4 折</td><td>100 席</td><td>¥48,000</td><td>10%</td></tr>
+        <tr><td class="l">第五批</td><td>5 折</td><td>50 席</td><td>¥60,000</td><td>5%</td></tr>
+        <tr><td class="l">常价期</td><td>标准价</td><td>50 席</td><td>¥120,000</td><td>5%</td></tr>
+      </table>
+      <div class="grid2" style="margin-top:18px">
+        <div class="mini st d4"><b>越早进，越便宜，回本越快</b><span>1 折进场 1–2 个月回本 → 案例速成 → 支撑后批涨价——结构自我实现</span></div>
+        <div class="mini st d5"><b>已签约者，涨价锁保护</b><span>后续任何价格调整不影响已获权益；升级只按已付累计金额补差</span></div>
+      </div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>06 / 13</span></div>
+  </section>
+
+  <!-- S7 时间线 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">RHYTHM · 招商节奏</div>
+      <div class="h-1 st d2" style="margin:12px 0 24px">9 个月，三波闸门，月月涨一档</div>
+      <div class="tl">
+        <div class="ph st d3"><b>M1–M2</b><span><em>起盘</em>：市代 1 折开闸<br>月均 250 人铺大部队<br>意向金蓄水 ≥800 人</span></div>
+        <div class="ph st d4"><b>M3–M5</b><span><em>造兵</em>：市达 100 人开团长闸<br>月月涨一档（每月公示）<br>城市发布会双周制</span></div>
+        <div class="ph st d5"><b>M4–M6</b><span><em>成层</em>：团长达 2,000 开县代闸<br>团长升级补差减半<br>一区一位铺满 2,000 区</span></div>
+        <div class="ph st d6"><b>M7–M8</b><span><em>收官</em>：市代进入原价期<br>1,000 席满员公告<br>常价体系锁定</span></div>
+        <div class="ph st d6"><b>M9</b><span><em>盛典</em>：天选之夜<br>下一波门槛上调 50% 公示<br>创始编号终身展示</span></div>
+      </div>
+      <div class="card st d6" style="margin-top:20px;padding:16px 22px"><span class="lead" style="font-size:13.5px">控盘铁律：<b class="gold">人数没到不涨价</b>——每档售罄才进入下一档，真实进度、后台可查、绝不虚假倒计时。</span></div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>07 / 13</span></div>
+  </section>
+
+  <!-- S8 三铁律 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">RULES · 涨价规则</div>
+      <div class="h-1 st d2" style="margin:12px 0 26px">三条铁律，写在公示页上</div>
+      <div class="grid3">
+        <div class="card st d3" style="text-align:center"><div class="num" style="font-size:44px">一</div><div class="h-2" style="margin:8px 0 8px">名额触发</div><div class="lead" style="font-size:13px">各批次席位售罄即进入下一价格档——不看日期，只看真实进度</div></div>
+        <div class="card st d4" style="text-align:center"><div class="num" style="font-size:44px">二</div><div class="h-2" style="margin:8px 0 8px">每月公示</div><div class="lead" style="font-size:13px">每月 1 号公示当前价格档与剩余名额，数据后台可查</div></div>
+        <div class="card st d5" style="text-align:center"><div class="num" style="font-size:44px">三</div><div class="h-2" style="margin:8px 0 8px">绝不超发</div><div class="lead" style="font-size:13px">每档名额定死，售完即止，不追加——包括任何关系户</div></div>
+      </div>
+      <div class="grid2" style="margin-top:20px">
+        <div class="mini st d5"><b>市代：一城限 3 席</b><span>区域稀缺比价格更硬——钱能再赚，城只有一个</span></div>
+        <div class="mini st d6"><b>县代：一区一位</b><span>意向锁定 6 个月，补差激活正式独家授权</span></div>
+      </div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>08 / 13</span></div>
+  </section>
+
+  <!-- S9 总部全包 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">SUPPORT · 总部扶持</div>
+      <div class="h-1 st d2" style="margin:12px 0 26px">你带圈子进场，其余总部全包</div>
+      <div class="grid4">
+        <div class="mini st d3"><b>课程与工具</b><span>7 天普惠课全体系 · AI 老师「上线」答疑 · 实战营课件 · 会员产品线</span></div>
+        <div class="mini st d4"><b>开班 SOP</b><span>逐日动作手册 · 群公告模板 · 随心付三底线 · 分层承接话术</span></div>
+        <div class="mini st d5"><b>陪跑体系</b><span>团长 30 天总部陪跑 · 区县代理培训 · 市代招商支持 · 每月策略会</span></div>
+        <div class="mini st d6"><b>品牌与活动</b><span>天选姐 IP 势能 · 城市发布会双周制 · 年度天选之夜 · 案例共署名</span></div>
+      </div>
+      <div class="intent st d6" style="margin-top:22px;padding:22px 30px">
+        <div><div class="h-2" style="margin-bottom:4px">AI 创始人「上线」</div><div class="lead" style="font-size:13px">王炸社第 001 号主理人——AI 数字人坐镇答疑与内容，每个班的标配老师</div></div>
+      </div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>09 / 13</span></div>
+  </section>
+
+  <!-- S10 适合谁 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">FIT · 适合谁</div>
+      <div class="h-1 st d2" style="margin:12px 0 26px">先筛人，再谈钱</div>
+      <div class="grid2">
+        <div class="card st d3">
+          <div class="h-2" style="margin-bottom:14px">适合的人</div>
+          <ul class="cl">
+            <li>有朋友圈/社群圈子，想把它变成资产的人</li>
+            <li>认可 AI 趋势、愿意动手验证的实干型</li>
+            <li>实体老板 / 团队长 / 知识博主，想把客户盘活</li>
+            <li>想在城市做事、但缺产品和体系的操盘者</li>
+          </ul>
+        </div>
+        <div class="card st d4">
+          <div class="h-2" style="margin-bottom:14px">不适合的人</div>
+          <ul class="x">
+            <li>想交钱躺赚、等分红的（没有这种席位）</li>
+            <li>不认可「0 元可学完」公益打法的</li>
+            <li>想在朋友圈刷屏硬广式收割的</li>
+            <li>想拿代理资格转手倒卖的</li>
+          </ul>
+        </div>
+      </div>
+      <div class="lead st d5" style="text-align:center;margin-top:24px;font-size:13.5px">筛选即信任——<b class="gold">把不适合的人挡在门外，是对进场的人最好的保护。</b></div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>10 / 13</span></div>
+  </section>
+
+  <!-- S11 为什么是现在 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="height:100%;display:flex;flex-direction:column;justify-content:center;max-height:582px;overflow:hidden">
+      <div class="kicker st d1">WHY NOW · 为什么是现在</div>
+      <div class="h-display st d2" style="font-size:44px;margin:16px 0 30px">这一波的原价，<br>是下一波的 <span class="num">5</span> 折不到</div>
+      <div class="grid3">
+        <div class="card st d3"><div class="h-2 gold" style="margin-bottom:8px">1 折只在创始批</div><div class="lead" style="font-size:13.5px">500 席卖完即止——2 折 2.4 万，常价 12 万，价格阶梯公示执行</div></div>
+        <div class="card st d4"><div class="h-2 gold" style="margin-bottom:8px">下一波，门槛上调 50%</div><div class="lead" style="font-size:13.5px">M9 天选之夜公示下一波规则——这一波的常价，是下一波的 5 折不到</div></div>
+        <div class="card st d5"><div class="h-2 gold" style="margin-bottom:8px">意向金零风险</div><div class="lead" style="font-size:13.5px">1,000 元锁 1 折资格，未成交 7 个工作日全额退——犹豫不亏钱，观望才亏</div></div>
+      </div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>11 / 13</span></div>
+  </section>
+
+  <!-- S12 行动页 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="padding-top:16px">
+      <div class="kicker st d1">ACTION · 下一步</div>
+      <div class="h-1 st d2" style="margin:12px 0 24px">创始席位意向金 · 蓄水中</div>
+      <div class="intent st d3">
+        <div class="amt">¥1,000</div>
+        <div>
+          <div class="h-2" style="margin-bottom:8px">三权益</div>
+          <ul class="cl" style="font-size:13.5px">
+            <li><b>优先购买资格</b>——1 折名额仅向意向金持有者开放（市代 1 折限 5 席），按到账时间排序</li>
+            <li><b>成交全额抵扣</b>——计入升级账户，后续升级继续抵扣，一分不白花</li>
+            <li><b>未成交随时可退</b>——有效期 30 天，未签约 7 个工作日内全额原路退还</li>
+          </ul>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:30px" class="st d4">
+        <span class="cta">私信「王炸」· 锁定席位</span>
+        <div class="lead st d5" style="margin-top:16px;font-size:13px">详细权利义务以《创始席位意向金协议》《代理合作协议》为准 · 王炸社不承诺任何投资回报与经营收益</div>
+      </div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>12 / 13</span></div>
+  </section>
+
+  <!-- S13 封底 -->
+  <section class="slide">
+    <div class="chrome-top"><span><b>王炸社</b> · 城市创始席位</span><span>WANGZHA 2026</span></div>
+    <div style="height:100%;display:flex;flex-direction:column;justify-content:center;align-items:center;max-height:582px;overflow:hidden">
+      <div class="kicker st d1">WANGZHA COMMUNITY</div>
+      <div class="h-display st d2" style="text-align:center;margin:24px 0 14px">人生王炸<br>今晚开打</div>
+      <div class="lead st d3" style="text-align:center;margin-bottom:34px">1,000 席 · 9 个月 · 每月 1 号公示进度<br>名额售罄即涨价 · 已签约者权益不受任何影响</div>
+      <div class="stamp st d4">王 炸 社</div>
+    </div>
+    <div class="chrome-bot"><span>创始席位 · 路演版</span><span>13 / 13</span></div>
+  </section>
+
+  <div class="dots" id="dots"></div>
+</div>
+<script>
+  const canvas=document.getElementById('canvas');
+  const slides=[...document.querySelectorAll('.slide')];
+  const dotsBox=document.getElementById('dots');
+  let cur=0;
+  slides.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='dot'+(i===0?' on':'');
+    d.onclick=()=>go(i);
+    dotsBox.appendChild(d);
+  });
+  const dots=[...dotsBox.children];
+  function go(i){
+    if(i<0||i>=slides.length||i===cur)return;
+    slides[cur].classList.remove('active');
+    dots[cur].classList.remove('on');
+    cur=i;
+    slides[cur].classList.add('active');
+    dots[cur].classList.add('on');
+  }
+  function fit(){
+    const s=Math.min(innerWidth/1280,innerHeight/720);
+    canvas.style.transform='translate(-50%,-50%) scale('+s+')';
+  }
+  fit();
+  addEventListener('resize',fit);
+  addEventListener('keydown',e=>{
+    if(['ArrowRight','ArrowDown','PageDown',' '].includes(e.key))go(cur+1);
+    if(['ArrowLeft','ArrowUp','PageUp'].includes(e.key))go(cur-1);
+    if(e.key==='Home')go(0);
+    if(e.key==='End')go(slides.length-1);
+  });
+  let wheelLock=0;
+  addEventListener('wheel',e=>{
+    const now=Date.now();
+    if(now-wheelLock<650)return;
+    if(Math.abs(e.deltaY)<24)return;
+    wheelLock=now;
+    go(cur+(e.deltaY>0?1:-1));
+  },{passive:true});
+  let touchY=null;
+  addEventListener('touchstart',e=>{touchY=e.touches[0].clientY;},{passive:true});
+  addEventListener('touchend',e=>{
+    if(touchY===null)return;
+    const dy=touchY-e.changedTouches[0].clientY;
+    if(Math.abs(dy)>46)go(cur+(dy>0?1:-1));
+    touchY=null;
+  },{passive:true});
+</script>
+</body>
+</html>

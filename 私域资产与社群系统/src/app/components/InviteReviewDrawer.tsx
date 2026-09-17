@@ -474,7 +474,7 @@ const _cls = useStyles();
                           <span className="text-xs font-bold">{m.label}</span>
                           <span className="text-[10px] font-bold px-1.5 py-0.5" style={{
                             background: on ? "#3b82f6" : S.surfaceSoft,
-                            color: "#ffffff",
+                            color: on ? "#ffffff" : S.text,
                             borderRadius: 4,
                           }}>
                             {m.scopeTypeLabel}

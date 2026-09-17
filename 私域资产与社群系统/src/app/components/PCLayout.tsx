@@ -19,10 +19,9 @@ const navGroups = [
   { label: "配置中心", items: [
     { id: "wechat",     label: "账号资产中心",    icon: CreditCard,      badge: "2"  },
     { id: "community",  label: "微信群管理",      icon: Users2,          badge: "8"  },
-    { id: "cs",         label: "客服与服务资源",  icon: Headphones,      badge: null },
+    { id: "cs",         label: "员工与服务资源",  icon: Headphones,      badge: null },
     { id: "channel",    label: "渠道流量绑定",    icon: Share2,          badge: null },
     { id: "cities",     label: "城市分站",        icon: MapPin,          badge: null },
-    { id: "permissions",label: "员工权限",        icon: Shield,          badge: null },
   ]},
   { label: "日常运营", items: [
     { id: "users",      label: "会员运营工作台", icon: User,            badge: null },
@@ -51,12 +50,13 @@ type VMItem = {
   desc: string;           // 菜单里的副标题
   icon: typeof Globe;
   accent: string;         // 触发器胶囊的强调色
+  onAccent: string;       // 胶囊上的字色（亮背景配深字，暗背景配白字）
 };
 const VIEW_MODES: VMItem[] = [
-  { id: "landing",  label: "官网展示", short: "WEB",   desc: "公开官网 · 营销介绍页", icon: Globe,     accent: "#0ea5e9" },
-  { id: "pc",       label: "PC 后台",  short: "PC",    desc: "工作台 · 全功能控制台", icon: Monitor,    accent: S.accent },
-  { id: "mobile",   label: "APP 预览", short: "APP",   desc: "会员小程序 · 私域用户端", icon: Smartphone, accent: "#22c55e" },
-  { id: "zhuliren", label: "主理人",    short: "主理人", desc: "城市主理人 · 合伙人工作台", icon: Star,     accent: "#1e293b" },
+  { id: "landing",  label: "官网展示", short: "WEB",   desc: "公开官网 · 营销介绍页", icon: Globe,     accent: "#0ea5e9", onAccent: "#ffffff" },
+  { id: "pc",       label: "PC 后台",  short: "PC",    desc: "工作台 · 全功能控制台", icon: Monitor,    accent: S.accent,   onAccent: S.onAccent },
+  { id: "mobile",   label: "APP 预览", short: "APP",   desc: "会员小程序 · 私域用户端", icon: Smartphone, accent: "#22c55e", onAccent: "#14532d" },
+  { id: "zhuliren", label: "主理人",    short: "主理人", desc: "城市主理人 · 合伙人工作台", icon: Star,     accent: "#1e293b", onAccent: "#ffffff" },
 ];
 
 function ViewModePicker({
@@ -119,7 +119,7 @@ function ViewModePicker({
           style={{
             display: "inline-flex", alignItems: "center", gap: 4,
             padding: "3px 8px", borderRadius: "999px",
-            background: current.accent, color: "#fff",
+            background: current.accent, color: current.onAccent,
             fontSize: 11, fontWeight: 700,
             whiteSpace: "nowrap",
           }}
@@ -285,7 +285,7 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
                     <Icon size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.6 }} />
                     {!isSidebarCollapsed && <span className="flex-1 truncate">{item.label}</span>}
                     {!isSidebarCollapsed && item.badge && (
-                      <span className="px-1.5 py-0.5 font-bold" style={{ background: isActive ? "rgba(0,0,0,0.15)" : S.accent, color: "#ffffff", fontSize: "9px", borderRadius: "4px", fontFamily: "monospace" }}>
+                      <span className="px-1.5 py-0.5 font-bold" style={{ background: isActive ? "rgba(0,0,0,0.15)" : S.accent, color: isActive ? "#ffffff" : S.onAccent, fontSize: "9px", borderRadius: "4px", fontFamily: "monospace" }}>
                         {item.badge}
                       </span>
                     )}

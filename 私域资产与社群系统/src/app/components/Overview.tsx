@@ -198,7 +198,7 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
         <div className="flex items-center gap-2">
           <AlertTriangle size={13} style={{ color: S.accent }} />
           <span className="text-xs font-bold font-mono tracking-wider" style={{ color: S.accent }}>// HIGH RISK ALERT</span>
-          <span className="text-xs font-bold px-1.5 py-0.5" style={{ background: highRiskCount > 0 ? "#cc0000" : S.accent, color: "#ffffff", borderRadius: "4px" }}>{risks.length}</span>
+          <span className="text-xs font-bold px-1.5 py-0.5" style={{ background: highRiskCount > 0 ? "#cc0000" : S.accent, color: highRiskCount > 0 ? "#ffffff" : S.onAccent, borderRadius: "4px" }}>{risks.length}</span>
         </div>
         <div className="flex gap-3 flex-wrap">
           {risks.map(r => (

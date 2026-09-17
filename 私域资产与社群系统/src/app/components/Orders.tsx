@@ -35,7 +35,7 @@ const initialOrders: Order[] = [
 ];
 
 const statusConfig: Record<string, { bg: string; color: string; label: string }> = {
-  "已完成": { bg: S.accent, color: "#ffffff", label: "已完成" },
+  "已完成": { bg: S.accent, color: S.onAccent, label: "已完成" },
   "待确认": { bg: "#3b82f6", color: "#ffffff", label: "待确认" },
   "退款申请": { bg: "#1e293b", color: S.accent, label: "退款申请" },
   "审核中": { bg: "#f1f5f9", color: "#475569", label: "审核中" },

@@ -1,0 +1,303 @@
+/* ==========================================================================
+   VIP BADGE LIBRARY · 私域资产与社群系统 · PC 端游戏化徽章
+   --------------------------------------------------------------------------
+   设计套路：多层金属嵌套 + 宝石内核 + 流光扫过 + 光晕脉冲 + 王冠/盾
+   等级：r0游客(灰褐) → r1体验官(翠绿) → r2PRO(紫) → r3VIP(金) → r4黑金(赤红)
+   尺寸：sm=28px 行内 / md=52px 卡片 / lg=96px 大展示
+   ========================================================================== */
+
+@import './fonts.css';
+@import './tailwind.css';
+@import './theme.css';
+
+/* ---------- 通用动画 ---------- */
+@keyframes vipSweep{
+  0%{ transform:translateX(-120%) skewX(-25deg); opacity:0; }
+  10%{ opacity:1; }
+  60%,100%{ transform:translateX(220%) skewX(-25deg); opacity:0; }
+}
+@keyframes vipPulseGlow{
+  0%,100%{ filter:brightness(1) drop-shadow(0 0 4px var(--vip-glow,#7C3AED)); }
+  50%{ filter:brightness(1.25) drop-shadow(0 0 20px var(--vip-glow,#7C3AED)); }
+}
+@keyframes vipFloatY{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-3px); }
+}
+@keyframes vipSlowSpin{ to{ transform:rotate(360deg); } }
+@keyframes vipParticle{
+  0%,100%{ opacity:.2; transform:translate(0,0) scale(1); }
+  50%{ opacity:1; transform:translate(var(--tx,10px),var(--ty,-12px)) scale(1.5); }
+}
+
+/* ---------- 基础 ---------- */
+.vb{
+  position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  font-style:normal;
+  user-select:none;
+  font-family:'Inter','PingFang SC',system-ui,sans-serif;
+}
+
+/* ==========================================================================
+   套系 A：王者盾 V1（八边形金属盾徽 + 三层嵌套 + 宝石内核 + 流光）
+   DOM：<span class="vb vb-shield vb-md vb-r3"><b>VIP</b></span>
+   ========================================================================== */
+.vb-shield{
+  --w:52px; --h:60px;
+  width:var(--w); height:var(--h);
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.18));
+}
+/* 外金属框 */
+.vb-shield::before{
+  content:''; position:absolute; inset:0; z-index:1;
+  clip-path:polygon(50% 0%,88% 6%,100% 22%,100% 76%,50% 100%,0 76%,0 22%,12% 6%);
+  background:var(--vb-metal,#C4B5A0);
+}
+/* 中深色边 */
+.vb-shield::after{
+  content:''; position:absolute; inset:4px; z-index:2;
+  clip-path:polygon(50% 2%,84% 9%,98% 25%,98% 73%,50% 98%,2% 73%,2% 25%,16% 9%);
+  background:linear-gradient(160deg,var(--vb-mid,#5C4A35),var(--vb-deep,#2E2519));
+  box-shadow:inset 0 0 8px rgba(0,0,0,.5);
+}
+/* 宝石内核（b 标签） */
+.vb-shield > b{
+  position:relative; z-index:5;
+  width:calc(var(--w) - 16px); height:calc(var(--h) - 16px);
+  display:flex; align-items:center; justify-content:center;
+  clip-path:polygon(50% 4%,82% 12%,93% 28%,93% 70%,50% 96%,7% 70%,7% 28%,18% 12%);
+  font-weight:900; font-size:11px; letter-spacing:.5px;
+  color:var(--vb-fg,#fff); line-height:1; text-align:center;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);
+  background:linear-gradient(160deg,var(--vb-core,#6B5A44),var(--vb-deep,#2E2519));
+  /* 宝石高光斜条 */
+  background-image:
+    linear-gradient(135deg,transparent 30%,rgba(255,255,255,.5) 42%,transparent 56%),
+    linear-gradient(160deg,var(--vb-core,#6B5A44),var(--vb-deep,#2E2519));
+  box-shadow:inset 0 0 10px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+/* 流光扫过 */
+.vb-shield > b::before{
+  content:''; position:absolute; left:-20%; right:-20%; top:0; bottom:0; z-index:1;
+  background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.45) 50%,transparent 70%);
+  transform:translateX(-120%) skewX(-25deg);
+  opacity:0;
+}
+
+/* --- 等级配色 --- */
+/* r0 游客 · 灰褐 */
+.vb-shield.vb-r0{ --vb-fg:#FFF7EC; --vb-glow:#8B7355; --vb-metal:linear-gradient(160deg,#A89B88,#7A6A52,#4A3D2B); --vb-mid:#4A3D2B; --vb-deep:#241D14; --vb-core:#6B5A44; }
+/* r1 体验官 · 翠绿 */
+.vb-shield.vb-r1{ --vb-fg:#fff; --vb-glow:#10B981; --vb-metal:linear-gradient(160deg,#6EE7B7,#10B981,#047857); --vb-mid:#065F46; --vb-deep:#022C22; --vb-core:#34D399; }
+.vb-shield.vb-r1::after{ box-shadow:inset 0 0 10px rgba(0,0,0,.45),0 0 10px rgba(16,185,129,.35); }
+/* r2 PRO · 紫 */
+.vb-shield.vb-r2{ --vb-fg:#fff; --vb-glow:#7C3AED; --vb-metal:linear-gradient(160deg,#C4B5FD,#8B5CF6,#5B21B6); --vb-mid:#4C1D95; --vb-deep:#1E1B4B; --vb-core:#A78BFA; }
+.vb-shield.vb-r2::after{ box-shadow:inset 0 0 10px rgba(0,0,0,.45),0 0 14px rgba(124,58,237,.45); }
+.vb-shield.vb-r2 > b::before{ animation:vipSweep 4s ease-in-out infinite; }
+/* r3 VIP · 金 */
+.vb-shield.vb-r3{ --vb-fg:#451A03; --vb-glow:#F59E0B; --vb-metal:linear-gradient(160deg,#FEF3C7,#F59E0B,#92400E); --vb-mid:#B45309; --vb-deep:#451A03; --vb-core:#FDE68A; }
+.vb-shield.vb-r3::before{ animation:vipPulseGlow 3s ease-in-out infinite; }
+.vb-shield.vb-r3::after{ box-shadow:inset 0 0 10px rgba(0,0,0,.4),0 0 18px rgba(245,158,11,.5); }
+.vb-shield.vb-r3 > b::before{ animation:vipSweep 3s ease-in-out infinite; }
+/* r4 黑金 · 赤红 */
+.vb-shield.vb-r4{ --vb-fg:#fff; --vb-glow:#DC2626; --vb-metal:linear-gradient(160deg,#FECACA,#DC2626,#7F1D1D); --vb-mid:#991B1B; --vb-deep:#450A0A; --vb-core:#FCA5A5; }
+.vb-shield.vb-r4::before{ animation:vipPulseGlow 2s ease-in-out infinite; }
+.vb-shield.vb-r4::after{ box-shadow:inset 0 0 12px rgba(0,0,0,.45),0 0 22px rgba(220,38,38,.6); }
+.vb-shield.vb-r4 > b::before{ animation:vipSweep 2.2s ease-in-out infinite; }
+
+/* --- 尺寸 --- */
+.vb-shield.vb-sm{ --w:28px; --h:34px; }
+.vb-shield.vb-sm > b{ font-size:8px; width:calc(var(--w) - 10px); height:calc(var(--h) - 10px); }
+.vb-shield.vb-md{ --w:52px; --h:60px; }
+.vb-shield.vb-md > b{ font-size:12px; }
+.vb-shield.vb-lg{ --w:88px; --h:102px; }
+.vb-shield.vb-lg > b{ font-size:20px; width:calc(var(--w) - 26px); height:calc(var(--h) - 26px); }
+
+
+/* ==========================================================================
+   套系 B：王冠 CROWN（尖齿王冠 + 宝石圆章 + 金属环 + 底部绶带）
+   DOM：<span class="vb vb-crown vb-md vb-r4">
+          <i class="vb-cr-crown"></i><b class="vb-cr-em">VIP</b><i class="vb-cr-band">★</i>
+        </span>
+   ========================================================================== */
+.vb-crown{
+  --w:52px; --h:68px;
+  width:var(--w); height:var(--h);
+  position:relative;
+  display:inline-flex; align-items:flex-end; justify-content:center;
+  padding-bottom:5px;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.2));
+}
+/* 王冠（11 尖齿） */
+.vb-crown > .vb-cr-crown{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:44px; height:22px; z-index:1;
+  clip-path:polygon(
+    0 100%,2% 55%,8% 72%,14% 12%,20% 65%,26% 0,
+    38% 60%,50% 6%,62% 60%,74% 0,80% 65%,86% 12%,
+    92% 72%,98% 55%,100% 100%
+  );
+}
+/* 宝石圆章（双层金属环 + 宝石面） */
+.vb-crown > .vb-cr-em{
+  width:32px; height:32px; z-index:3;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:9px;
+  border-width:2.5px;
+  line-height:1; position:relative;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+.vb-crown > .vb-cr-em::before{
+  content:''; position:absolute; top:15%; left:15%;
+  width:30%; height:22%; border-radius:50%;
+  background:rgba(255,255,255,.55);
+}
+/* 底部绶带 */
+.vb-crown > .vb-cr-band{
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  width:36px; height:10px; z-index:2;
+  clip-path:polygon(0 0,100% 0,94% 100%,50% 70%,6% 100%);
+  font-size:6px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* --- 等级配色 --- */
+.vb-crown.vb-r0{ --vb-glow:#8B7355; }
+.vb-crown.vb-r0 > .vb-cr-crown{ background:linear-gradient(180deg,#A89B88,#3E3223); }
+.vb-crown.vb-r0 > .vb-cr-em{ background:linear-gradient(160deg,#5C4A35,#2E2519); border-color:#A89B88; color:#FFF7EC; }
+.vb-crown.vb-r0 > .vb-cr-band{ background:linear-gradient(180deg,#5C4A35,#2E2519); color:#D4C5A9; }
+
+.vb-crown.vb-r1{ --vb-glow:#10B981; }
+.vb-crown.vb-r1 > .vb-cr-crown{ background:linear-gradient(180deg,#4ADE80,#064E3B); }
+.vb-crown.vb-r1 > .vb-cr-em{ background:linear-gradient(160deg,#10B981,#052E16); border-color:#34D399; color:#fff; box-shadow:0 0 10px rgba(16,185,129,.4); }
+.vb-crown.vb-r1 > .vb-cr-band{ background:linear-gradient(180deg,#16A34A,#064E3B); color:#BBF7D0; }
+
+.vb-crown.vb-r2{ --vb-glow:#7C3AED; }
+.vb-crown.vb-r2 > .vb-cr-crown{ background:linear-gradient(180deg,#C4B5FD,#3B0764); }
+.vb-crown.vb-r2 > .vb-cr-em{ background:linear-gradient(160deg,#8B5CF6,#1E1B4B); border-color:#DDD6FE; color:#fff; box-shadow:0 0 14px rgba(124,58,237,.5); animation:vipPulseGlow 3s ease-in-out infinite; }
+.vb-crown.vb-r2 > .vb-cr-band{ background:linear-gradient(180deg,#7C3AED,#3B0764); color:#DDD6FE; }
+
+.vb-crown.vb-r3{ --vb-glow:#F59E0B; }
+.vb-crown.vb-r3 > .vb-cr-crown{
+  background-image:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.6) 45%,transparent 65%),linear-gradient(180deg,#FEF3C7,#B45309);
+  background-size:200% 100%,100% 100%;
+  animation:vipSweep 3.5s ease-in-out infinite;
+}
+.vb-crown.vb-r3 > .vb-cr-em{ background:linear-gradient(160deg,#F59E0B,#7C2D12); border-color:#FBBF24; color:#451A03; box-shadow:0 0 18px rgba(245,158,11,.6); animation:vipPulseGlow 2.5s ease-in-out infinite; }
+.vb-crown.vb-r3 > .vb-cr-band{ background:linear-gradient(180deg,#F59E0B,#7C2D12); color:#FDE68A; }
+
+.vb-crown.vb-r4{ --vb-glow:#DC2626; }
+.vb-crown.vb-r4 > .vb-cr-crown{
+  background-image:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.7) 45%,transparent 65%),linear-gradient(180deg,#FECACA,#7F1D1D);
+  background-size:200% 100%,100% 100%;
+  animation:vipSweep 2.2s ease-in-out infinite;
+}
+.vb-crown.vb-r4 > .vb-cr-em{ background:linear-gradient(160deg,#EF4444,#7F1D1D); border-color:#FCA5A5; color:#fff; box-shadow:0 0 24px rgba(220,38,38,.7); animation:vipPulseGlow 1.5s ease-in-out infinite; }
+.vb-crown.vb-r4 > .vb-cr-band{ background:linear-gradient(180deg,#DC2626,#7F1D1D); color:#FECACA; }
+
+/* --- 尺寸 --- */
+.vb-crown.vb-sm{ --w:28px; --h:38px; }
+.vb-crown.vb-sm > .vb-cr-crown{ width:24px; height:12px; }
+.vb-crown.vb-sm > .vb-cr-em{ width:18px; height:18px; font-size:7px; border-width:1.5px; }
+.vb-crown.vb-sm > .vb-cr-band{ width:22px; height:6px; font-size:5px; }
+.vb-crown.vb-md{ --w:52px; --h:68px; }
+.vb-crown.vb-md > .vb-cr-crown{ width:44px; height:22px; }
+.vb-crown.vb-md > .vb-cr-em{ width:32px; height:32px; font-size:10px; border-width:2.5px; }
+.vb-crown.vb-md > .vb-cr-band{ width:36px; height:10px; font-size:6px; }
+.vb-crown.vb-lg{ --w:90px; --h:120px; padding-bottom:8px; }
+.vb-crown.vb-lg > .vb-cr-crown{ width:76px; height:38px; }
+.vb-crown.vb-lg > .vb-cr-em{ width:56px; height:56px; font-size:16px; border-width:3.5px; }
+.vb-crown.vb-lg > .vb-cr-band{ width:62px; height:18px; font-size:10px; }
+
+
+/* ==========================================================================
+   套系 C：通用圆徽 ORB（环形金属 + 中心宝石 + 粒子环绕）
+   DOM：<span class="vb vb-orb vb-md vb-r3"><b>VIP</b></span>
+   ========================================================================== */
+.vb-orb{
+  --size:52px;
+  width:var(--size); height:var(--size);
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.18));
+}
+/* 外环（金属双层环） */
+.vb-orb::before{
+  content:''; position:absolute; inset:0; z-index:1;
+  border-radius:50%;
+  background:var(--vb-metal,linear-gradient(160deg,#C4B5A0,#8B7355));
+}
+.vb-orb::after{
+  content:''; position:absolute; inset:3px; z-index:2;
+  border-radius:50%;
+  background:linear-gradient(160deg,var(--vb-mid,#5C4A35),var(--vb-deep,#2E2519));
+  box-shadow:inset 0 0 8px rgba(0,0,0,.5);
+}
+/* 宝石内核 */
+.vb-orb > b{
+  position:relative; z-index:5;
+  width:calc(var(--size) - 18px); height:calc(var(--size) - 18px);
+  display:flex; align-items:center; justify-content:center;
+  border-radius:50%;
+  font-weight:900; font-size:11px; letter-spacing:.5px;
+  color:var(--vb-fg,#fff); line-height:1;
+  text-shadow:0 1px 3px rgba(0,0,0,.35);
+  background:
+    linear-gradient(135deg,transparent 30%,rgba(255,255,255,.55) 42%,transparent 56%),
+    linear-gradient(160deg,var(--vb-core,#6B5A44),var(--vb-deep,#2E2519));
+  box-shadow:inset 0 0 8px rgba(0,0,0,.3);
+  overflow:hidden;
+}
+.vb-orb > b::before{
+  content:''; position:absolute; left:-20%; right:-20%; top:0; bottom:0; z-index:1;
+  background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.4) 50%,transparent 70%);
+  transform:translateX(-120%) skewX(-25deg);
+  opacity:0;
+}
+
+/* --- 等级配色（复用 shield 的变量） --- */
+.vb-orb.vb-r0{ --vb-fg:#FFF7EC; --vb-glow:#8B7355; --vb-metal:linear-gradient(160deg,#A89B88,#7A6A52); --vb-mid:#4A3D2B; --vb-deep:#241D14; --vb-core:#6B5A44; }
+.vb-orb.vb-r1{ --vb-fg:#fff; --vb-glow:#10B981; --vb-metal:linear-gradient(160deg,#6EE7B7,#10B981); --vb-mid:#065F46; --vb-deep:#022C22; --vb-core:#34D399; }
+.vb-orb.vb-r1::after{ box-shadow:inset 0 0 10px rgba(0,0,0,.4),0 0 12px rgba(16,185,129,.4); }
+.vb-orb.vb-r2{ --vb-fg:#fff; --vb-glow:#7C3AED; --vb-metal:linear-gradient(160deg,#C4B5FD,#8B5CF6); --vb-mid:#4C1D95; --vb-deep:#1E1B4B; --vb-core:#A78BFA; }
+.vb-orb.vb-r2::after{ box-shadow:inset 0 0 10px rgba(0,0,0,.4),0 0 16px rgba(124,58,237,.5); }
+.vb-orb.vb-r2 > b::before{ animation:vipSweep 4s ease-in-out infinite; }
+.vb-orb.vb-r3{ --vb-fg:#451A03; --vb-glow:#F59E0B; --vb-metal:linear-gradient(160deg,#FEF3C7,#F59E0B); --vb-mid:#B45309; --vb-deep:#451A03; --vb-core:#FDE68A; }
+.vb-orb.vb-r3::before{ animation:vipPulseGlow 3s ease-in-out infinite; }
+.vb-orb.vb-r3::after{ box-shadow:inset 0 0 10px rgba(0,0,0,.4),0 0 20px rgba(245,158,11,.55); }
+.vb-orb.vb-r3 > b::before{ animation:vipSweep 3s ease-in-out infinite; }
+.vb-orb.vb-r4{ --vb-fg:#fff; --vb-glow:#DC2626; --vb-metal:linear-gradient(160deg,#FECACA,#DC2626); --vb-mid:#991B1B; --vb-deep:#450A0A; --vb-core:#FCA5A5; }
+.vb-orb.vb-r4::before{ animation:vipPulseGlow 2s ease-in-out infinite; }
+.vb-orb.vb-r4::after{ box-shadow:inset 0 0 12px rgba(0,0,0,.45),0 0 24px rgba(220,38,38,.65); }
+.vb-orb.vb-r4 > b::before{ animation:vipSweep 2.2s ease-in-out infinite; }
+
+/* --- 尺寸 --- */
+.vb-orb.vb-sm{ --size:28px; }
+.vb-orb.vb-sm > b{ font-size:8px; width:calc(var(--size) - 10px); height:calc(var(--size) - 10px); }
+.vb-orb.vb-md{ --size:52px; }
+.vb-orb.vb-md > b{ font-size:12px; }
+.vb-orb.vb-lg{ --size:90px; }
+.vb-orb.vb-lg > b{ font-size:20px; }
+
+
+/* ==========================================================================
+   展示组件：等级徽章英雄（带等级名 + 价格 + 光效环）
+   ========================================================================== */
+.vb-tier-showcase{
+  display:inline-flex; align-items:center; gap:14px;
+  padding:16px 20px;
+  border-radius:12px;
+  background:linear-gradient(160deg,#fafaf8,#f1f1ec);
+  border:1.5px solid #e8e6df;
+  box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+.vb-tier-showcase.vb-ts--active{
+  border-color:var(--vb-glow,#7C3AED);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--vb-glow,#7C3AED) 18%,transparent),0 2px 12px rgba(0,0,0,.08);
+}
+.vb-ts-info{ display:flex; flex-direction:column; gap:2px; }
+.vb-ts-name{ font-weight:700; font-size:14px; color:#1a1a16; font-family:'Inter',sans-serif; }
+.vb-ts-price{ font-weight:800; font-size:16px; color:var(--vb-glow,#7C3AED); }
+.vb-ts-users{ font-size:11px; color:#8b8680; }

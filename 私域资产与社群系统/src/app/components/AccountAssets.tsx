@@ -46,10 +46,10 @@ const emailOthers = [
 
 // ─── 工具 ────────────────────────────────────────────────────
 const statusStyle: Record<string, { bg: string; color: string; borderRadius: string }> = {
-  "使用中":  { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
-  "正常":    { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
-  "已完成":  { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
-  "配置完成":{ bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm },
+  "使用中":  { bg: S.accent, color: S.onAccent, borderRadius: S.radiusSm },
+  "正常":    { bg: S.accent, color: S.onAccent, borderRadius: S.radiusSm },
+  "已完成":  { bg: S.accent, color: S.onAccent, borderRadius: S.radiusSm },
+  "配置完成":{ bg: S.accent, color: S.onAccent, borderRadius: S.radiusSm },
   "异常":    { bg: "#fff0f0", color: "#c53030", borderRadius: S.radiusSm },
   "高风险":  { bg: "#fff0f0", color: "#c53030", borderRadius: S.radiusSm },
   "已拒绝":  { bg: "#fff0f0", color: "#c53030", borderRadius: S.radiusSm },
@@ -68,7 +68,7 @@ const platformIcon: Record<string, string> = {
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const s = statusStyle[status] || { bg: S.accent, color: "#ffffff", borderRadius: S.radiusSm };
+  const s = statusStyle[status] || { bg: S.accent, color: S.onAccent, borderRadius: S.radiusSm };
   return (
     <span className="flex items-center gap-1 px-2 py-0.5 text-xs w-fit font-medium" style={{ background: s.bg, color: s.color, borderRadius: s.borderRadius, fontFamily: "monospace" }}>
       {status}

@@ -186,7 +186,7 @@ function ChannelsTab() {
               <span style={{
                 marginTop: 8, display: "inline-block", padding: "2px 10px", borderRadius: S.radiusSm, fontSize: 11, fontWeight: 700, fontFamily: "monospace",
                 background: detail.status === "已绑定" ? S.accent : "#3b82f6",
-                color: "#ffffff",
+                color: detail.status === "已绑定" ? S.onAccent : "#ffffff",
               }}>{detail.status}</span>
             </div>
 
