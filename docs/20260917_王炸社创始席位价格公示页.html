@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>王炸社 · 创始席位价格公示</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7;
+    --line:#EFE9DE; --ok:#7A9B5E; --hot:#C3272B;
+    --radius:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:980px;margin:0 auto;padding:48px 24px 80px}
+  .eyebrow{letter-spacing:.4em;font-size:12px;color:var(--gold-deep);font-weight:600}
+  h1{font-size:40px;font-weight:800;letter-spacing:.04em;margin:8px 0 6px}
+  .slogan{color:var(--sub);font-size:15px;margin-bottom:40px}
+  .tagline{display:inline-block;background:var(--gold-soft);color:#8A6A1F;font-size:13px;padding:4px 14px;border-radius:99px;font-weight:600}
+
+  .card{background:var(--paper);border-radius:var(--radius);padding:28px 28px;margin-bottom:24px}
+  h2{font-size:20px;font-weight:800;margin-bottom:4px}
+  h2 .num{color:var(--gold-deep);font-family:Georgia,serif;font-style:italic;margin-right:6px}
+  .desc{color:var(--sub);font-size:13.5px;margin-bottom:18px}
+
+  /* 常价四档 */
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .tier{background:#fff;border-radius:14px;padding:18px 16px;text-align:center;border-bottom:3px solid var(--gold)}
+  .tier .lv{font-size:12px;color:var(--sub);letter-spacing:.15em}
+  .tier .name{font-weight:800;font-size:16px;margin:4px 0}
+  .tier .price{font-size:22px;font-weight:800;color:var(--gold-deep)}
+  .tier .note{font-size:11.5px;color:var(--sub)}
+  .tier.hot{background:linear-gradient(160deg,#FFFDF8,var(--gold-soft));position:relative}
+  .badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold-deep);color:#fff;font-size:11px;padding:2px 10px;border-radius:99px;font-weight:700;white-space:nowrap}
+
+  /* 阶梯表 */
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:#fff;border-radius:12px;overflow:hidden}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:11px 10px;font-size:12.5px;letter-spacing:.05em}
+  td{padding:11px 10px;text-align:center;border-top:1px solid var(--line)}
+  td.l{text-align:left}
+  .sold{color:var(--sub);text-decoration:none}
+  .now-row td{background:#FFF9EC;font-weight:700}
+  .pill{display:inline-block;padding:2px 10px;border-radius:99px;font-size:11.5px;font-weight:700}
+  .p-live{background:var(--gold-deep);color:#fff}
+  .p-done{background:#EDE9E1;color:#9A9285}
+
+  /* 进度条 */
+  .prog-wrap{background:#fff;border-radius:12px;padding:18px 20px;margin-top:16px}
+  .prog-title{display:flex;justify-content:space-between;font-size:13px;margin-bottom:10px}
+  .prog-title b{color:var(--gold-deep)}
+  .bar{height:14px;background:var(--line);border-radius:99px;overflow:hidden}
+  .fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-deep));border-radius:99px;transition:width 1s ease}
+  .prog-note{font-size:12px;color:var(--sub);margin-top:8px}
+
+  /* 规则三条 */
+  .rules{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .rule{background:#fff;border-radius:14px;padding:18px}
+  .rule .no{width:28px;height:28px;border-radius:99px;background:var(--gold-soft);color:var(--gold-deep);font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px;margin-bottom:10px}
+  .rule b{display:block;font-size:14.5px;margin-bottom:4px}
+  .rule span{font-size:12.5px;color:var(--sub)}
+
+  /* 意向金 */
+  .intent{background:linear-gradient(150deg,#FFFDF8,var(--gold-soft));border-radius:var(--radius);padding:30px;display:flex;gap:28px;align-items:center;margin-bottom:24px}
+  .intent .amt{font-size:44px;font-weight:800;color:var(--gold-deep);white-space:nowrap;font-family:Georgia,serif}
+  .intent .amt small{font-size:15px;color:var(--sub);font-family:inherit;font-weight:600}
+  .intent h3{font-size:18px;margin-bottom:8px}
+  .intent ul{list-style:none;font-size:13.5px}
+  .intent li{padding:3px 0 3px 22px;position:relative}
+  .intent li::before{content:"✓";position:absolute;left:0;color:var(--gold-deep);font-weight:800}
+
+  /* 权益对比 */
+  .cmp{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:12px;overflow:hidden}
+  .cmp td:first-child{width:22%;font-weight:700;color:var(--sub);background:var(--paper)}
+  .cmp th{padding:12px 10px;text-align:center}
+
+  /* FAQ */
+  .faq details{background:#fff;border-radius:12px;padding:14px 18px;margin-bottom:10px}
+  .faq summary{font-weight:700;font-size:14px;cursor:pointer;color:var(--ink)}
+  .faq p{font-size:13px;color:var(--sub);margin-top:8px}
+
+  .legal{font-size:11.5px;color:#A39B8E;margin-top:36px;border-top:1px solid var(--line);padding-top:18px;text-align:center}
+  .stamp{display:inline-block;margin-top:10px;border:2px solid rgba(201,154,60,.5);color:var(--gold-deep);font-size:11px;padding:3px 12px;border-radius:6px;letter-spacing:.3em}
+  @media(max-width:760px){.grid4{grid-template-columns:repeat(2,1fr)}.rules{grid-template-columns:1fr}.intent{flex-direction:column;align-items:flex-start}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div style="text-align:center">
+    <div class="eyebrow">WANGZHA COMMUNITY</div>
+    <h1>王炸社 · 创始席位价格公示</h1>
+    <div class="slogan">人生王炸，今晚开打</div>
+    <span class="tagline">分批价格阶梯 · 名额有限 · 售罄即涨 · 每月公示</span>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">01</span>合作体系 · 标准价格</h2>
+    <div class="desc">四级代理体系，以下为长期标准价（常价），创始席位折扣期价格见第二节</div>
+    <div class="grid4">
+      <div class="tier"><div class="lv">L1</div><div class="name">社群团长</div><div class="price">1 万</div><div class="note">开班授权 · 随心付 50%</div></div>
+      <div class="tier"><div class="lv">L2</div><div class="name">区县代理</div><div class="price">3 万</div><div class="note">一区一位 · 团长陪跑</div></div>
+      <div class="tier hot"><span class="badge">本轮招募主力</span><div class="lv">L3</div><div class="name">市代理</div><div class="price">12 万</div><div class="note">一城限 3 席 · 市域招商</div></div>
+      <div class="tier"><div class="lv">L4</div><div class="name">省市分公司</div><div class="price">50 万</div><div class="note">城市运营中心 · 另有六项门槛</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">02</span>市代理 · 创始席位价格阶梯（共 1,000 席）</h2>
+    <div class="desc">折扣档按名额售罄依次推进，当前进度实时更新，全程后台可查</div>
+    <table>
+      <tr><th>批次</th><th>折扣</th><th>席位</th><th>单席价格</th><th>状态</th></tr>
+      <tr><td class="l">创始批</td><td>1 折</td><td>500 席</td><td>¥12,000</td><td><span class="pill p-live">招募中</span></td></tr>
+      <tr class="sold"><td class="l">第二批</td><td>2 折</td><td>200 席</td><td>¥24,000</td><td><span class="pill p-done">未开放</span></td></tr>
+      <tr class="sold"><td class="l">第三批</td><td>3 折</td><td>100 席</td><td>¥36,000</td><td><span class="pill p-done">未开放</span></td></tr>
+      <tr class="sold"><td class="l">第四批</td><td>4 折</td><td>100 席</td><td>¥48,000</td><td><span class="pill p-done">未开放</span></td></tr>
+      <tr class="sold"><td class="l">第五批</td><td>5 折</td><td>50 席</td><td>¥60,000</td><td><span class="pill p-done">未开放</span></td></tr>
+      <tr class="sold"><td class="l">常价期</td><td>标准价</td><td>50 席</td><td>¥120,000</td><td><span class="pill p-done">未开放</span></td></tr>
+    </table>
+    <div class="prog-wrap">
+      <div class="prog-title"><span>创始批（1 折 · ¥12,000）进度</span><b id="progNum">0 / 500 席</b></div>
+      <div class="bar"><div class="fill" id="fill"></div></div>
+      <div class="prog-note">意向金持有者按支付时间排序锁定 1 折名额 · 一城限 3 席</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">03</span>涨价规则（三条 · 铁律）</h2>
+    <div class="rules">
+      <div class="rule"><div class="no">一</div><b>名额触发</b><span>各批次席位售罄即进入下一价格档，不看日期只看真实进度</span></div>
+      <div class="rule"><div class="no">二</div><b>每月公示</b><span>每月 1 号公示当前价格档与剩余名额，数据后台可查</span></div>
+      <div class="rule"><div class="no">三</div><b>绝不超发</b><span>每档名额定死，售完即止，不追加——包括任何关系户</span></div>
+    </div>
+  </div>
+
+  <div class="intent">
+    <div class="amt">¥1,000<small> 意向金</small></div>
+    <div>
+      <h3>创始席位意向金 · 三项权益</h3>
+      <ul>
+        <li>优先购买资格——各档 1 折名额仅向意向金持有者开放（市代 1 折限 5 席），按支付时间先后锁定</li>
+        <li>成交全额抵扣——签署正式合作协议时 1,000 元全额抵扣，并计入升级账户，后续升级继续抵扣</li>
+        <li>未成交随时可退——有效期 30 天，未签约全额原路退还（7 个工作日内）</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">04</span>席位权益说明</h2>
+    <table class="cmp">
+      <tr><th style="text-align:left"></th><th>1–3 折席位（卡位期权益）</th><th>4 折起席位（完整授权）</th></tr>
+      <tr><td>开班运营 · 随心付分账</td><td>✓ 享有一级分账</td><td>✓ 享有一级分账</td></tr>
+      <tr><td>课程与会员分销</td><td>✓ 对应档位佣金</td><td>✓ 对应档位佣金</td></tr>
+      <tr><td>区域意向锁定</td><td>✓ 6 个月优先权</td><td>✓ 区域独家授权</td></tr>
+      <tr><td>发展下级代理</td><td>— 升级后解锁</td><td>✓ 团队发展权</td></tr>
+      <tr><td>升级抵扣</td><td colspan="2" style="text-align:center">所有已付款项全额累计抵扣升级（升级账户）</td></tr>
+    </table>
+  </div>
+
+  <div class="card faq">
+    <h2><span class="num">05</span>常见问题</h2>
+    <details open><summary>意向金和定金有什么区别？</summary><p>意向金可退：有效期内未签约，7 个工作日内全额原路退还。它只锁定「优先购买资格」，不构成合作合同成立。</p></details>
+    <details><summary>1 折名额是怎么排序的？</summary><p>按意向金实际到账时间先后排序，先到先得。名额有限（市代 1 折 5 席），锁完为止——未锁到 1 折的意向金持有者仍可按当期价格档签约，意向金照常抵扣。</p></details>
+    <details><summary>为什么越早越便宜？</summary><p>早期席位承担了与平台一起把案例跑出来的过程，价格让利是给先行者的创始权益；后期席位看到的是已验证的完整体系与团队成果，标准价对应的是确定性。</p></details>
+    <details><summary>付款方式与凭证？</summary><p>全部对公转账，签署《创始席位意向金协议》，收款后出具凭证；正式合作另行签署《代理合作协议》并依约开票。</p></details>
+    <details><summary>王炸社承诺收益吗？</summary><p>不承诺。代理合作属商业合作，经营成果取决于个人投入与能力。我们对价格、名额、区域规则的公示真实性负责，不对任何人的经营收益作保证。</p></details>
+  </div>
+
+  <div class="legal">
+    本页价格与名额公示真实执行 · 后台数据可查 · 详细权利义务以签署协议为准<br>
+    王炸社不承诺任何投资回报与经营收益
+    <div class="stamp">王 炸 社</div>
+  </div>
+
+</div>
+<script>
+  // 演示进度：正式上线后由后台接口写入真实数据
+  setTimeout(()=>{document.getElementById('fill').style.width='0%';},200);
+</script>
+</body>
+</html>

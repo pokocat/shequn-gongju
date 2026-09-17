@@ -3,7 +3,7 @@
     "width": 430,
     "height": 932
   },
-  "pages": 41,
+  "pages": 42,
   "screens": [
     {
       "slug": "notifications",
@@ -35,6 +35,62 @@
       "title": "消息中心",
       "variant": "搜索无结果",
       "route": "/pages/notifications/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "chat--成长教练",
+      "name": "chat",
+      "title": "会话聊天",
+      "variant": "成长教练",
+      "route": "/pages/chat/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "chat--课程顾问",
+      "name": "chat",
+      "title": "会话聊天",
+      "variant": "课程顾问",
+      "route": "/pages/chat/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "chat--社群运营",
+      "name": "chat",
+      "title": "会话聊天",
+      "variant": "社群运营",
+      "route": "/pages/chat/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "chat--财务官",
+      "name": "chat",
+      "title": "会话聊天",
+      "variant": "财务官",
+      "route": "/pages/chat/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "chat--班班",
+      "name": "chat",
+      "title": "会话聊天",
+      "variant": "班班",
+      "route": "/pages/chat/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "chat--服务导师",
+      "name": "chat",
+      "title": "会话聊天",
+      "variant": "服务导师",
+      "route": "/pages/chat/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "chat--专属顾问",
+      "name": "chat",
+      "title": "会话聊天",
+      "variant": "专属顾问",
+      "route": "/pages/chat/index",
       "group": "主导航（TabBar）"
     },
     {
@@ -107,6 +163,14 @@
       "title": "微信群",
       "variant": "未入群",
       "route": "/pages/group/index",
+      "group": "主导航（TabBar）"
+    },
+    {
+      "slug": "group-chat",
+      "name": "group-chat",
+      "title": "群会话同步",
+      "variant": "企业微信群",
+      "route": "/pages/group-chat/index",
       "group": "主导航（TabBar）"
     },
     {

@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品牌包装 · 30 套方案切换查看</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7;
+    --line:#EFE9DE; --radius:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 20px 80px}
+  .eyebrow{letter-spacing:.4em;font-size:12px;color:var(--gold-deep);font-weight:600;text-align:center}
+  h1{font-size:36px;font-weight:800;margin:10px 0 6px;text-align:center}
+  .slogan{color:var(--sub);font-size:14px;text-align:center;margin-bottom:26px}
+
+  /* tabs */
+  .tabs{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:22px;position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);padding:12px 0;z-index:10;border-bottom:1px solid var(--line)}
+  .tab{border:none;background:var(--paper);color:var(--ink);font-size:13px;font-weight:700;padding:8px 18px;border-radius:99px;cursor:pointer;transition:all .25s;font-family:inherit}
+  .tab:hover{background:var(--gold-soft)}
+  .tab.on{background:var(--gold-deep);color:#fff}
+  .tab .cnt{font-size:11px;opacity:.7;margin-left:3px}
+
+  .fam-head{background:var(--paper);border-radius:16px;padding:20px 24px;margin-bottom:18px}
+  .fam-head h2{font-size:20px;font-weight:800}
+  .fam-head .tag{display:inline-block;background:var(--gold-soft);color:#8A6A1F;font-size:12px;padding:3px 12px;border-radius:99px;font-weight:700;margin-right:8px;vertical-align:2px}
+  .fam-head p{font-size:13.5px;color:var(--sub);margin-top:8px}
+
+  /* cards */
+  .plans{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .plan{background:#fff;border-radius:16px;padding:22px;border-bottom:3px solid var(--gold);opacity:0;transform:translateY(10px);animation:in .4s forwards}
+  .plan.top{background:linear-gradient(160deg,#FFFDF8,var(--gold-soft))}
+  @keyframes in{to{opacity:1;transform:none}}
+  .plan .row1{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+  .plan .no{font-size:12px;color:#A39B8E;font-weight:700}
+  .plan .medal{font-size:11px;background:var(--gold-deep);color:#fff;border-radius:99px;padding:2px 10px;font-weight:700;white-space:nowrap}
+  .plan .en{font-size:20px;font-weight:800;letter-spacing:.02em;margin-bottom:2px}
+  .plan .cn{font-size:13px;color:var(--gold-deep);font-weight:700;margin-bottom:14px}
+  .plan .field{display:flex;font-size:12.5px;padding:3px 0}
+  .plan .field b{width:56px;flex-shrink:0;color:#A39B8E;font-weight:700}
+  .plan .field span{color:var(--ink)}
+  .plan .slogan{font-size:12.5px;background:var(--paper);border-radius:8px;padding:8px 10px;margin:10px 0;color:var(--sub);text-align:center}
+  .plan .gw{font-size:12px;color:var(--sub)}
+  .plan .gw b{color:var(--gold-deep)}
+  .plan .style-tags{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}
+  .plan .st{font-size:11px;background:var(--paper);border-radius:99px;padding:2px 10px;color:var(--sub)}
+
+  /* top5 */
+  .topsec{margin-top:34px;background:var(--paper);border-radius:var(--radius);padding:28px}
+  .topsec h2{font-size:20px;font-weight:800;margin-bottom:6px}
+  .topsec .desc{font-size:13px;color:var(--sub);margin-bottom:16px}
+  .toprow{display:flex;align-items:center;gap:14px;background:#fff;border-radius:14px;padding:14px 18px;margin-bottom:10px}
+  .toprow .rank{font-size:22px;width:34px;text-align:center;flex-shrink:0}
+  .toprow .info b{font-size:15px}
+  .toprow .info span{display:block;font-size:12.5px;color:var(--sub);margin-top:2px}
+
+  .legal{font-size:11.5px;color:#A39B8E;margin-top:30px;border-top:1px solid var(--line);padding-top:16px;text-align:center}
+  .stamp{display:inline-block;margin-top:8px;border:2px solid rgba(201,154,60,.5);color:var(--gold-deep);font-size:11px;padding:3px 12px;border-radius:6px;letter-spacing:.3em}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">BRAND PACKAGING · 30 PLANS</div>
+  <h1>品牌包装 30 套方案</h1>
+  <div class="slogan">英文商标 × 艺名 × 数字人 × 善意机制 —— 点击家族切换查看</div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="fam-head" id="famHead" style="display:none"></div>
+  <div class="plans" id="plans"></div>
+
+  <div class="topsec">
+    <h2>🏆 Top 5 综合推荐（跨家族）</h2>
+    <div class="desc">未做选择时的默认推荐；亦可采用「多商标矩阵」（一商标一用途：One&Co CLUB 主品牌 + OPC Lab 课程线 + OPC Planet 社区线）。</div>
+    <div class="toprow"><div class="rank">🥇</div><div class="info"><b>#1 One&Co CLUB · 一姐 · 蔻蔻（Co-1）</b><span>One Person 中文双关（行业头牌）· & = Company/Commune/Care 三关 · 善意社章制仪式感强</span></div></div>
+    <div class="toprow"><div class="rank">🥈</div><div class="info"><b>#8 OPC Planet · 星主 · 小星（Planet-1）</b><span>「每个一人公司都是一颗自带引力的星」· 善意是星球引力 · 星力值游戏化顺滑</span></div></div>
+    <div class="toprow"><div class="rank">🥉</div><div class="info"><b>#13 OPC Lab · 所长 · 阿博（Lab-1）</b><span>「善意是可以被实验和复制的」· 与善意经济学演讲稿天然一体 · 严肃课程品牌</span></div></div>
+    <div class="toprow"><div class="rank">4</div><div class="info"><b>#17 GO-OPC · 队长 · 小G（GO-1）</b><span>「GO 即善意」机制最简单好懂 · 行动感最强 · 适合快节奏招商</span></div></div>
+    <div class="toprow"><div class="rank">5</div><div class="info"><b>#21 NEO-OPC · Neo 姐 · 妮奥（Neo-1）</b><span>「善意是新纪元的货币」最有金句相 · 呼应「重构行业话语权」演讲主题</span></div></div>
+  </div>
+
+  <div class="legal">
+    本页为品牌包装方案库（2026-09-17 V1）· 依据：创始人圈定商标池 + 善意经济学关系定案（OPC 是壳，善意是魂）<br>
+    商标策略：中文「主理人公社」+ 英文（本页 7 家族送检）+ 思想品牌 Beneconomy
+    <div class="stamp">主 理 人 公 社</div>
+  </div>
+</div>
+
+<script>
+const F=[
+{id:'oneco',name:'One&Co 家族',cnt:7,tag:'温暖商务',desc:'「&」是温度——Co 同时是 Company（公司）、Commune（公社）、Care（关怀）。一个人的精品公司，善意直接写进词根。',
+ plans:[
+ {no:'#1',medal:'🥇 本组推荐',top:1,en:'One&Co CLUB',cn:'主理人公社',alias:'一姐',bot:'蔻蔻（Co-1）',slogan:'「一个人，一家公司，一群同路人」',gw:'社章制：入社签「善意经营承诺」，善意账户积分可视化',st:['温暖商务','One Person 中文双关','蔻蔻谐音可注册']},
+ {no:'#2',en:'One&Co',cn:'主理人公社',alias:'堡主',bot:'蔻蔻（Co-1）',slogan:'「十年前一座城堡，今天一家公司」',gw:'城堡新法：女王城堡升级叙事，城堡的新规矩就是善意经济',st:['传承叙事']},
+ {no:'#3',en:'One&&Care',cn:'善意公社',alias:'善姐',bot:'善善',slogan:'「把关怀写进名字」',gw:'品牌本体：Care 直接入名，随心付三底线就是品牌底线',st:['治愈系']},
+ {no:'#4',en:'One&Co Lab',cn:'一人公司实验室',alias:'一姐',bot:'蔻蔻（Co-1）',slogan:'「把自己当成一家公司来做实验」',gw:'课题制：每季一个善意经济学公开实验（如「0 元课能不能活」）',st:['理性实验']},
+ {no:'#5',en:'ONE&CO',cn:'主理人公社',alias:'社长',bot:'蔻蔻（Co-1）',slogan:'「社长，也是 One 长」',gw:'社长责任：社长带头日更善意（创始人 IP 的善意示范义务）',st:['社团制']},
+ {no:'#6',en:'One&Co',cn:'一人公司联盟',alias:'一姐',bot:'蔻蔻（Co-1）',slogan:'「One 是你，Co 是我们」',gw:'互补制：一人公司互为客户/互为伙伴（善意内循环）',st:['联盟感']},
+ {no:'#7',en:'One&Co Club',cn:'掌灯公社',alias:'掌门',bot:'蔻蔻（Co-1）',slogan:'衔接掌灯计划公益线',gw:'掌灯制：每位主理人认领一盏灯（公益发声任务）',st:['公益融合']}]},
+{id:'planet',name:'OPC Planet 星球家族',cnt:5,tag:'浪漫宏大',desc:'超级个体的家园——每个一人公司都是一颗自带引力的星。善意是这颗星球的「法律」。',
+ plans:[
+ {no:'#8',medal:'🥈 本组推荐',top:1,en:'OPC Planet',cn:'一人公司星球',alias:'星主',bot:'小星（Planet-1）',slogan:'「每个一人公司，都是一颗自带引力的星」',gw:'星球公约：善意是星球引力（利他者聚人）；善意账户=「星力值」',st:['浪漫宏大','世界观完整']},
+ {no:'#9',en:'OPC Planet',cn:'主理人星球',alias:'舰长',bot:'小星（Planet-1）',slogan:'「一人驾驶，星际远航」',gw:'领航制：老主理人为新人领航（善意传承的具象化）',st:['冒险探索']},
+ {no:'#10',en:'OPC Planet',cn:'善意星球',alias:'星主',bot:'小星（Planet-1）',slogan:'「善意是这个星球的氧气」',gw:'星球生态：公益项目=星球生态建设（掌灯计划=种树）',st:['理想主义']},
+ {no:'#11',en:'OPC Planet',cn:'曦光公社',alias:'曦姐',bot:'小星（Planet-1）',slogan:'「每个日出，都是上线」',gw:'日出口号：善意如晨光，日更即日出（八字喜火延续）',st:['晨光温暖']},
+ {no:'#12',en:'OPC Planet',cn:'一人星',alias:'球长',bot:'小星（Planet-1）',slogan:'「一人一星，星球成海」',gw:'星海制：个人善意汇成星海（公益数据可视化大屏）',st:['科幻社区']}]},
+{id:'lab',name:'OPC Lab 实验室家族',cnt:4,tag:'科学严谨',desc:'把创业当成可实验的科学——善意经济学是常设课题，每个公式都做公开实验并公示结果（透明=善意）。',
+ plans:[
+ {no:'#13',medal:'🥉 本组推荐',top:1,en:'OPC Lab',cn:'一人公司实验室',alias:'所长',bot:'阿博（Lab-1）',slogan:'「把创业当成可实验的科学」',gw:'公开实验：善意经济学每个公式都做公开实验并公示结果（透明=善意）',st:['科学严谨','与演讲稿一体']},
+ {no:'#14',en:'OPC Lab',cn:'善意实验室',alias:'所长',bot:'阿博（Lab-1）',slogan:'「善意是可以被实验和复制的」',gw:'善意配方：把「善意→回报」做成可复制的标准动作库（SOP 化的善意）',st:['方法论感']},
+ {no:'#15',en:'OPC Lab',cn:'主理人研究所',alias:'主理员',bot:'阿博（Lab-1）',slogan:'「研究自己这家公司」',gw:'样本共享：成员的一人公司数据匿名共享，集体研究（互助式善意）',st:['智库感']},
+ {no:'#16',en:'OPC Lab',cn:'一号实验室',alias:'一号',bot:'阿博（Lab-1）',slogan:'「你是自己人生的一号研究员」',gw:'001 编号：每位主理人有编号，001 号主理人是 AI 创始人（沿用既定叙事）',st:['编号仪式感']}]},
+{id:'go',name:'GO-OPC 行动家族',cnt:4,tag:'行动力爆棚',desc:'说干就干——每次 GO 都绑定一个利他动作，行动自带善意。',
+ plans:[
+ {no:'#17',medal:'4 本组推荐',top:1,en:'GO-OPC',cn:'出发公社',alias:'队长',bot:'小G（GO-1）',slogan:'「一个人，也要立刻出发」',gw:'GO 即善意：每次行动绑定一个利他动作（开班=公益科普）',st:['行动力爆棚']},
+ {no:'#18',en:'GO-OPC',cn:'一人出发',alias:'队长',bot:'小G（GO-1）',slogan:'「GO，就是一个人最好的公司」',gw:'同行制：出发者必须带一个同行者（老带新的善意结构）',st:['互助热血']},
+ {no:'#19',en:'GO-OPC',cn:'善意出发地',alias:'G 姐',bot:'小G（GO-1）',slogan:'「从善意出发，向回报抵达」',gw:'起终点：善意是 GO 的起点，商业回报是自然终点（善意飞轮的动词化）',st:['公路片感']},
+ {no:'#20',en:'GO-OPC',cn:'上线公社',alias:'上线姐',bot:'上线',slogan:'「今晚，你上线」',gw:'上线仪式：每晚上线学习=日行一善（知识普惠）',st:['夜行动感']}]},
+{id:'neo',name:'NEO-OPC 新纪元家族',cnt:3,tag:'宣言感',desc:'旧商业已死——善意是新纪元的货币。零和博弈（旧）vs 共生共赢（新）。',
+ plans:[
+ {no:'#21',medal:'5 本组推荐',top:1,en:'NEO-OPC',cn:'新一人公司纪元',alias:'Neo 姐',bot:'妮奥（Neo-1）',slogan:'「旧商业已死，善意是新纪元的货币」',gw:'新旧对照：零和博弈（旧）vs 共生共赢（新），善意经济即新纪元宪法',st:['宣言感','金句相']},
+ {no:'#22',en:'NEO-OPC',cn:'善意新纪元',alias:'Neo 姐',bot:'妮奥（Neo-1）',slogan:'「第一次，善意成了硬通货」',gw:'善意货币：善意账户积分可兑换权益（善意资本化的游戏化）',st:['经济实验']},
+ {no:'#23',en:'NEO-OPC',cn:'新主理人公社',alias:'新姐',bot:'妮奥（Neo-1）',slogan:'「每天都是新的公司」',gw:'日新制：每日一善（日更善意的组织化）',st:['日日新哲学']}]},
+{id:'club',name:'OPC CLUB 俱乐部家族',cnt:4,tag:'会员尊贵',desc:'一人公司创始人的私人俱乐部——善意是社章（入社即承诺）。',
+ plans:[
+ {no:'#24',en:'OPC CLUB',cn:'主理人俱乐部',alias:'社长',bot:'小欧（CLUB-1）',slogan:'「一人公司创始人的私人俱乐部」',gw:'社章誓言：入社宣誓善意经营（仪式感+约束力+传播素材）',st:['会员尊贵','仪式感强']},
+ {no:'#25',en:'OPC CLUB',cn:'善意俱乐部',alias:'会长',bot:'小欧（CLUB-1）',slogan:'「以善意为会费」',gw:'善意会费：会员资格的维持=持续善意行为（替代金钱会费的资格设计）',st:['荣誉社团']},
+ {no:'#26',en:'OPC CLUB',cn:'一人公司俱乐部',alias:'社长',bot:'小欧（CLUB-1）',slogan:'「一个人，但不孤单」',gw:'陪伴制：俱乐部成员一对一守望（一人公司最大的痛是孤独，善意=陪伴）',st:['温度社交']},
+ {no:'#27',en:'OPC CLUB',cn:'主理人社',alias:'社姐',bot:'小欧（CLUB-1）',slogan:'「社交的社，善意为社」',gw:'社交即善意：所有社群活动的第一目标设定为利他（次级目标才是转化）',st:['轻社交']}]},
+{id:'sopc',name:'S-OPC 超级家族',cnt:3,tag:'热血超英',desc:'Super 级的一人公司——善意是一人公司唯一的超能力（无团队无背景者的破局点）。',
+ plans:[
+ {no:'#28',en:'S-OPC',cn:'超级一人公司',alias:'超姐',bot:'S 妹（S-1）',slogan:'「Super 级的一人公司，Super 级的善意」',gw:'超能力设定：善意是一人公司唯一的超能力（无团队无背景者的破局点）',st:['热血超英']},
+ {no:'#29',en:'S-OPC',cn:'超级个体公社',alias:'超姐',bot:'S 妹（S-1）',slogan:'「一个人，活成一支队伍」',gw:'S 评级：成员评级看善意值不看营收（善意账户积分定段位）',st:['段位文化']},
+ {no:'#30',en:'S-OPC',cn:'善力公社',alias:'S 姐',bot:'S 妹（S-1）',slogan:'「S = 善（Shan）的首字母」',gw:'双关词根：S 既 Super 又 Shan（善），善意直接写进字母',st:['中文双关']}]}
+];
+
+const tabsEl=document.getElementById('tabs');
+const headEl=document.getElementById('famHead');
+const plansEl=document.getElementById('plans');
+let cur=0;
+F.forEach((f,i)=>{
+  const b=document.createElement('button');
+  b.className='tab'+(i===0?' on':'');
+  b.innerHTML=f.name+'<span class="cnt">'+f.cnt+'</span>';
+  b.onclick=()=>{cur=i;render();};
+  tabsEl.appendChild(b);
+});
+function render(){
+  [...tabsEl.children].forEach((t,i)=>t.classList.toggle('on',i===cur));
+  const f=F[cur];
+  headEl.style.display='block';
+  headEl.innerHTML='<h2><span class="tag">'+f.tag+'</span>'+f.name+'</h2><p>'+f.desc+'</p>';
+  plansEl.innerHTML='';
+  f.plans.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.className='plan'+(p.top?' top':'');
+    d.style.animationDelay=(i*0.06)+'s';
+    d.innerHTML=
+      '<div class="row1"><span class="no">'+p.no+'</span>'+(p.medal?'<span class="medal">'+p.medal+'</span>':'')+'</div>'+
+      '<div class="en">'+p.en+'</div><div class="cn">'+p.cn+'</div>'+
+      '<div class="field"><b>艺名</b><span>'+p.alias+'</span></div>'+
+      '<div class="field"><b>数字人</b><span>'+p.bot+'</span></div>'+
+      '<div class="slogan">'+p.slogan+'</div>'+
+      '<div class="gw"><b>善意机制：</b>'+p.gw+'</div>'+
+      '<div class="style-tags">'+p.st.map(s=>'<span class="st">'+s+'</span>').join('')+'</div>';
+    plansEl.appendChild(d);
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+render();
+</script>
+</body>
+</html>

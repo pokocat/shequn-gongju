@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主理人公社 One&Co · 项目驾驶舱（操盘版）</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7;
+    --line:#EFE9DE; --ok:#7A9B5E; --ok-bg:#EDF3E8; --warn:#C99A3C;
+    --danger:#B85C5C; --danger-bg:#FAEFEF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  #progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99;transition:width .15s}
+  /* 顶栏 */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:40;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px;padding:10px 18px}
+  .burger{border:1px solid var(--line);background:#fff;border-radius:10px;width:36px;height:36px;font-size:15px;cursor:pointer;color:var(--gold-deep);display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;font-family:inherit}
+  .burger:hover{border-color:var(--gold);box-shadow:0 4px 10px rgba(201,154,60,.2)}
+  .brand{font-weight:800;font-size:15px}
+  .brand small{color:var(--gold-deep);font-size:9.5px;display:block;letter-spacing:.24em;font-weight:700}
+  .phase{display:flex;gap:8px;align-items:center;margin-left:auto}
+  .pill{font-size:11px;font-weight:700;border-radius:99px;padding:4px 12px}
+  .pill.now{background:var(--gold-deep);color:#fff}
+  .pill.dim{background:var(--paper);color:var(--sub)}
+  /* 侧边栏 */
+  .side{position:fixed;top:57px;bottom:0;left:0;width:218px;background:linear-gradient(180deg,var(--paper),#F7F3EA);border-right:1px solid var(--line);display:flex;flex-direction:column;transition:width .25s cubic-bezier(.2,.8,.3,1);z-index:30;overflow:hidden}
+  body.mini .side{width:66px}
+  .snav{flex:1;padding:14px 10px;overflow-y:auto;scrollbar-width:thin}
+  .sitem{display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:12px;cursor:pointer;color:var(--sub);font-weight:700;font-size:13.5px;margin-bottom:3px;transition:all .2s;border:none;background:none;font-family:inherit;width:100%;text-align:left}
+  .sitem:hover{background:#fff;color:var(--ink)}
+  .sitem.on{background:linear-gradient(135deg,var(--gold-soft),#F6EBD3);color:#8A6A1F;box-shadow:inset 0 0 0 1.5px rgba(201,154,60,.4)}
+  .sitem .ic{width:22px;text-align:center;flex-shrink:0;font-size:15px}
+  .sitem .tx{white-space:nowrap;transition:opacity .2s}
+  body.mini .sitem .tx,body.mini .sitem .bdg{display:none}
+  body.mini .sitem{justify-content:center;padding:10px 8px}
+  .sitem .bdg{font-size:10px;background:#fff;color:#8A6A1F;border-radius:99px;padding:1px 7px;margin-left:auto;font-weight:800;box-shadow:inset 0 0 0 1px rgba(201,154,60,.3)}
+  .sfold{border:none;background:none;padding:13px;color:#A39B8E;cursor:pointer;font-size:11.5px;font-weight:700;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;gap:6px;font-family:inherit;transition:color .2s;white-space:nowrap}
+  .sfold:hover{color:var(--ink)}
+  body.mini .sfold .tx{display:none}
+  .scap{font-size:10px;color:#A39B8E;letter-spacing:.28em;font-weight:800;padding:4px 14px 8px;white-space:nowrap}
+  body.mini .scap{display:none}
+  .main{margin-left:218px;transition:margin .25s cubic-bezier(.2,.8,.3,1);min-width:0}
+  body.mini .main{margin-left:66px}
+  .mask{display:none}
+  @media(max-width:820px){
+    .side{transform:translateX(-100%);transition:transform .25s cubic-bezier(.2,.8,.3,1);width:236px!important;top:57px}
+    body.mini .side{width:236px!important}
+    body.mopen .side{transform:none;box-shadow:20px 0 60px rgba(43,38,32,.18)}
+    .main,body.mini .main{margin-left:0}
+    body.mopen .mask{display:block;position:fixed;inset:57px 0 0 0;background:rgba(43,38,32,.32);z-index:25;backdrop-filter:blur(2px)}
+    body.mopen .sfold{display:none}
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:80px 24px 90px}
+  .view{display:none;animation:vin .35s ease}
+  .view.on{display:block}
+  @keyframes vin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .hero{margin-bottom:22px}
+  .eyebrow{letter-spacing:.4em;font-size:11px;color:var(--gold-deep);font-weight:700}
+  h1{font-size:28px;font-weight:800;margin:8px 0 5px}
+  .slogan{color:var(--sub);font-size:13px;margin-bottom:10px}
+  .tagline{display:inline-block;background:var(--gold-soft);color:#8A6A1F;font-size:12px;padding:4px 14px;border-radius:99px;font-weight:600}
+  .card{background:var(--paper);border-radius:20px;padding:24px 26px;margin-bottom:22px}
+  h2{font-size:19px;font-weight:800;margin-bottom:4px}
+  h2 .num{color:var(--gold-deep);font-family:Georgia,serif;font-style:italic;margin-right:6px}
+  .desc{color:var(--sub);font-size:12.5px;margin-bottom:16px}
+  .subtabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .stab{border:none;background:#fff;font-family:inherit;font-size:12.5px;font-weight:700;color:var(--sub);padding:7px 16px;border-radius:99px;cursor:pointer;transition:all .2s;border:1px solid var(--line)}
+  .stab:hover{border-color:var(--gold)}
+  .stab.on{background:var(--gold-deep);color:#fff;border-color:var(--gold-deep)}
+  .stab .n{opacity:.65;font-size:11px;margin-left:3px}
+  .subview{display:none;animation:vin .3s ease}
+  .subview.on{display:block}
+
+  /* 今日操盘 */
+  .wk-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .wk{background:#fff;border-radius:16px;padding:20px}
+  .wk h3{font-size:15px;font-weight:800;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+  .wk .wkmeta{font-size:11px;color:var(--sub);margin-bottom:12px}
+  .wk .wring{width:44px;height:44px;border-radius:99px;background:conic-gradient(var(--gold-deep) 0deg,var(--gold-soft) 0deg 360deg);display:flex;align-items:center;justify-content:center;margin-left:auto;flex-shrink:0}
+  .wk .wring div{width:34px;height:34px;border-radius:99px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:var(--gold-deep)}
+  .task{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;font-size:13px;cursor:pointer;user-select:none;border:1px solid transparent;transition:all .2s;margin-bottom:2px}
+  .task:hover{background:var(--paper);border-color:var(--line)}
+  .task .cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;transition:all .2s}
+  .task.done{opacity:.62}
+  .task.done .cb{background:var(--ok);border-color:var(--ok)}
+  .task.done .tt{text-decoration:line-through}
+  .task .tt{font-weight:600}
+  .task .tag2{font-size:9.5px;background:var(--gold-soft);color:#8A6A1F;border-radius:99px;padding:1px 8px;margin-left:auto;font-weight:700;flex-shrink:0}
+  .op-goal{background:linear-gradient(150deg,#FFFDF8,var(--gold-soft));border-radius:16px;padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;gap:16px}
+  .op-goal .big{font-size:15px;font-weight:800}
+  .op-goal .big small{display:block;font-size:11px;color:var(--sub);font-weight:400;margin-top:2px}
+
+  /* 时间线/铁律/决策/KPI/品牌/物料 沿用 3.0 样式 */
+  .tl{display:grid;grid-template-columns:repeat(9,1fr);gap:8px}
+  .m{background:#fff;border-radius:14px;padding:14px 10px;text-align:center;position:relative;border-top:4px solid var(--line);transition:transform .2s}
+  .m:hover{transform:translateY(-4px)}
+  .m .mo{font-size:15px;font-weight:800}
+  .m .stage{font-size:9.5px;font-weight:800;letter-spacing:.1em;display:block;margin:3px 0 6px}
+  .m .ev{font-size:10.5px;color:var(--sub);display:block;line-height:1.5}
+  .m .gate{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold-deep);color:#fff;font-size:9px;font-weight:800;border-radius:99px;padding:2px 8px;white-space:nowrap;box-shadow:0 2px 6px rgba(201,154,60,.4)}
+  .m.c-now{border-top-color:var(--gold-deep);background:linear-gradient(160deg,#FFFDF8,var(--gold-soft));box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  .m.c1{border-top-color:#D4B57A}.m.c2{border-top-color:#C99A3C}.m.c3{border-top-color:#A87F33}.m.c4{border-top-color:#6E5314}
+  .tl-rules{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .rule{font-size:11px;background:#fff;border-radius:99px;padding:5px 13px;color:var(--sub);border:1px solid var(--line)}
+  .rule b{color:var(--gold-deep)}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+  .kpi{background:#fff;border-radius:16px;padding:18px 18px 14px;position:relative;overflow:hidden}
+  .kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+  .kpi .k{font-size:11.5px;color:var(--sub);font-weight:600}
+  .kpi .v{font-size:28px;font-weight:800;font-family:Georgia,serif;margin:3px 0 1px}
+  .kpi .v small{font-size:13px;color:var(--sub)}
+  .kpi .t{font-size:10.5px;color:#A39B8E}
+  .kpi .track{height:5px;background:var(--line);border-radius:99px;margin-top:9px;overflow:hidden}
+  .kpi .fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+  .kpi.hot{background:linear-gradient(160deg,#FFFDF8,var(--gold-soft))}
+  .dec-head{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+  .ring{width:54px;height:54px;border-radius:99px;background:conic-gradient(var(--gold-deep) 0 120deg,var(--gold-soft) 120deg 360deg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ring-in{width:41px;height:41px;border-radius:99px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:var(--gold-deep)}
+  .dec-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .t-item{display:flex;align-items:flex-start;gap:12px;background:#fff;border-radius:14px;padding:14px 16px;font-size:13px;cursor:pointer;user-select:none;border:1px solid var(--line);transition:all .2s}
+  .t-item:hover{border-color:var(--gold)}
+  .t-item .box{width:20px;height:20px;border-radius:6px;border:2px solid var(--gold);flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;margin-top:1px}
+  .t-item.done{border-color:var(--ok);background:linear-gradient(160deg,#fff,var(--ok-bg))}
+  .t-item.done .box{background:var(--ok);border-color:var(--ok)}
+  .t-item.done .tt{color:var(--ok)}
+  .tt{font-weight:800;display:block;font-size:13.5px}
+  .opt{display:block;color:var(--sub);font-size:11.5px;margin-top:2px;line-height:1.55}
+  .brands{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:12px}
+  .brand{background:#fff;border-radius:14px;padding:15px 16px;border-top:3px solid var(--gold);transition:all .2s}
+  .brand:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(201,154,60,.14)}
+  .brand .en{font-size:10px;color:#A39B8E;letter-spacing:.1em;font-weight:700}
+  .brand b{display:block;font-size:15.5px;margin:2px 0 5px}
+  .brand p{font-size:11.5px;color:var(--sub)}
+  .status{display:inline-block;font-size:10px;border-radius:99px;padding:2px 10px;margin-top:7px;font-weight:700}
+  .st-done{background:var(--ok-bg);color:var(--ok)}
+  .st-wait{background:var(--gold-soft);color:var(--warn)}
+  .docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+  .doc{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:12px 15px;text-decoration:none;color:var(--ink);border:1px solid var(--line);transition:all .2s}
+  .doc:hover{border-color:var(--gold);background:#FFFDF8;transform:translateY(-2px);box-shadow:0 6px 14px rgba(201,154,60,.12)}
+  .doc .ico{width:38px;height:38px;border-radius:10px;background:var(--gold-soft);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+  .doc .t{font-size:13px;font-weight:700;line-height:1.4}
+  .doc .m{font-size:10.5px;color:#A39B8E;display:block;font-weight:400}
+  .doc .go{margin-left:auto;color:var(--gold-deep);font-size:15px;flex-shrink:0}
+  /* 铁律 */
+  .law-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+  .law{background:#fff;border-radius:14px;padding:18px}
+  .law h3{font-size:14.5px;font-weight:800;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+  .law h3 .no{color:#fff;background:var(--gold-deep);width:22px;height:22px;border-radius:99px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+  .law ul{list-style:none;font-size:12.5px}
+  .law li{padding:4px 0 4px 20px;position:relative;color:var(--ink)}
+  .law li::before{content:"—";position:absolute;left:0;color:var(--gold-deep)}
+  .law.risk h3 .no{background:var(--danger)}
+  .law.risk{border:1px solid #EFD9D9}
+  .banword{display:flex;flex-wrap:wrap;gap:8px}
+  .bw{background:var(--danger-bg);color:var(--danger);border-radius:99px;font-size:12px;padding:4px 13px;font-weight:700;border:1px solid #EBD2D2}
+  /* 帝国项目 */
+  .emp-sec{margin-bottom:14px}
+  .emp-sec h4{font-size:12.5px;color:var(--gold-deep);font-weight:800;letter-spacing:.1em;margin:14px 0 8px}
+  .emp-sec .brands{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+  .brand.emp{border-top-color:var(--gold-deep)}
+  .brand.emp .map{font-size:10.5px;color:var(--gold-deep);margin-top:4px;font-weight:700}
+  .legal{font-size:11px;color:#A39B8E;margin-top:26px;border-top:1px solid var(--line);padding-top:16px;text-align:center}
+  .stamp{display:inline-block;margin-top:8px;border:2px solid rgba(201,154,60,.5);color:var(--gold-deep);font-size:11px;padding:3px 12px;border-radius:6px;letter-spacing:.3em}
+  @media(max-width:820px){.wk-grid{grid-template-columns:1fr}.tl{grid-template-columns:repeat(3,1fr)}.dec-grid{grid-template-columns:1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="topbar">
+  <button class="burger" id="burger" title="菜单">☰</button>
+  <div class="brand"><small>ONE PERSON COMPANY · COCKPIT 4.1</small>主理人公社 · 驾驶舱</div>
+  <div class="phase">
+    <span class="pill now">W1–W2 筹备期</span>
+    <span class="pill dim" id="today"></span>
+  </div>
+</header>
+<div class="mask" id="mask"></div>
+
+<aside class="side" id="side">
+  <nav class="snav">
+    <div class="scap">操盘导航</div>
+    <button class="sitem on" data-v="v-op"><span class="ic">🎯</span><span class="tx">今日操盘</span><span class="bdg" id="tabOp">0/14</span></button>
+    <button class="sitem" data-v="v-tl"><span class="ic">⏱</span><span class="tx">节奏</span></button>
+    <button class="sitem" data-v="v-kpi"><span class="ic">📊</span><span class="tx">数据</span></button>
+    <button class="sitem" data-v="v-law"><span class="ic">⚠️</span><span class="tx">铁律</span></button>
+    <button class="sitem" data-v="v-dec"><span class="ic">✅</span><span class="tx">决策</span><span class="bdg" id="tabDec">3/9</span></button>
+    <button class="sitem" data-v="v-brand"><span class="ic">🏷</span><span class="tx">品牌</span></button>
+    <button class="sitem" data-v="v-graph"><span class="ic">🕸</span><span class="tx">图谱</span></button>
+    <button class="sitem" data-v="v-asset"><span class="ic">📦</span><span class="tx">物料</span><span class="bdg">30</span></button>
+  </nav>
+  <button class="sfold" id="sfold"><span>«</span><span class="tx">收起菜单</span></button>
+</aside>
+
+<main class="main">
+
+<div class="wrap">
+
+  <!-- 1 今日操盘 -->
+  <section class="view on" id="v-op">
+    <div class="hero">
+      <div class="eyebrow">DAILY OPERATION</div>
+      <h1>今日操盘</h1>
+      <div class="slogan">W1–W2 筹备期 · 每周任务分解 · 点击勾选（本地记忆）</div>
+    </div>
+    <div class="op-goal">
+      <div class="big">🎯 本阶段唯一目标：意向金蓄水 ≥ 800 人<small>达成后进入 M1 起盘发布会（首日 100 单 · 1 折 500 席开闸）</small></div>
+      <div class="wring" id="opRing"><div id="opPct">0%</div></div>
+    </div>
+    <div class="wk-grid">
+      <div class="wk">
+        <h3>W1 · 基建周<div class="wring" id="w1ring"><div id="w1pct">0/7</div></div></h3>
+        <div class="wkmeta">协议 · 商标 · 拍板 · 账户</div>
+        <div class="task" data-k="w1a"><div class="cb"></div><span class="tt">意向金协议律师复核</span><span class="tag2">法务</span></div>
+        <div class="task" data-k="w1b"><div class="cb"></div><span class="tt">代理合作协议律师定稿</span><span class="tag2">法务</span></div>
+        <div class="task" data-k="w1c"><div class="cb"></div><span class="tt">「主理人公社」商标 35/41/42 类检索</span><span class="tag2">商标</span></div>
+        <div class="task" data-k="w1d"><div class="cb"></div><span class="tt">英文商标 + 艺名 + 数字人方案拍板</span><span class="tag2">决策</span></div>
+        <div class="task" data-k="w1e"><div class="cb"></div><span class="tt">对公账户 + 收款凭证通道开通</span><span class="tag2">财务</span></div>
+        <div class="task" data-k="w1f"><div class="cb"></div><span class="tt">创始人 IP 视觉切换（新艺名）</span><span class="tag2">品牌</span></div>
+        <div class="task" data-k="w1g"><div class="cb"></div><span class="tt">7 天课件生产线启动（7视频+讲义+作业）</span><span class="tag2">生产</span></div>
+      </div>
+      <div class="wk">
+        <h3>W2 · 蓄水周<div class="wring" id="w2ring"><div id="w2pct">0/7</div></div></h3>
+        <div class="wkmeta">蓄水 · 物料 · 彩排</div>
+        <div class="task" data-k="w2a"><div class="cb"></div><span class="tt">朋友圈 7 天预热序列上线</span><span class="tag2">蓄水</span></div>
+        <div class="task" data-k="w2b"><div class="cb"></div><span class="tt">私聊 100 人定向名单（意向金话术 V4）</span><span class="tag2">蓄水</span></div>
+        <div class="task" data-k="w2c"><div class="cb"></div><span class="tt">发布会预告物料投放</span><span class="tag2">蓄水</span></div>
+        <div class="task" data-k="w2d"><div class="cb"></div><span class="tt">7 天课件成片验收（对照 P0 清单）</span><span class="tag2">生产</span></div>
+        <div class="task" data-k="w2e"><div class="cb"></div><span class="tt">种子团长签约 3–5 人</span><span class="tag2">招商</span></div>
+        <div class="task" data-k="w2f"><div class="cb"></div><span class="tt">M1 发布会全流程带妆彩排</span><span class="tag2">活动</span></div>
+        <div class="task" data-k="w2g"><div class="cb"></div><span class="tt">蓄水数据检查（≥800 判定 → 是否进 M1）</span><span class="tag2">闸门</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 节奏 -->
+  <section class="view" id="v-tl">
+    <div class="card">
+      <h2><span class="num">02</span>招商节奏 · 9 个月时间线</h2>
+      <div class="desc">V6 已拍板 · 颜色由浅入深 = 价格逐月上涨 · 铁律：人数没到不涨价</div>
+      <div class="tl">
+        <div class="m c-now"><span class="mo">W1-2</span><span class="stage" style="color:var(--gold-deep)">筹备</span><span class="ev">蓄水≥800<br>物料齐备</span></div>
+        <div class="m c1"><span class="mo">M1</span><span class="stage" style="color:#B8945A">起盘</span><span class="ev">发布会<br>1折开闸</span></div>
+        <div class="m c1"><span class="gate">◆ 团长闸</span><span class="mo">M2</span><span class="stage" style="color:#B8945A">造兵</span><span class="ev">市达100人<br>1折收官</span></div>
+        <div class="m c2"><span class="mo">M3</span><span class="stage" style="color:#A87F33">2折</span><span class="ev">月月涨<br>双周发布会</span></div>
+        <div class="m c2"><span class="gate">◆ 县代闸</span><span class="mo">M4</span><span class="stage" style="color:#A87F33">成层</span><span class="ev">团长2000<br>掌灯首发</span></div>
+        <div class="m c3"><span class="mo">M5</span><span class="stage" style="color:#8A6A1F">4折</span><span class="ev">游学首期<br>县代铺区</span></div>
+        <div class="m c3"><span class="mo">M6</span><span class="stage" style="color:#8A6A1F">铺满</span><span class="ev">三线数据<br>5折收官</span></div>
+        <div class="m c4"><span class="mo">M7-8</span><span class="stage" style="color:#6E5314">原价</span><span class="ev">1,000席<br>满员公告</span></div>
+        <div class="m c4"><span class="mo">M9</span><span class="stage" style="color:#6E5314">盛典</span><span class="ev">天选之夜<br>下一波+50%</span></div>
+      </div>
+      <div class="tl-rules">
+        <span class="rule">团长闸：<b>市代 ≥100 人</b>（预计 M1 中旬）</span>
+        <span class="rule">县代闸：<b>团长 ≥2,000 人</b>（预计 M3 末）</span>
+        <span class="rule">售罄即跳档 · <b>绝不超发</b></span>
+        <span class="rule">1 折期基准 <b>250 人/月</b>，不达顺延</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 数据 -->
+  <section class="view" id="v-kpi">
+    <div class="card">
+      <h2><span class="num">03</span>关键指标</h2>
+      <div class="desc">当前初始态 · M1 起盘后由后台看板单源输出</div>
+      <div class="kpis">
+        <div class="kpi hot"><div class="k">🎯 意向金蓄水</div><div class="v">0<small> / 800 人</small></div><div class="t">W1–W2 阶段目标</div><div class="track"><div class="fill"></div></div></div>
+        <div class="kpi"><div class="k">1 折席位（市代）</div><div class="v">0<small> / 500 席</small></div><div class="t">M1–M2 · 一城 3 席</div><div class="track"><div class="fill"></div></div></div>
+        <div class="kpi"><div class="k">起盘首日成交</div><div class="v">—<small> / 100 单</small></div><div class="t">M1 发布会目标</div><div class="track"><div class="fill"></div></div></div>
+        <div class="kpi"><div class="k">团长（累计）</div><div class="v">0<small> / 5,000 人</small></div><div class="t">闸未开 · M2 触发</div><div class="track"><div class="fill"></div></div></div>
+        <div class="kpi"><div class="k">县代（区域）</div><div class="v">0<small> / 2,000 区</small></div><div class="t">闸未开 · M4 触发</div><div class="track"><div class="fill"></div></div></div>
+        <div class="kpi"><div class="k">普惠班（在跑）</div><div class="v">0<small> / 100 班·月</small></div><div class="t">M2 规模化目标</div><div class="track"><div class="fill"></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 铁律 -->
+  <section class="view" id="v-law">
+    <div class="card">
+      <h2><span class="num">04</span>操盘铁律 · 一屏看全</h2>
+      <div class="desc">违反任何一条 = 体系性风险 · 招商话术与系统设计均以此为准</div>
+      <div class="law-grid">
+        <div class="law"><h3><span class="no">1</span>控盘三铁律</h3><ul>
+          <li>人数没到不涨价（顺延不强涨，进度真实）</li>
+          <li>每档售罄即跳档，绝不超发（含关系户）</li>
+          <li>每月 1 号公示价格与剩余席位</li>
+        </ul></div>
+        <div class="law"><h3><span class="no">2</span>结算一层</h3><ul>
+          <li>所有代理与总部直签，款项全走对公</li>
+          <li>市代不拿团长业绩抽成（推荐费+服务年卡）</li>
+          <li>推荐费定额一层：500/1,000/2,000 封顶 2 万</li>
+        </ul></div>
+        <div class="law risk"><h3><span class="no">3</span>合规红线</h3><ul>
+          <li>不承诺任何投资回报与经营收益</li>
+          <li>AI 数字人内容全程角标标识</li>
+          <li>随心付三底线：0 元可学完 / 不设参考价 / 权益脱钩</li>
+          <li>对外禁用「卡位」，统一「创始席位」</li>
+        </ul></div>
+        <div class="law"><h3><span class="no">4</span>闸门触发器</h3><ul>
+          <li>市代 ≥100 人 → 提醒开团长闸（预计 M1 中旬）</li>
+          <li>团长 ≥2,000 人 → 提醒开县代闸（预计 M3 末）</li>
+          <li>月进度 <250 人 → 触发顺延流程（加推不涨）</li>
+        </ul></div>
+      </div>
+      <div style="margin-top:18px">
+        <h4 style="font-size:12.5px;color:var(--danger);font-weight:800;margin-bottom:10px">🚫 禁词表（所有对外物料与话术）</h4>
+        <div class="banword">
+          <span class="bw">躺赚</span><span class="bw">下级</span><span class="bw">代理分成</span><span class="bw">团队收益</span><span class="bw">月入X万</span><span class="bw">卡位发财</span><span class="bw">保证回本</span><span class="bw">稳赚</span><span class="bw">发展下线</span><span class="bw">资本运作</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 决策 -->
+  <section class="view" id="v-dec">
+    <div class="card">
+      <h2><span class="num">05</span>待拍板决策</h2>
+      <div class="desc">点击勾选（本地记忆）· 全勾选即品牌体系封版</div>
+      <div class="dec-head"><div class="ring" id="ring"><div class="ring-in" id="doneCnt">3/9</div></div><div style="font-size:13px;color:var(--sub)">已定案 <b id="doneTxt">3</b> / 9 项</div></div>
+      <div class="dec-grid" id="todo">
+        <div class="t-item done" data-k="d1"><div class="box">✓</div><div><span class="tt">✓ 商业体系</span><span class="opt">四级代理 · 随心付 · 9 个月节奏（总蓝图 V1 已确认）</span></div></div>
+        <div class="t-item done" data-k="d2"><div class="box">✓</div><div><span class="tt">✓ 善意经济关系</span><span class="opt">双身份定案（独立思想 IP + 社群操作系统）</span></div></div>
+        <div class="t-item done" data-k="d3"><div class="box">✓</div><div><span class="tt">✓ 中文社群名</span><span class="opt">主理人公社（公司主体同名自洽）</span></div></div>
+        <div class="t-item" data-k="d4"><div class="box"></div><div><span class="tt">☐ 英文商标</span><span class="opt">One&Co 家族 / OPC 家族（30 套方案或多商标矩阵）</span></div></div>
+        <div class="t-item" data-k="d5"><div class="box"></div><div><span class="tt">☐ 艺名</span><span class="opt">一姐 / 星主 / 所长 / 队长 / Neo 姐 / 超姐</span></div></div>
+        <div class="t-item" data-k="d6"><div class="box"></div><div><span class="tt">☐ 数字人方案</span><span class="opt">A 真身分身 / B 原生传人 / C 双生（推荐 B→A→C）</span></div></div>
+        <div class="t-item" data-k="d7"><div class="box"></div><div><span class="tt">☐ 入口社群名</span><span class="opt">上线夜校（候选）</span></div></div>
+        <div class="t-item" data-k="d8"><div class="box"></div><div><span class="tt">☐ 天选之夜地点</span><span class="opt">M9 盛典城市</span></div></div>
+        <div class="t-item" data-k="d9"><div class="box"></div><div><span class="tt">☐ 商标送检</span><span class="opt">主理人公社 + 英文商标 + Beneconomy（35/41/42 类）</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 品牌（含帝国项目） -->
+  <section class="view" id="v-brand">
+    <div class="card">
+      <h2><span class="num">06</span>品牌矩阵 · 帝国资源</h2>
+      <div class="desc">公社五层品牌 + 帝国 18 项目（流量枢纽 · 人才军校 · 变现出口）</div>
+      <div class="subtabs">
+        <button class="stab on" data-s="b1">公社品牌<span class="n">5 层</span></button>
+        <button class="stab" data-s="b6">帝国 18 项目<span class="n">接入映射</span></button>
+      </div>
+      <div class="subview on" id="b1">
+        <div class="emp-sec"><h4>思想层</h4><div class="brands">
+          <div class="brand"><div class="en">BENECONOMY</div><b>善意经济学</b><p>善意→价值→信任→回报</p><span class="status st-done">✓ 定案</span></div></div></div>
+        <div class="emp-sec"><h4>母品牌</h4><div class="brands">
+          <div class="brand"><div class="en">ONE PERSON COMPANY COMMUNE</div><b>主理人公社</b><p>培养一人公司创始人</p><span class="status st-done">✓ 中文名定案</span></div>
+          <div class="brand"><div class="en">EN · 30 选 1</div><b>英文商标</b><p>One&Co / OPC 家族候选</p><span class="status st-wait">待选</span></div></div></div>
+        <div class="emp-sec"><h4>子品牌</h4><div class="brands">
+          <div class="brand"><div class="en">招商</div><b>王炸社</b><p>1 折 500 席 · 四级代理</p><span class="status st-done">✓</span></div>
+          <div class="brand"><div class="en">引流</div><b>上线夜校</b><p>7 天 AI 普及 · 随心付</p><span class="status st-wait">候选</span></div>
+          <div class="brand"><div class="en">公益</div><b>掌灯计划</b><p>为非遗/老字号/实体发声</p><span class="status st-done">✓</span></div>
+          <div class="brand"><div class="en">节点</div><b>充电站</b><p>OPC Base · 城市场地</p><span class="status st-done">✓</span></div></div></div>
+        <div class="emp-sec"><h4>活动 IP</h4><div class="brands">
+          <div class="brand"><div class="en">招商场</div><b>摘星计划</b><p>城市合伙人专场</p><span class="status st-done">✓</span></div>
+          <div class="brand"><div class="en">战略场</div><b>移山计划</b><p>一代人，移一座山</p><span class="status st-done">✓</span></div>
+          <div class="brand"><div class="en">年度</div><b>天选之夜</b><p>M9 盛典 · 善意账单</p><span class="status st-wait">地点待定</span></div></div></div>
+        <div class="emp-sec"><h4>人物层</h4><div class="brands">
+          <div class="brand"><div class="en">IP</div><b>创始人艺名</b><p>一姐/星主/所长/队长…</p><span class="status st-wait">待选</span></div>
+          <div class="brand"><div class="en">AI FOUNDER</div><b>数字人创始人</b><p>真身分身/原生传人/双生</p><span class="status st-wait">三套待选</span></div></div></div>
+      </div>
+      <div class="subview" id="b6">
+        <div class="emp-sec"><h4>平台系统（4）· 技术底座</h4><div class="brands">
+          <div class="brand emp"><div class="en">01 · 旗舰</div><b>AI Star Eco</b><p>AI 艺人孵化操作系统</p><div class="map">主理人变现出口：数字人定制分销</div><span class="status st-done">已上线</span></div>
+          <div class="brand emp"><div class="en">02</div><b>星枢影像</b><p>AI 超级广告 · 为实体发声</p><div class="map">掌灯计划产能方 · 项目承接</div><span class="status st-wait">开发中</span></div>
+          <div class="brand emp"><div class="en">03 · 关键</div><b>一人公司 SaaS</b><p>ONE PERSON CO. · 主理人工具</p><div class="map">公社终点产品：培养→工具闭环</div><span class="status st-wait">开发中</span></div>
+          <div class="brand emp"><div class="en">04</div><b>明星切片系统</b><p>Clip AI · 内容分发生成</p><div class="map">主理人内容生产工具出口</div><span class="status st-done">已上线</span></div></div></div>
+        <div class="emp-sec"><h4>声量体系（2）· 传播</h4><div class="brands">
+          <div class="brand emp"><div class="en">05</div><b>宇宙声量</b><p>UNIVERSEAI</p><div class="map">天选姐 IP 矩阵传播支撑</div><span class="status st-wait">规划中</span></div>
+          <div class="brand emp"><div class="en">06</div><b>声量工场</b><p>BUZZWORKSAI</p><div class="map">主理人代运营服务承接</div><span class="status st-wait">规划中</span></div></div></div>
+        <div class="emp-sec"><h4>明星 IP（4）· 势能</h4><div class="brands">
+          <div class="brand emp"><div class="en">07</div><b>亮哥带你赚</b><p>贾乃亮</p><div class="map">明星势能站台</div><span class="status st-wait">紧急推进</span></div>
+          <div class="brand emp"><div class="en">08</div><b>马可数字星</b><p>首个明星级 AI 艺人（已确认）</p><div class="map">天选之夜嘉宾 / 数字资产样板</div><span class="status st-done">已确认</span></div>
+          <div class="brand emp"><div class="en">09/10</div><b>立群信任链 / 于震品质圈</b><p>明星社群 IP</p><div class="map">社群方法论互鉴</div><span class="status st-wait">规划中</span></div></div></div>
+        <div class="emp-sec"><h4>合资公司（3）· 生态</h4><div class="brands">
+          <div class="brand emp"><div class="en">11</div><b>星映传媒</b><p>合资传媒</p><div class="map">内容产能</div><span class="status st-done">已落地</span></div>
+          <div class="brand emp"><div class="en">12</div><b>漫星文娱</b><p>AI 数字资产平台（张漫）</p><div class="map">公益联合发起 + 数字人资产化出口</div><span class="status st-wait">紧急推进</span></div>
+          <div class="brand emp"><div class="en">13</div><b>般若探店</b><p>BANRUO LOCAL</p><div class="map">主理人变现出口：探店/本地生活</div><span class="status st-done">运营中</span></div></div></div>
+        <div class="emp-sec"><h4>技术公司（4）· 桐庐矩阵</h4><div class="brands">
+          <div class="brand emp"><div class="en">14</div><b>火星引擎</b><p>MARSAI</p><div class="map">智能技术线</div><span class="status st-wait">待注册</span></div>
+          <div class="brand emp"><div class="en">15</div><b>声量算法</b><p>BUZZAI</p><div class="map">内容算法线</div><span class="status st-wait">待注册</span></div>
+          <div class="brand emp"><div class="en">16</div><b>增长引擎</b><p>GROWTH ENGINE</p><div class="map">公社系统开发可承接方</div><span class="status st-done">运营中</span></div>
+          <div class="brand emp"><div class="en">17</div><b>声引科技</b><p>BUZZCRM</p><div class="map">客户系统线</div><span class="status st-wait">待注册</span></div></div></div>
+        <div class="emp-sec"><h4>教育（1）</h4><div class="brands">
+          <div class="brand emp"><div class="en">18</div><b>金潮 × AI 产教</b><p>JINTAO EDU</p><div class="map">课程产能方 · 实战营共建</div><span class="status st-wait">推进中</span></div></div></div>
+        <div style="background:#fff;border-radius:14px;padding:16px 20px;margin-top:6px;font-size:12.5px;color:var(--sub);text-align:center">主理人公社 = 帝国的<b style="color:var(--gold-deep)">流量中央枢纽 + 人才中央军校</b>——18 个项目的变现，都需要「主理人」来干</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 图谱嵌入视图 -->
+  <section class="view" id="v-graph">
+    <iframe src="20260917_品牌物料交互图谱.html" style="width:100%;height:calc(100vh - 120px);border:none;border-radius:0;display:block;background:#fff" title="品牌物料交互图谱"></iframe>
+  </section>
+
+  <!-- 7 物料 -->
+  <section class="view" id="v-asset">
+    <div class="card">
+      <h2><span class="num">07</span>全套物料库</h2>
+      <div class="desc">📄 白金排版文档 · 🌐 交互页面 · 🖼 视觉图 · 点击直达</div>
+      <div class="subtabs">
+        <button class="stab on" data-s="a1">🛡 战略<span class="n">6</span></button>
+        <button class="stab" data-s="a2">💰 招商<span class="n">5</span></button>
+        <button class="stab" data-s="a3">⚙ 运营<span class="n">5</span></button>
+        <button class="stab" data-s="a4">🎨 视觉<span class="n">6</span></button>
+        <button class="stab" data-s="a5">🧭 命名档案<span class="n">5</span></button>
+        <button class="stab" data-s="a6">📊 总览<span class="n">3</span></button>
+      </div>
+      <div class="subview on" id="a1"><div class="docs">
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_主理人公社帝国整合操盘方案_V1.md"><div class="ico">📄</div><div><span class="t">帝国整合操盘方案 V1</span><span class="m">18 项目盘点 · 三阶段路线</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_招商运营总蓝图_V1.md"><div class="ico">📄</div><div><span class="t">招商运营总蓝图 V1（已确认）</span><span class="m">9 个月 · 回本模型 · 总盘子</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260916_四级代理体系_团长至省分公司.md"><div class="ico">📄</div><div><span class="t">四级代理体系 V2</span><span class="m">1万/3万/12万/50万</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260916_AI普惠计划_随心付分账方案_V2.md"><div class="ico">📄</div><div><span class="t">随心付分账 V2</span><span class="m">0 元可学完 · 团长 50%</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260916_升单课程与变现承接体系.md"><div class="ico">📄</div><div><span class="t">升单承接体系</span><span class="m">八层触发 · 四线产品</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260916_门槛阶梯定价_内邀与涨价逼单策略.md"><div class="ico">📄</div><div><span class="t">门槛阶梯定价 V6（已拍板）</span><span class="m">时间进度表 · 折扣分布</span></div><span class="go">›</span></a>
+      </div></div>
+      <div class="subview" id="a2"><div class="docs">
+        <a class="doc" href="20260917_王炸社创始席位价格公示页.html"><div class="ico">🌐</div><div><span class="t">席位价格公示页</span><span class="m">1 折 500 席 · 三铁律</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_王炸社招商手册_对外版.html"><div class="ico">🌐</div><div><span class="t">招商手册对外版</span><span class="m">三问三答 · CTA</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_王炸社招商路演PPT_对外版.html"><div class="ico">🌐</div><div><span class="t">路演 PPT 对外版</span><span class="m">13 页 · 四路导航</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_创始席位意向金协议_V1.md"><div class="ico">📄</div><div><span class="t">意向金协议 V1</span><span class="m">1,000 · 30 天可退</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_代理合作协议_V1_四级分层.md"><div class="ico">📄</div><div><span class="t">代理合作协议 V1</span><span class="m">四级 · 冷静期 · 红线</span></div><span class="go">›</span></a>
+      </div></div>
+      <div class="subview" id="a3"><div class="docs">
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_团长SOP手册_开营7天_V1.md"><div class="ico">📄</div><div><span class="t">团长 SOP · 7 天</span><span class="m">每日三动作 · 话术库</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_AI普及计划_7天课程详细设计_V1.md"><div class="ico">📄</div><div><span class="t">7 天课程设计</span><span class="m">教学目标 · 课件清单</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260916_种子团长招募营销包_V4.md"><div class="ico">📄</div><div><span class="t">招募营销包 V4</span><span class="m">上车卡启动 · 全套话术</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_M1起盘发布会流程脚本_V1.md"><div class="ico">📄</div><div><span class="t">M1 发布会脚本</span><span class="m">90 分钟 · 异议库</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_招商后台进度看板字段表_V1.md"><div class="ico">📄</div><div><span class="t">看板字段表</span><span class="m">8 表 · 闸门触发器</span></div><span class="go">›</span></a>
+      </div></div>
+      <div class="subview" id="a4"><div class="docs">
+        <a class="doc" href="tianxuanjie_visual_main.jpg"><div class="ico">🖼</div><div><span class="t">概念图 · 白金主视觉</span><span class="m">纯白+香槟金</span></div><span class="go">›</span></a>
+        <a class="doc" href="tianxuanjie_visual_cinnabar.jpg"><div class="ico">🖼</div><div><span class="t">概念图 · 朱砂公域版</span><span class="m">新中式锦囊</span></div><span class="go">›</span></a>
+        <a class="doc" href="tianxuanjie_visual_gold.jpg"><div class="ico">🖼</div><div><span class="t">概念图 · 鎏金高端版</span><span class="m">墨绿丝绒</span></div><span class="go">›</span></a>
+        <a class="doc" href="tianxuanjie_poster_baijin.jpg"><div class="ico">🖼</div><div><span class="t">海报 · 直播预告</span><span class="m">白金 · 每 20:00</span></div><span class="go">›</span></a>
+        <a class="doc" href="tianxuanjie_poster_zhusha.jpg"><div class="ico">🖼</div><div><span class="t">海报 · 天选锦囊</span><span class="m">朱砂 · 转发锦鲤</span></div><span class="go">›</span></a>
+        <a class="doc" href="tianxuanjie_poster_liujin.jpg"><div class="ico">🖼</div><div><span class="t">海报 · 邀请函</span><span class="m">鎏金 · 101 位</span></div><span class="go">›</span></a>
+      </div></div>
+      <div class="subview" id="a5"><div class="docs">
+        <a class="doc" href="20260917_品牌包装30套方案_切换查看页.html"><div class="ico">🌐</div><div><span class="t">30 套方案 · 切换查看页</span><span class="m">7 家族交互浏览</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_品牌包装30套方案_V1.md"><div class="ico">📄</div><div><span class="t">30 套方案（文档版）</span><span class="m">逐套详述</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_AI数字人创始人_三套方案_V1.md"><div class="ico">📄</div><div><span class="t">数字人三套方案</span><span class="m">分身/传人/双生</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_品牌架构决策_公司主体与社群命名_V1.md"><div class="ico">📄</div><div><span class="t">品牌架构决策 V2</span><span class="m">女王城堡 · 公司版图</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_文档阅读器.html?file=20260917_OPC英文组词与善意经济融合_V1.md"><div class="ico">📄</div><div><span class="t">组词与善意融合</span><span class="m">14 组词 · 关系定案</span></div><span class="go">›</span></a>
+      </div></div>
+      <div class="subview" id="a6"><div class="docs">
+        <a class="doc" href="20260917_品牌物料交互图谱.html"><div class="ico">🕸</div><div><span class="t">品牌物料交互图谱</span><span class="m">39 节点 · 点击高亮 · 缩放平移</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_善意经济×One&Co品牌架构总览.html"><div class="ico">🌐</div><div><span class="t">善意经济 × One&Co 架构总览</span><span class="m">关系公式 · 三层架构</span></div><span class="go">›</span></a>
+        <a class="doc" href="20260917_主理人公社品牌平台_总入口.html"><div class="ico">🌐</div><div><span class="t">品牌平台（旧版存档）</span><span class="m">已被驾驶舱取代</span></div><span class="go">›</span></a>
+      </div></div>
+    </div>
+  </section>
+
+  <div class="legal">
+    主理人公社（杭州）传媒科技有限公司 · 项目驾驶舱 4.1（侧边栏版）· 2026-09-17<br>
+    帝国资源依据：陈彬彬商业帝国资料包（18 项目矩阵 · 米诺战略参谋部）
+    <div class="stamp">主 理 人 公 社</div>
+  </div>
+</div>
+</main>
+
+<script>
+  document.getElementById('today').textContent=new Date().toLocaleDateString('zh-CN');
+  const sitems=[...document.querySelectorAll('.sitem')];
+  const views=[...document.querySelectorAll('.view')];
+  function go(v){
+    sitems.forEach(t=>t.classList.toggle('on',t.dataset.v===v));
+    views.forEach(s=>s.classList.toggle('on',s.id===v));
+    history.replaceState(null,'','#'+v.replace('v-',''));
+    window.scrollTo({top:0});
+    document.getElementById('progress').style.width='0%';
+    if(innerWidth<=820)document.body.classList.remove('mopen');
+  }
+  sitems.forEach(t=>t.onclick=()=>go(t.dataset.v));
+  // 键盘 ←→ 切换
+  addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+    if(e.key!=='ArrowLeft'&&e.key!=='ArrowRight')return;
+    const cur=sitems.findIndex(t=>t.classList.contains('on'));
+    const nx=cur+(e.key==='ArrowRight'?1:-1);
+    if(nx>=0&&nx<sitems.length)go(sitems[nx].dataset.v);
+  });
+  const h=location.hash.replace('#','');
+  if(h&&document.getElementById('v-'+h))go('v-'+h);
+  // 侧边栏折叠（桌面收窄 / 移动抽屉）
+  const burger=document.getElementById('burger'),sfold=document.getElementById('sfold'),mask=document.getElementById('mask');
+  function setMini(m){document.body.classList.toggle('mini',m);localStorage.setItem('cockpit_mini',m?'1':'0');}
+  if(localStorage.getItem('cockpit_mini')==='1')document.body.classList.add('mini');
+  burger.onclick=()=>{
+    if(innerWidth<=820)document.body.classList.toggle('mopen');
+    else setMini(!document.body.classList.contains('mini'));
+  };
+  sfold.onclick=()=>{
+    if(innerWidth<=820)document.body.classList.remove('mopen');
+    else setMini(true);
+  };
+  mask.onclick=()=>document.body.classList.remove('mopen');
+  document.querySelectorAll('.subtabs').forEach(box=>{
+    const stabs=[...box.querySelectorAll('.stab')];
+    stabs.forEach(t=>t.onclick=()=>{
+      stabs.forEach(x=>x.classList.toggle('on',x===t));
+      const scope=box.parentElement;
+      scope.querySelectorAll('.subview').forEach(s=>s.classList.toggle('on',s.id===t.dataset.s));
+    });
+  });
+  addEventListener('scroll',()=>{
+    const d=document.documentElement;
+    document.getElementById('progress').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';
+  },{passive:true});
+  // 通用勾选（决策+今日操盘任务）
+  function bindCheck(sel,cntFn,storagePfx){
+    document.querySelectorAll(sel).forEach(it=>{
+      const k=(it.dataset.k||'').startsWith('w')?'op_'+it.dataset.k:it.dataset.k;
+      const saved=localStorage.getItem(k);
+      if(saved==='1'&&!it.classList.contains('done'))it.classList.add('done');
+      if(saved==='0')it.classList.remove('done');
+      syncUI(it);
+      it.onclick=()=>{
+        it.classList.toggle('done');
+        localStorage.setItem(k,it.classList.contains('done')?'1':'0');
+        syncUI(it);cntFn();
+      };
+    });
+  }
+  function syncUI(it){
+    const box=it.querySelector('.cb')||it.querySelector('.box');
+    if(!box)return;
+    if(it.classList.contains('done')){box.textContent='✓';}
+    else{box.textContent='';}
+  }
+  function updDec(){
+    const n=document.querySelectorAll('#todo .t-item.done').length;
+    document.getElementById('doneTxt').textContent=n;
+    document.getElementById('doneCnt').textContent=n+'/9';
+    document.getElementById('tabDec').textContent=n+'/9';
+    document.getElementById('ring').style.background='conic-gradient(var(--gold-deep) 0 '+(n/9*360)+'deg,var(--gold-soft) '+(n/9*360)+'deg 360deg)';
+  }
+  function updOp(){
+    const all=document.querySelectorAll('.task');
+    const w1=[...document.querySelectorAll('.wk:nth-child(1) .task')];
+    const w2=[...document.querySelectorAll('.wk:nth-child(2) .task')];
+    const d1=w1.filter(t=>t.classList.contains('done')).length;
+    const d2=w2.filter(t=>t.classList.contains('done')).length;
+    document.getElementById('w1pct').textContent=d1+'/7';
+    document.getElementById('w2pct').textContent=d2+'/7';
+    document.getElementById('w1ring').style.background='conic-gradient(var(--gold-deep) 0 '+(d1/7*360)+'deg,var(--gold-soft) '+(d1/7*360)+'deg 360deg)';
+    document.getElementById('w2ring').style.background='conic-gradient(var(--gold-deep) 0 '+(d2/7*360)+'deg,var(--gold-soft) '+(d2/7*360)+'deg 360deg)';
+    const tot=d1+d2;
+    document.getElementById('tabOp').textContent=tot+'/14';
+    document.getElementById('opPct').textContent=Math.round(tot/14*100)+'%';
+    document.getElementById('opRing').style.background='conic-gradient(var(--gold-deep) 0 '+(tot/14*360)+'deg,var(--gold-soft) '+(tot/14*360)+'deg 360deg)';
+  }
+  // 决策 t-item 用 tt 前缀符号恢复
+  document.querySelectorAll('#todo .t-item').forEach(it=>{
+    const tt=it.querySelector('.tt');
+    if(!tt.textContent.startsWith('✓')&&!tt.textContent.startsWith('☐'))tt.textContent='☐ '+tt.textContent;
+  });
+  document.querySelectorAll('#todo .t-item').forEach(it=>{
+    const tt=it.querySelector('.tt');
+    if(it.classList.contains('done')&&!tt.textContent.startsWith('✓'))tt.textContent='✓ '+tt.textContent.slice(2);
+    if(!it.classList.contains('done')&&!tt.textContent.startsWith('☐'))tt.textContent='☐ '+tt.textContent.slice(2);
+  });
+  bindCheck('#todo .t-item',updDec);
+  bindCheck('.task',updOp);
+  updDec();updOp();
+</script>
+</body>
+</html>

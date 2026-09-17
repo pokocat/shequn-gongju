@@ -178,11 +178,11 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
         <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
           <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>共 {filtered.length} 条成员</div>
           <div className="flex items-center gap-1">
-            <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === 1 ? S.bg : S.accent, color: "#ffffff", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><ChevronLeft size={13} /></button>
+            <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === 1 ? S.bg : S.accent, color: page === 1 ? S.text : S.onAccent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><ChevronLeft size={13} /></button>
             {Array.from({ length: Math.max(1, totalPages) }, (_, i) => i + 1).map(p => (
               <button key={p} className="w-7 h-7 text-xs" style={{ background: page === p ? "#1e293b" : S.bg, color: page === p ? S.accent : S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setPage(p)}>{p}</button>
             ))}
-            <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === totalPages ? S.bg : S.accent, color: "#ffffff", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><ChevronRight size={13} /></button>
+            <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === totalPages ? S.bg : S.accent, color: page === totalPages ? S.text : S.onAccent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><ChevronRight size={13} /></button>
           </div>
           <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>每页 {PAGE_SIZE} 条</div>
         </div>
@@ -409,7 +409,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
                     <span className="px-1.5 py-0.5 text-xs uppercase" style={{ background: tc.bg, color: tc.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{g.type}</span>
                   </div>
                   <div className="flex-shrink-0" style={{ width: 80 }}>
-                    <span className="text-xs px-1.5 py-0.5 uppercase" style={{ background: g.ownerStatus === "正常" ? S.accent : "#3b82f6", color: "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{g.ownerStatus}</span>
+                    <span className="text-xs px-1.5 py-0.5 uppercase" style={{ background: g.ownerStatus === "正常" ? S.accent : "#3b82f6", color: g.ownerStatus === "正常" ? S.onAccent : "#ffffff", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{g.ownerStatus}</span>
                   </div>
                   <div className="flex-shrink-0 text-xs" style={{ width: 90, color: S.textSec, fontFamily: "monospace" }}>{managerFor(g)}</div>
                   <div className="flex-shrink-0 text-xs font-medium" style={{ width: 80, color: S.text, fontFamily: "monospace" }}>{g.pushCount}</div>
@@ -431,11 +431,11 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
           <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
             <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>第 {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} 条，共 {filtered.length} 条</div>
             <div className="flex items-center gap-1">
-              <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === 1 ? S.bg : S.accent, color: "#ffffff", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><ChevronLeft size={13} /></button>
+              <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === 1 ? S.bg : S.accent, color: page === 1 ? S.text : S.onAccent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><ChevronLeft size={13} /></button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
                 <button key={p} className="w-7 h-7 text-xs" style={{ background: page === p ? "#1e293b" : S.bg, color: page === p ? S.accent : S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setPage(p)}>{p}</button>
               ))}
-              <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === totalPages ? S.bg : S.accent, color: "#ffffff", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><ChevronRight size={13} /></button>
+              <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === totalPages ? S.bg : S.accent, color: page === totalPages ? S.text : S.onAccent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}><ChevronRight size={13} /></button>
             </div>
             <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>每页 {PAGE_SIZE} 条</div>
           </div>

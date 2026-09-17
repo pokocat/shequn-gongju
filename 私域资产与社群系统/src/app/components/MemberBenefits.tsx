@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Star, Crown, Diamond, Zap, Award, Gift, ChevronRight, Check, X } from "lucide-react";
+import VipBadge from "./VipBadge";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from "recharts";
@@ -178,9 +179,9 @@ const [activeTier, setActiveTier] = useState("pro");
       {/* ── Tier Cards Strip ── */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 12 }}>
         {TIERS.map(tier => {
-          const Icon = tier.icon;
           const isActive = activeTier === tier.id;
           const isBlack = tier.id === "black";
+          const rarity = {guest: 0, trial: 1, pro: 2, vip: 3, black: 4}[tier.id] ?? 0;
           return (
             <button
               key={tier.id}
@@ -196,8 +197,8 @@ const [activeTier, setActiveTier] = useState("pro");
                 outline: "none",
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
-                <Icon size={15} style={{ color: isActive && isBlack ? S.accent : S.text }} />
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 8 }}>
+                <VipBadge rarity={rarity} size="md" />
                 <span style={{ fontWeight: 700, fontSize: 13, color: isActive && isBlack ? S.accent : S.text, fontFamily: "monospace" }}>
                   {tier.name}
                 </span>
@@ -367,7 +368,7 @@ const [activeTier, setActiveTier] = useState("pro");
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <active.icon size={13} style={{ color: active.id === "black" ? S.accent : S.text }} />
+              <VipBadge rarity={{"guest":0,"trial":1,"pro":2,"vip":3,"black":4}[active.id] ?? 0} size="md" />
               <span style={{ fontWeight: 700, fontSize: 11, color: active.id === "black" ? S.accent : S.text, fontFamily: "monospace" }}>{active.name}</span>
             </div>
             <div style={{ fontSize: 11, color: active.id === "black" ? "rgba(204,255,0,0.6)" : S.textSec, fontFamily: "monospace" }}>{active.desc}</div>
@@ -550,13 +551,14 @@ const [activeTier, setActiveTier] = useState("pro");
                     background: isBlack ? "#1e293b" : (activeTier === tier.id ? S.accentLight : "#f8f8f5"),
                     border: `1.5px solid ${isBlack ? S.accent : (activeTier === tier.id ? S.accent : S.border)}`,
                     borderRadius: S.radius,
-                    padding: "10px 14px",
+                    padding: "12px 14px",
                     textAlign: "center",
-                    minWidth: 90,
+                    minWidth: 100,
                     boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
                   }}
                 >
-                  <tier.icon size={16} style={{ color: isBlack ? S.accent : S.text, margin: "0 auto 4px" }} />
+                  <VipBadge rarity={{"guest":0,"trial":1,"pro":2,"vip":3,"black":4}[tier.id] ?? 0} size="md" />
                   <div style={{ fontWeight: 700, fontSize: 11, color: isBlack ? S.accent : S.text, fontFamily: "monospace" }}>{tier.name}</div>
                   <div style={{ fontSize: 10, marginTop: 2, color: isBlack ? "rgba(204,255,0,0.5)" : S.muted, fontFamily: "monospace" }}>{tier.price}</div>
                   <div style={{ fontSize: 10, color: isBlack ? "rgba(204,255,0,0.5)" : S.muted, fontFamily: "monospace" }}>{tier.users}人</div>

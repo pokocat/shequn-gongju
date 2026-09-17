@@ -20,7 +20,7 @@ export interface SPalette {
   danger: string; dangerBg: string;
   text: string; textSec: string; muted: string; mutedLight: string;
   radius: string; radiusSm: string; radiusLg: string;
-  shadow: string; glass: string; glassBorder: string; onPrimary: string;
+  shadow: string; glass: string; glassBorder: string; onPrimary: string; onAccent: string;
 }
 
 export interface ThemePalette {
@@ -55,6 +55,7 @@ const NEON: ThemePalette = {
     shadow: "0 8px 30px rgba(168,85,247,0.14)",
     glass: "rgba(255,255,255,0.65)", glassBorder: "rgba(255,255,255,0.6)",
     onPrimary: "#ffffff",
+    onAccent: "#581c87",
   },
   dark: {
     bg: "#0a0416", surface: "#150a2a",
@@ -70,6 +71,7 @@ const NEON: ThemePalette = {
     shadow: "0 10px 40px rgba(0,0,0,0.7), 0 0 24px rgba(168,85,247,0.25)",
     glass: "rgba(21,10,42,0.75)", glassBorder: "rgba(217,70,239,0.22)",
     onPrimary: "#1a0533",
+    onAccent: "#581c87",
   },
 };
 
@@ -167,6 +169,7 @@ const OBSIDIAN: ThemePalette = {
     shadow: "0 8px 30px rgba(15,23,42,0.12)",
     glass: "rgba(255,255,255,0.72)", glassBorder: "rgba(15,23,42,0.10)",
     onPrimary: "#ffffff",
+    onAccent: "#422006",
   },
   dark: {
     // 曜石暗（原始）：纯黑 + 琥珀金
@@ -183,6 +186,7 @@ const OBSIDIAN: ThemePalette = {
     shadow: "0 10px 40px rgba(0,0,0,0.7), 0 0 24px rgba(245,158,11,0.22)",
     glass: "rgba(20,26,42,0.75)", glassBorder: "rgba(255,255,255,0.08)",
     onPrimary: "#111827",
+    onAccent: "#422006",
   },
 };
 
@@ -206,6 +210,7 @@ const ACID: ThemePalette = {
     shadow: "0 8px 28px rgba(101,163,13,0.18)",
     glass: "rgba(255,255,255,0.70)", glassBorder: "rgba(255,255,255,0.6)",
     onPrimary: "#1a2e05",
+    onAccent: "#1a2e05",
   },
   dark: {
     // 暗黑荧光：纯黑底 + 酸柠荧光黄（复刻早期 ccff00 + 0d0d0d 赛博味道）
@@ -222,6 +227,7 @@ const ACID: ThemePalette = {
     shadow: "0 10px 40px rgba(0,0,0,0.7), 0 0 26px rgba(204,255,0,0.25)",
     glass: "rgba(20,31,11,0.75)", glassBorder: "rgba(204,255,0,0.24)",
     onPrimary: "#0a1205",
+    onAccent: "#1a2e05",
   },
 };
 

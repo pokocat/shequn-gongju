@@ -688,7 +688,7 @@ const { tools, setTools } = useTools();
               onClick={confirmAction.action === "disable" ? doDisable : confirmAction.action === "archive" ? doArchive : doSendNurture}
               style={{ padding: "7px 15px", border: "none", borderRadius: 7,
                 background: confirmAction.action === "disable" || confirmAction.action === "archive" ? S.danger : S.primary,
-                color: "#ffffff", fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(0,0,0,.08)" }}>
+                color: confirmAction.action === "disable" || confirmAction.action === "archive" ? "#ffffff" : S.onPrimary, fontWeight: 600, fontSize: 13, cursor: "pointer", boxShadow: "0 1px 2px rgba(0,0,0,.08)" }}>
               <Check size={12} style={{ verticalAlign: "middle", marginRight: 3 }} /> 确认
             </button>
           </div>

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from "lucide-react";
 import { getAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
+import { SCOPE_CONFIGS, dataScopeOptions, type DataScope, type ScopeOperationId, type ScopeRow, type ScopeTreeNode } from "./workbenchScopes";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const taskCategories = [
   { label: "待处理的任务", count: 12, active: true },
@@ -14,10 +15,10 @@ const rankingTabs = ["待处理的任务", "全部任务", "我发布的任务",
 const profileTabs = ["待处理", "订单详情", "历史操作记录", "回访单"];
 const orderStatusTabs = ["所有订单", "待付款", "待发货", "待收货", "已完成", "退款/换货"];
 const operationTabs = [
-  { id: "issue", label: "问题登记", icon: MessageSquare },
-  { id: "push", label: "推送任务", icon: Send },
-  { id: "activity", label: "活动运营", icon: CalendarDays },
-  { id: "moments", label: "朋友圈", icon: ClipboardCheck },
+  { id: "issue", label: "问题登记", icon: MessageSquare, button: "登记并指派" },
+  { id: "push", label: "推送任务", icon: Send, button: "创建推送任务" },
+  { id: "activity", label: "活动运营", icon: CalendarDays, button: "创建活动任务" },
+  { id: "moments", label: "朋友圈", icon: ClipboardCheck, button: "发布" },
 ] as const;
 
 const rankingData = [
@@ -190,16 +191,29 @@ function TreeNode({ node, depth = 0 }: { node: typeof relationTree; depth?: numb
 }
 
 const taskStatusStyle = (status: string) => {
-  if (status === "已完成") return { bg: S.accent, color: "#ffffff" };
+  if (status === "已完成") return { bg: S.accent, color: S.onAccent };
   if (status === "进行中") return { bg: "#f1f5f9", color: "#475569" };
   return { bg: "#3b82f6", color: "#ffffff" };
 };
 
 // ─── 主组件 ───────────────────────────────────────────────────
+// dataScope：数据视角（会员/社群/项目/代理），切换器位于排行表格上方。
+// 任务中心的基础任务（总任务）永远保留；非会员视角仅追加一个视角任务 Tab，可切换查看。
 export default function InfluenceRanking() {
   useThemeSingleton();
-const [activeTab, setActiveTab] = useState(rankingTabs[0]);
+  const [dataScope, setDataScope] = useState<DataScope>("members");
+  const isMemberScope = dataScope === "members";
+  const scopeCfg = isMemberScope ? null : SCOPE_CONFIGS[dataScope];
+  // 任务中心数据源：basic = 基础任务（原 4 类，任何视角保留）；scope = 当前视角任务
+  const [taskSource, setTaskSource] = useState<"basic" | "scope">("basic");
+  const showScopeTaskTab = !isMemberScope;
+  const activeCats = showScopeTaskTab && taskSource === "scope" ? scopeCfg!.taskCategories : taskCategories;
+  const activeLists = showScopeTaskTab && taskSource === "scope" ? scopeCfg!.taskLists : taskLists;
+  const rankTabs = isMemberScope ? rankingTabs : scopeCfg!.rankingTabs;
+  const opTabs: Array<{ id: ScopeOperationId; label: string; icon: typeof MessageSquare; button: string }> = isMemberScope ? [...operationTabs] : scopeCfg!.operations;
+  const [activeTab, setActiveTab] = useState(rankingTabs[0]);
   const [selectedUser, setSelectedUser] = useState(rankingData[0]);
+  const [selectedRow, setSelectedRow] = useState<ScopeRow | null>(null);
   const [activeTaskCategory, setActiveTaskCategory] = useState(taskCategories[0].label);
   const [selectedTaskIndex, setSelectedTaskIndex] = useState(0);
   const [profileNotice, setProfileNotice] = useState("");
@@ -207,7 +221,7 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
   const [isEditingTags, setIsEditingTags] = useState(false);
   const [tagDraft, setTagDraft] = useState("");
   const [activeTagFilter, setActiveTagFilter] = useState("全部");
-  const [activeProfileTab, setActiveProfileTab] = useState(profileTabs[0]);
+  const [activeProfileTab, setActiveProfileTab] = useState(isMemberScope ? profileTabs[0] : scopeCfg!.profileTabs[0]);
   const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
   const [isTaskPanelCollapsed, setIsTaskPanelCollapsed] = useState(false);
   const [activeOrderStatus, setActiveOrderStatus] = useState(orderStatusTabs[0]);
@@ -223,7 +237,31 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
   };
 
   const selectedTags = memberTags[selectedUser.rank] ?? defaultMemberTags;
-  const visibleTaskList = taskLists[activeTaskCategory as keyof typeof taskLists] ?? taskSideList;
+  const activeListsRecord = activeLists as Record<string, typeof taskSideList>;
+  const visibleTaskList = activeListsRecord[activeTaskCategory] ?? (taskSource === "scope" ? activeListsRecord[scopeCfg!.taskCategories[0].label] : taskSideList);
+  // 操作台 / 档案的当前对象名：会员视角用选中会员，其余视角用选中行
+  const targetName = isMemberScope ? selectedUser.name : (selectedRow?.name ?? "");
+  const filteredScopeRows = !scopeCfg ? [] : (activeTagFilter === "全部" ? scopeCfg.rows : scopeCfg.rows.filter(r => r.filter === activeTagFilter));
+  const scopeTableMinWidth = scopeCfg ? scopeCfg.columns.reduce((sum, c) => sum + c.width, 0) + 132 : 900;
+  // 切换数据视角：任务中心回落到基础任务，排行 Tab / 档案 Tab / 筛选按新视角重置
+  const switchDataScope = (next: DataScope) => {
+    if (next === dataScope) return;
+    setDataScope(next);
+    setTaskSource("basic");
+    setActiveTaskCategory(taskCategories[0].label);
+    setSelectedTaskIndex(0);
+    setActiveTagFilter("全部");
+    if (next === "members") {
+      setActiveTab(rankingTabs[0]);
+      setActiveProfileTab(profileTabs[0]);
+      setSelectedRow(null);
+    } else {
+      const cfg = SCOPE_CONFIGS[next];
+      setActiveTab(cfg.rankingTabs[0]);
+      setActiveProfileTab(cfg.profileTabs[0]);
+      setSelectedRow(cfg.rows[0]);
+    }
+  };
   const tagFilters = ["全部", ...Array.from(new Set(Object.values(memberTags).flat().map(tag => tag.label)))];
   const filteredRankingData = activeTagFilter === "全部"
     ? rankingData
@@ -276,18 +314,26 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
         </div>
 
         {!isTaskPanelCollapsed && <>
+        {/* 任务来源：基础任务永远保留；非会员视角可切换查看对应视角的任务 */}
+        {showScopeTaskTab && (
+          <div className="flex items-center gap-0.5 px-3 pt-2.5 flex-shrink-0" role="tablist" aria-label="任务来源切换">
+            <button type="button" role="tab" aria-selected={taskSource === "basic"} onClick={() => { setTaskSource("basic"); setActiveTaskCategory(taskCategories[0].label); setSelectedTaskIndex(0); }} className="flex-1 px-2 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: taskSource === "basic" ? "#1e293b" : "#f1f5f9", color: taskSource === "basic" ? S.accent : S.muted, border: `1px solid ${taskSource === "basic" ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>基础任务</button>
+            <button type="button" role="tab" aria-selected={taskSource === "scope"} onClick={() => { setTaskSource("scope"); setActiveTaskCategory(scopeCfg!.taskCategories[0].label); setSelectedTaskIndex(0); }} className="flex-1 px-2 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: taskSource === "scope" ? "#1e293b" : "#f1f5f9", color: taskSource === "scope" ? S.accent : S.muted, border: `1px solid ${taskSource === "scope" ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>{scopeCfg!.noun}任务</button>
+          </div>
+        )}
+
         {/* 任务分类 */}
         <div className="px-3 py-2 flex-shrink-0">
-          {taskCategories.map((c, i) => (
+          {activeCats.map((c, i) => (
             <button key={i} className="w-full flex items-center justify-between px-2 py-2 text-left mb-0.5 transition-all" style={{
               background: activeTaskCategory === c.label ? S.accentLight : "transparent",
               borderRadius: S.radiusSm,
               border: activeTaskCategory === c.label ? `1px solid ${S.accent}` : "1px solid transparent",
-            }} onClick={() => { setActiveTaskCategory(c.label); setSelectedTaskIndex(0); if (c.label === "待处理的任务") { setActiveProfileTab("待处理"); setSelectedOrderNo(null); } }}>
+            }} onClick={() => { setActiveTaskCategory(c.label); setSelectedTaskIndex(0); if (isMemberScope && taskSource === "basic" && c.label === "待处理的任务") { setActiveProfileTab("待处理"); setSelectedOrderNo(null); } }}>
               <span className="text-xs font-mono" style={{ color: activeTaskCategory === c.label ? S.text : S.muted }}>{c.label}</span>
               <span className="px-1.5 py-0.5 text-xs font-bold" style={{
                 background: activeTaskCategory === c.label ? S.accent : "rgba(15,23,42,0.06)",
-                color: activeTaskCategory === c.label ? "#ffffff" : S.muted,
+                color: activeTaskCategory === c.label ? S.onAccent : S.muted,
                 borderRadius: S.radiusSm,
               }}>{c.count}</span>
             </button>
@@ -320,9 +366,31 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
 
       {/* ── 中间区域 ──────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        {/* 数据视角切换器：位于排行表格上方，切换列表展示的内容类型；窄容器下自动换行避免被右侧档案栏遮挡 */}
+        <div className="flex items-center gap-2 px-4 pt-3 flex-shrink-0 flex-wrap" role="group" aria-label="数据视角切换">
+          <span className="text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>数据视角</span>
+          <div className="flex items-center gap-0.5 p-0.5 min-w-0 flex-wrap" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: "999px" }}>
+            {dataScopeOptions.map(option => {
+              const isActive = dataScope === option.id;
+              return (
+                <button
+                  key={option.id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => switchDataScope(option.id)}
+                  className="px-2 py-1 text-[11px] font-bold whitespace-nowrap transition-all"
+                  style={{ background: isActive ? "#1e293b" : "transparent", color: isActive ? S.accent : S.muted, borderRadius: "999px" }}
+                >
+                  {option.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* 排行榜 Tab */}
-        <div className="flex items-center gap-1 px-4 pt-4 flex-shrink-0 flex-wrap">
-          {rankingTabs.map(t => (
+        <div className="flex items-center gap-1 px-4 pt-3 flex-shrink-0 flex-wrap">
+          {rankTabs.map(t => (
             <button key={t} className="px-3 py-1.5 text-xs transition-all font-bold" style={{
               background: activeTab === t ? "#1e293b" : S.surface,
               color: activeTab === t ? S.accent : S.muted,
@@ -359,32 +427,60 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
           <button onClick={() => showProfileNotice("排行筛选已重置")} className="px-2.5 py-1.5 text-xs" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>重置</button>
         </div>
 
-        <div className="mx-4 mt-3 flex items-center gap-2 overflow-x-auto flex-shrink-0" aria-label="按画像标签筛选会员">
-          <span className="inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>
-            <Tags size={13} style={{ color: "#6db100" }} />按画像筛选
-          </span>
-          {tagFilters.map(label => {
-            const isActive = activeTagFilter === label;
-            return (
-              <button
-                key={label}
-                onClick={() => setActiveTagFilter(label)}
-                className="px-2.5 py-1.5 text-xs font-bold whitespace-nowrap transition-all"
-                style={{
-                  background: isActive ? S.accent : S.surface,
-                  color: isActive ? "#ffffff" : S.muted,
-                  border: `1px solid ${isActive ? S.accent : S.border}`,
-                  borderRadius: "999px",
-                }}
-              >
-                {label}
-              </button>
-            );
-          })}
-          <span className="ml-auto text-xs whitespace-nowrap" style={{ color: S.muted }}>{filteredRankingData.length} 位会员</span>
-        </div>
+        {isMemberScope ? (
+          <div className="mx-4 mt-3 flex items-center gap-2 overflow-x-auto flex-shrink-0" aria-label="按画像标签筛选会员">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>
+              <Tags size={13} style={{ color: "#6db100" }} />按画像筛选
+            </span>
+            {tagFilters.map(label => {
+              const isActive = activeTagFilter === label;
+              return (
+                <button
+                  key={label}
+                  onClick={() => setActiveTagFilter(label)}
+                  className="px-2.5 py-1.5 text-xs font-bold whitespace-nowrap transition-all"
+                  style={{
+                    background: isActive ? S.accent : S.surface,
+                    color: isActive ? S.onAccent : S.muted,
+                    border: `1px solid ${isActive ? S.accent : S.border}`,
+                    borderRadius: "999px",
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+            <span className="ml-auto text-xs whitespace-nowrap" style={{ color: S.muted }}>{filteredRankingData.length} 位会员</span>
+          </div>
+        ) : scopeCfg ? (
+          <div className="mx-4 mt-3 flex items-center gap-2 overflow-x-auto flex-shrink-0" aria-label={`按${scopeCfg.noun}筛选`}>
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>
+              <Tags size={13} style={{ color: "#6db100" }} />按{scopeCfg.noun}筛选
+            </span>
+            {scopeCfg.filterChips.map(label => {
+              const isActive = activeTagFilter === label;
+              return (
+                <button
+                  key={label}
+                  onClick={() => setActiveTagFilter(label)}
+                  className="px-2.5 py-1.5 text-xs font-bold whitespace-nowrap transition-all"
+                  style={{
+                    background: isActive ? S.accent : S.surface,
+                    color: isActive ? S.onAccent : S.muted,
+                    border: `1px solid ${isActive ? S.accent : S.border}`,
+                    borderRadius: "999px",
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+            <span className="ml-auto text-xs whitespace-nowrap" style={{ color: S.muted }}>{filteredScopeRows.length} {scopeCfg.counterUnit}</span>
+          </div>
+        ) : null}
 
-        {/* 排行榜表格 */}
+        {/* 排行榜表格：会员视角原样，其余视角按视角列定义渲染 */}
+        {isMemberScope ? (
         <div className="mx-4 mt-3 overflow-x-auto overflow-y-hidden flex-shrink-0" aria-label="会员排行横向滚动表格" style={{
           background: S.surface,
           border: `1px solid ${S.border}`,
@@ -393,8 +489,8 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
           scrollbarWidth: "thin",
         }}>
           <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 900, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
-            {[["排名",44],["头像",44],["排名",44],["微信名",100],["性别",44],["城市",90],["职业",80],["进群",44],["待处理",64],["发布",54],["完成",54],["总用户",68],["影响力",68],["评分",64]].map(([l,w]) => (
-              <div key={`h-${l}-${w}`} className="flex-shrink-0" style={{ width: w as number }}>{l}</div>
+            {[["排名",44],["头像",44],["排名",44],["微信名",100],["性别",44],["城市",90],["职业",80],["进群",44],["待处理",64],["发布",54],["完成",54],["总用户",68],["影响力",68],["评分",64]].map(([l,w], hi) => (
+              <div key={`h-${hi}-${l}-${w}`} className="flex-shrink-0" style={{ width: w as number }}>{l}</div>
             ))}
           </div>
           {filteredRankingData.map((u, idx) => (
@@ -428,6 +524,42 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
             <div className="px-3 py-8 text-center text-xs" style={{ color: S.muted }}>暂无匹配该标签的会员</div>
           )}
         </div>
+        ) : scopeCfg ? (
+        <div className="mx-4 mt-3 overflow-x-auto overflow-y-hidden flex-shrink-0" aria-label={`${scopeCfg.noun}排行横向滚动表格`} style={{
+          background: S.surface,
+          border: `1px solid ${S.border}`,
+          borderRadius: S.radius,
+          boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+          scrollbarWidth: "thin",
+        }}>
+          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: scopeTableMinWidth, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+            <div className="flex-shrink-0" style={{ width: 44 }}>排名</div>
+            <div className="flex-shrink-0" style={{ width: 44 }}>头像</div>
+            {scopeCfg.columns.map(c => <div key={`h-${c.label}`} className="flex-shrink-0" style={{ width: c.width }}>{c.label}</div>)}
+          </div>
+          {filteredScopeRows.map((row, idx) => (
+            <div key={row.rank} className="flex items-center px-3 py-2.5 cursor-pointer text-xs transition-all font-mono" style={{
+              minWidth: scopeTableMinWidth,
+              background: selectedRow?.rank === row.rank ? S.accentLight : idx % 2 === 0 ? "#ffffff" : "#fafaf8",
+              borderBottom: `1px solid ${S.border}`,
+              borderLeft: selectedRow?.rank === row.rank ? `3px solid ${S.accent}` : "3px solid transparent",
+            }} onClick={() => setSelectedRow(row)}>
+              <div className="flex-shrink-0" style={{ width: 44 }}>
+                <div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: row.rank <= 3 ? "#1e293b" : "rgba(15,23,42,0.06)", color: row.rank <= 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{row.rank}</div>
+              </div>
+              <div className="flex-shrink-0" style={{ width: 44 }}>
+                <div className="w-7 h-7 flex items-center justify-center text-xs font-bold" style={{ background: S.accentLight, border: "1px solid rgba(204,255,0,0.45)", color: "#5a6e00", borderRadius: S.radiusSm }}>{row.initial}</div>
+              </div>
+              {scopeCfg.columns.map((c, ci) => (
+                <div key={`${row.rank}-${c.label}`} className="flex-shrink-0" style={{ width: c.width, color: c.tone === "muted" ? S.muted : c.tone === "name" || c.tone === "bold" ? S.text : S.textSec, fontWeight: c.tone === "name" || c.tone === "bold" ? 700 : 400 }}>{row.cells[ci]}</div>
+              ))}
+            </div>
+          ))}
+          {filteredScopeRows.length === 0 && (
+            <div className="px-3 py-8 text-center text-xs" style={{ color: S.muted }}>暂无匹配该筛选的{scopeCfg.noun}</div>
+          )}
+        </div>
+        ) : null}
 
         {/* 底部：关系链 + 朋友圈操作 */}
         <div className="flex gap-3 mx-4 mt-3 flex-1 min-h-0 overflow-x-auto overflow-y-hidden pb-4">
@@ -464,12 +596,12 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
             <div className="flex items-center justify-between gap-2">
               <div>
                 <div className="text-sm font-bold" style={{ color: S.text }}>运营操作台</div>
-                <span className="text-xs" style={{ color: S.muted }}>针对 {selectedUser.name} 登记问题或发起运营动作</span>
+                <span className="text-xs" style={{ color: S.muted }}>针对 {targetName} 登记问题或发起运营动作</span>
               </div>
-              <span className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>当前会员</span>
+              <span className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>当前{isMemberScope ? "会员" : scopeCfg!.noun}</span>
             </div>
             <div className="flex items-center gap-1 overflow-x-auto pb-1" role="tablist" aria-label="运营操作类型">
-              {operationTabs.map(tab => {
+              {opTabs.map(tab => {
                 const Icon = tab.icon;
                 const isActive = activeOperation === tab.id;
                 return <button key={tab.id} type="button" role="tab" aria-selected={isActive} onClick={() => setActiveOperation(tab.id)} className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: isActive ? "#1e293b" : "#f1f5f9", color: isActive ? S.accent : S.muted, border: `1px solid ${isActive ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><Icon size={12} />{tab.label}</button>;
@@ -483,8 +615,8 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
                 <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>优先级</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="重要" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>普通</option><option>重要</option><option>紧急</option></select></div>
                 <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>指派处理人</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="吴思远" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>吴思远</option><option>林小燕</option><option>客服组</option></select></div>
               </div>
-              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`登记 ${selectedUser.name} 的问题描述...`} />
-              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice(`已登记 ${selectedUser.name} 的问题并指派至会员运营部`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><ClipboardCheck size={11} className="inline mr-1" />登记并指派</button></div>
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`登记 ${targetName} 的问题描述...`} />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice(`已登记 ${targetName} 的问题并指派至会员运营部`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><ClipboardCheck size={11} className="inline mr-1" />{opTabs[0].button}</button></div>
             </>}
 
             {activeOperation === "push" && <>
@@ -504,7 +636,7 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
               </div>
               <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入活动名称..." />
               <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写活动说明、时间和报名要求..." />
-              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建活动运营任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><CalendarDays size={11} className="inline mr-1" />创建活动任务</button></div>
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${targetName} 创建活动运营任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><CalendarDays size={11} className="inline mr-1" />{opTabs[2].button}</button></div>
             </>}
 
             {activeOperation === "moments" && <>
@@ -516,7 +648,7 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
               </div>
               <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="补充本次朋友圈运营动作说明..." />
               <div className="flex items-center gap-2 px-2.5 py-2" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="w-20 h-12 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.04)", border: `1px dashed rgba(0,0,0,0.10)`, borderRadius: S.radiusSm }}><span className="text-2xl" style={{ color: S.mutedLight }}>+</span></div><span className="text-xs" style={{ color: S.muted }}>添加图片（最多 9 张）</span></div>
-              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice("朋友圈发布任务已创建")} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />发布</button></div>
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice("朋友圈发布任务已创建")} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />{opTabs[3].button}</button></div>
             </>}
           </div>
         </div>
@@ -524,6 +656,7 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
 
       {/* ── 右侧会员档案：资料、画像与权益在同一信息流中展示 ───── */}
       {!isProfileCollapsed ? <aside className="flex-shrink-0 overflow-auto transition-all duration-200" style={{ width: "clamp(292px, 22vw, 350px)", background: S.surface, borderLeft: `1px solid ${S.border}` }}>
+        {isMemberScope ? <>
         <div className="p-3.5" style={{ borderBottom: `1px solid ${S.border}` }}>
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -760,6 +893,109 @@ const [activeTab, setActiveTab] = useState(rankingTabs[0]);
             </div>
           ))}
         </section>
+        </> : scopeCfg ? (
+        /* ── 其余视角档案：与会员档案同构（头部/字段/摘要/指标/Tab 记录），仅内容不同 ── */
+        <>
+          <div className="p-3.5" style={{ borderBottom: `1px solid ${S.border}` }}>
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-sm font-bold" style={{ color: S.text }}>{scopeCfg.panelTitle}</div>
+                <div className="text-xs mt-0.5" style={{ color: S.muted }}>{scopeCfg.panelSub}</div>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="px-2 py-1 text-xs font-bold" style={{ background: "#e8fbf4", color: "#00a978", borderRadius: "999px" }}>统一档案</span>
+                <button type="button" title="收起档案栏" aria-label="收起档案栏" onClick={() => setIsProfileCollapsed(true)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                  <PanelRightClose size={14} />
+                </button>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5 mt-3">
+              <div className="w-11 h-11 flex items-center justify-center text-base font-bold flex-shrink-0" style={{ background: S.accentLight, border: "1px solid rgba(204,255,0,0.45)", color: "#5a6e00", borderRadius: S.radiusSm }}>{selectedRow?.initial}</div>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-bold" style={{ color: S.text }}>{targetName}</div>
+                <div className="text-xs mt-0.5 font-mono truncate" style={{ color: S.muted }}>{scopeCfg.profileSub}</div>
+                <div className="flex flex-wrap items-center gap-1 mt-1">
+                  {scopeCfg.profileTags.map(tag => (
+                    <span key={tag.label} className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold" style={{ background: tag.background, color: tag.color, borderRadius: "999px" }}>{tag.label}</span>
+                  ))}
+                </div>
+              </div>
+              <button title="查看档案二维码" aria-label="查看档案二维码" onClick={() => showProfileNotice(`已生成 ${targetName} 的档案二维码`)} className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.accentLight, border: "1px solid rgba(204,255,0,0.5)", borderRadius: S.radiusSm }}>
+                <QrCode size={17} style={{ color: "#1e293b" }} />
+              </button>
+            </div>
+            {profileNotice && <div role="status" className="mt-3 px-2.5 py-2 text-xs font-bold" style={{ background: S.accentLight, color: S.text, borderLeft: `2px solid ${S.accent}` }}>{profileNotice}</div>}
+            <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${S.border}` }}>
+              <div className="grid grid-cols-2 gap-x-5">
+                {scopeCfg.profileFields.map(([label, value]) => (
+                  <div key={label} className="flex items-center justify-between gap-2 py-1" style={{ borderBottom: `1px solid ${S.border}` }}>
+                    <span className="text-xs" style={{ color: S.muted }}>{label}</span>
+                    <span className="text-xs font-bold truncate text-right" style={{ color: S.textSec }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-bold" style={{ color: S.text }}>经营摘要</span>
+              <span className="text-xs" style={{ color: S.muted }}>同步于 今天 10:42</span>
+            </div>
+            <div className="grid grid-cols-4 gap-2">
+              {scopeCfg.summary.map(([label, value, color]) => (
+                <div key={label} className="min-w-0">
+                  <div className="text-xs truncate" style={{ color: S.muted }}>{label}</div>
+                  <div className="text-sm font-bold mt-1 truncate" style={{ color }}>{value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <section className="px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-bold" style={{ color: S.text }}>分层指标</span>
+              <span className="text-xs" style={{ color: S.muted }}>基于运营数据计算</span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-6 mt-3">
+              {scopeCfg.metrics.map(([label, value, color]) => (
+                <div key={label} className="flex items-center justify-between gap-2 py-1.5" style={{ borderBottom: `1px solid ${S.border}` }}>
+                  <span className="text-xs" style={{ color: S.muted }}>{label}</span><span className="text-xs font-bold text-right" style={{ color }}>{value}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <div className="flex items-center gap-0 px-3.5 pt-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
+            {scopeCfg.profileTabs.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveProfileTab(tab)}
+                className="flex-1 px-1 py-2 text-[11px] font-bold whitespace-nowrap transition-all"
+                style={{
+                  color: activeProfileTab === tab ? S.text : S.muted,
+                  borderBottom: activeProfileTab === tab ? `2px solid ${S.accent}` : "2px solid transparent",
+                }}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <section className="px-3.5 py-2.5">
+            {(scopeCfg.profileRecords[activeProfileTab] ?? []).map(record => (
+              <div key={record.title} className="flex items-center gap-2 py-2" style={{ borderBottom: `1px solid ${S.border}` }}>
+                <Clock size={12} className="flex-shrink-0" style={{ color: "#6db100" }} />
+                <div className="flex-1 min-w-0"><div className="text-xs font-bold" style={{ color: S.text }}>{record.title}</div><div className="text-[11px] truncate" style={{ color: S.muted }}>{record.desc}</div></div>
+                <span className="text-[11px] font-bold" style={{ color: record.status.includes("待") || record.status.includes("预警") ? "#e77800" : "#00a978" }}>{record.status}</span>
+              </div>
+            ))}
+            {(scopeCfg.profileRecords[activeProfileTab] ?? []).length === 0 && (
+              <div className="px-3 py-5 text-center text-[11px]" style={{ color: S.muted }}>暂无「{activeProfileTab}」记录</div>
+            )}
+          </section>
+        </>
+        ) : null}
 
       </aside> : (
         <div className="w-9 flex-shrink-0 flex items-start justify-center pt-3" style={{ background: S.surface, borderLeft: `1px solid ${S.border}` }}>

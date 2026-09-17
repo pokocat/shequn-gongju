@@ -307,7 +307,7 @@ const _cls = useStyles();
                             className="text-[10px] px-1.5 py-0.5 font-bold"
                             style={{
                               background: on ? "#3b82f6" : S.surfaceSoft,
-                              color: "#ffffff",
+                              color: on ? "#ffffff" : S.text,
                               borderRadius: 4,
                             }}
                           >
@@ -418,7 +418,7 @@ const _cls = useStyles();
                         background: S.surfaceSoft,
                         border: `1px solid ${S.border}`,
                         fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                        color: "#ffffff",
+                        color: S.text,
                         fontWeight: 700,
                         letterSpacing: 1,
                       }}
@@ -552,7 +552,7 @@ const _cls = useStyles();
                     height: 52,
                     borderRadius: "50%",
                     background: "#0a0",
-                    color: "#ffffff",
+                    color: "#0a2e0a",
                   }}
                 >
                   <CheckCircle2 size={30} strokeWidth={2.4} />

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品牌架构 · 物料体系 · 交互图谱</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7;
+    --line:#EFE9DE; --ok:#7A9B5E; --ok-bg:#EDF3E8; --warn:#C99A3C;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;overflow:hidden}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink)}
+  #app{position:relative;height:100vh;overflow:hidden;
+    background:
+      radial-gradient(900px 600px at 50% 48%,rgba(243,233,215,.5),rgba(255,255,255,0) 70%),
+      radial-gradient(500px 320px at 12% 42%,rgba(243,233,215,.35),rgba(255,255,255,0) 70%),
+      radial-gradient(520px 320px at 88% 42%,rgba(243,233,215,.3),rgba(255,255,255,0) 70%),
+      #FFFFFF;}
+
+  /* 工具栏 */
+  .bar{position:absolute;top:0;left:0;right:0;z-index:20;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:16px;padding:10px 20px;flex-wrap:wrap}
+  .bar .t{font-weight:800;font-size:15px}
+  .bar .t small{display:block;font-size:9.5px;color:var(--gold-deep);letter-spacing:.25em;font-weight:700}
+  .stats{display:flex;gap:6px}
+  .stat{background:var(--paper);border-radius:99px;font-size:11px;font-weight:700;color:var(--sub);padding:4px 12px}
+  .stat b{color:var(--gold-deep)}
+  .bar .sp{flex:1}
+  .lg{display:flex;gap:12px;align-items:center;font-size:11px;color:var(--sub);flex-wrap:wrap}
+  .lg i{width:11px;height:11px;border-radius:4px;display:inline-block;margin-right:4px;vertical-align:-1.5px}
+  .btn{border:1px solid var(--line);background:#fff;color:var(--sub);font-family:inherit;font-size:11.5px;font-weight:700;padding:6px 14px;border-radius:99px;cursor:pointer;transition:all .2s}
+  .btn:hover{border-color:var(--gold);color:var(--ink);transform:translateY(-1px)}
+  .btn.on{background:var(--gold-deep);border-color:var(--gold-deep);color:#fff}
+  .back{position:absolute;top:68px;left:16px;z-index:20;background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:99px;padding:7px 17px;font-size:12px;font-weight:700;color:var(--gold-deep);text-decoration:none;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.06);transition:all .2s}
+  .back:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(201,154,60,.2)}
+
+  #svg{width:100%;height:100%;cursor:grab;touch-action:none;display:block}
+  #svg.drag{cursor:grabbing}
+
+  /* 详情面板 */
+  .panel{position:absolute;right:18px;bottom:18px;z-index:20;width:330px;background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 18px 50px rgba(43,38,32,.16);backdrop-filter:blur(12px);display:none}
+  .panel.on{display:block;animation:pin .28s cubic-bezier(.2,.8,.3,1)}
+  @keyframes pin{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1}}
+  .panel .ph{height:5px;background:linear-gradient(90deg,var(--gold),var(--gold-deep))}
+  .panel .pb{padding:18px 20px 20px}
+  .panel .pt{font-size:10px;color:var(--gold-deep);letter-spacing:.22em;font-weight:800}
+  .panel h3{font-size:20px;margin:3px 0 6px}
+  .panel .st{display:inline-block;font-size:10px;border-radius:99px;padding:2px 11px;font-weight:700;margin-bottom:8px}
+  .panel .st.done{background:var(--ok-bg);color:var(--ok)}
+  .panel .st.wait{background:var(--gold-soft);color:var(--warn)}
+  .panel p{font-size:12.5px;color:var(--sub);line-height:1.75}
+  .panel .lk{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:9px 13px;margin-top:8px;font-size:12px;font-weight:700;transition:all .2s}
+  .panel .lk:hover{border-color:var(--gold);background:#FFFDF8;transform:translateX(2px)}
+  .panel .lk .ico{width:28px;height:28px;border-radius:8px;background:var(--gold-soft);color:var(--gold-deep);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+  .panel .lk .go{margin-left:auto;color:var(--gold-deep)}
+  .panel .x{position:absolute;top:12px;right:14px;border:none;background:none;font-size:17px;color:#A39B8E;cursor:pointer;font-family:inherit;transition:color .2s}
+  .panel .x:hover{color:var(--ink)}
+  .hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);z-index:15;font-size:11px;color:#A39B8E;background:rgba(255,255,255,.92);border-radius:99px;padding:6px 18px;pointer-events:none;box-shadow:0 2px 10px rgba(43,38,32,.05)}
+
+  /* SVG 元素 */
+  .edge{stroke:var(--gold);stroke-width:1.4;fill:none;opacity:.4;transition:all .3s}
+  .edge.hot{stroke:var(--gold-deep);stroke-width:2.6;opacity:1;stroke-dasharray:7 5;animation:flow 1.1s linear infinite}
+  @keyframes flow{to{stroke-dashoffset:-12}}
+  .dim .edge:not(.hot){opacity:.06}
+  .nlabel{font-size:12.5px;font-weight:800;fill:var(--ink);text-anchor:middle;pointer-events:none}
+  .nsub{font-size:8.5px;fill:var(--sub);text-anchor:middle;pointer-events:none}
+  .alabel{font-size:9.5px;fill:var(--gold-deep);text-anchor:middle;font-weight:800;opacity:.8;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round}
+  .nd{cursor:pointer;transition:opacity .3s}
+  .dim .nd{opacity:.12}
+  .dim .nd.hot{opacity:1}
+  .box{fill:#fff;stroke:var(--gold);stroke-width:1.8;filter:drop-shadow(0 2px 5px rgba(43,38,32,.07));transition:all .25s}
+  .nd:hover .box{stroke:var(--gold-deep);stroke-width:2.6;filter:drop-shadow(0 6px 14px rgba(201,154,60,.3))}
+  .nd:hover{transform:translateY(-2px)}
+  .box.core{fill:url(#gcore)}
+  .box.idea{fill:url(#gidea)}
+  .box.person{fill:#FFFDF8;stroke-dasharray:5 3}
+  .box.asset{fill:var(--paper);stroke-width:1.3}
+  .nd.hot .box{stroke:var(--gold-deep);stroke-width:2.6}
+  .badge-dot{fill:var(--ok);stroke:#fff;stroke-width:1.2}
+  .badge-dot.w{fill:var(--warn)}
+  .icon-t{font-size:11px;text-anchor:middle;pointer-events:none}
+  .halo{fill:none;stroke:rgba(201,154,60,.28);stroke-width:1.2}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="bar">
+    <div class="t"><small>BRAND × ASSET GRAPH</small>品牌架构 · 物料图谱</div>
+    <div class="stats">
+      <span class="stat">品牌 <b>11</b></span>
+      <span class="stat">物料 <b>28</b></span>
+    </div>
+    <div class="sp"></div>
+    <div class="lg">
+      <span><i style="background:var(--gold-deep)"></i>核心</span>
+      <span><i style="background:var(--gold)"></i>思想</span>
+      <span><i style="background:#fff;border:1.5px dashed var(--gold)"></i>人物</span>
+      <span><i style="background:#fff;border:1.5px solid var(--gold)"></i>子品牌</span>
+      <span><i style="background:var(--paper);border:1px solid #D8CFBE"></i>物料</span>
+    </div>
+    <button class="btn on" id="fAll">全部</button>
+    <button class="btn" id="fBrand">仅品牌架构</button>
+    <button class="btn" id="fAsset">仅物料体系</button>
+    <button class="btn" id="reset">⟲ 复位</button>
+  </div>
+  <a class="back" href="20260917_主理人公社项目驾驶舱.html">← 返回驾驶舱</a>
+
+  <svg id="svg"><defs>
+    <radialGradient id="gcore" cx="50%" cy="32%"><stop offset="0%" stop-color="#EBD9B5"/><stop offset="100%" stop-color="#C99A3C"/></radialGradient>
+    <radialGradient id="gidea" cx="50%" cy="32%"><stop offset="0%" stop-color="#FBF9F5"/><stop offset="100%" stop-color="#D4B57A"/></radialGradient>
+    <pattern id="dots" width="44" height="44" patternUnits="userSpaceOnUse"><circle cx="22" cy="22" r="1.1" fill="#EDE5D6"/></pattern>
+  </defs>
+  <rect x="-2000" y="-2000" width="6000" height="6000" fill="url(#dots)" pointer-events="none"/>
+  <g id="world"></g></svg>
+
+  <div class="hint">点击节点看关联 · 点击物料直达 · 滚轮缩放 · 拖拽平移 · 双击空白复位</div>
+  <div class="panel" id="panel"><div class="ph"></div><button class="x" id="px">×</button><div class="pb">
+    <div class="pt" id="pType"></div><h3 id="pName"></h3><span class="st" id="pSt"></span><p id="pDesc"></p><div id="pLinks"></div>
+  </div></div>
+</div>
+
+<script>
+const VW=1500,VH=1000,CX=750,CY=490;
+const V='20260917_文档阅读器.html?file=';
+const N=[
+ {id:'core',t:'core',name:'主理人公社',en:'ONE&CO · OPC',st:'done',desc:'社群母品牌 · One Person Company Commune。公司主体：主理人公社（杭州）传媒科技有限公司。培养超级个体 / 一人公司创始人。',x:CX,y:CY},
+ {id:'idea',t:'idea',name:'善意经济学',en:'BENECONOMY',st:'done',desc:'思想顶层（双身份）：对外=独立思想 IP（演讲/出书/课程），对内=社群操作系统（随心付四步=善意飞轮实证）。OPC 是壳，善意是魂。',x:180,y:CY},
+ {id:'fip',t:'person',name:'创始人 IP',en:'艺名待选',st:'wait',desc:'艺名弃用天选姐，从 30 套方案选：一姐/星主/所长/队长/Neo 姐/超姐。挂 5 件视觉物料。',x:1290,y:270},
+ {id:'ai',t:'person',name:'AI 数字人',en:'三套方案待选',st:'wait',desc:'基于陈彬彬真实原型：A 真身分身 / B 原生传人 / C 双生（推荐 B→A→C）。名待选：蔻蔻/小星/阿博/小G/妮奥。',x:1290,y:700},
+ {id:'wz',t:'sub',name:'王炸社',en:'招商品牌',st:'done',desc:'城市创始席位：1 折 500 席 · 四级代理 · 涨价三铁律。9 个月收官 1,000 席。',ang:135},
+ {id:'school',t:'sub',name:'上线夜校',en:'AI 学习入口 · 候选',st:'wait',desc:'7 天 AI 普及计划 · 0 元可学完 · 随心付 · 雷达分层 T0–T4。入口名候选中。',ang:100},
+ {id:'lantern',t:'sub',name:'掌灯计划',en:'公益发声',st:'done',desc:'为非遗 / 老字号 / 实体发声（陈彬彬 × 漫姐联合发起）。善意经济学的公益表达。',ang:65},
+ {id:'base',t:'sub',name:'充电站',en:'OPC BASE',st:'done',desc:'城市节点：市代授权场地 · 一日营 / 双周城市发布会举办地。',ang:30},
+ {id:'star',t:'sub',name:'摘星计划',en:'招商活动',st:'done',desc:'城市合伙人招商专场（代理=摘星人）。',ang:163},
+ {id:'mtn',t:'sub',name:'移山计划',en:'战略项目',st:'done',desc:'战略项目发布：「一代人，移一座山」。',ang:12},
+ {id:'night',t:'sub',name:'天选之夜',en:'年度盛典',st:'wait',desc:'M9 收官盛典 · 1,000 席满员礼 · 年度善意账单。地点待定。',ang:-38}
+];
+const EDGES=[
+ {f:'idea',to:'core',l:'思想定魂'},
+ {f:'core',to:'fip'},{f:'core',to:'ai'},{f:'fip',to:'ai',l:'真人→数字分身'},
+ {f:'core',to:'wz'},{f:'core',to:'school'},{f:'core',to:'lantern'},{f:'core',to:'base'},
+ {f:'core',to:'star'},{f:'core',to:'mtn'},{f:'core',to:'night'},
+ {f:'school',to:'wz',l:'引流→招商'}
+];
+const A=[
+ {o:'wz',n:'价格公示页',i:'🌐',h:'20260917_王炸社创始席位价格公示页.html',d:'1 折 500 席阶梯 · 涨价三铁律'},
+ {o:'wz',n:'招商手册',i:'🌐',h:'20260917_王炸社招商手册_对外版.html',d:'三问三答 · 回本模型 · CTA'},
+ {o:'wz',n:'路演 PPT',i:'🌐',h:'20260917_王炸社招商路演PPT_对外版.html',d:'13 页 16:9 · 四路导航'},
+ {o:'wz',n:'意向金协议',i:'📄',h:V+'20260917_创始席位意向金协议_V1.md',d:'1,000 · 30 天可退'},
+ {o:'wz',n:'代理合作协议',i:'📄',h:V+'20260917_代理合作协议_V1_四级分层.md',d:'四级 · 3 天冷静期'},
+ {o:'wz',n:'阶梯定价 V6',i:'📄',h:V+'20260916_门槛阶梯定价_内邀与涨价逼单策略.md',d:'9 个月时间进度表'},
+ {o:'school',n:'7 天课程设计',i:'📄',h:V+'20260917_AI普及计划_7天课程详细设计_V1.md',d:'教学目标 · 单课结构'},
+ {o:'school',n:'团长 SOP',i:'📄',h:V+'20260917_团长SOP手册_开营7天_V1.md',d:'每日三动作 · 话术库'},
+ {o:'school',n:'招募营销包',i:'📄',h:V+'20260916_种子团长招募营销包_V4.md',d:'上车卡启动全套话术'},
+ {o:'school',n:'随心付 V2',i:'📄',h:V+'20260916_AI普惠计划_随心付分账方案_V2.md',d:'0 元可学完 · 团长 50%'},
+ {o:'lantern',n:'锦囊海报',i:'🖼',h:'tianxuanjie_poster_zhusha.jpg',d:'公域发声 · 朱砂'},
+ {o:'core',n:'总蓝图 V1',i:'📄',h:V+'20260917_招商运营总蓝图_V1.md',d:'已确认 · 9 个月总盘子'},
+ {o:'core',n:'四级代理体系',i:'📄',h:V+'20260916_四级代理体系_团长至省分公司.md',d:'1/3/12/50 万'},
+ {o:'core',n:'升单承接',i:'📄',h:V+'20260916_升单课程与变现承接体系.md',d:'八层触发 · 四线产品'},
+ {o:'core',n:'看板字段表',i:'📄',h:V+'20260917_招商后台进度看板字段表_V1.md',d:'8 表 · 闸门触发器'},
+ {o:'core',n:'发布会脚本',i:'📄',h:V+'20260917_M1起盘发布会流程脚本_V1.md',d:'90 分钟 · 首日 100 单'},
+ {o:'core',n:'30 套切换页',i:'🌐',h:'20260917_品牌包装30套方案_切换查看页.html',d:'7 家族 Tab 交互'},
+ {o:'core',n:'30 套方案文档',i:'📄',h:V+'20260917_品牌包装30套方案_V1.md',d:'逐套详述'},
+ {o:'core',n:'数字人三方案',i:'📄',h:V+'20260917_AI数字人创始人_三套方案_V1.md',d:'分身/传人/双生'},
+ {o:'core',n:'架构决策 V2',i:'📄',h:V+'20260917_品牌架构决策_公司主体与社群命名_V1.md',d:'女王城堡 · 公司版图'},
+ {o:'core',n:'组词与融合',i:'📄',h:V+'20260917_OPC英文组词与善意经济融合_V1.md',d:'14 组词 · 关系定案'},
+ {o:'core',n:'架构总览页',i:'🌐',h:'20260917_善意经济×One&Co品牌架构总览.html',d:'关系公式 · 三层架构'},
+ {o:'core',n:'文档阅读器',i:'🌐',h:'20260917_文档阅读器.html',d:'md 白金排版渲染'},
+ {o:'fip',n:'白金概念图',i:'🖼',h:'tianxuanjie_visual_main.jpg',d:'主视觉'},
+ {o:'fip',n:'朱砂概念图',i:'🖼',h:'tianxuanjie_visual_cinnabar.jpg',d:'公域版'},
+ {o:'fip',n:'鎏金概念图',i:'🖼',h:'tianxuanjie_visual_gold.jpg',d:'高端版'},
+ {o:'fip',n:'直播海报',i:'🖼',h:'tianxuanjie_poster_baijin.jpg',d:'每晚 20:00'},
+ {o:'night',n:'邀请函海报',i:'🖼',h:'tianxuanjie_poster_liujin.jpg',d:'12.31 · 101 位'}
+];
+const R1=300;
+N.forEach(n=>{
+  if(n.ang!==undefined){
+    const r=n.ang*Math.PI/180;
+    n.x=CX+Math.cos(r)*R1*1.35;n.y=CY-Math.sin(r)*R1;
+  }
+});
+const byOwner={};
+A.forEach((a,i)=>{(byOwner[a.o]=byOwner[a.o]||[]).push({...a,idx:i});});
+Object.keys(byOwner).forEach(o=>{
+  const own=N.find(n=>n.id===o);
+  const ang0=Math.atan2(CY-own.y,own.x-CX);
+  const list=byOwner[o];const spread=0.55;
+  list.forEach((a,k)=>{
+    const t=ang0+(list.length===1?0:(spread*(k/(list.length-1)-0.5))*2);
+    const dist=215+((k%2)?30:0);
+    a.x=Math.max(95,Math.min(VW-95,own.x+Math.cos(t)*dist));
+    a.y=Math.max(80,Math.min(VH-70,own.y-Math.sin(t)*dist));
+    EDGES.push({f:o,to:'a'+a.idx,asset:true});
+    N.push({id:'a'+a.idx,t:'asset',name:a.n,st:'done',asset:a,x:a.x,y:a.y});
+  });
+});
+const NM={};N.forEach(n=>NM[n.id]=n);
+
+const svg=document.getElementById('svg'),world=document.getElementById('world');
+svg.setAttribute('viewBox','0 0 '+VW+' '+VH);
+function curve(x1,y1,x2,y2){
+  const mx=(x1+x2)/2,my=(y1+y2)/2;
+  const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1;
+  return 'M'+x1+' '+y1+' Q'+(mx+(-dy/len)*len*0.08)+' '+(my+(dx/len)*len*0.08)+' '+x2+' '+y2;
+}
+EDGES.forEach((e,i)=>{
+  const p=NM[e.f],q=NM[e.to];
+  const path=document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d',curve(p.x,p.y,q.x,q.y));
+  path.setAttribute('class','edge');path.dataset.eid=i;
+  world.appendChild(path);
+  if(e.l){
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',(p.x+q.x)/2);t.setAttribute('y',(p.y+q.y)/2-6);
+    t.setAttribute('class','alabel');t.textContent=e.l;
+    world.appendChild(t);
+  }
+});
+const SZ={core:118,idea:96,person:88,sub:78,asset:66};
+N.forEach(n=>{
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','nd');g.dataset.id=n.id;
+  const w=SZ[n.t]||70,h=n.t==='asset'?34:46;
+  if(n.t==='core'){
+    const halo=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    halo.setAttribute('x',n.x-w/2-8);halo.setAttribute('y',n.y-h/2-8);
+    halo.setAttribute('width',w+16);halo.setAttribute('height',h+16);
+    halo.setAttribute('rx',22);halo.setAttribute('class','halo');
+    g.appendChild(halo);
+  }
+  const r=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  r.setAttribute('x',n.x-w/2);r.setAttribute('y',n.y-h/2);
+  r.setAttribute('width',w);r.setAttribute('height',h);
+  r.setAttribute('rx',n.t==='asset'?17:15);
+  r.setAttribute('class','box '+(n.t==='core'?'core':n.t==='idea'?'idea':n.t==='person'?'person':n.t==='asset'?'asset':''));
+  g.appendChild(r);
+  if(n.t==='asset'&&n.asset){
+    const it=document.createElementNS('http://www.w3.org/2000/svg','text');
+    it.setAttribute('x',n.x-w/2+14);it.setAttribute('y',n.y+4);
+    it.setAttribute('class','icon-t');it.textContent=n.asset.i;g.appendChild(it);
+    const t1=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t1.setAttribute('x',n.x+7);t1.setAttribute('y',n.y-2);t1.setAttribute('class','nlabel');t1.style.fontSize='11px';
+    t1.textContent=n.name;g.appendChild(t1);
+  }else{
+    const t1=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t1.setAttribute('x',n.x);t1.setAttribute('y',n.y+(n.en?3:5));t1.setAttribute('class','nlabel');
+    if(n.t==='core'){t1.style.fill='#fff';t1.style.fontSize='15.5px';}
+    if(n.t==='idea'){t1.style.fontSize='13.5px';t1.style.fill='#6E5314';}
+    t1.textContent=n.name;g.appendChild(t1);
+    if(n.en){
+      const t2=document.createElementNS('http://www.w3.org/2000/svg','text');
+      t2.setAttribute('x',n.x);t2.setAttribute('y',n.y+17);t2.setAttribute('class','nsub');
+      if(n.t==='core')t2.style.fill='rgba(255,255,255,.88)';
+      if(n.t==='idea')t2.style.fill='rgba(110,83,20,.75)';
+      t2.textContent=n.en;g.appendChild(t2);
+    }
+    if(n.t==='sub'||n.t==='person'){
+      const d=document.createElementNS('http://www.w3.org/2000/svg','circle');
+      d.setAttribute('cx',n.x+w/2-6);d.setAttribute('cy',n.y-h/2+7);d.setAttribute('r',4.5);
+      d.setAttribute('class','badge-dot'+(n.st==='wait'?' w':''));g.appendChild(d);
+    }
+  }
+  g.addEventListener('click',ev=>{ev.stopPropagation();select(n.id);});
+  world.appendChild(g);
+});
+
+let sel=null;
+function select(id){
+  if(sel===id){clear();return;}
+  sel=id;document.body.classList.add('dim');
+  document.querySelectorAll('.nd').forEach(g=>g.classList.remove('hot'));
+  document.querySelectorAll('.edge').forEach(e=>e.classList.remove('hot'));
+  const n=NM[id];
+  document.querySelector('.nd[data-id="'+id+'"]')?.classList.add('hot');
+  EDGES.forEach((e,i)=>{
+    if(e.f===id||e.to===id){
+      document.querySelector('.edge[data-eid="'+i+'"]')?.classList.add('hot');
+      const other=e.f===id?e.to:e.f;
+      const og=document.querySelector('.nd[data-id="'+other+'"]');
+      if(og&&other!=='core')og.classList.add('hot');
+      else if(og&&id!=='core')og.classList.add('hot');
+    }
+  });
+  showPanel(n);
+}
+function clear(){
+  sel=null;document.body.classList.remove('dim');
+  document.querySelectorAll('.nd.hot,.edge.hot').forEach(e=>e.classList.remove('hot'));
+  document.getElementById('panel').classList.remove('on');
+}
+function showPanel(n){
+  const p=document.getElementById('panel');
+  const typeMap={core:'核心 · 母品牌',idea:'思想层',person:'人物层',sub:'子品牌',asset:'物料'};
+  document.getElementById('pType').textContent=typeMap[n.t];
+  document.getElementById('pName').textContent=n.name;
+  const st=document.getElementById('pSt');
+  if(n.t==='asset'){st.style.display='none';}
+  else{st.style.display='inline-block';st.className='st '+(n.st==='done'?'done':'wait');st.textContent=n.st==='done'?'✓ 已定案':'待选';}
+  document.getElementById('pDesc').textContent=n.asset?n.asset.d:n.desc;
+  const links=document.getElementById('pLinks');links.innerHTML='';
+  if(n.asset){
+    const a=document.createElement('a');a.className='lk';a.href=n.asset.h;
+    a.innerHTML='<div class="ico">'+n.asset.i+'</div>打开 '+n.asset.n+'<span class="go">›</span>';
+    links.appendChild(a);
+  }else{
+    const own=A.filter(x=>x.o===n.id);
+    const title=document.createElement('div');
+    title.style.cssText='font-size:11px;color:#A39B8E;margin-top:10px;font-weight:700';
+    title.textContent='关联物料 '+own.length+' 件';
+    links.appendChild(title);
+    own.forEach(x=>{
+      const a=document.createElement('a');a.className='lk';a.href=x.h;
+      a.innerHTML='<div class="ico">'+x.i+'</div>'+x.n+'<span style="margin-left:auto;color:#A39B8E;font-weight:400">'+x.d+'</span>';
+      links.appendChild(a);
+    });
+  }
+  p.classList.add('on');
+}
+document.getElementById('px').onclick=clear;
+svg.addEventListener('click',e=>{if(e.target===svg||e.target.id==='world')clear();});
+svg.addEventListener('dblclick',e=>{if(e.target===svg||e.target.id==='world'){clear();fitView();}});
+
+let vx=0,vy=0,vs=1;
+function apply(){world.setAttribute('transform','translate('+vx+','+vy+') scale('+vs+')');}
+function fitView(){
+  const r=svg.getBoundingClientRect();
+  const s=Math.min(r.width/VW,r.height/VH)*0.96;
+  vs=s;vx=(VW-VW*s)/2;vy=(VH-VH*s)/2;apply();
+}
+function resetView(){clear();fitView();}
+document.getElementById('reset').onclick=resetView;
+svg.addEventListener('wheel',e=>{
+  e.preventDefault();
+  const r=svg.getBoundingClientRect();
+  const sx=(e.clientX-r.left)/r.width*VW,sy=(e.clientY-r.top)/r.height*VH;
+  const k=e.deltaY<0?1.12:0.89;
+  const ns=Math.min(3.2,Math.max(0.35,vs*k));
+  vx=sx-(sx-vx)*(ns/vs);vy=sy-(sy-vy)*(ns/vs);vs=ns;apply();
+},{passive:false});
+let drag=null,moved=0;
+svg.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY,vx,vy};moved=0;svg.classList.add('drag');svg.setPointerCapture(e.pointerId);});
+svg.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  const r=svg.getBoundingClientRect();
+  const kx=VW/r.width,ky=VH/r.height;
+  const dx=(e.clientX-drag.x)*kx,dy=(e.clientY-drag.y)*ky;
+  moved=Math.max(moved,Math.abs(dx)+Math.abs(dy));
+  vx=drag.vx+dx;vy=drag.vy+dy;apply();
+});
+svg.addEventListener('pointerup',()=>{drag=null;svg.classList.remove('drag');});
+world.addEventListener('click',e=>{if(moved>6)e.stopPropagation();},true);
+addEventListener('resize',()=>fitView());
+
+function filter(mode){
+  document.querySelectorAll('.nd').forEach(g=>{
+    const n=NM[g.dataset.id];
+    let show=true;
+    if(mode==='brand')show=n.t!=='asset';
+    if(mode==='asset')show=n.t==='asset'||n.t==='core';
+    g.style.transition='opacity .3s';g.style.display=show?'':'none';
+  });
+  document.querySelectorAll('.edge').forEach(e=>{
+    const ed=EDGES[+e.dataset.eid];
+    let show=true;
+    if(mode==='brand')show=!ed.asset;
+    if(mode==='asset')show=ed.asset;
+    e.style.display=show?'':'none';
+  });
+  clear();
+}
+document.getElementById('fAll').onclick=()=>{setF('fAll');filter('all');};
+document.getElementById('fBrand').onclick=()=>{setF('fBrand');filter('brand');};
+document.getElementById('fAsset').onclick=()=>{setF('fAsset');filter('asset');};
+function setF(id){['fAll','fBrand','fAsset'].forEach(x=>document.getElementById(x).classList.toggle('on',x===id));}
+fitView();
+// 嵌入 iframe 时隐藏返回按钮
+if(window.self!==window.top){document.querySelector('.back')?.style.setProperty('display','none');}
+</script>
+</body>
+</html>

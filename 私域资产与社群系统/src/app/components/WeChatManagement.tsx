@@ -1038,7 +1038,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
                 className="px-5 py-2 text-sm font-bold"
                 style={{
                   background: gtForm.name.trim() ? S.primary : "#d1d5db",
-                  color: "#ffffff",
+                  color: gtForm.name.trim() ? S.onPrimary : S.text,
                   borderRadius: S.radius,
                   opacity: gtForm.name.trim() ? 1 : 0.55,
                   cursor: gtForm.name.trim() ? "pointer" : "not-allowed",

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>王炸社 · 城市创始席位招募手册</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7;
+    --line:#EFE9DE; --radius:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.75}
+  .wrap{max-width:980px;margin:0 auto;padding:52px 24px 80px}
+  .eyebrow{letter-spacing:.4em;font-size:12px;color:var(--gold-deep);font-weight:600;text-align:center}
+  h1{font-size:42px;font-weight:800;letter-spacing:.04em;margin:10px 0 6px;text-align:center}
+  .slogan{color:var(--sub);font-size:15px;text-align:center;margin-bottom:36px}
+  .tagline{display:inline-block;background:var(--gold-soft);color:#8A6A1F;font-size:13px;padding:5px 16px;border-radius:99px;font-weight:600}
+
+  .card{background:var(--paper);border-radius:var(--radius);padding:30px 28px;margin-bottom:24px}
+  h2{font-size:21px;font-weight:800;margin-bottom:6px}
+  h2 .num{color:var(--gold-deep);font-family:Georgia,serif;font-style:italic;margin-right:6px}
+  .desc{color:var(--sub);font-size:13.5px;margin-bottom:20px}
+
+  /* 三问三答 */
+  .qa{display:flex;flex-direction:column;gap:16px}
+  .qa .q{font-size:17px;font-weight:800;padding:16px 20px;background:#fff;border-radius:14px 14px 4px 4px;border-left:4px solid var(--gold)}
+  .qa .a{font-size:14px;color:var(--sub);background:var(--gold-soft);border-radius:4px 14px 14px 14px;padding:14px 20px;margin-top:-8px}
+  .qa .a b{color:#8A6A1F}
+
+  /* 模式图 */
+  .flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;text-align:center;margin:8px 0 4px}
+  .step{background:#fff;border-radius:14px;padding:16px 10px;border-bottom:3px solid var(--gold)}
+  .step .t{font-weight:800;font-size:15px;margin-bottom:2px}
+  .step .s{font-size:11.5px;color:var(--sub)}
+  .arrow{text-align:center;color:var(--gold-deep);font-size:18px;font-weight:800;margin:6px 0}
+
+  /* 回本表 */
+  table{width:100%;border-collapse:collapse;font-size:13px;background:#fff;border-radius:12px;overflow:hidden}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:11px 8px;font-size:12.5px}
+  td{padding:10px 8px;text-align:center;border-top:1px solid var(--line)}
+  td.l{text-align:left;font-weight:600}
+  .gold{color:var(--gold-deep);font-weight:800}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .mini{background:#fff;border-radius:14px;padding:18px}
+  .mini b{display:block;font-size:14.5px;margin-bottom:6px}
+  .mini span{font-size:12.5px;color:var(--sub)}
+
+  ul.cl{list-style:none;font-size:13.5px}
+  ul.cl li{padding:5px 0 5px 24px;position:relative}
+  ul.cl li::before{content:"✓";position:absolute;left:2px;color:var(--gold-deep);font-weight:800}
+  ul.x{list-style:none;font-size:13.5px}
+  ul.x li{padding:5px 0 5px 24px;position:relative;color:var(--sub)}
+  ul.x li::before{content:"✕";position:absolute;left:2px;color:#B8B2A6;font-weight:800}
+
+  .intent{background:linear-gradient(150deg,#FFFDF8,var(--gold-soft));border-radius:var(--radius);padding:30px;text-align:center;margin-bottom:24px}
+  .intent .amt{font-size:40px;font-weight:800;color:var(--gold-deep);font-family:Georgia,serif}
+  .intent h3{font-size:17px;margin:8px 0 12px}
+  .intent ul{list-style:none;font-size:13.5px;text-align:left;max-width:520px;margin:0 auto}
+  .intent li{padding:3px 0 3px 22px;position:relative}
+  .intent li::before{content:"✓";position:absolute;left:0;color:var(--gold-deep);font-weight:800}
+  .cta{display:inline-block;margin-top:16px;background:var(--gold-deep);color:#fff;font-size:15px;font-weight:700;padding:12px 42px;border-radius:99px;letter-spacing:.1em}
+
+  .legal{font-size:11.5px;color:#A39B8E;margin-top:36px;border-top:1px solid var(--line);padding-top:18px;text-align:center}
+  .stamp{display:inline-block;margin-top:10px;border:2px solid rgba(201,154,60,.5);color:var(--gold-deep);font-size:11px;padding:3px 12px;border-radius:6px;letter-spacing:.3em}
+  .disc{background:#fff;border-radius:12px;padding:14px 18px;font-size:12px;color:var(--sub);margin-top:14px}
+  @media(max-width:760px){.flow{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}h1{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">WANGZHA COMMUNITY · CITY PARTNER</div>
+  <h1>王炸社 · 城市创始席位</h1>
+  <div class="slogan">人生王炸，今晚开打 —— 首批 1,000 席，9 个月，一座城市一个席位集群</div>
+  <div style="text-align:center"><span class="tagline">1 折创始批 · 名额有限 · 售罄即涨 · 每月公示</span></div>
+
+  <div class="card">
+    <h2><span class="num">01</span>开始之前，三个问题</h2>
+    <div class="qa">
+      <div class="q">AI 是不是已经把普通人甩下了？</div>
+      <div class="a"><b>没有。只是没人正经教。</b>会用 AI 的人和不会用的人，工作效率差出一个量级——但市场上要么是 9.9 的碎片课，要么是几万的大师班。中间那一层「认真把普通人教会」的，就是王炸社的位置。</div>
+      <div class="q">现在入场，是不是已经晚了？</div>
+      <div class="a"><b>最不晚的方式，是成为教的人。</b>每个城市、每个圈子里想学 AI 的人都在问「去哪学」——你把班开到自己城市的那一刻，你就是答案。1 折创始批 500 席，就是留给第一批把答案落地的人。</div>
+      <div class="q">我没人脉没资源，能做吗？</div>
+      <div class="a"><b>普惠班就是从 0 开始的验证场。</b>你的微信朋友圈、你所在的群，就是第一批学员来源。7 天课、0 元起随心付，总部全包——先用 1,000 元上车卡验证你的圈子值多少钱，再决定要不要认真干。</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">02</span>王炸社是什么</h2>
+    <div class="desc">一套「公益普惠入口 + 四级代理体系」的 AI 普及商业体</div>
+    <div class="flow">
+      <div class="step"><div class="t">普惠班</div><div class="s">7 天课 · 0 元起<br>随心付 · 城市圈层入口</div></div>
+      <div class="step"><div class="t">社群团长</div><div class="s">开班运营<br>随心付分账 50%</div></div>
+      <div class="step"><div class="t">区县代理</div><div class="s">一区一位<br>发展团长 · 陪跑</div></div>
+      <div class="step"><div class="t">市代理</div><div class="s">一城 3 席<br>市域招商 · 主办活动</div></div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="flow">
+      <div class="step"><div class="t">上线会员</div><div class="s">99/月 · AI 军师</div></div>
+      <div class="step"><div class="t">实战营</div><div class="s">399–1,980 · 三大主题</div></div>
+      <div class="step"><div class="t">师徒制</div><div class="s">掌灯门徒 · 天选门徒</div></div>
+      <div class="step"><div class="t">项目承接</div><div class="s">数字人 · 代运营 · 方案</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">03</span>怎么挣钱 · 回本模型</h2>
+    <div class="desc">以下是模型测算（按成熟期活跃度中位数），非收益承诺——你的结果取决于你的圈子质量与投入</div>
+    <table>
+      <tr><th style="text-align:left">档位</th><th>门槛（常价）</th><th>月收入构成</th><th>回本周期*</th></tr>
+      <tr><td class="l">社群团长</td><td class="gold">1 万</td><td>随心付 50% + 课程 30% + 进阶 20%</td><td>中位约 4 个月</td></tr>
+      <tr><td class="l">区县代理</td><td class="gold">3 万</td><td>自营 + 团长陪跑年卡 + 推荐费</td><td>中位约 5 个月</td></tr>
+      <tr><td class="l">市代理</td><td class="gold">12 万</td><td>自营 + 县代陪跑 + 推荐费 + 活动主办</td><td>1 折进场 1–2 个月</td></tr>
+      <tr><td class="l">省市分公司</td><td class="gold">50 万</td><td>体系年卡 + 大项目联营 + 线下联办</td><td>12–18 个月</td></tr>
+    </table>
+    <div class="disc">* 回本周期为模型推算值，不构成任何承诺。所有已付款项全额累计抵扣升级（升级账户），随时补差、随时停。</div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">04</span>创始席位 · 价格阶梯（市代 1,000 席）</h2>
+    <table>
+      <tr><th>批次</th><th>折扣</th><th>席位</th><th>单席价格</th></tr>
+      <tr><td class="l">创始批</td><td class="gold">1 折</td><td>500 席</td><td class="gold">¥12,000</td></tr>
+      <tr><td class="l">第二批</td><td>2 折</td><td>200 席</td><td>¥24,000</td></tr>
+      <tr><td class="l">第三批</td><td>3 折</td><td>100 席</td><td>¥36,000</td></tr>
+      <tr><td class="l">第四批</td><td>4 折</td><td>100 席</td><td>¥48,000</td></tr>
+      <tr><td class="l">第五批</td><td>5 折</td><td>50 席</td><td>¥60,000</td></tr>
+      <tr><td class="l">常价期</td><td>标准价</td><td>50 席</td><td>¥120,000</td></tr>
+    </table>
+    <div class="desc" style="margin-top:14px;margin-bottom:0">涨价规则三条：名额售罄即进入下一档（不看日期看真实进度）· 每月 1 号公示剩余席位 · 绝不超发（包括任何关系户）。<b>已签约者权益不因涨价受任何影响。</b></div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">05</span>总部全包清单</h2>
+    <div class="grid2">
+      <div class="mini"><b>课程与工具</b><span>7 天普惠课全体系 · AI 老师「上线」答疑 · 实战营课件 · 会员产品线</span></div>
+      <div class="mini"><b>开班 SOP</b><span>逐日动作手册 · 群公告模板 · 随心付三底线 · 雷达分层承接话术</span></div>
+      <div class="mini"><b>陪跑体系</b><span>团长 30 天总部陪跑 · 区县代理培训 · 市代招商支持 · 每月策略会</span></div>
+      <div class="mini"><b>品牌与活动</b><span>天选姐 IP 势能 · 城市发布会双周制 · 年度天选之夜 · 案例共署名</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">06</span>适合谁 · 不适合谁</h2>
+    <div class="grid2">
+      <div>
+        <ul class="cl">
+          <li>有微信朋友圈/社群圈子，想把它变成资产的人</li>
+          <li>认可 AI 趋势，愿意动手验证的实干型</li>
+          <li>实体老板/团队长/知识博主，想把客户盘活</li>
+          <li>想在城市里做点事、但缺产品和体系的操盘者</li>
+        </ul>
+      </div>
+      <div>
+        <ul class="x">
+          <li>想交钱躺赚、等分红的（没有这种席位）</li>
+          <li>不认可「0 元可学完」公益打法的</li>
+          <li>想在朋友圈刷屏硬广式的收割的</li>
+          <li>想拿代理转手倒卖资格的</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="intent">
+    <div class="amt">¥1,000</div>
+    <h3>创始席位意向金 · 蓄水中</h3>
+    <ul>
+      <li>优先购买资格——1 折名额仅向意向金持有者开放（市代 1 折限 5 席），按到账时间排序</li>
+      <li>成交全额抵扣——计入升级账户，后续升级继续抵扣，一分不白花</li>
+      <li>未成交随时可退——有效期 30 天，未签约 7 个工作日内全额原路退还</li>
+    </ul>
+    <div class="cta">私信「王炸」· 锁定席位</div>
+  </div>
+
+  <div class="legal">
+    王炸社不承诺任何投资回报与经营收益 · 价格与名额公示真实执行 · 详细权利义务以签署协议为准
+    <div class="stamp">王 炸 社</div>
+  </div>
+
+</div>
+</body>
+</html>

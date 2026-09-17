@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文档阅读器 · 主理人公社</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="20260917_主理人公社项目驾驶舱.html">← 返回驾驶舱</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<div class="content" id="content"><p style="color:#A39B8E">加载中…</p></div>
+
+<script>
+const params=new URLSearchParams(location.search);
+const file=params.get('file')||'';
+document.getElementById('fname').textContent=file;
+if(!file){
+  document.getElementById('content').innerHTML='<div class="err">未指定文档。请从驾驶舱物料库进入。</div>';
+}else{
+  fetch(encodeURIComponent(file)).catch(()=>fetch(file))
+    .then(r=>{if(!r.ok)throw new Error(r.status);return r.text();})
+    .then(md=>{renderDoc(render(md));})
+    .catch(()=>{document.getElementById('content').innerHTML='<div class="err">文档加载失败：'+file+'<br>请确认从驾驶舱（8092 服务）打开本页。</div>';});
+}
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML=html;
+  const toc=document.getElementById('toc');
+  const hs=[...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h,i)=>{
+    h.id='sec'+i;
+    const a=document.createElement('a');
+    a.href='#'+h.id;a.textContent=h.textContent;
+    if(h.tagName==='H3')a.className='h3';
+    toc.appendChild(a);
+  });
+  if(hs.length>0)toc.classList.add('has');
+  const ta=[...toc.querySelectorAll('a')];
+  addEventListener('scroll',()=>{
+    const d=document.documentElement;
+    document.getElementById('readbar').style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';
+    document.getElementById('top-btn').classList.toggle('on',d.scrollTop>400);
+    let cur=-1;
+    hs.forEach((h,i)=>{if(h.getBoundingClientRect().top<120)cur=i;});
+    ta.forEach((a,i)=>a.classList.toggle('on',i===cur));
+  },{passive:true});
+}
+document.getElementById('top-btn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function inline(s){
+  s=esc(s);
+  s=s.replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+  s=s.replace(/`([^`]+)`/g,'<code>$1</code>');
+  s=s.replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md){
+  const lines=md.split('\n');
+  let out=[],i=0;
+  while(i<lines.length){
+    const L=lines[i];
+    if(/^```/.test(L)){let buf=[];i++;while(i<lines.length&&!/^```/.test(lines[i])){buf.push(lines[i]);i++;}
+      out.push('<pre><code>'+esc(buf.join('\n'))+'</code></pre>');i++;continue;}
+    if(/^\|/.test(L)&&i+1<lines.length&&/^\|[\s:|-]+\|?$/.test(lines[i+1])){
+      let rows=[];let head=L.split('|').slice(1,-1);
+      i+=2;
+      while(i<lines.length&&/^\|/.test(lines[i])){rows.push(lines[i].split('|').slice(1,-1));i++;}
+      let h='<table><tr>'+head.map(c=>'<th>'+inline(c.trim())+'</th>').join('')+'</tr>';
+      rows.forEach(r=>{h+='<tr>'+r.map(c=>'<td>'+inline(c.trim())+'</td>').join('')+'</tr>';});
+      out.push(h+'</table>');continue;}
+    if(/^#{1,4}\s/.test(L)){
+      const m=L.match(/^(#{1,4})\s+(.*)/);
+      const lv=m[1].length,txt=inline(m[2]);
+      out.push('<h'+lv+'>'+txt+'</h'+lv+'>');i++;continue;}
+    if(/^>\s?/.test(L)){let buf=[];while(i<lines.length&&/^>\s?/.test(lines[i])){buf.push(lines[i].replace(/^>\s?/,''));i++;}
+      out.push('<blockquote>'+buf.map(b=>inline(b)).join('<br>')+'</blockquote>');continue;}
+    if(/^(---|\*\*\*)\s*$/.test(L)){out.push('<hr>');i++;continue;}
+    if(/^[-*]\s/.test(L)){let buf=[];while(i<lines.length&&/^[-*]\s/.test(lines[i])){buf.push(lines[i].replace(/^[-*]\s/,''));i++;}
+      out.push('<ul>'+buf.map(b=>'<li>'+inline(b)+'</li>').join('')+'</ul>');continue;}
+    if(/^\d+\.\s/.test(L)){let buf=[];while(i<lines.length&&/^\d+\.\s/.test(lines[i])){buf.push(lines[i].replace(/^\d+\.\s/,''));i++;}
+      out.push('<ol>'+buf.map(b=>'<li>'+inline(b)+'</li>').join('')+'</ol>');continue;}
+    if(/^\s*$/.test(L)){i++;continue;}
+    let buf=[L];i++;
+    while(i<lines.length&&!/^\s*$/.test(lines[i])&&!/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])){buf.push(lines[i]);i++;}
+    out.push('<p>'+inline(buf.join(' '))+'</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>
