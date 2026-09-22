@@ -2,7 +2,7 @@ import { useState } from "react";
 import { getAvatar } from "./Avatar";
 import GroupAssignment from "./GroupAssignment";
 import { Search, Plus, X, ChevronLeft, ChevronRight, QrCode, Users, ArrowLeft, GitBranch, RefreshCw, ChevronDown, Edit3, Archive, UserCog, SlidersHorizontal } from "lucide-react";
-import { buildGroupCode, buildGroupName, defaultGroupTypeRules, pickWechatAccount, type AllocationMode, type GroupTypeRule } from "../data/projectGroupRules";
+import { buildGroupCode, buildGroupName, defaultGroupTypeRules, pickWechatAccount, wechatAccounts, type AllocationMode, type GroupTypeRule } from "../data/projectGroupRules";
 import { addGeneratedGroups, updateGeneratedGroup, useCommunityData } from "../data/communityDataStore";
 import { S, useThemeSingleton } from "../theme";
 // ─── 模拟数据 ─────────────────────────────────────────────────
@@ -278,7 +278,15 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
     const quantity = Math.max(1, Math.min(100, Number(form.quantity) || 1));
     const selectedCities = form.cities.length ? form.cities : rule.cities.slice(0, 1);
     const accountUsage: Record<string, number> = {};
-    groups.forEach(item => { if (item.wechat && item.wechat !== "待分配") accountUsage[item.wechat] = (accountUsage[item.wechat] || 0) + 1; });
+    // pickWechatAccount 用 account.id 记占用（见下方 accountUsage[account.id]），
+    // 预置已存在群的占用也必须按 account.id 归并——群上存的是 account.wechat（号码），
+    // 号码与 id 一旦不一致（真实账号数据），按号码记就漏计已用容量、把新群超配给已满账号。
+    groups.forEach(item => {
+      if (!item.wechat || item.wechat === "待分配") return;
+      const acct = wechatAccounts.find(a => a.wechat === item.wechat);
+      const key = acct ? acct.id : item.wechat;
+      accountUsage[key] = (accountUsage[key] || 0) + 1;
+    });
     const sequenceByCity: Record<string, number> = {};
     const generated = Array.from({ length: quantity }, (_, index) => {
       const assignedCity = form.allocationMode === "统一分配" ? "全国" : selectedCities[index % selectedCities.length];
