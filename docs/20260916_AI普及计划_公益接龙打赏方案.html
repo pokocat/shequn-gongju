@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260916 AI普及计划 公益接龙打赏方案 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># AI 普及计划 · 公益接龙打赏方案（随心付运营手册）
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档编号 | 20260916_AI普及计划_公益接龙打赏方案 |
+| 状态 | V1 待确认 |
+| 关联 | [[20260916_社群运营计划_品牌整合版]] · [[20260905_主理人公社社群双引擎运营方案_已确认]]（公益三原则沿用） |
+| 一句话定位 | **对外：真公益、随心付、零门槛；对内：一场持续运行的支付意愿雷达。** |
+
+---
+
+## 一、机制总览
+
+```
+AI 普及计划（7 天社群课，标称价值 1,000 元）
+   ├── 报名：公益接龙，0 元参与
+   ├── 学习：每日打卡 + 学分
+   ├── 打赏：「为 AI 老师充算力」——随心付，0 元起
+   │     └── 流向每月公示（算力账单）
+   └── 内部：打赏金额 × 接龙行为 → 客户分层雷达
+         → 团长按分层跟进 → 转化上车卡/会员/代理
+```
+
+**核心设计**：打赏在**对外**是纯自愿公益支持（不挂钩任何商业权益，守住公益性质）；在**对内**是最真实的支付意愿信号——比问卷和口头意向准十倍，且完全合法（属于用户行为分析）。
+
+---
+
+## 二、产品包（标称价值锚）
+
+| 项 | 内容 |
+| --- | --- |
+| 课程 | 7 天 AI 普及营（社群陪跑制） |
+| 价值锚 | 标注「与 1,000 元上车卡同款课程体系」——**上车卡必须真实在售**，原价才成立 |
+| 交付 | 社群 + 每晚 1 场直播课 + 天选班长陪跑 + 结业测试 |
+
+### 7 天课程表
+
+| 天 | 主题 | 内容 |
+| --- | --- | --- |
+| D1 | 和 AI 的第一次对话 | 提示词入门，当场出结果 |
+| D2 | 用 AI 写方案 | 汇报/文案/朋友圈 |
+| D3 | 用 AI 做图做视频 | 海报/短视频 |
+| D4 | 用 AI 查资料 | 防幻觉、验真伪 |
+| D5 | 用 AI 管客户 | 私域场景实战 |
+| D6 | 用 AI 做副业 | 变现路径 + 合规边界 |
+| D7 | 毕业课 | AI 时代人设定位 + 天选锦囊开奖 |
+
+---
+
+## 三、玩法机制
+
+### 3.1 公益接龙（报名侧）
+
+- 群内接龙报名：`#AI普及接龙 第 X 位｜昵称｜城市`；
+- 接龙自带社交证明：后报名者看到的是一条越来越长的名单；
+- 团长专属接龙码（带参数二维码），归因到推荐人。
+
+### 3.2 算力支持话术（打赏侧）
+
+把打赏包装成「给 AI 老师充电」——趣味化 + 化解打赏尴尬：
+
+- 打赏按钮文案：**「为 AI 老师充点电」**；
+- 话术 A（开课）：「这堂课，按内容对得起 1,000 元。但公益期一分不收——觉得有用，随心充点电。」
+- 话术 B（引导）：「你的打赏不是给我，是给夜校 AI 老师充算力。下一节课能不能继续免费，就看今晚大家充的电。」
+- 话术 C（结课）：「本月算力账单已公示，感谢每一位充电的小太阳。」
+
+### 3.3 算力账单（流向公示）
+
+每月公示打赏流向，做成趣味账单（合规公示 + 内容素材一鱼两吃）：
+
+```
+【夜校算力账单 · 9月】
+本月充电总额：¥23,741
+→ 课程制作与讲师：40%
+→ AI 算力与工具：30%
+→ 掌灯计划公益基金：30%
+每一度电，都有去处。
+```
+
+### 3.4 荣誉体系（打赏挂钩的唯一回报）
+
+打赏**只挂钩荣誉，不挂钩商业权益**（守住公益性质）：
+
+| 行为 | 荣誉 |
+| --- | --- |
+| 任意打赏 | 「小太阳」勋章 + 掌灯学分 |
+| 打赏 ≥ 100 | 当月「充电榜」公示（自愿晒单） |
+| 全勤打卡 | 结业证书 + 天选锦囊参与资格 |
+| 团长维度 | 城市「充电榜」荣誉旗 |
+
+---
+
+## 四、内部机制：打赏分层雷达（核心资产）
+
+### 4.1 客户价值分层（按打赏区间）
+
+| 打赏区间 | 分层 | 判断 | 跟进动作（团长执行） |
+| --- | --- | --- | --- |
+| 0 元 | 内容型 | 免费习惯，暂无付费意愿 | 学分培育，每周轻触达，等下一期 |
+| 1–99 | 认可型 | 有付费意愿，预算敏感 | 邀 9.9 元主题班（押金制），走会员线 |
+| 100–499 | 意向型 | 明确认可课程价值 | 直接推上线会员（99/月） |
+| 500–999 | 高意向型 | 接近上车卡预算 | 1v1 沟通，推 1,000 元上车卡（7 天体验） |
+| ≥ 1,000 | 强意向/强关系 | 付费能力与信任双高 | 天选姐/总部出面：上车卡升级面谈 + Tier C 招商资格预沟通 |
+
+### 4.2 关系强度矩阵（打赏 × 接龙速度 → 判断与推荐人的关系）
+
+| | 打赏高 | 打赏低 |
+| --- | --- | --- |
+| **接龙快** | 铁粉型（强关系+高价值）→ 团长核心名单，优先发展班长 | 捧场型（关系在、预算浅）→ 维系关系，二期再测 |
+| **接龙慢** | 内容认同型（信课程不信人）→ 用内容续钩，弱化人际推荐 | 路人型 → 群发层，不投人力 |
+
+### 4.3 推荐人质量评估（反向赋能团长）
+
+- 每位团长后台可见：自己接龙码带来的报名数、打赏分布、高分层占比；
+- 谁推荐的人质量高 → 谁的人脉值得重点经营 → 总部据此辅导与资源倾斜；
+- **打赏本身不给代理分账**（公益红线）；代理的收益在后续转化：高分层用户 → 上车卡/会员/代理 → 团长赚合法差价与定额推荐费。
+
+---
+
+## 五、对外话术纪律（三条铁律）
+
+1. **永远说「随心」，不说「建议多少」**——不设参考价、不暗示金额档次（一旦暗示就是变相定价，公益性质即破）；
+2. **打赏与权益脱钩**——不打赏者获得完全相同的课程；打赏者只多荣誉，不多内容；
+3. **原价必须真实**——「价值 1,000 元」的前提是 1,000 元上车卡真实在售、内容同源；上车卡下架当天，话术同步撤下。
+
+---
+
+## 六、团长/代理操作 SOP（一图流）
+
+```
+开营前 3 天：朋友圈预热（天选姐白金视觉海报）
+开营前 1 天：发接龙码，群内 @所有人 讲规则（0 元 + 随心充电）
+D1–D7：每晚发听课链接 + 打卡接龙 + 学分
+D3：悄悄标记已打赏名单（后台雷达）→ 对 100+ 者私聊感谢（不提金额）
+D7 毕业课：天选锦囊开奖 + 结业证书 + 下一期预告
+D8–D14：按分层跟进（0 元层不动 / 1–99 邀主题班 / 100+ 推会员 / 500+ 面谈上车卡）
+每月 1 号：转发算力账单（信任续杯）+ 城市充电榜
+```
+
+---
+
+## 七、30 天启动清单
+
+| 周 | 事项 | 交付 |
+| --- | --- | --- |
+| W1 | 课程包录制（7 课）+ 接龙工具配置（带参二维码）+ 打赏通道与账单模板 | 上线就绪 |
+| W2 | 3–5 个种子团长的首批开营（总部陪跑） | 首期 100–300 人 |
+| W3 | 首份算力账单公示 + 首批分层名单交付团长跟进 | 转化第一波 |
+| W4 | 复盘调参（话术/课程/分层阈值）→ 团长 SOP 定稿 → 全代理开放 | 可复制模板 |
+
+---
+
+## 八、待确认决策项
+
+| # | 决策项 | 选项 |
+| --- | --- | --- |
+| 1 | 计划名称 | AI 普及计划 / 追光夜校普及营 / 掌灯公开课 |
+| 2 | 打赏通道 | 企微收款码（对公·开票"捐赠/支持"口径与会计确认） / 视频号打赏 / 小程序 |
+| 3 | 分层阈值 | 是否按 0/100/500/1000 四档（可按首期数据再校） |
+| 4 | 首批种子团长数 | 3–5 人（推荐） |
+| 5 | 高打赏者承接人 | 天选姐本人 / 总部招商组 |
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-16 | 初稿：公益接龙 + 算力支持话术 + 打赏分层雷达（客户价值五层 × 关系强度矩阵 × 团长人脉评估）+ 话术纪律 + 30 天启动清单；打赏与商业权益完全脱钩以守公益性质，"按人脉定价"转化为内部支付意愿分析 |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260916_AI普及计划_公益接龙打赏方案.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260916_AI普及计划_公益接龙打赏方案.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

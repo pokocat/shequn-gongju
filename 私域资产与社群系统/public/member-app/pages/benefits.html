@@ -2,77 +2,129 @@
 <html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>会员权益</title>
+<title>会员权益与续费</title>
 <link rel="stylesheet" href="../css/app.css?v=20260917">
 <script>
 var q = location.search;
 if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
 if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
 </script>
-<style>.ben-hero{ padding: 16.053px 16.053px 0; overflow: hidden; }
-.ben-title{ font-size: 29.813px; font-weight: 700; margin: 10.32px 0 5.733px; }
-.stat-3{ margin: 13.76px -16.053px 0; }
+<style>
+/* ===== 会员卡横滑 ===== */
+.swiper{ display:flex; gap:8.027px; padding:4.013px 10.32px 4.587px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; }
+.swiper::-webkit-scrollbar{ display:none; }
+.s-card{ width:280px; flex-shrink:0; border-radius:16px; padding:11.467px 12.04px 9.173px; scroll-snap-align:center; position:relative; overflow:hidden; cursor:pointer; transition:opacity .25s,transform .25s,box-shadow .25s; box-sizing:border-box; }
+.s-card--on{ opacity:1; transform:scale(1); box-shadow:0 6px 24px rgba(126,92,150,.12), var(--sheen); border:0.573px solid var(--line-signal); }
+.s-card--off{ opacity:.8; transform:scale(.95); box-shadow:0 2px 10px rgba(122,82,54,.08); border:0.573px solid var(--line); }
+.s-badge{ position:absolute; top:8.6px; right:8.6px; min-width:26.453px; height:19.533px; border-radius:11.467px; display:flex; align-items:center; justify-content:center; font-size:var(--fs-micro); font-weight:800; padding:0 5.733px; }
+.s-name{ font-size:var(--fs-h4); font-weight:800; margin:0 0 1.147px; }
+.s-dur{ font-size:var(--fs-tiny); margin-bottom:3.44px; opacity:.85; }
+.s-dur--exp{ color:var(--signal-700); font-weight:700; opacity:1; }
+.s-price{ font-size:var(--fs-h2); font-weight:800; margin:0 0 3.44px; }
+.s-price .cur{ font-size:var(--fs-meta); font-weight:600; }
+.s-feat{ font-size:var(--fs-micro); padding:2.293px 0; border-top:0.573px solid; display:flex; gap:4.013px; align-items:center; }
+.s-feat:last-child{ border-bottom:0.573px solid; padding-bottom:2.293px; }
+.s-dot{ width:4.013px; height:4.013px; border-radius:50%; flex-shrink:0; }
+/* 四档卡片配色（全部浅色，对齐我的页面风格） */
+.card-starter{ background:linear-gradient(135deg,#FAF6F0 0%,#F3EDE3 100%); color:var(--ink-900); }
+.card-starter .s-badge{ background:var(--track); color:var(--ink-600); }
+.card-starter .s-feat{ border-color:rgba(122,82,54,.1); color:var(--ink-700); }
+.card-starter .s-dot{ background:var(--ink-400); }
+.card-pro{ background:var(--grad-hero); color:var(--ink-900); }
+.card-pro .s-badge{ background:linear-gradient(135deg,#7C3AED,#A98BF5); color:#FFF; }
+.card-pro .s-feat{ border-color:rgba(124,58,237,.12); color:var(--ink-800); }
+.card-pro .s-dot{ background:var(--signal-400); }
+.card-elite{ background:var(--grad-hero-2); color:var(--ink-900); }
+.card-elite .s-badge{ background:rgba(124,58,237,.18); color:var(--signal-800); }
+.card-elite .s-feat{ border-color:rgba(124,58,237,.12); color:var(--ink-800); }
+.card-elite .s-dot{ background:var(--signal-400); }
+.card-creator{ background:var(--grad-hero-3); color:var(--ink-900); }
+.card-creator .s-badge{ background:linear-gradient(135deg,#92400E,#D97A35); color:#FFF; }
+.card-creator .s-feat{ border-color:rgba(146,64,14,.14); color:var(--ink-800); }
+.card-creator .s-dot{ background:var(--pulse-500); }
+/* 圆点指示器 */
+.dots-row{ display:flex; justify-content:center; gap:5.16px; padding:2.293px 0 8.027px; }
+.dot{ width:5.16px; height:5.16px; border-radius:50%; background:var(--line); transition:all .2s; }
+.dot--on{ width:17.2px; background:var(--signal-600); border-radius:3.44px; }
+.swiper-hint{ display:none; }
 
-.ben-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: 10.32px; }
-.ben-tile{
-  padding: 12.04px 10.893px 10.32px; border-radius: var(--r-box); box-sizing: border-box;
-  background: var(--sunk); border: 0.573px solid var(--line);
+/* ===== 通用区块卡片 ===== */
+.sec-card{ margin:10.32px 10.32px 14.907px; padding:12.04px; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line); }
+.sec-h{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8.027px; }
+.sec-title{ font-size:var(--fs-h4); font-weight:700; color:var(--ink-900); }
+.sec-count{ font-size:var(--fs-micro); color:var(--signal-700); font-weight:600; }
+.sec-divider{ margin:18.92px 10.32px 8.027px; display:flex; align-items:center; gap:6.88px; }
+.sec-divider::before{ content:''; width:3.44px; height:16.053px; background:linear-gradient(180deg,var(--signal-600),var(--signal-800)); border-radius:2.293px; }
+.sec-divider span{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+
+/* ===== 权益网格 ===== */
+.rights-sub{ font-size:var(--fs-micro); font-weight:700; color:var(--ink-600); margin:8.027px 0 4.013px; display:flex; align-items:center; gap:4px; }
+.rights-sub::before{ content:''; width:2px; height:10px; border-radius:1px; background:var(--signal-400); }
+.rights-sub--lock::before{ background:var(--ink-400); }
+.rights-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:6.88px; }
+.right-tile{ text-align:center; padding:8.027px 2px; border-radius:10.32px; background:var(--sunk-2); border:0.573px solid var(--line-soft); transition:transform .15s; }
+.right-tile:active{ transform:scale(.96); }
+.right-tile--lock{ background:transparent; border-color:transparent; }
+.right-ico{ margin:0 auto; color:var(--signal-700); display:flex; justify-content:center; }
+.right-tile--lock .right-ico{ color:var(--ink-400); }
+.right-ico svg{ width:24px; height:24px; }
+.right-t{ display:block; margin-top:5.16px; font-size:var(--fs-micro); font-weight:600; color:var(--ink-800); line-height:1.25; }
+.right-tile--lock .right-t{ color:var(--ink-500); }
+.right-st{ display:inline-block; margin-top:2.867px; font-size:9px; font-weight:700; padding:1.147px 5.16px; border-radius:4px; line-height:1.35; white-space:nowrap; }
+.right-st--ok{ background:rgba(34,197,94,.12); color:var(--ok); }
+.right-st--use{ background:rgba(124,58,237,.1); color:var(--signal-700); }
+.right-st--lock{ background:rgba(122,82,54,.1); color:var(--ink-600); }
+/* 本周推荐 */
+.rec-row{ display:flex; align-items:center; gap:10.32px; padding:8.027px; border-radius:var(--r-box); background:var(--sunk-2); margin-top:8.027px; }
+.rec-ico{ display:flex; align-items:center; color:var(--signal-700); flex-shrink:0; }
+.rec-ico svg{ width:22px; height:22px; }
+.rec-info{ flex:1; min-width:0; }
+.rec-name{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.rec-desc{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.rec-go{ font-size:var(--fs-micro); color:var(--signal-700); font-weight:600; flex-shrink:0; }
+/* 使用三步 */
+.steps{ display:flex; gap:6.88px; margin-top:8.027px; }
+.step{ flex:1; text-align:center; padding:6.88px 4.013px; border-radius:var(--r-box); background:var(--sunk-2); }
+.step-n{ width:20.64px; height:20.64px; border-radius:50%; margin:0 auto 4.013px; display:grid; place-items:center; font-size:var(--fs-micro); font-weight:800; color:#FFF; background:linear-gradient(135deg,var(--signal-600),var(--signal-800)); }
+.step-t{ font-size:var(--fs-micro); color:var(--ink-700); font-weight:600; }
+
+/* ===== 专属服务 ===== */
+.svc-item{ display:flex; align-items:center; gap:10.32px; padding:10.32px 0; border-bottom:0.573px solid var(--line-soft); }
+.svc-item:last-child{ border-bottom:none; }
+.svc-ico{ display:flex; align-items:center; color:var(--signal-700); flex-shrink:0; }
+.svc-ico svg{ width:22px; height:22px; }
+.svc-info{ flex:1; min-width:0; }
+.svc-name{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.svc-desc{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.svc-count{ font-size:var(--fs-micro); color:var(--signal-700); font-weight:600; margin-top:1.147px; }
+.svc-btn{ padding:5.733px 12.04px; border-radius:8.6px; background:var(--signal-600); color:#FFF; font-size:var(--fs-micro); font-weight:600; flex-shrink:0; }
+.svc-btn--used{ background:var(--track); color:var(--ink-500); }
+.svc-empty{ text-align:center; padding:12.04px; font-size:var(--fs-micro); color:var(--ink-500); }
+
+/* ===== AI 建议一行卡（页面末尾，预留底部操作栏空间） ===== */
+.ai-tip{
+  margin:10.32px 10.32px 132px; padding:9.173px 10.32px; border-radius:var(--r-box);
+  background:var(--signal-50); border:0.573px solid var(--line-brand);
+  font-size:var(--fs-micro); color:var(--ink-700); line-height:1.55;
 }
-.ben-tile--lock{ background: var(--track); border-color: var(--line-soft); }
-.ben-ico{ height: 29.813px; display: flex; align-items: center; }
-.bt-t{ display: block; margin-top: 6.88px; font-size: var(--fs-h4); font-weight: 700; color: var(--ink-900); }
-.bt-d{ display: block; margin-top: 2.867px; font-size: var(--fs-tiny); color: var(--ink-600); line-height: 1.35; }
-.ben-st{
-  display: inline-flex; align-items: center; gap: 3.44px; margin-top: 8.027px;
-  font-size: var(--fs-micro); color: var(--ok);
-}
-.ben-st--lock{ color: var(--ink-500); }
-
-
-.cmp-btn{
-  display: inline-flex; align-items: center; gap: 3.44px;
-  font-size: var(--fs-tiny); color: var(--signal-800);
-}
-.cmp-tier{ margin-top: 10.32px; padding-top: 9.173px; border-top: 0.573px solid var(--line-soft); }
-.cmp-tier:first-child{ margin-top: 6.88px; padding-top: 0; border-top: none; }
-.cmp-h{ font-size: var(--fs-sec); font-weight: 700; color: var(--ink-900); }
-.cmp-r{ display: block; margin-top: 3.44px; font-size: var(--fs-micro); color: var(--ink-600); line-height: 1.45; }
-.cmp-list{ margin-top: 5.733px; }
-.cmp-row{ display: flex; align-items: center; gap: 5.733px; padding: 2.867px 0; }
-.cmp-n{ font-size: var(--fs-meta); color: var(--ink-800); }
-.cmp-n--lock{ color: var(--ink-600); }
-
-
-.act-row{ display: flex; align-items: center; gap: 10.32px; padding: 8.027px 0; }
-.act-row--sep{ border-top: 0.573px solid var(--line-soft); }
-.act-t{ display: block; font-size: var(--fs-h4); font-weight: 700; color: var(--ink-900); }
-.act-act{ flex: 0 0 auto; display: flex; align-items: center; }
-
-
-.ben-foot{
-  display: flex; align-items: flex-start; gap: 5.733px;
-  margin: 11.467px 3.44px 0;
-  font-size: var(--fs-micro); color: var(--ink-500); line-height: 1.5;
-}
-
-.flow-t{ font-size: var(--fs-sec); font-weight: 700; color: var(--ink-900); }
-.flow-d{ margin-top: 4.013px; font-size: var(--fs-micro); color: var(--ink-600); line-height: 1.45; }</style>
+.ai-tip b{ color:var(--signal-700); font-weight:800; margin-right:4.587px; }
+.ai-tip em{ font-style:normal; color:var(--signal-700); font-weight:700; }
+</style>
 </head>
 <body class="mp-body">
 <div class="mp-shell">
   <div class="mp-meta">
-    <h1>会员权益</h1>
+    <h1>会员权益与续费</h1>
     <code>/pages/benefits/index</code>
-    
   </div>
-  <p class="mp-note">权益目录。锁定项要说明「差什么才能用」（lockReason），不能只画一把灰锁——用户分不清是没到等级还是没数据。</p>
+  <p class="mp-note">横滑会员卡切换等级，下方权益/服务两区联动，底部按钮随等级切换续费/升级动作。</p>
   <div class="mp-bar">
     <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
     <button onclick="location.href='../index.html'">返回总览</button>
   </div>
   <div class="mp-frame">
     <div class="mp-page">
-      
+
 <div class="mp-statusbar">
   <span>9:41</span>
   <span class="mp-icons">
@@ -86,15 +138,275 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   <span class="mp-sep"></span>
   <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
 </div>
-      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">会员权益</span><div class="subbar-slot wx-view"></div></div></div></div><div class="card card--hero ben-hero wx-view"><div class="f-start wx-view" style="gap:4.587px;"><div class="f-1 wx-view"><span class="tag tag--purple tag--round wx-text">PRO 专享</span><div class="title-grad ben-title wx-view">会员权益</div><span class="lead wx-text">查看当前可用权益，以及升级后可以使用的服务</span></div><div class="wxc wxc-art"><div class="art wx-view" style="width:120.4px;height:112.373px;flex-shrink:0;"><img class="art-img wx-image" style="object-fit:contain;" src="../assets/art/gem.png" alt="" /><div class="art-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:28.667px;height:28.667px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M11.562%203.266a.5.5%200%200%201%20.876%200L15.39%208.87a1%201%200%200%200%201.516.294L21.183%205.5a.5.5%200%200%201%20.798.519l-2.834%2010.246a1%201%200%200%201-.956.734H5.81a1%201%200%200%201-.957-.734L2.02%206.02a.5.5%200%200%201%20.798-.519l4.276%203.664a1%201%200%200%200%201.516-.294z%22%20%2F%3E%3Cpath%20d%3D%22M5%2021h14%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div></div><div class="stat-3 wx-view"><div class="stat-3-item wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:20.067px;height:20.067px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;margin:0 auto;"></div></div><span class="s3-v mono wx-text">8<span class="s3-unit wx-text"> 项</span></span><span class="s3-d wx-text">当前可用</span></div><div class="stat-3-item wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:20.067px;height:20.067px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2211%22%20x%3D%223%22%20y%3D%2211%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M7%2011V7a5%205%200%200%201%2010%200v4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;margin:0 auto;"></div></div><span class="s3-v mono wx-text">4<span class="s3-unit wx-text"> 项</span></span><span class="s3-d wx-text">升级后解锁</span></div><div class="stat-3-item wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:20.067px;height:20.067px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;margin:0 auto;"></div></div><span class="s3-v title-grad mono wx-text">LV3</span><span class="s3-d wx-text">深耕主理人</span></div></div></div><div class="card card-pad gap wx-view"><div class="f-between mb-12 wx-view"><span class="col-h wx-text">全部权益</span><div class="f wx-view" style="gap:9.173px;"><span class="t-tiny wx-text">共 <span class="mono wx-text">8</span> 项</span><div class="cmp-btn wx-view"><span class="wx-text">对比权益</span><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div><div class="ben-grid wx-view"><div class="ben-tile wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M21.42%2010.922a1%201%200%200%200-.019-1.838L12.83%205.18a2%202%200%200%200-1.66%200L2.6%209.08a1%201%200%200%200%200%201.832l8.57%203.908a2%202%200%200%200%201.66%200z%22%20%2F%3E%3Cpath%20d%3D%22M22%2010v6%22%20%2F%3E%3Cpath%20d%3D%22M6%2012.5V16a6%203%200%200%200%2012%200v-3.5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">全部课程无限回看</span><span class="bt-d wx-text">含直播回放与配套课件下载</span><div class="ben-st wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2322A070%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">不限次</span></div></div><div class="ben-tile wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">班级微信群</span><span class="bt-d wx-text">同期主理人 + 班班答疑</span><div class="ben-st wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2322A070%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">不限次</span></div></div><div class="ben-tile wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M11.017%202.814a1%201%200%200%201%201.966%200l1.051%205.558a2%202%200%200%200%201.594%201.594l5.558%201.051a1%201%200%200%201%200%201.966l-5.558%201.051a2%202%200%200%200-1.594%201.594l-1.051%205.558a1%201%200%200%201-1.966%200l-1.051-5.558a2%202%200%200%200-1.594-1.594l-5.558-1.051a1%201%200%200%201%200-1.966l5.558-1.051a2%202%200%200%200%201.594-1.594z%22%20%2F%3E%3Cpath%20d%3D%22M20%202v4%22%20%2F%3E%3Cpath%20d%3D%22M22%204h-4%22%20%2F%3E%3Ccircle%20cx%3D%224%22%20cy%3D%2220%22%20r%3D%222%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">经营诊断</span><span class="bt-d wx-text">服务老师人工出具经营建议</span><div class="ben-st wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2322A070%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">本季剩 1 次</span></div></div><div class="ben-tile wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M8%202v3%22%20%2F%3E%3Cpath%20d%3D%22M16%202v3%22%20%2F%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">线下闭门会</span><span class="bt-d wx-text">每季一场，年卡会员优先</span><div class="ben-st wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2322A070%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">本季剩 1 次</span></div></div><div class="ben-tile wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M3%2014h3a2%202%200%200%201%202%202v3a2%202%200%200%201-2%202H5a2%202%200%200%201-2-2v-7a9%209%200%200%201%2018%200v7a2%202%200%200%201-2%202h-1a2%202%200%200%201-2-2v-3a2%202%200%200%201%202-2h3%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">1 对 1 陪跑咨询</span><span class="bt-d wx-text">每月 1 次，每次 30 分钟</span><div class="ben-st wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2322A070%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">本月剩 1 次</span></div></div><div class="ben-tile ben-tile--lock wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M9%2017H7A5%205%200%200%201%207%207h2%22%20%2F%3E%3Cpath%20d%3D%22M15%207h2a5%205%200%201%201%200%2010h-2%22%20%2F%3E%3Cline%20x1%3D%228%22%20x2%3D%2216%22%20y1%3D%2212%22%20y2%3D%2212%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">选品与供应链对接</span><span class="bt-d wx-text">由运营牵线，按品类匹配</span><div class="ben-st ben-st--lock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2211%22%20x%3D%223%22%20y%3D%2211%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M7%2011V7a5%205%200%200%201%2010%200v4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">团长起</span></div></div><div class="ben-tile ben-tile--lock wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M11%206a13%2013%200%200%200%208.4-2.8A1%201%200%200%201%2021%204v12a1%201%200%200%201-1.6.8A13%2013%200%200%200%2011%2014H5a2%202%200%200%201-2-2V8a2%202%200%200%201%202-2z%22%20%2F%3E%3Cpath%20d%3D%22M6%2014a12%2012%200%200%200%202.4%207.2%202%202%200%200%200%203.2-2.4A8%208%200%200%201%2010%2014%22%20%2F%3E%3Cpath%20d%3D%22M8%206v8%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">品牌联名合作</span><span class="bt-d wx-text">参与公社品牌活动共创</span><div class="ben-st ben-st--lock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2211%22%20x%3D%223%22%20y%3D%2211%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M7%2011V7a5%205%200%200%201%2010%200v4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">团长起</span></div></div><div class="ben-tile ben-tile--lock wx-view"><div class="ben-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2010c0%204.993-5.539%2010.193-7.399%2011.799a1%201%200%200%201-1.202%200C9.539%2020.193%204%2014.993%204%2010a8%208%200%200%201%2016%200%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2210%22%20r%3D%223%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="bt-t wx-text">城市分站主理</span><span class="bt-d wx-text">承办本地线下活动</span><div class="ben-st ben-st--lock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2211%22%20x%3D%223%22%20y%3D%2211%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M7%2011V7a5%205%200%200%201%2010%200v4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">城市合伙人起</span></div></div></div></div><div class="card card-pad gap wx-view"><div class="f-between mb-12 wx-view"><span class="col-h wx-text">近期活动</span><span class="t-tiny wx-text">面向你所在的项目与班级</span></div><div class="act-row wx-view"><div class="f-1 wx-view"><span class="act-t wx-text">杭州站线下闭门会：私域的第二曲线</span><div class="f f-wrap mt-4 wx-view" style="gap:8.027px;"><span class="t-tiny mono wx-text">9 月 20 日 14:00</span><span class="t-tiny truncate wx-text">杭州 · 湖滨银泰 in77</span></div><span class="t-micro mt-4 block wx-text">已报名 <span class="mono wx-text">24</span><span class="mono wx-text">/30</span> 人</span></div><div class="act-act wx-view"><div class="btn-sm wx-view">我要报名</div></div></div><div class="act-row act-row--sep wx-view"><div class="f-1 wx-view"><span class="act-t wx-text">线上共学：选品清单怎么搭</span><div class="f f-wrap mt-4 wx-view" style="gap:8.027px;"><span class="t-tiny mono wx-text">9 月 8 日 20:00</span><span class="t-tiny truncate wx-text">线上 · 微信群直播</span></div><span class="t-micro mt-4 block wx-text">已报名 <span class="mono wx-text">61</span><span class="mono wx-text">/100</span> 人</span></div><div class="act-act wx-view"><span class="tag tag--green tag--round wx-text">已报名</span></div></div><div class="act-row act-row--sep wx-view"><div class="f-1 wx-view"><span class="act-t wx-text">上海站闭门会（名额已满）</span><div class="f f-wrap mt-4 wx-view" style="gap:8.027px;"><span class="t-tiny mono wx-text">9 月 27 日 14:00</span><span class="t-tiny truncate wx-text">上海 · 张园</span></div><span class="t-micro mt-4 block wx-text">已报名 <span class="mono wx-text">30</span><span class="mono wx-text">/30</span> 人</span></div><div class="act-act wx-view"><span class="tag tag--gray tag--round wx-text">名额已满</span></div></div><span class="t-micro mt-10 block wx-text">另有 <span class="mono wx-text">2</span> 场排期，在「微信群 · 公告与活动」查看</span></div><div class="card card-pad gap wx-view"><span class="col-h mb-14 block wx-text">如何使用权益</span><div class="flow3 wx-view"><div class="flow-item wx-view"><span class="flow-n mono wx-text">1</span><div class="flow-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3Cpath%20d%3D%22M3%2015h18%22%20%2F%3E%3Cpath%20d%3D%22M9%203v18%22%20%2F%3E%3Cpath%20d%3D%22M15%203v18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="flow-t wx-text">选择权益</span><span class="flow-d wx-text">浏览并选择需要的权益</span></div><div class="flow-line wx-view"></div><div class="flow-item wx-view"><span class="flow-n mono wx-text">2</span><div class="flow-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M8%202v3%22%20%2F%3E%3Cpath%20d%3D%22M16%202v3%22%20%2F%3E%3Crect%20x%3D%223%22%20y%3D%223%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="flow-t wx-text">预约或使用</span><span class="flow-d wx-text">按提示预约或直接使用</span></div><div class="flow-line wx-view"></div><div class="flow-item wx-view"><span class="flow-n mono wx-text">3</span><div class="flow-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15.477%2012.89%201.515%208.526a.5.5%200%200%201-.81.47l-3.58-2.687a1%201%200%200%200-1.197%200l-3.586%202.686a.5.5%200%200%201-.81-.469l1.514-8.526%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%228%22%20r%3D%226%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="flow-t wx-text">使用服务</span><span class="flow-d wx-text">按权益说明使用课程、活动与会员服务</span></div></div></div><div class="ben-foot wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:13.76px;height:13.76px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%2013c0%205-3.5%207.5-7.66%208.95a1%201%200%200%201-.67-.01C7.5%2020.5%204%2018%204%2013V6a1%201%200%200%201%201-1c2%200%204.5-1.2%206.24-2.72a1.17%201.17%200%200%201%201.52%200C14.51%203.81%2017%205%2019%205a1%201%200%200%201%201%201z%22%20%2F%3E%3Cpath%20d%3D%22m9%2012%202%202%204-4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;flex:0 0 auto;margin-top:1.72px;"></div></div><span class="wx-text"><span class="wx-text">你当前是「PRO」档，</span><span class="mono wx-text">4</span> 项需达到对应档位后使用；部分权益需预约后使用</span></div></div><div class="action-bar wx-view"><div class="action-row wx-view"><div class="cta cta--primary wx-view mp-nav" data-nav="diagnosis"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:18.347px;height:18.347px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M11.017%202.814a1%201%200%200%201%201.966%200l1.051%205.558a2%202%200%200%200%201.594%201.594l5.558%201.051a1%201%200%200%201%200%201.966l-5.558%201.051a2%202%200%200%200-1.594%201.594l-1.051%205.558a1%201%200%200%201-1.966%200l-1.051-5.558a2%202%200%200%200-1.594-1.594l-5.558-1.051a1%201%200%200%201%200-1.966l5.558-1.051a2%202%200%200%200%201.594-1.594z%22%20%2F%3E%3Cpath%20d%3D%22M20%202v4%22%20%2F%3E%3Cpath%20d%3D%22M22%204h-4%22%20%2F%3E%3Ccircle%20cx%3D%224%22%20cy%3D%2220%22%20r%3D%222%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">使用经营诊断</span></div><div class="cta cta--ghost wx-view mp-nav" data-nav="member"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:17.2px;height:17.2px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2220%22%20height%3D%2214%22%20x%3D%222%22%20y%3D%225%22%20rx%3D%222%22%20%2F%3E%3Cline%20x1%3D%222%22%20x2%3D%2222%22%20y1%3D%2210%22%20y2%3D%2210%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">返回会员卡</span></div></div></div></div>
-      
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">会员权益与续费</span><div class="subbar-slot wx-view"></div></div></div></div>
+
+<!-- 会员卡横滑 -->
+<div class="swiper" id="cardSwiper"></div>
+<div class="dots-row" id="cardDots"></div>
+<div class="swiper-hint">左右滑动切换等级，查看对应权益与服务</div>
+
+<!-- ① 我的权益 -->
+<div class="sec-divider"><span>我的权益</span></div>
+<div class="sec-card">
+  <div class="sec-h">
+    <span class="sec-title" id="rightsTitle">全部权益</span>
+    <span class="sec-count" id="rightsCount"></span>
+  </div>
+  <div id="rightsGrid"></div>
+  <div class="rec-row" id="recRow"></div>
+</div>
+
+<!-- ② 专属服务 -->
+<div class="sec-divider"><span>专属服务</span></div>
+<div class="sec-card">
+  <div class="sec-h">
+    <span class="sec-title">专属服务预约</span>
+    <span class="sec-count">本月可用</span>
+  </div>
+  <div id="svcList"></div>
+</div>
+
+<!-- ③ AI 建议（一行） -->
+<div class="ai-tip" id="aiTip"></div>
+
+<div class="action-bar wx-view"><div class="action-row wx-view"><div class="cta cta--primary wx-view" id="bottomCta"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:18.347px;height:18.347px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M11.017%202.814a1%201%200%200%201%201.966%200l1.051%205.558a2%202%200%200%200%201.594%201.594l5.558%201.051a1%201%200%200%201%200%201.966l-5.558%201.051a2%202%200%200%200-1.594%201.594l-1.051%205.558a1%201%200%200%201-1.966%200l-1.051-5.558a2%202%200%200%200-1.594-1.594l-5.558-1.051a1%201%200%200%201%200-1.966l5.558-1.051a2%202%200%200%200%201.594-1.594z%22%20%2F%3E%3Cpath%20d%3D%22M20%202v4%22%20%2F%3E%3Cpath%20d%3D%22M22%204h-4%22%20%2F%3E%3Ccircle%20cx%3D%224%22%20cy%3D%2220%22%20r%3D%222%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text" id="bottomCtaText">立即续费</span></div><div class="cta cta--ghost wx-view mp-nav" data-nav="mine"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:17.2px;height:17.2px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2220%22%20height%3D%2214%22%20x%3D%222%22%20y%3D%225%22%20rx%3D%222%22%20%2F%3E%3Cline%20x1%3D%222%22%20x2%3D%2222%22%20y1%3D%2210%22%20y2%3D%2210%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">返回会员卡</span></div></div></div></div></div>
+
       <div class="mp-home"></div>
     </div>
   </div>
 </div>
 <script>
-// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
-// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+// ===== 四档会员数据 =====
+var TIERS = {
+  starter: {
+    key:'starter', name:'体验会员', tag:'入门', price:'98', priceUnit:'/30天', dur:'30天体验', gem:'体',
+    colorClass:'card-starter',
+    rights:[
+      {n:'课程体验', s:'3门'}, {n:'社群交流', s:'可用'}, {n:'工具基础', s:'可用'},
+      {n:'经营诊断', s:'升级', lock:true}, {n:'1v1陪跑', s:'升级', lock:true}, {n:'闭门会议', s:'升级', lock:true},
+      {n:'工具专业', s:'升级', lock:true}, {n:'资源对接', s:'升级', lock:true}
+    ],
+    rec:{name:'新手指南营', desc:'7天入门 · 3个基础案例'},
+    services:[],
+    renew:{title:'升级到 PRO', tag:'解锁更多权益 ›', desc:'体验期内升级 PRO 可享 8 项权益与专属服务', pname:'升级为 PRO 年卡', pmeta:'30天体验升级 · 立享全部权益', price:'¥1,882', gem:'升', ai:'你正在体验期，升级 PRO 后可解锁经营诊断、1v1陪跑等 8 项权益，立省 ¥98 体验费。', keep:['课程','社群','诊断','陪跑'], bonus:{t:'升级限时福利', d:'赠送 1 次经营诊断'}, primary:'立即升级', ghost:'继续体验'}
+  },
+  pro: {
+    key:'pro', name:'PRO 年卡', tag:'当前', price:'1,980', priceUnit:'/年', dur:'365天', gem:'P', expire:'2027-08-12',
+    colorClass:'card-pro',
+    rights:[
+      {n:'课程无限', s:'可用'}, {n:'班级社群', s:'可用'}, {n:'经营诊断', s:'2/4'}, {n:'1v1陪跑', s:'1/1'},
+      {n:'闭门会议', s:'可约'}, {n:'工具专业', s:'可用'}, {n:'案例拆解', s:'可用'}, {n:'资源对接', s:'可用'},
+      {n:'城市分站', s:'升级', lock:true}, {n:'分润体系', s:'升级', lock:true}, {n:'品牌联名', s:'升级', lock:true}, {n:'1v1教练', s:'升级', lock:true}
+    ],
+    rec:{name:'流量变现实战策略', desc:'7大流量模型 · 3个真实案例'},
+    services:[
+      {n:'经营诊断', d:'导师1对1分析社群经营数据', c:'本月剩余 2/4 次', btn:'预约'},
+      {n:'1v1陪跑', d:'每月1次深度陪跑，制定成长计划', c:'本月剩余 1/1 次', btn:'预约'},
+      {n:'闭门会', d:'每季度1次线下闭门会', c:'本季度 1/1 次', btn:'已用', used:true}
+    ],
+    renew:{title:'会员续费', tag:'续费后继续享有 ›', desc:'提前续费，锁定全年权益与专属服务', pname:'PRO 年度会员', pmeta:'有效期至 2027-08-12 · 327 天后到期', price:'¥1,980', gem:'H', ai:'你本年度已使用 6 项权益、完成 4 次专属服务，续费后可持续使用资源库、诊断服务与活动预约。', keep:['资源库','专属课程','闭门会','AI 诊断'], bonus:{t:'续费专属福利', d:'赠送价值 ¥299《AI商业诊断报告》'}, primary:'立即续费', ghost:'查看升级方案',
+      compare:[
+        {h:'对比体验会员', t2:'多 8 项', items:[{t:'专属课程全系列', ok:true},{t:'经营诊断 4次/季', ok:true},{t:'1v1陪跑 1次/月', ok:true},{t:'城市分站、品牌联名', ok:false}]},
+        {h:'对比精英会员', t2:'少 5 项', items:[{t:'城市分站运营权', ok:false},{t:'品牌联名资源', ok:false},{t:'1v1教练持续陪跑', ok:false}]}
+      ]}
+  },
+  elite: {
+    key:'elite', name:'精英会员', tag:'高阶', price:'5,980', priceUnit:'/年', dur:'365天', gem:'精',
+    colorClass:'card-elite',
+    rights:[
+      {n:'课程无限', s:'可用'}, {n:'班级社群', s:'可用'}, {n:'经营诊断', s:'8/季'}, {n:'1v1陪跑', s:'2/月'},
+      {n:'闭门会议', s:'优先'}, {n:'工具专业', s:'可用'}, {n:'案例拆解', s:'可用'}, {n:'资源对接', s:'可用'},
+      {n:'城市分站', s:'可用'}, {n:'品牌联名', s:'可用'}, {n:'分润体系', s:'可用'}, {n:'1v1教练', s:'升级', lock:true}
+    ],
+    rec:{name:'精英私董会', desc:'每月1次 · 限20人 · 深度链接'},
+    services:[
+      {n:'经营诊断', d:'导师1对1分析，含季度复盘', c:'本季剩余 6/8 次', btn:'预约'},
+      {n:'1v1陪跑', d:'每月2次深度陪跑', c:'本月剩余 1/2 次', btn:'预约'},
+      {n:'闭门会', d:'优先席位 + 专属座位', c:'优先参与', btn:'预约'},
+      {n:'品牌联名', d:'联合品牌活动与资源置换', c:'可用', btn:'申请'}
+    ],
+    renew:{title:'会员续费', tag:'续费后继续享有 ›', desc:'续费锁定精英权益，城市分站与品牌联名持续可用', pname:'精英年度会员', pmeta:'有效期至 2027-06-30 · 284 天后到期', price:'¥5,980', gem:'精', ai:'你本年度已解锁城市分站与品牌联名，累计使用 10 项权益，续费可继续享受高阶资源。', keep:['城市分站','品牌联名','闭门会','1v1教练'], bonus:{t:'续费专属福利', d:'赠送 1 次品牌联名策划'}, primary:'立即续费', ghost:'升级创始人',
+      compare:[
+        {h:'对比 PRO 年卡', t2:'多 3 项', items:[{t:'城市分站运营权', ok:true},{t:'品牌联名资源', ok:true},{t:'分润体系', ok:true},{t:'1v1教练持续陪跑', ok:false}]},
+        {h:'对比联合创始人', t2:'少 1 项', items:[{t:'1v1教练持续陪跑', ok:false},{t:'终身权益', ok:false}]}
+      ]}
+  },
+  creator: {
+    key:'creator', name:'联合创始人', tag:'终身', price:'19,800', priceUnit:'/终身', dur:'终身', gem:'创',
+    colorClass:'card-creator',
+    rights:[
+      {n:'课程无限', s:'可用'}, {n:'班级社群', s:'可用'}, {n:'经营诊断', s:'无限'}, {n:'1v1陪跑', s:'无限'},
+      {n:'闭门会议', s:'优先'}, {n:'工具专业', s:'可用'}, {n:'案例拆解', s:'可用'}, {n:'资源对接', s:'可用'},
+      {n:'城市分站', s:'可用'}, {n:'分润体系', s:'可用'}, {n:'品牌联名', s:'可用'}, {n:'1v1教练', s:'可用'}
+    ],
+    rec:{name:'创始人闭门会', desc:'每季度1次 · 战略级深度共创'},
+    services:[
+      {n:'经营诊断', d:'不限次 · 含年度战略复盘', c:'无限次', btn:'预约'},
+      {n:'1v1陪跑', d:'不限次深度陪跑', c:'无限次', btn:'预约'},
+      {n:'1v1教练', d:'专属教练持续陪跑', c:'可用', btn:'预约'},
+      {n:'品牌联名', d:'深度品牌共创', c:'可用', btn:'申请'}
+    ],
+    renew:{title:'会员维护', tag:'终身权益持续享有 ›', desc:'联合创始人为终身会员，续缴维护费即可持续享有全部权益', pname:'联合创始人', pmeta:'终身会员 · 每年维护', price:'¥9,800', gem:'创', ai:'作为联合创始人，你享有全部 12 项权益与终身身份，续缴维护费可保持所有权益与服务可用。', keep:['全部权益','终身身份','1v1教练','品牌共创'], bonus:{t:'续费专属福利', d:'赠送年度战略顾问 1 次'}, primary:'缴纳维护费', ghost:'查看权益明细',
+      compare:[
+        {h:'对比精英会员', t2:'多 1 项', items:[{t:'1v1教练持续陪跑', ok:true},{t:'终身会员身份', ok:true}]}
+      ]}
+  }
+};
+var TIER_ORDER = ['starter','pro','elite','creator'];
+var CURRENT = 'pro';
+var USER_TIER = 'pro'; // 用户实际持有的等级（卡片上显示有效期）
+
+// ===== 渲染会员卡横滑 =====
+function renderSwiper(){
+  var sw = document.getElementById('cardSwiper');
+  var dots = document.getElementById('cardDots');
+  sw.innerHTML = ''; dots.innerHTML = '';
+  TIER_ORDER.forEach(function(key, i){
+    var t = TIERS[key];
+    var on = key === CURRENT;
+    var card = document.createElement('div');
+    card.className = 's-card ' + t.colorClass + (on ? ' s-card--on' : ' s-card--off');
+    card.setAttribute('data-tier', key);
+    card.innerHTML =
+      '<span class="s-badge">'+t.tag+'</span>'+
+      '<div class="s-name">'+t.name+'</div>'+
+      '<div class="s-dur'+(key===USER_TIER&&t.expire?' s-dur--exp':'')+'">'+(key===USER_TIER&&t.expire?'有效期至 '+t.expire:t.dur)+'</div>'+
+      '<div class="s-price"><span class="cur">¥</span>'+t.price+'<span style="font-size:var(--fs-micro);font-weight:500;opacity:.7">'+t.priceUnit+'</span></div>'+
+      '<div class="s-feat"><span class="s-dot"></span>'+(key==='creator'?'终身权益':'权益逐年生效')+'</div>'+
+      '<div class="s-feat"><span class="s-dot"></span>'+(key==='starter'?'升级可解锁全部':'专属服务可用')+'</div>';
+    card.addEventListener('click', function(){ switchTier(key); });
+    sw.appendChild(card);
+    var dot = document.createElement('div');
+    dot.className = 'dot' + (on ? ' dot--on' : '');
+    dot.setAttribute('data-tier', key);
+    dot.addEventListener('click', function(){ switchTier(key); });
+    dots.appendChild(dot);
+  });
+  // 滚动到当前卡居中
+  setTimeout(function(){
+    var cur = sw.querySelector('.s-card--on');
+    if(cur){ var sl = cur.offsetLeft - (sw.clientWidth - cur.offsetWidth)/2; sw.scrollTo({left:sl, behavior:'smooth'}); }
+  }, 50);
+}
+
+// ===== 切换等级 =====
+function switchTier(key){
+  if(CURRENT === key) return;
+  CURRENT = key;
+  // 更新卡片状态
+  var sw = document.getElementById('cardSwiper');
+  sw.querySelectorAll('.s-card').forEach(function(c){
+    var on = c.getAttribute('data-tier') === key;
+    c.className = c.className.replace(/s-card--(on|off)/g,'') + (on ? ' s-card--on' : ' s-card--off');
+  });
+  var dots = document.getElementById('cardDots');
+  dots.querySelectorAll('.dot').forEach(function(d){
+    var on = d.getAttribute('data-tier') === key;
+    d.className = 'dot' + (on ? ' dot--on' : '');
+  });
+  renderContent();
+}
+
+// ===== 渲染三区内容 =====
+// SVG 线条图标（对齐 mine.html 风格：fill=none stroke=currentColor stroke-width=2 round）
+var SVG_WRAP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.8 1.8) scale(0.85)">{d}</g></svg>';
+var RIGHT_SVGS = {
+  '课程无限': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  '班级社群': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.128a4 4 0 0 1 0 7.744"/>',
+  '经营诊断': '<path d="M3 3v18h18"/><path d="M7 14l3.3-3.3 3 3L18.7 8.3"/>',
+  '1v1陪跑': '<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/>',
+  '闭门会议': '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+  '工具专业': '<path d="M14.7 6.3a4 4 0 0 0-5.6 5.6l-4 4 2.8 2.8 4-4a4 4 0 0 0 5.6-5.6l-2.1 2.1-2.8-2.8 2.1-2.1z"/>',
+  '案例拆解': '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/>',
+  '资源对接': '<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+  '城市分站': '<path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/>',
+  '分润体系': '<path d="M19 5L5 19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+  '品牌联名': '<path d="M3 7v5l9 9 5-5-9-9H3z"/><circle cx="7" cy="7" r="1.5"/>',
+  '1v1教练': '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>',
+  '课程体验': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  '社群交流': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>',
+  '工具基础': '<path d="M14.7 6.3a4 4 0 0 0-5.6 5.6l-4 4 2.8 2.8 4-4a4 4 0 0 0 5.6-5.6l-2.1 2.1-2.8-2.8 2.1-2.1z"/>'
+};
+var SVC_SVGS = {
+  '经营诊断': '<path d="M3 3v18h18"/><path d="M7 14l3.3-3.3 3 3L18.7 8.3"/>',
+  '1v1陪跑': '<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/>',
+  '闭门会': '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>',
+  '品牌联名': '<path d="M3 7v5l9 9 5-5-9-9H3z"/><circle cx="7" cy="7" r="1.5"/>',
+  '1v1教练': '<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>'
+};
+function makeSvg(paths){ return SVG_WRAP.replace('{d}', paths || '<circle cx="12" cy="12" r="9"/>'); }
+function getRightStatus(r){
+  // 三态统一：锁定=升级（棕灰）、开放类=绿、配额类=紫（前缀"剩"）
+  if(r.lock) return {cls:'right-st--lock', t:'升级'};
+  if(r.s==='可用' || r.s==='可约' || r.s==='优先' || r.s==='无限') return {cls:'right-st--ok', t:r.s};
+  return {cls:'right-st--use', t:/\d/.test(r.s) ? '剩' + r.s : r.s};
+}
+function renderContent(){
+  var t = TIERS[CURRENT];
+  // 权益 - 分已解锁/待解锁两组
+  document.getElementById('rightsTitle').textContent = t.name + ' · 全部权益';
+  var avail = t.rights.filter(function(r){ return !r.lock; }).length;
+  var locked = t.rights.length - avail;
+  document.getElementById('rightsCount').textContent = avail + '项可用' + (locked ? ' / ' + locked + '项待解锁' : '');
+  var rg = document.getElementById('rightsGrid');
+  var unlocked = t.rights.filter(function(r){ return !r.lock; });
+  var lockedList = t.rights.filter(function(r){ return r.lock; });
+  var html = '';
+  if(unlocked.length){
+    html += '<div class="rights-sub">已解锁 · '+unlocked.length+'项</div>';
+    html += '<div class="rights-grid">' + unlocked.map(function(r){
+      var st = getRightStatus(r);
+      return '<div class="right-tile">'+
+        '<div class="right-ico">'+makeSvg(RIGHT_SVGS[r.n])+'</div>'+
+        '<span class="right-t">'+r.n+'</span>'+
+        '<span class="right-st '+st.cls+'">'+st.t+'</span>'+
+        '</div>';
+    }).join('') + '</div>';
+  }
+  if(lockedList.length){
+    html += '<div class="rights-sub rights-sub--lock">待解锁 · '+lockedList.length+'项</div>';
+    html += '<div class="rights-grid">' + lockedList.map(function(r){
+      var st = getRightStatus(r);
+      return '<div class="right-tile right-tile--lock">'+
+        '<div class="right-ico">'+makeSvg(RIGHT_SVGS[r.n])+'</div>'+
+        '<span class="right-t">'+r.n+'</span>'+
+        '<span class="right-st right-st--lock">'+st.t+'</span>'+
+        '</div>';
+    }).join('') + '</div>';
+  }
+  rg.innerHTML = html;
+  // 本周推荐
+  document.getElementById('recRow').innerHTML =
+    '<div class="rec-ico">'+makeSvg('<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>')+'</div>'+
+    '<div class="rec-info"><div class="rec-name">'+t.rec.name+'</div><div class="rec-desc">'+t.rec.desc+'</div></div>'+
+    '<span class="rec-go">查看 ›</span>';
+  // 服务
+  var sl = document.getElementById('svcList');
+  if(t.services.length === 0){
+    sl.innerHTML = '<div class="svc-empty">体验会员暂未开通专属服务，升级 PRO 即可预约</div>';
+  } else {
+    sl.innerHTML = t.services.map(function(s){
+      return '<div class="svc-item">'+
+        '<div class="svc-ico">'+makeSvg(SVC_SVGS[s.n])+'</div>'+
+        '<div class="svc-info"><div class="svc-name">'+s.n+'</div><div class="svc-desc">'+s.d+'</div><div class="svc-count">'+s.c+'</div></div>'+
+        '<div class="svc-btn'+(s.used?' svc-btn--used':'')+'">'+s.btn+'</div>'+
+        '</div>';
+    }).join('');
+  }
+  // AI 建议一行卡（续费/升级动作由底部常驻按钮承担，按钮文字随等级联动）
+  var r = t.renew;
+  document.getElementById('aiTip').innerHTML =
+    '<b>✦ AI 建议</b>' + r.ai + ' <em>' + r.bonus.t + '：' + r.bonus.d + '</em>';
+  // 底部主按钮：按选中等级与用户等级的关系显示动作（当前=续费 / 更高=升级 / 更低=成为会员）
+  var idx = TIER_ORDER.indexOf(CURRENT), uIdx = TIER_ORDER.indexOf(USER_TIER);
+  document.getElementById('bottomCtaText').textContent = idx === uIdx ? '续费' : (idx > uIdx ? '升级' : '成为会员');
+}
+
+// 初始化
+renderSwiper();
+renderContent();
+
+// 跨页跳转
 (function () {
   var SLUG = "benefits";
   try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
@@ -104,7 +416,6 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
     e.preventDefault();
     var t = el.getAttribute("data-nav");
     if (t === "__back__") {
-      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
       if (history.length > 1) history.back();
       else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
       return;

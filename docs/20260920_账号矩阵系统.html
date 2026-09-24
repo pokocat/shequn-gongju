@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>账号矩阵系统 · 主理人公社</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f3ea;color:#4a443b;min-height:100vh}
+.topbar{background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.topbar h1{font-size:17px;font-weight:800;letter-spacing:.04em}
+.back{background:rgba(255,255,255,.2);border:none;color:#fff;padding:7px 16px;border-radius:16px;cursor:pointer;font-size:12px;font-weight:700}
+.back:hover{background:rgba(255,255,255,.3)}
+.tabs{display:flex;gap:4px;padding:12px 24px;background:#fff;border-bottom:1px solid #eadfce}
+.tab{padding:8px 18px;font-size:13px;font-weight:700;color:#8d8577;border-radius:18px;cursor:pointer;transition:.15s;background:transparent}
+.tab:hover{background:#f7f0e0}
+.tab.on{background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff}
+.panel{display:none;padding:20px 24px}
+.panel.on{display:block;animation:fadeIn .25s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* 战略导览条 */
+.camp-bar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.camp-chip{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:20px;background:#fff;border:1.5px solid #eadfce;cursor:pointer;transition:.15s;font-size:12px;font-weight:700}
+.camp-chip:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,0,0,.06)}
+.camp-chip.on{color:#fff;border-color:transparent}
+.camp-dot{width:10px;height:10px;border-radius:50%}
+/* 思维导图 */
+.mindmap{background:#fff;border:1px solid #eadfce;border-radius:16px;padding:30px;overflow:auto;min-height:500px}
+.mm-center{display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;padding:16px 28px;border-radius:30px;font-size:16px;font-weight:800;box-shadow:0 4px 14px rgba(201,160,92,.3);white-space:nowrap}
+.mm-camp{margin-top:26px;border:1.5px solid #eadfce;border-radius:14px;overflow:hidden;page-break-inside:avoid}
+.mm-camp-head{padding:12px 18px;color:#fff;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.mm-camp-head .cm-sub{font-size:11px;font-weight:600;opacity:.9}
+.mm-camp-body{padding:16px 18px;background:#fff}
+.mm-group{margin-bottom:14px}
+.mm-group:last-child{margin-bottom:0}
+.mm-group-title{font-size:12px;font-weight:800;color:#8a6d2f;margin-bottom:8px;padding-left:10px;border-left:3px solid #d4c4a0;line-height:1.4}
+.mm-group-title .gn{display:inline-block;background:#fbf6ea;color:#a3762a;font-size:10px;font-weight:700;padding:1px 7px;border-radius:8px;margin-left:6px}
+.mm-items{display:flex;flex-wrap:wrap;gap:8px;padding-left:14px;align-items:flex-start}
+.mm-node{background:#faf7f0;border:1px solid #eee5d3;border-radius:8px;padding:7px 11px 7px 9px;cursor:pointer;transition:.12s;font-size:12px;display:inline-flex;align-items:center;gap:6px;border-left:3px solid #d4c4a0;position:relative}
+.mm-node:hover{background:#f7f0e0;border-color:#d4c4a0;transform:translateY(-1px)}
+.mm-node.active{background:#fdf6ec;border-color:#c9a05c;font-weight:700;color:#8a6d2f}
+.mm-node.lvl-1{border-left-color:#c9a05c;background:#fdf6ec;font-weight:700;box-shadow:0 2px 6px rgba(201,160,92,.12)}
+.mm-node.lvl-2{border-left-color:#7a9b5a}
+.mm-node.lvl-3{border-left-color:#4a7a9b}
+.mm-node.lvl-4{border-left-color:#9b7a5a}
+.mm-node.lvl-5{border-left-color:#8d8577}
+.mm-node.lvl-6{border-left-color:#b85a9b}
+.mm-lvl{display:inline-block;font-size:9px;font-weight:800;padding:1px 6px;border-radius:4px;color:#fff}
+.mm-rel{font-size:9px;color:#a3762a;font-weight:700;background:#fbf6ea;padding:1px 5px;border-radius:3px}
+.mm-pos{font-size:10px;color:#a39b8e;margin-left:4px}
+/* 层级图例 */
+.level-legend{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.level-legend .ll{font-size:11px;font-weight:700;color:#8d8577;margin-right:4px}
+.level-legend span.lg{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;color:#fff}
+/* 层级承接关系总览 */
+.lvl-flow{background:linear-gradient(135deg,#fdf6ec,#fbf3df);border:1px solid #eadfce;border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.lvl-flow h4{font-size:12px;font-weight:800;color:#a3762a;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.lvl-flow h4::before{content:'';width:3px;height:13px;background:#c9a05c;border-radius:2px}
+.lvl-chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.lvl-step{display:flex;align-items:center;gap:6px}
+.lvl-badge{font-size:11px;font-weight:800;color:#fff;padding:3px 9px;border-radius:6px;white-space:nowrap}
+.lvl-desc{font-size:10px;color:#6b6154;font-weight:600;line-height:1.3;max-width:90px}
+.lvl-arrow{color:#c9a05c;font-weight:800;font-size:14px}
+/* 账号清单层级深度条 */
+.lvl-bar{display:inline-block;width:4px;height:14px;border-radius:2px;margin-right:6px;vertical-align:middle}
+/* 层级树形图 */
+.tree-scroll{background:#fff;border:1px solid #eadfce;border-radius:14px;padding:0;overflow:hidden;min-height:620px;position:relative}
+.tree-viewport{position:relative;width:100%;height:620px;overflow:auto}
+.tree-stage-inner{position:relative;transform-origin:0 0;transition:transform .18s ease;width:max-content}
+.tree-wrap{position:relative;padding:24px;min-width:100%}
+/* 固定比例控制 */
+.zoom-ctrl{position:absolute;top:14px;right:14px;z-index:30;display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.95);border:1px solid #eadfce;border-radius:8px;padding:5px 7px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.zoom-ctrl button{height:28px;min-width:38px;border:1px solid #eadfce;background:#fff;border-radius:6px;cursor:pointer;font-size:11px;font-weight:800;color:#8a6d2f;padding:0 7px;transition:.12s}
+.zoom-ctrl button:hover,.zoom-ctrl button.on{background:#fbf6ea;border-color:#c9a05c;color:#8a6d2f}
+.zoom-ctrl .z-label{font-size:10px;font-weight:800;color:#8d8577;padding-right:2px}
+.zoom-ctrl .z-info{font-size:10px;font-weight:800;color:#a3762a;text-align:center;padding:0 2px;min-width:34px}
+/* 空缺位节点 */
+.tree-node.empty{border:1.5px dashed #d4c4a0;background:#fafafa;opacity:.8}
+.tree-node.empty .tn-name{color:#a39b8e;font-style:italic}
+.tree-node.empty .tn-fill{display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:10px;font-weight:800;padding:4px 8px;border-radius:6px;margin-top:5px;cursor:pointer}
+.tree-node.empty .tn-fill:hover{box-shadow:0 2px 8px rgba(201,160,92,.4)}
+/* 配额徽章 */
+.quota-badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;margin-left:8px}
+.quota-badge.full{background:#e8f0d4;color:#6b7a35}
+.quota-badge.partial{background:#fbf6ea;color:#a3762a}
+.quota-badge.empty{background:#fde8e8;color:#c35a3a}
+/* 授权登录弹窗 */
+.auth-mask{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:300;align-items:center;justify-content:center}
+.auth-mask.show{display:flex}
+.auth-box{background:#fff;border-radius:14px;padding:22px;width:360px;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.auth-box h3{font-size:15px;font-weight:800;color:#4a443b;margin-bottom:6px}
+.auth-box .ab-sub{font-size:11px;color:#8d8577;margin-bottom:14px}
+.auth-platforms{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.auth-pf{border:1px solid #eadfce;border-radius:8px;padding:10px 6px;text-align:center;cursor:pointer;transition:.12s;font-size:11px;font-weight:700;color:#4a443b}
+.auth-pf:hover{border-color:#c9a05c;background:#fbf6ea}
+.auth-pf.on{border-color:#c9a05c;background:#fdf6ec;color:#a3762a}
+.auth-input{width:100%;padding:9px 12px;border:1px solid #eadfce;border-radius:8px;font-size:13px;margin-bottom:10px;box-sizing:border-box}
+.auth-input:focus{outline:none;border-color:#c9a05c}
+.auth-btns{display:flex;gap:8px}
+.auth-btns button{flex:1;padding:9px;border-radius:8px;border:none;font-size:13px;font-weight:700;cursor:pointer}
+.auth-btns .ab-cancel{background:#f0ece4;color:#8d8577}
+.auth-btns .ab-ok{background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff}
+.tree-camp-block{margin-bottom:30px}
+.tree-camp-block:last-child{margin-bottom:0}
+.tree-camp-title{font-size:13px;font-weight:800;color:#fff;padding:8px 16px;border-radius:10px;display:inline-flex;align-items:center;gap:8px;margin-bottom:16px}
+.tree-camp-title .tct-sub{font-size:10px;font-weight:600;opacity:.85}
+.tree-stage{position:relative;margin-left:8px}
+.tree-node{position:absolute;background:#fff;border:1.5px solid #eadfce;border-radius:10px;padding:8px 12px;width:150px;box-sizing:border-box;cursor:pointer;transition:.15s;z-index:2}
+.tree-node:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.1);z-index:5}
+.tree-node.lvl-1{border-color:#c9a05c;background:linear-gradient(135deg,#fdf6ec,#fff);box-shadow:0 3px 10px rgba(201,160,92,.18)}
+.tree-node.lvl-2{border-left:3px solid #7a9b5a}
+.tree-node.lvl-3{border-left:3px solid #4a7a9b}
+.tree-node.lvl-4{border-left:3px solid #9b7a5a}
+.tree-node.lvl-5{border-left:3px solid #8d8577}
+.tree-node.lvl-6{border-left:3px solid #b85a9b}
+.tree-node .tn-name{font-size:12px;font-weight:800;color:#4a443b;line-height:1.3}
+.tree-node .tn-plat{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;margin-top:4px}
+.tree-node .tn-lvl{display:inline-block;font-size:8px;font-weight:800;padding:1px 5px;border-radius:3px;color:#fff;margin-top:4px;margin-left:4px}
+.tree-node .tn-pos{font-size:10px;color:#a39b8e;margin-top:3px;line-height:1.3}
+.tree-node .tn-desc{font-size:9px;color:#6b6154;margin-top:3px;line-height:1.35;max-height:2.7em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;border-top:1px dashed #eee5d3;padding-top:3px}
+.tree-node .tn-tip{display:none;position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:6px;width:220px;background:#fff;border:1px solid #c9a05c;border-radius:8px;padding:10px 12px;font-size:11px;color:#4a443b;line-height:1.5;box-shadow:0 6px 18px rgba(0,0,0,.12);z-index:20;pointer-events:none}
+.tree-node:hover .tn-tip{display:block}
+.tree-node .tn-tip .tt-title{font-weight:800;color:#a3762a;margin-bottom:4px;font-size:11px}
+.tree-node .tn-tip .tt-loc{color:#8a6d2f;font-weight:700;margin-bottom:3px}
+.tree-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.tree-svg line{stroke:#d4c4a0;stroke-width:1.5;fill:none}
+.tree-svg line.lvl-1{stroke:#c9a05c;stroke-width:2}
+.tree-svg line.lvl-2{stroke:#7a9b5a}
+.tree-svg line.lvl-3{stroke:#4a7a9b}
+.tree-svg line.lvl-4{stroke:#9b7a5a}
+.tree-svg line.lvl-5{stroke:#8d8577}
+.tree-svg line.lvl-6{stroke:#b85a9b}
+.tree-legend{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.tree-legend .tl{font-size:11px;font-weight:700;color:#8d8577;margin-right:4px}
+.tree-legend span.tg{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;color:#fff}
+/* 矩阵规划建议 */
+.plan-box{margin-top:24px;background:linear-gradient(135deg,#fdf6ec,#fbf3df);border:1px solid #eadfce;border-radius:14px;padding:20px 22px}
+.plan-box h3{font-size:14px;font-weight:800;color:#a3762a;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.plan-box h3::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,#c9a05c,#b98a2f);border-radius:2px}
+.plan-camps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-bottom:16px}
+.plan-card{background:#fff;border:1px solid #eadfce;border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.plan-card .pc-bar{position:absolute;left:0;top:0;bottom:0;width:4px}
+.plan-card .pc-title{font-size:12px;font-weight:800;color:#4a443b;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.plan-card .pc-title .pc-tag{font-size:9px;font-weight:800;color:#fff;padding:1px 7px;border-radius:5px}
+.plan-card ul{list-style:none;padding:0;margin:0}
+.plan-card li{font-size:11px;color:#6b6154;line-height:1.6;padding-left:14px;position:relative;margin-bottom:5px}
+.plan-card li::before{content:'▸';position:absolute;left:0;color:#c9a05c;font-weight:800}
+.plan-card li b{color:#4a443b}
+.plan-summary{background:#fff;border:1px solid #eadfce;border-radius:10px;padding:14px 16px}
+.plan-summary h4{font-size:12px;font-weight:800;color:#a3762a;margin-bottom:8px}
+.plan-summary p{font-size:11px;color:#6b6154;line-height:1.7;margin-bottom:6px}
+.plan-summary p b{color:#4a443b}
+.plan-summary .ps-priority{display:inline-block;font-size:10px;font-weight:800;padding:1px 8px;border-radius:4px;color:#fff;margin-left:6px}
+.plan-summary .ps-high{background:#c35a3a}
+.plan-summary .ps-mid{background:#c9a05c}
+.plan-summary .ps-low{background:#7a9b5a}
+/* 右侧详情 */
+.detail{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:#fff;border-left:1px solid #eadfce;box-shadow:-4px 0 20px rgba(0,0,0,.08);transition:right .3s;z-index:200;overflow-y:auto}
+.detail.show{right:0}
+.detail-head{padding:18px 20px;border-bottom:1px solid #eadfce;display:flex;align-items:center;justify-content:space-between}
+.detail-head h3{font-size:16px;font-weight:800;color:#4a443b}
+.detail-head .dh-camp{font-size:10px;font-weight:700;color:#fff;padding:2px 8px;border-radius:5px;margin-top:4px;display:inline-block}
+.detail-close{background:none;border:none;font-size:22px;color:#a39b8e;cursor:pointer}
+.detail-body{padding:18px 20px}
+.d-row{margin-bottom:14px}
+.d-label{font-size:11px;font-weight:800;color:#a39b8e;letter-spacing:.05em;margin-bottom:5px}
+.d-val{font-size:13px;color:#4a443b;font-weight:600;line-height:1.5}
+.d-tag{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;margin-right:6px}
+.d-tag.green{background:#e8f0d4;color:#6b7a35}
+.d-tag.gold{background:#fbf6ea;color:#a3762a}
+.d-tag.gray{background:#f0ece4;color:#a39b8e}
+.d-tag.blue{background:#e0ebf5;color:#4a7a9b}
+.d-tag.purple{background:#ede5f5;color:#7a5a9b}
+/* 账号列表 */
+.acct-table-wrap{background:#fff;border:1px solid #eadfce;border-radius:12px;overflow:hidden;overflow-x:auto}
+.acct-table{width:100%;border-collapse:collapse;min-width:1200px}
+.acct-table th{background:#f7f0e0;font-size:11px;font-weight:800;color:#8a6d2f;padding:10px 14px;text-align:left;letter-spacing:.04em;position:sticky;top:0}
+.acct-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #f5efe2}
+.acct-table tr:last-child td{border-bottom:none}
+.acct-table tr:hover td{background:#fdf9f0}
+.acct-table tr.camp-row td{background:#fdf6ec;font-size:12px;font-weight:800;color:#fff;padding:8px 14px;letter-spacing:.04em}
+.acct-name{font-weight:700;color:#4a443b}
+.acct-platform{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px}
+.p-wechat{background:#e8f0d4;color:#6b7a35}
+.p-xhs{background:#fde8ee;color:#c3272b}
+.p-douyin{background:#fde8e8;color:#c3272b}
+.p-bili{background:#e0ebf5;color:#4a7a9b}
+.p-zhihu{background:#ede5f5;color:#7a5a9b}
+.p-gzh{background:#fbf6ea;color:#a3762a}
+.p-toutiao{background:#fde8d8;color:#c9722a}
+.p-baijia{background:#d8e8f5;color:#2a5a9b}
+.p-mini{background:#e8f0e8;color:#4a7a35}
+/* 战略分布统计 */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.stat-card{background:#fff;border:1px solid #eadfce;border-radius:12px;padding:16px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;background:#c9a05c}
+.stat-card.blue::before{background:#4a7a9b}
+.stat-card.green::before{background:#7a9b5a}
+.stat-card.purple::before{background:#7a5a9b}
+.stat-card .sn{font-size:26px;font-weight:800;color:#4a443b}
+.stat-card .sl{font-size:12px;color:#8d8577;margin-top:4px}
+.stat-card .sa{font-size:10px;color:#a39b8e;margin-top:2px;font-weight:700}
+/* 阵营卡片 */
+.camp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-bottom:20px}
+.camp-card{background:#fff;border:1px solid #eadfce;border-radius:14px;padding:18px;position:relative;overflow:hidden}
+.camp-card .cc-bar{position:absolute;left:0;top:0;right:0;height:4px}
+.camp-card h3{font-size:15px;font-weight:800;color:#4a443b;margin-bottom:4px}
+.camp-card .cc-desc{font-size:11px;color:#8d8577;margin-bottom:12px;line-height:1.5}
+.camp-card .cc-stats{display:flex;gap:14px;margin-bottom:10px}
+.camp-card .cc-stat .n{font-size:20px;font-weight:800}
+.camp-card .cc-stat .l{font-size:10px;color:#a39b8e}
+.camp-card .cc-groups{display:flex;flex-wrap:wrap;gap:5px}
+.camp-card .cc-g{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;background:#f7f0e0;color:#8a6d2f}
+/* 引爆战略说明 */
+.strategy-box{background:linear-gradient(135deg,#fdf6ec,#fbf3df);border:1px solid #eadfce;border-radius:14px;padding:22px;margin-top:16px}
+.strategy-box h3{color:#a3762a;font-size:15px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.strategy-box h3::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,#c9a05c,#b98a2f);border-radius:2px}
+.strategy-box p{font-size:13px;line-height:1.8;color:#6b6154;margin-bottom:10px}
+.strategy-box p b{color:#4a443b}
+.strategy-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+.flow-step{background:#fff;border:1px solid #eadfce;border-radius:10px;padding:12px;text-align:center}
+.flow-step .fs-n{font-size:11px;font-weight:800;color:#fff;padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:6px}
+.flow-step .fs-t{font-size:12px;font-weight:800;color:#4a443b;margin-bottom:3px}
+.flow-step .fs-d{font-size:10px;color:#8d8577;line-height:1.4}
+</style>
+</head>
+<body>
+<div class="topbar">
+ <h1>◆ 账号矩阵系统 · 主理人公社</h1>
+ <button class="back" onclick="location.href='cockpit.html#mg'">← 返回驾驶舱</button>
+</div>
+<div class="tabs">
+ <span class="tab on" onclick="switchTab('mind')">战略分布思维导图</span>
+ <span class="tab" onclick="switchTab('tree')">层级树形图</span>
+ <span class="tab" onclick="switchTab('list')">账号清单</span>
+ <span class="tab" onclick="switchTab('stat')">战略分布</span>
+</div>
+
+<div class="panel on" id="panel-mind">
+ <div class="camp-bar" id="campBar"></div>
+ <div class="stats" id="mindStats"></div>
+ <div class="mindmap">
+  <div style="text-align:center">
+   <div class="mm-center">主理人公社 · 全域操盘矩阵</div>
+  </div>
+  <div id="mmCamps"></div>
+ </div>
+</div>
+
+<div class="panel" id="panel-list">
+ <div class="acct-table-wrap">
+  <table class="acct-table" id="acctTable">
+   <thead><tr><th>阵营</th><th>分组</th><th>账号名</th><th>平台</th><th>账号层级</th><th>上级账号</th><th>定位</th><th>负责人</th><th>内容方向</th><th>状态</th><th>粉丝量</th></tr></thead>
+   <tbody id="acctBody"></tbody>
+  </table>
+ </div>
+</div>
+
+<div class="panel" id="panel-tree">
+ <div class="camp-bar" id="treeCampBar"></div>
+ <div class="tree-scroll" id="treeScroll">
+  <div class="zoom-ctrl" aria-label="树形图比例选择">
+   <span class="z-label">显示比例</span>
+   <button data-scale="0.75" onclick="setTreeScale(.75)">75%</button>
+   <button data-scale="1" class="on" onclick="setTreeScale(1)">100%</button>
+   <button data-scale="1.25" onclick="setTreeScale(1.25)">125%</button>
+   <button data-scale="1.5" onclick="setTreeScale(1.5)">150%</button>
+   <span class="z-info" id="zoomInfo">100%</span>
+  </div>
+  <div class="tree-viewport" id="treeViewport">
+   <div class="tree-stage-inner" id="treeStage">
+    <div class="tree-wrap" id="treeWrap"></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="panel" id="panel-stat">
+ <div class="stats" id="statGrid"></div>
+ <div class="camp-grid" id="campGrid"></div>
+ <div class="strategy-box">
+  <h3>全域操盘矩阵 · 项目引爆战略</h3>
+  <div id="statDesc"></div>
+  <div class="strategy-flow" id="strategyFlow"></div>
+ </div>
+</div>
+
+<div class="detail" id="detail">
+ <div class="detail-head">
+  <div>
+   <h3 id="detailTitle">账号详情</h3>
+   <span class="dh-camp" id="detailCamp"></span>
+  </div>
+  <button class="detail-close" onclick="closeDetail()">×</button>
+ </div>
+ <div class="detail-body" id="detailBody"></div>
+</div>
+
+<!-- 授权登录弹窗 -->
+<div class="auth-mask" id="authMask">
+ <div class="auth-box">
+  <h3 id="authTitle">授权登录填充账号</h3>
+  <div class="ab-sub" id="authSub">选择平台并填写账号信息，完成后该空缺位将被填充</div>
+  <div class="auth-platforms" id="authPlatforms"></div>
+  <input type="text" class="auth-input" id="authName" placeholder="请输入账号名称">
+  <input type="text" class="auth-input" id="authPos" placeholder="账号定位（选填）">
+  <div class="auth-btns">
+   <button class="ab-cancel" onclick="closeAuth()">取消</button>
+   <button class="ab-ok" onclick="confirmAuth()">确认填充</button>
+  </div>
+ </div>
+</div>
+
+<script>
+// ===== 全域操盘矩阵数据：4大阵营 × 16分组 =====
+var CAMPS=[
+ {name:'官方核心矩阵',short:'官方',color:'#c9a05c',desc:'项目方直营账号体系，承担品牌认知、人设建立、课程交易、招商变现、公益资产五大核心职能',groups:[
+  {group:'品牌官方号',gn:5,items:[
+   {name:'主理人公社',platform:'视频号',pos:'品牌主阵地',level:'L1 核心主号',parent:null,owner:'一姐',content:'品牌故事/操盘干货/发布会直播',status:'已运营',fans:'1.2万',desc:'全平台主品牌号，承担品牌认知和招商转化，核心内容为操盘方法论和品牌故事'},
+   {name:'主理人公社',platform:'小红书',pos:'种草阵地',level:'L2 内容分发',parent:'视频号',owner:'一姐',content:'图文种草/方法论拆解',status:'已运营',fans:'8.6千',desc:'小红书品牌号，以图文形式种草主理人公社的社群价值和操盘方法'},
+   {name:'主理人公社',platform:'抖音',pos:'短视频流量',level:'L2 内容分发',parent:'视频号',owner:'一姐',content:'短平快操盘技巧',status:'已运营',fans:'2.3万',desc:'抖音品牌号，用短视频形式输出操盘干货，吸引泛流量'},
+   {name:'主理人公社',platform:'B站',pos:'长视频深度',level:'L2 内容分发',parent:'视频号',owner:'一姐',content:'深度操盘复盘',status:'已运营',fans:'4.1千',desc:'B站品牌号，输出深度操盘复盘和长视频内容，建立专业背书'},
+   {name:'主理人公社',platform:'知乎',pos:'问答背书',level:'L2 内容分发',parent:'视频号',owner:'一姐',content:'创业问答/观点输出',status:'已运营',fans:'2.8千',desc:'知乎品牌号，通过问答输出创业观点，建立专业背书和SEO'}
+  ]},
+  {group:'创始人IP',gn:4,items:[
+   {name:'一姐',platform:'视频号',pos:'人设核心',level:'L1 核心主号',parent:null,owner:'一姐',content:'创始人日常/直播',status:'已运营',fans:'3.5万',desc:'创始人IP主阵地，直播和短视频结合，建立人格化信任'},
+   {name:'一姐',platform:'小红书',pos:'人设种草',level:'L2 内容分发',parent:'视频号',owner:'一姐',content:'创业感悟/生活方式',status:'已运营',fans:'1.8万',desc:'小红书创始人号，输出创业感悟和生活方式，建立人设温度'},
+   {name:'一姐',platform:'个人微信',pos:'私域承接',level:'L4 私域运营',parent:'视频号',owner:'一姐',content:'1V1咨询/朋友圈',status:'已运营',fans:'4.2千',desc:'个人微信私域承接，通过朋友圈和1V1咨询完成转化'},
+   {name:'一姐',platform:'企业微信',pos:'私域运营',level:'L4 私域运营',parent:'个人微信',owner:'运营团队',content:'社群运营/SOP',status:'已运营',fans:'8.6千',desc:'企业微信承载社群运营，通过SOP标准化承接团长和会员'}
+  ]},
+  {group:'课程产品号',gn:3,items:[
+   {name:'上线夜校',platform:'视频号',pos:'课程入口',level:'L1 核心主号',parent:null,owner:'上线',content:'课程预告/夜校直播',status:'已运营',fans:'6.2千',desc:'AI数字人上线主理的课程号，承载上线夜校的课程预告和直播'},
+   {name:'主理人公社',platform:'小程序',pos:'会员系统',level:'L3 交易承接',parent:'上线夜校',owner:'技术',content:'会员/交易/权益',status:'已运营',fans:'—',desc:'小程序承载会员系统、交易和权益，是私域闭环的核心载体'},
+   {name:'操盘手记',platform:'公众号订阅号',pos:'课程内容',level:'L2 内容分发',parent:'上线夜校',owner:'内容团队',content:'课程笔记/案例拆解',status:'已运营',fans:'2.1千',desc:'操盘手记订阅号，输出课程笔记和案例拆解，延长课程内容生命周期'}
+  ]},
+  {group:'招商席位号',gn:2,items:[
+   {name:'王炸社',platform:'视频号',pos:'招商路演',level:'L3 交易承接',parent:null,owner:'招商团队',content:'招商路演/席位公示',status:'已运营',fans:'5.1千',desc:'王炸社招商席位品牌号，承载招商路演和席位公示，完成代理招募'},
+   {name:'王炸社',platform:'公众号服务号',pos:'席位公示',level:'L2 内容分发',parent:'视频号',owner:'招商团队',content:'席位名单/政策通知',status:'已运营',fans:'1.6千',desc:'王炸社服务号，公示席位名单和招商政策，承载招商交易闭环'}
+  ]},
+  {group:'公益品牌号',gn:2,items:[
+   {name:'万物有言',platform:'视频号',pos:'公益直播',level:'L5 辅助号',parent:null,owner:'公益团队',content:'公益直播/公益项目',status:'筹备中',fans:'—',desc:'万物有言公益品牌号，承载公益直播和公益项目，建立品牌社会价值'},
+   {name:'掌灯计划',platform:'公众号订阅号',pos:'公益专栏',level:'L5 辅助号',parent:'万物有言',owner:'公益团队',content:'公益故事/专栏',status:'筹备中',fans:'—',desc:'掌灯计划公益专栏，输出公益故事和公益项目进展'}
+  ]}
+ ]},
+ {name:'代理赋能矩阵',short:'赋能',color:'#4a7a9b',desc:'为代理提供服务支撑的账号体系，输出零售素材、运营工具和服务承接，赋能代理高效获客与转化',groups:[
+  {group:'代理服务号',gn:2,items:[
+   {name:'代理服务官',platform:'视频号',pos:'代理支持',level:'L3 交易承接',parent:null,owner:'代理运营',content:'代理培训/政策解读',status:'已运营',fans:'2.4千',desc:'代理服务官视频号，输出代理培训和政策解读，提供官方支持背书'},
+   {name:'代理服务官',platform:'企业微信',pos:'代理承接',level:'L4 私域运营',parent:'视频号',owner:'代理运营',content:'1V1答疑/社群SOP',status:'已运营',fans:'1.8千',desc:'代理服务官企微，1V1答疑和社群SOP运营，承接代理日常咨询'}
+  ]},
+  {group:'零售素材号',gn:3,items:[
+   {name:'零售素材库',platform:'小红书',pos:'素材输出',level:'L2 内容分发',parent:null,owner:'素材团队',content:'种草图文/朋友圈素材',status:'已运营',fans:'5.3千',desc:'零售素材库小红书，输出种草图文和朋友圈素材，供代理直接搬运使用'},
+   {name:'零售素材库',platform:'抖音',pos:'视频素材',level:'L2 内容分发',parent:'小红书',owner:'素材团队',content:'短视频素材/口播文案',status:'已运营',fans:'3.6千',desc:'零售素材库抖音，输出短视频素材和口播文案，供代理二创发布'},
+   {name:'零售素材库',platform:'公众号订阅号',pos:'图文素材',level:'L2 内容分发',parent:'小红书',owner:'素材团队',content:'长图文/海报素材',status:'已运营',fans:'1.8千',desc:'零售素材库订阅号，输出长图文和海报素材，供代理私域分发'}
+  ]},
+  {group:'代理工具号',gn:2,items:[
+   {name:'代理工具箱',platform:'小程序',pos:'工具承接',level:'L3 交易承接',parent:null,owner:'技术',content:'获客工具/数据看板',status:'筹备中',fans:'—',desc:'代理工具箱小程序，提供获客工具和数据看板，赋能代理高效运营'},
+   {name:'代理SOP',platform:'公众号订阅号',pos:'运营SOP',level:'L2 内容分发',parent:'代理服务官',owner:'代理运营',content:'SOP流程/案例库',status:'已运营',fans:'1.2千',desc:'代理SOP订阅号，输出标准化运营流程和案例库，降低代理执行门槛'}
+  ]}
+ ]},
+ {name:'市场推广矩阵',short:'推广',color:'#7a5a9b',desc:'公司辅助市场推广的账号体系，通过科普测评种草IP媒体五大类型账号，全平台铺设内容触达泛流量',groups:[
+  {group:'科普账号',gn:2,items:[
+   {name:'操盘科普',platform:'视频号',pos:'科普内容',level:'L2 内容分发',parent:null,owner:'内容团队',content:'行业科普/方法论拆解',status:'已运营',fans:'3.4千',desc:'操盘科普视频号，输出行业科普和方法论拆解，建立专业认知'},
+   {name:'商业科普',platform:'小红书',pos:'商业知识',level:'L2 内容分发',parent:'视频号',owner:'内容团队',content:'商业常识/创业指南',status:'已运营',fans:'2.9千',desc:'商业科普小红书，输出商业常识和创业指南，吸引泛创业人群'}
+  ]},
+  {group:'测评账号',gn:2,items:[
+   {name:'项目测评',platform:'B站',pos:'深度测评',level:'L2 内容分发',parent:null,owner:'测评团队',content:'项目深度评测/对比',status:'已运营',fans:'1.8千',desc:'项目测评B站号，输出项目深度评测和对比内容，建立第三方背书'},
+   {name:'实战测评',platform:'抖音',pos:'短视频测评',level:'L2 内容分发',parent:'B站',owner:'测评团队',content:'短测评/体验分享',status:'已运营',fans:'4.2千',desc:'实战测评抖音号，输出短测评和体验分享，快速触达泛流量'}
+  ]},
+  {group:'种草账号',gn:3,items:[
+   {name:'创业种草',platform:'小红书',pos:'创业种草',level:'L2 内容分发',parent:null,owner:'种草团队',content:'创业项目种草/副业推荐',status:'已运营',fans:'5.6千',desc:'创业种草小红书，输出创业项目种草和副业推荐，吸引创业意向人群'},
+   {name:'副业种草',platform:'公众号订阅号',pos:'副业内容',level:'L2 内容分发',parent:'小红书',owner:'种草团队',content:'副业拆解/收入案例',status:'已运营',fans:'2.3千',desc:'副业种草订阅号，输出副业拆解和收入案例，承接私域转化'},
+   {name:'生活方式',platform:'抖音',pos:'生活种草',level:'L2 内容分发',parent:'小红书',owner:'种草团队',content:'生活方式/价值观输出',status:'已运营',fans:'3.8千',desc:'生活方式抖音号，输出生活方式和价值观，建立品牌情感连接'}
+  ]},
+  {group:'IP矩阵账号',gn:3,items:[
+   {name:'操盘手IP',platform:'视频号',pos:'操盘人设',level:'L2 内容分发',parent:null,owner:'IP团队',content:'操盘手日常/方法论',status:'已运营',fans:'2.7千',desc:'操盘手IP视频号，塑造操盘手人设，输出操盘日常和方法论'},
+   {name:'女性创业IP',platform:'小红书',pos:'女性人设',level:'L2 内容分发',parent:'视频号',owner:'IP团队',content:'女性创业/成长故事',status:'已运营',fans:'4.1千',desc:'女性创业IP小红书，聚焦女性创业人设，输出成长故事和创业感悟'},
+   {name:'商业博主',platform:'知乎',pos:'商业观点',level:'L2 内容分发',parent:'视频号',owner:'IP团队',content:'商业观点/行业分析',status:'已运营',fans:'1.9千',desc:'商业博主知乎号，输出商业观点和行业分析，建立专业IP背书'}
+  ]},
+  {group:'媒体类账号',gn:2,items:[
+   {name:'行业观察',platform:'头条号',pos:'行业媒体',level:'L2 内容分发',parent:null,owner:'媒体团队',content:'行业观察/资讯速递',status:'已运营',fans:'2.5千',desc:'行业观察头条号，输出行业观察和资讯速递，覆盖头条系流量'},
+   {name:'商业观察',platform:'百家号',pos:'商业媒体',level:'L2 内容分发',parent:'头条号',owner:'媒体团队',content:'商业分析/趋势解读',status:'已运营',fans:'1.7千',desc:'商业观察百家号，输出商业分析和趋势解读，覆盖百度系流量'}
+  ]}
+ ]},
+ {name:'代理共建矩阵',short:'共建',color:'#7a9b5a',desc:'与代理共建的账号体系，孵化代理个人IP区域号和社群号，形成代理自主获客能力，实现矩阵裂变',groups:[
+  {group:'代理个人IP号',gn:3,items:[
+   {name:'代理IP孵化',platform:'视频号',pos:'代理IP',level:'L6 代理共建',parent:null,owner:'代理孵化组',content:'代理IP孵化/成长记录',status:'已运营',fans:'1.2千',desc:'代理IP孵化视频号，孵化代理个人IP，记录成长过程，形成IP矩阵'},
+   {name:'代理IP',platform:'小红书',pos:'代理种草',level:'L6 代理共建',parent:'视频号',owner:'代理孵化组',content:'代理种草/创业分享',status:'已运营',fans:'0.9千',desc:'代理IP小红书，代理输出种草内容和创业分享，建立个人品牌'},
+   {name:'代理IP',platform:'抖音',pos:'代理流量',level:'L6 代理共建',parent:'视频号',owner:'代理孵化组',content:'代理短视频/日常输出',status:'已运营',fans:'2.1千',desc:'代理IP抖音号，代理输出短视频和日常内容，获取泛流量'}
+  ]},
+  {group:'代理区域号',gn:2,items:[
+   {name:'华东区域号',platform:'视频号',pos:'区域运营',level:'L6 代理共建',parent:null,owner:'华东代理',content:'区域活动/本地化内容',status:'已运营',fans:'0.6千',desc:'华东区域号视频号，承载区域活动和本地化内容，深耕区域市场'},
+   {name:'华南区域号',platform:'视频号',pos:'区域运营',level:'L6 代理共建',parent:null,owner:'华南代理',content:'区域活动/本地化内容',status:'筹备中',fans:'—',desc:'华南区域号视频号，承载华南区域活动和本地化内容，拓展华南市场'}
+  ]},
+  {group:'代理社群号',gn:2,items:[
+   {name:'代理社群',platform:'公众号订阅号',pos:'代理社群',level:'L6 代理共建',parent:null,owner:'代理运营',content:'代理社群内容/活动通知',status:'已运营',fans:'0.8千',desc:'代理社群订阅号，输出代理社群内容和活动通知，沉淀代理社群资产'},
+   {name:'代理社群',platform:'视频号',pos:'代理直播',level:'L6 代理共建',parent:'公众号订阅号',owner:'代理运营',content:'代理直播/经验分享',status:'已运营',fans:'0.5千',desc:'代理社群视频号，承载代理直播和经验分享，形成代理互助氛围'}
+  ]}
+ ]}
+];
+
+// 层级颜色映射
+var LEVELCOLOR={
+ 'L1 核心主号':'#c9a05c',
+ 'L2 内容分发':'#7a9b5a',
+ 'L3 交易承接':'#4a7a9b',
+ 'L4 私域运营':'#9b7a5a',
+ 'L5 辅助号':'#8d8577',
+ 'L6 代理共建':'#b85a9b'
+};
+
+// 平台标签颜色映射
+var PCOLOR={
+ '视频号':'p-wechat','小红书':'p-xhs','抖音':'p-douyin','B站':'p-bili','知乎':'p-zhihu',
+ '公众号服务号':'p-gzh','公众号订阅号':'p-gzh','小程序':'p-mini','个人微信':'p-wechat','企业微信':'p-wechat',
+ '头条号':'p-toutiao','百家号':'p-baijia'
+};
+
+// 当前筛选阵营
+var curCamp='all';
+
+function switchTab(id){
+ document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.getAttribute('onclick').indexOf(id)>=0)});
+ document.querySelectorAll('.panel').forEach(function(p){p.classList.toggle('on',p.id==='panel-'+id)});
+}
+
+// 阵营筛选条
+function renderCampBar(){
+ var bar=document.getElementById('campBar');
+ var html='<div class="camp-chip on" onclick="filterCamp(\'all\')" style="background:#4a443b;border-color:#4a443b"><span class="camp-dot" style="background:#fff"></span>全部阵营</div>';
+ CAMPS.forEach(function(c){
+  html+='<div class="camp-chip" onclick="filterCamp(\''+c.short+'\')"><span class="camp-dot" style="background:'+c.color+'"></span>'+c.name+'</div>';
+ });
+ bar.innerHTML=html;
+}
+function filterCamp(short){
+ curCamp=short;
+ document.querySelectorAll('.camp-chip').forEach(function(ch,i){
+  if(i===0){ch.classList.toggle('on',short==='all');ch.style.background=short==='all'?'#4a443b':'';ch.style.borderColor=short==='all'?'#4a443b':'#eadfce';ch.style.color=short==='all'?'#fff':''}
+  else{ch.classList.toggle('on',ch.textContent.indexOf(CAMPS[i-1].name)>=0&&short===CAMPS[i-1].short);ch.style.background=ch.classList.contains('on')?CAMPS[i-1].color:'';ch.style.borderColor=ch.classList.contains('on')?CAMPS[i-1].color:'#eadfce';ch.style.color=ch.classList.contains('on')?'#fff':''}
+ });
+ renderMindmap();
+}
+
+// 渲染思维导图
+function renderMindmap(){
+ var wrap=document.getElementById('mmCamps');
+ wrap.innerHTML='';
+ // 层级图例
+ var legend=document.createElement('div');legend.className='level-legend';
+ legend.innerHTML='<span class="ll">账号层级：</span>';
+ ['L1 核心主号','L2 内容分发','L3 交易承接','L4 私域运营','L5 辅助号','L6 代理共建'].forEach(function(l){
+  var s=document.createElement('span');s.className='lg';s.style.background=LEVELCOLOR[l];s.textContent=l;
+  legend.appendChild(s);
+ });
+ wrap.appendChild(legend);
+ // 层级承接关系总览
+ var flow=document.createElement('div');flow.className='lvl-flow';
+ var flowChain=document.createElement('div');flowChain.className='lvl-chain';
+ var lvls=[
+  {l:'L1',n:'核心主号',d:'品牌/人设主阵地，流量与信任源头',c:'#c9a05c'},
+  {l:'L2',n:'内容分发',d:'全平台内容铺设，承接L1声量',c:'#7a9b5a'},
+  {l:'L3',n:'交易承接',d:'交易/招商/工具闭环转化',c:'#4a7a9b'},
+  {l:'L4',n:'私域运营',d:'企微/个微1V1私域承接',c:'#9b7a5a'},
+  {l:'L5',n:'辅助号',d:'公益/品牌资产长线沉淀',c:'#8d8577'},
+  {l:'L6',n:'代理共建',d:'代理IP/区域/社群裂变',c:'#b85a9b'}
+ ];
+ flow.innerHTML='<h4>全域层级承接关系 · 流量自上而下逐层转化</h4>';
+ lvls.forEach(function(x,i){
+  var step=document.createElement('div');step.className='lvl-step';
+  step.innerHTML='<span class="lvl-badge" style="background:'+x.c+'">'+x.l+' '+x.n+'</span><span class="lvl-desc">'+x.d+'</span>';
+  flowChain.appendChild(step);
+  if(i<lvls.length-1){var ar=document.createElement('span');ar.className='lvl-arrow';ar.textContent='→';flowChain.appendChild(ar)}
+ });
+ flow.appendChild(flowChain);
+ wrap.appendChild(flow);
+ CAMPS.forEach(function(camp){
+  if(curCamp!=='all'&&curCamp!==camp.short)return;
+  var cBox=document.createElement('div');cBox.className='mm-camp';
+  // 阵营头
+  var head=document.createElement('div');head.className='mm-camp-head';head.style.background=camp.color;
+  var totalAccts=camp.groups.reduce(function(s,g){return s+g.items.length},0);
+  // 统计该阵营层级分布
+  var lvlDist={};
+  camp.groups.forEach(function(g){g.items.forEach(function(a){var k=a.level||'';lvlDist[k]=(lvlDist[k]||0)+1})});
+  var distTxt=Object.keys(lvlDist).filter(function(k){return k}).map(function(k){return k.replace(' 核心主号','').replace(' 内容分发','').replace(' 交易承接','').replace(' 私域运营','').replace(' 辅助号','').replace(' 代理共建','')+'×'+lvlDist[k]}).join(' / ');
+  head.innerHTML='<span>◆ '+camp.name+'</span><span class="cm-sub">'+camp.groups.length+' 分组 · '+totalAccts+' 账号 · '+distTxt+'</span>';
+  cBox.appendChild(head);
+  // 阵营体
+  var body=document.createElement('div');body.className='mm-camp-body';
+  camp.groups.forEach(function(g){
+   var gBox=document.createElement('div');gBox.className='mm-group';
+   var gTitle=document.createElement('div');gTitle.className='mm-group-title';
+   gTitle.innerHTML=g.group+'<span class="gn">'+g.items.length+'</span>';
+   gBox.appendChild(gTitle);
+   var items=document.createElement('div');items.className='mm-items';
+   // 按层级排序：L1优先，其次L2、L3...
+   var sorted=g.items.slice().sort(function(x,y){
+    var lx=x.level?parseInt(x.level.charAt(1)):9;
+    var ly=y.level?parseInt(y.level.charAt(1)):9;
+    return lx-ly;
+   });
+   sorted.forEach(function(a){
+    items.appendChild(makeNode(a,camp));
+   });
+   gBox.appendChild(items);
+   body.appendChild(gBox);
+  });
+  cBox.appendChild(body);
+  wrap.appendChild(cBox);
+ });
+}
+function makeNode(a,camp){
+ var n=document.createElement('div');n.className='mm-node';
+ var lvlNum=a.level?a.level.charAt(1):'2';
+ n.className+=' lvl-'+lvlNum;
+ var lvlColor=LEVELCOLOR[a.level]||'#8d8577';
+ var pc=PCOLOR[a.platform]||'p-gzh';
+ var rel=a.parent?'<span class="mm-rel">↑承接 '+a.parent+'</span>':'<span class="mm-rel" style="background:#fdf6ec;color:#a3762a">★源头</span>';
+ n.innerHTML='<span class="acct-platform '+pc+'">'+a.platform+'</span>'
+  +'<span style="font-weight:700">'+a.name+'</span>'
+  +'<span class="mm-lvl" style="background:'+lvlColor+'">'+(a.level||'')+'</span>'
+  +rel+'<span class="mm-pos">'+a.pos+'</span>';
+ n.onclick=function(){showDetail(a,camp)};
+ return n;
+}
+
+// 渲染账号列表
+function renderList(){
+ var body=document.getElementById('acctBody');
+ body.innerHTML='';
+ CAMPS.forEach(function(camp){
+  // 阵营行
+  var cr=document.createElement('tr');cr.className='camp-row';
+  var totalAccts=camp.groups.reduce(function(s,g){return s+g.items.length},0);
+  cr.innerHTML='<td colspan="11" style="background:'+camp.color+'"><span>◆ '+camp.name+' · '+camp.desc.slice(0,30)+'…（'+camp.groups.length+'分组 / '+totalAccts+'账号）</span></td>';
+  body.appendChild(cr);
+  camp.groups.forEach(function(g){
+   g.items.forEach(function(a){
+    var pc=PCOLOR[a.platform]||'p-gzh';
+    var st=a.status==='已运营'?'green':a.status==='筹备中'?'gold':'gray';
+    var lvlColor=LEVELCOLOR[a.level]||'#8d8577';
+    var lvlNum=a.level?a.level.charAt(1):'2';
+    var isRoot=!a.parent;
+    var lvlTag='<span class="lvl-bar" style="background:'+lvlColor+'"></span><span style="display:inline-block;padding:2px 8px;border-radius:5px;color:#fff;font-size:10px;font-weight:700;background:'+lvlColor+'">'+a.level+'</span>';
+    var parentTxt=isRoot?'<span style="color:#a3762a;font-weight:700">★ 流量源头</span>':'<span style="color:#a3762a;font-weight:700">↑承接 '+a.parent+'</span>';
+    var campTag='<span style="display:inline-block;padding:2px 8px;border-radius:5px;color:#fff;font-size:10px;font-weight:700;background:'+camp.color+'">'+camp.short+'</span>';
+    var tr=document.createElement('tr');
+    if(isRoot){tr.style.background='#fdf9f0'}
+    tr.innerHTML='<td>'+campTag+'</td><td style="color:#8a6d2f;font-weight:700">'+g.group+'</td>'
+     +'<td class="acct-name"'+(isRoot?' style="font-weight:800"':'')+'>'+a.name+'</td><td><span class="acct-platform '+pc+'">'+a.platform+'</span></td>'
+     +'<td>'+lvlTag+'</td><td>'+parentTxt+'</td>'
+     +'<td>'+a.pos+'</td><td>'+a.owner+'</td><td>'+a.content+'</td>'
+     +'<td><span class="d-tag '+st+'">'+a.status+'</span></td><td>'+a.fans+'</td>';
+    tr.onclick=function(){showDetail(a,camp)};
+    body.appendChild(tr);
+   });
+  });
+ });
+}
+
+// 战略分布统计
+function renderStat(){
+ var totalAccts=CAMPS.reduce(function(s,c){return s+c.groups.reduce(function(ss,g){return ss+g.items.length},0)},0);
+ var totalGroups=CAMPS.reduce(function(s,c){return s+c.groups.length},0);
+ var platforms=new Set();
+ CAMPS.forEach(function(c){c.groups.forEach(function(g){g.items.forEach(function(a){platforms.add(a.platform)})})});
+ var running=CAMPS.reduce(function(s,c){return s+c.groups.reduce(function(ss,g){return ss+g.items.filter(function(a){return a.status==='已运营'}).length},0)},0);
+ var stats=[
+  {n:4,l:'操盘阵营',a:'官方/赋能/推广/共建',cls:''},
+  {n:totalGroups,l:'战略分组',a:'16个职能分组',cls:''},
+  {n:totalAccts,l:'账号总数',a:'全域矩阵布局',cls:''},
+  {n:platforms.size,l:'覆盖平台',a:'全平台流量占位',cls:'blue'},
+  {n:running,l:'已运营账号',a:'持续输出内容',cls:'green'},
+  {n:CAMPS[3].groups.reduce(function(s,g){return s+g.items.length},0),l:'代理共建号',a:'矩阵裂变能力',cls:'purple'}
+ ];
+ document.getElementById('statGrid').innerHTML=stats.map(function(s){
+  return '<div class="stat-card '+s.cls+'"><div class="sn">'+s.n+'</div><div class="sl">'+s.l+'</div><div class="sa">'+s.a+'</div></div>';
+ }).join('');
+ // 思维导图统计（精简）
+ document.getElementById('mindStats').innerHTML=stats.slice(0,4).map(function(s){
+  return '<div class="stat-card '+s.cls+'"><div class="sn">'+s.n+'</div><div class="sl">'+s.l+'</div></div>';
+ }).join('');
+ // 阵营卡片
+ var cg=document.getElementById('campGrid');
+ cg.innerHTML=CAMPS.map(function(c){
+  var accts=c.groups.reduce(function(s,g){return s+g.items.length},0);
+  var run=c.groups.reduce(function(s,g){return s+g.items.filter(function(a){return a.status==='已运营'}).length},0);
+  return '<div class="camp-card"><div class="cc-bar" style="background:'+c.color+'"></div>'
+   +'<h3 style="color:'+c.color+'">◆ '+c.name+'</h3>'
+   +'<div class="cc-desc">'+c.desc+'</div>'
+   +'<div class="cc-stats"><div class="cc-stat"><div class="n" style="color:'+c.color+'">'+c.groups.length+'</div><div class="l">分组</div></div>'
+   +'<div class="cc-stat"><div class="n" style="color:'+c.color+'">'+accts+'</div><div class="l">账号</div></div>'
+   +'<div class="cc-stat"><div class="n" style="color:'+c.color+'">'+run+'</div><div class="l">已运营</div></div></div>'
+   +'<div class="cc-groups">'+c.groups.map(function(g){return '<span class="cc-g">'+g.group+'</span>'}).join('')+'</div>'
+   +'</div>';
+ }).join('');
+ // 引爆战略说明
+ var desc=document.getElementById('statDesc');
+ desc.innerHTML='<p><b style="color:#c9a05c">一、官方核心矩阵（5分组/16账号）</b>：项目方直营，以「主理人公社」品牌号 + 「一姐」创始人IP 双主阵地，覆盖视频号/小红书/抖音/B站/知乎/公众号六大平台。课程产品号承接交易，招商席位号完成变现，公益品牌号沉淀长线资产。<b>职能：品牌认知 + 人设信任 + 交易闭环</b></p>'
+  +'<p style="margin-top:10px"><b style="color:#4a7a9b">二、代理赋能矩阵（3分组/7账号）</b>：为代理提供服务支撑，代理服务号做1V1承接，零售素材号输出可搬运的图文/视频/朋友圈素材，代理工具号提供获客工具和SOP。<b>职能：降低代理执行门槛 + 提升代理获客效率</b></p>'
+  +'<p style="margin-top:10px"><b style="color:#7a5a9b">三、市场推广矩阵（5分组/12账号）</b>：公司辅助推广，科普号建认知、测评号做背书、种草号抓流量、IP矩阵号做人设、媒体号覆盖头条百度系。<b>职能：全平台铺设内容 + 触达泛流量 + 引爆项目声量</b></p>'
+  +'<p style="margin-top:10px"><b style="color:#7a9b5a">四、代理共建矩阵（3分组/7账号）</b>：与代理共建，孵化代理个人IP、区域号、社群号，形成代理自主获客能力。<b>职能：矩阵裂变 + 区域深耕 + 代理自主造血</b></p>'
+  +'<p style="margin-top:14px;color:#a3762a"><b>核心引爆逻辑：</b>官方核心矩阵造势 → 市场推广矩阵扩流 → 代理赋能矩阵承接 → 代理共建矩阵裂变，四阵营协同形成「品牌声量→流量获取→代理转化→矩阵裂变」的全域引爆闭环。</p>';
+ // 引爆流程
+ var flow=document.getElementById('strategyFlow');
+ var steps=[
+  {n:'01',t:'造势',d:'官方核心矩阵\n品牌声量+人设信任',c:'#c9a05c'},
+  {n:'02',t:'扩流',d:'市场推广矩阵\n全平台内容铺设',c:'#7a5a9b'},
+  {n:'03',t:'承接',d:'代理赋能矩阵\n素材工具赋能代理',c:'#4a7a9b'},
+  {n:'04',t:'裂变',d:'代理共建矩阵\n代理IP区域裂变',c:'#7a9b5a'}
+ ];
+ flow.innerHTML=steps.map(function(s){
+  return '<div class="flow-step"><div class="fs-n" style="background:'+s.c+'">'+s.n+' '+s.t+'</div><div class="fs-t">'+s.t+'</div><div class="fs-d" style="white-space:pre-line">'+s.d+'</div></div>';
+ }).join('');
+}
+
+// ===== 层级树形图 =====
+var curTreeCamp='all';
+var TREE_NODE_W=150,TREE_GAP=26,TREE_LEVEL_H=150,TREE_TOP=20,TREE_NODE_H=92;
+// 每个分组预设账号配额
+var QUOTA={
+ '品牌官方号':6,'创始人IP':5,'课程产品号':4,'招商席位号':3,'公益品牌号':3,
+ '代理服务号':3,'零售素材号':4,'代理工具号':3,
+ '科普账号':3,'测评账号':3,'种草账号':4,'IP矩阵账号':4,'媒体类账号':3,
+ '代理个人IP号':5,'代理区域号':6,'代理社群号':4
+};
+// 固定比例状态
+var treeScale=1;
+// 授权填充目标
+var authTarget=null;
+// 平台列表
+var PLATFORMS=['视频号','小红书','抖音','B站','知乎','公众号','小程序','头条号','百家号','个人微信','企业微信'];
+
+// 从localStorage加载已填充账号
+function loadFilled(){
+ try{return JSON.parse(localStorage.getItem('matrix_filled')||'{}')}catch(e){return{}}
+}
+function saveFilled(data){
+ try{localStorage.setItem('matrix_filled',JSON.stringify(data))}catch(e){}
+}
+// 获取某分组通过授权填充的账号列表
+function getFilledByGroup(group){
+ var f=loadFilled();
+ var result=[];
+ for(var k in f){
+  var parts=k.split('|');
+  if(parts.length===3&&parts[2]===group){
+   result.push(f[k]);
+  }
+ }
+ return result;
+}
+// 判断账号是否已填充：已运营 或 localStorage有记录
+function isFilled(a){
+ if(a.status==='已运营')return true;
+ var f=loadFilled();
+ return !!f[a.platform+'|'+a.name+'|'+(a._group||'')];
+}
+// 统计分组填充情况
+function groupFillStats(group,items){
+ var quota=QUOTA[group]||items.length;
+ var origFilled=items.filter(function(a){return isFilled(a)}).length;
+ var authFilled=getFilledByGroup(group).length;
+ var filled=origFilled+authFilled;
+ return {filled:filled,quota:quota,empty:Math.max(0,quota-filled)};
+}
+
+function applyTreeTransform(){
+ var st=document.getElementById('treeStage');
+ if(st){st.style.transform='scale('+treeScale+')'}
+ var info=document.getElementById('zoomInfo');
+ if(info){info.textContent=Math.round(treeScale*100)+'%'}
+ document.querySelectorAll('.zoom-ctrl button[data-scale]').forEach(function(btn){
+  btn.classList.toggle('on',Number(btn.dataset.scale)===treeScale);
+ });
+}
+function setTreeScale(scale){
+ treeScale=scale;
+ applyTreeTransform();
+}
+function initPanZoom(){
+ applyTreeTransform();
+}
+
+// 打开授权弹窗
+function openAuth(node,group,camp){
+ authTarget={node:node,group:group,camp:camp};
+ document.getElementById('authTitle').textContent='填充 '+group+' · 空缺账号';
+ document.getElementById('authSub').textContent='选择平台并填写账号名称，完成后该空缺位将被填充（数据保存在本地）';
+ var pfs=document.getElementById('authPlatforms');
+ pfs.innerHTML=PLATFORMS.map(function(p){return '<div class="auth-pf" onclick="selPf(this,\''+p+'\')">'+p+'</div>'}).join('');
+ document.getElementById('authName').value='';
+ document.getElementById('authPos').value='';
+ document.getElementById('authMask').classList.add('show');
+}
+var selPlatform='';
+function selPf(el,p){
+ document.querySelectorAll('.auth-pf').forEach(function(x){x.classList.remove('on')});
+ el.classList.add('on');selPlatform=p;
+}
+function closeAuth(){document.getElementById('authMask').classList.remove('show');authTarget=null}
+function confirmAuth(){
+ var name=document.getElementById('authName').value.trim();
+ if(!selPlatform){alert('请选择平台');return}
+ if(!name){alert('请输入账号名称');return}
+ var pos=document.getElementById('authPos').value.trim()||'授权填充账号';
+ var key=selPlatform+'|'+name+'|'+authTarget.group;
+ var f=loadFilled();
+ f[key]={name:name,platform:selPlatform,pos:pos,status:'已运营',owner:'授权用户',fans:'0',desc:'通过授权登录填充的账号，定位：'+pos};
+ saveFilled(f);
+ closeAuth();
+ renderTree();
+}
+
+function renderTreeCampBar(){
+ var bar=document.getElementById('treeCampBar');
+ if(!bar)return;
+ var html='<div class="camp-chip on" onclick="filterTreeCamp(\'all\')" style="background:#4a443b;border-color:#4a443b"><span class="camp-dot" style="background:#fff"></span>全部阵营</div>';
+ CAMPS.forEach(function(c){
+  html+='<div class="camp-chip" onclick="filterTreeCamp(\''+c.short+'\')"><span class="camp-dot" style="background:'+c.color+'"></span>'+c.name+'</div>';
+ });
+ bar.innerHTML=html;
+}
+function filterTreeCamp(short){
+ curTreeCamp=short;
+ document.querySelectorAll('#treeCampBar .camp-chip').forEach(function(ch,i){
+  if(i===0){ch.classList.toggle('on',short==='all');ch.style.background=short==='all'?'#4a443b':'';ch.style.borderColor=short==='all'?'#4a443b':'#eadfce';ch.style.color=short==='all'?'#fff':''}
+  else{var on=short===CAMPS[i-1].short;ch.classList.toggle('on',on);ch.style.background=on?CAMPS[i-1].color:'';ch.style.borderColor=on?CAMPS[i-1].color:'#eadfce';ch.style.color=on?'#fff':''}
+ });
+ renderTree();
+}
+
+// 从所有账号构建索引：platform/name -> account
+function buildAcctIndex(){
+ var idx={};
+ CAMPS.forEach(function(c){c.groups.forEach(function(g){g.items.forEach(function(a){
+  idx[a.platform+'|'+a.name]=a;
+  // also index by platform alone and name alone for parent matching
+  if(!idx['p:'+a.platform])idx['p:'+a.platform]=a;
+  if(!idx['n:'+a.name])idx['n:'+a.name]=a;
+ })})});
+ return idx;
+}
+
+// 为某个阵营构建森林（多棵树）：L1为根，子节点按parent匹配，补全空缺位
+function buildForest(camp){
+ var allItems=[];
+ camp.groups.forEach(function(g){
+  var quota=QUOTA[g.group]||g.items.length;
+  var filledCount=0;
+  g.items.forEach(function(a){
+   a._group=g.group;a._camp=camp.short;
+   a._filled=isFilled(a);
+   if(a._filled)filledCount++;
+   allItems.push({acct:a,children:[]});
+  });
+  // 加入通过授权登录填充的账号
+  var authFilled=getFilledByGroup(g.group);
+  authFilled.forEach(function(a){
+   a._group=g.group;a._camp=camp.short;a._filled=true;
+   allItems.push({acct:a,children:[]});
+   filledCount++;
+  });
+  // 补全空缺位占位节点
+  var emptyCount=Math.max(0,quota-filledCount);
+  for(var i=0;i<emptyCount;i++){
+   var emptyAcct={name:'空缺位'+(i+1),platform:'未授权',pos:'待填充',level:'L2 内容分发',parent:null,owner:'—',content:'授权登录后填充',status:'空缺',fans:'—',desc:'点击「授权登录」填充该账号',_group:g.group,_camp:camp.short,_filled:false,_empty:true};
+   allItems.push({acct:emptyAcct,children:[]});
+  }
+ });
+ var map={};
+ allItems.forEach(function(n){
+  var k=n.acct.platform+'|'+n.acct.name+'|'+(n.acct._group||'');
+  map[k]=n;
+ });
+ var roots=[];
+ allItems.forEach(function(n){
+  var p=n.acct.parent;
+  if(!p){roots.push(n);return}
+  var parent=map[p+'|'+n.acct.name+'|'+(n.acct._group||'')]||null;
+  if(!parent){
+   for(var k in map){if(map[k].acct.platform===p){parent=map[k];break}}
+  }
+  if(!parent){
+   for(var k2 in map){if(map[k2].acct.name===p){parent=map[k2];break}}
+  }
+  if(parent&&parent!==n){parent.children.push(n)}else{roots.push(n)}
+ });
+ return roots;
+}
+
+// 计算子树叶子数
+function leafCount(node){
+ if(node.children.length===0)return 1;
+ return node.children.reduce(function(s,c){return s+leafCount(c)},0);
+}
+
+// 布局：自上而下，父节点居中于子节点上方
+function layoutTree(roots){
+ var unitW=TREE_NODE_W+TREE_GAP;
+ function assign(node,leftX,depth){
+  var leaves=leafCount(node);
+  node.width=leaves*unitW-TREE_GAP;
+  node.x=leftX+node.width/2;
+  node.y=TREE_TOP+depth*TREE_LEVEL_H;
+  node.depth=depth;
+  var cur=leftX;
+  node.children.forEach(function(ch){
+   assign(ch,cur,depth+1);
+   cur+=leafCount(ch)*unitW;
+  });
+ }
+ var curX=0;
+ roots.forEach(function(r){
+  assign(r,curX,0);
+  curX+=leafCount(r)*unitW;
+ });
+}
+
+// 获取树的边界
+function getBounds(roots){
+ var minX=Infinity,maxX=-Infinity,maxY=-Infinity;
+ function walk(n){
+  minX=Math.min(minX,n.x);maxX=Math.max(maxX,n.x);maxY=Math.max(maxY,n.y);
+  n.children.forEach(walk);
+ }
+ roots.forEach(walk);
+ return {minX:minX,maxX:maxX,maxY:maxY,width:maxX-minX+TREE_NODE_W,height:maxY+TREE_NODE_H+TREE_TOP};
+}
+
+function renderTree(){
+ var wrap=document.getElementById('treeWrap');
+ if(!wrap)return;
+ wrap.innerHTML='';
+ // 图例
+ var legend=document.createElement('div');legend.className='tree-legend';
+ legend.innerHTML='<span class="tl">账号层级：</span>';
+ ['L1 核心主号','L2 内容分发','L3 交易承接','L4 私域运营','L5 辅助号','L6 代理共建'].forEach(function(l){
+  var s=document.createElement('span');s.className='tg';s.style.background=LEVELCOLOR[l];s.textContent=l;
+  legend.appendChild(s);
+ });
+ wrap.appendChild(legend);
+ CAMPS.forEach(function(camp){
+  if(curTreeCamp!=='all'&&curTreeCamp!==camp.short)return;
+  var block=document.createElement('div');block.className='tree-camp-block';
+  var roots=buildForest(camp);
+  if(roots.length===0)return;
+  layoutTree(roots);
+  var bounds=getBounds(roots);
+  // 阵营配额统计
+  var campFilled=0,campQuota=0;
+  camp.groups.forEach(function(g){var s=groupFillStats(g.group,g.items);campFilled+=s.filled;campQuota+=s.quota});
+  var qClass=campFilled>=campQuota?'full':(campFilled===0?'empty':'partial');
+  // 阵营标题
+  var title=document.createElement('div');title.className='tree-camp-title';title.style.background=camp.color;
+  title.innerHTML='◆ '+camp.name+' <span class="tct-sub">'+camp.groups.length+'分组</span>'
+   +'<span class="quota-badge '+qClass+'">已填 '+campFilled+' / '+campQuota+'</span>';
+  block.appendChild(title);
+  // 舞台
+  var stage=document.createElement('div');stage.className='tree-stage';
+  stage.style.width=bounds.width+'px';
+  stage.style.height=bounds.height+'px';
+  // SVG 连线
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('class','tree-svg');
+  svg.setAttribute('width',bounds.width);
+  svg.setAttribute('height',bounds.height);
+  svg.setAttribute('viewBox','0 0 '+bounds.width+' '+bounds.height);
+  function drawLines(node){
+   node.children.forEach(function(ch){
+    var x1=node.x,y1=node.y+TREE_NODE_H;
+    var x2=ch.x,y2=ch.y;
+    var midY=(y1+y2)/2;
+    var path=document.createElementNS('http://www.w3.org/2000/svg','path');
+    var lvlNum=ch.acct.level?ch.acct.level.charAt(1):'2';
+    path.setAttribute('class','lvl-'+lvlNum);
+    path.setAttribute('d','M '+x1+' '+y1+' L '+x1+' '+midY+' L '+x2+' '+midY+' L '+x2+' '+y2);
+    path.setAttribute('fill','none');
+    svg.appendChild(path);
+    drawLines(ch);
+   });
+  }
+  roots.forEach(drawLines);
+  stage.appendChild(svg);
+  // 节点
+  function drawNodes(node){
+   var div=document.createElement('div');
+   var lvlNum=node.acct.level?node.acct.level.charAt(1):'2';
+   div.className='tree-node lvl-'+lvlNum+(node.acct._empty?' empty':'');
+   div.style.left=(node.x-TREE_NODE_W/2)+'px';
+   div.style.top=node.y+'px';
+   var pc=PCOLOR[node.acct.platform]||'p-gzh';
+   var lvlColor=LEVELCOLOR[node.acct.level]||'#8d8577';
+   var desc=node.acct.desc||'';
+   var shortDesc=desc.length>36?desc.substring(0,36)+'…':desc;
+   if(node.acct._empty){
+    // 空缺位：显示授权登录按钮
+    div.innerHTML='<div class="tn-name">空缺位</div>'
+     +'<span class="tn-plat" style="background:#f0ece4;color:#8d8577">未授权</span>'
+     +'<span class="tn-lvl" style="background:#c9c0b0">L2</span>'
+     +'<div class="tn-pos" style="color:#a39b8e">'+node.acct._group+'</div>'
+     +'<div class="tn-fill" onclick="openAuth(null,\''+node.acct._group+'\',\''+camp.short+'\')">授权登录填充</div>';
+   }else{
+    div.innerHTML='<div class="tn-name">'+node.acct.name+'</div>'
+     +'<span class="tn-plat '+pc+'">'+node.acct.platform+'</span>'
+     +'<span class="tn-lvl" style="background:'+lvlColor+'">'+(node.acct.level||'')+'</span>'
+     +'<div class="tn-pos">'+node.acct.pos+'</div>'
+     +'<div class="tn-desc">'+shortDesc+'</div>'
+     +'<div class="tn-tip"><div class="tt-title">'+node.acct.name+' · '+node.acct.platform+'</div>'
+     +'<div class="tt-loc">【定位】'+node.acct.pos+'</div>'
+     +'<div style="color:#6b6154">'+desc+'</div>'
+     +(node.acct.owner?'<div style="margin-top:5px;color:#a3762a;font-weight:700">负责人：'+node.acct.owner+'</div>':'')
+     +(node.acct.fans&&node.acct.fans!=='—'?'<div style="color:#8a6d2f">粉丝：'+node.acct.fans+'</div>':'')
+     +'</div>';
+    div.onclick=function(){showDetail(node.acct,camp)};
+   }
+   stage.appendChild(div);
+   node.children.forEach(drawNodes);
+  }
+  roots.forEach(drawNodes);
+  block.appendChild(stage);
+  wrap.appendChild(block);
+ });
+ // 矩阵规划建议
+ renderPlanSuggestions(wrap);
+ // 初始化拖拽缩放
+ initPanZoom();
+ applyTreeTransform();
+}
+
+// 矩阵规划建议：基于数据分析给出策略建议
+function renderPlanSuggestions(wrap){
+ var box=document.createElement('div');box.className='plan-box';
+ box.innerHTML='<h3>◆ 矩阵规划建议 · 基于当前账号体系的策略分析</h3>';
+ // 按阵营分析
+ var campCards=document.createElement('div');campCards.className='plan-camps';
+ CAMPS.forEach(function(camp){
+  var items=[];
+  camp.groups.forEach(function(g){g.items.forEach(function(a){items.push(a)})});
+  var running=items.filter(function(a){return a.status==='已运营'}).length;
+  var preparing=items.filter(function(a){return a.status==='筹备中'}).length;
+  var lvl1=items.filter(function(a){return a.level&&a.level.indexOf('L1')>=0}).length;
+  var platforms=new Set(items.map(function(a){return a.platform})).size;
+  var suggestions=[];
+  if(preparing>0){suggestions.push('当前有 <b>'+preparing+'</b> 个账号筹备中，建议优先启动，形成完整声量')}
+  if(lvl1===0){suggestions.push('缺少 <b>L1 核心主号</b>，建议设立阵营主阵地账号作为流量源头')}
+  if(platforms<3){suggestions.push('仅覆盖 <b>'+platforms+'</b> 个平台，建议补充抖音/小红书等流量平台')}
+  if(running>0&&items.length/running<0.8){suggestions.push('运营率不足 <b>80%</b>，建议集中资源提升已运营账号产出')}
+  if(suggestions.length===0){suggestions.push('阵营结构完整，建议持续优化内容质量与互动率')}
+  // 阵营定位建议
+  var campAdvice={
+   '官方':'强化 <b>双主阵地</b>（品牌号+创始人IP）联动，统一品牌叙事',
+   '赋能':'素材号需保持 <b>日更频率</b>，确保代理有充足可搬运内容',
+   '推广':'5类账号需 <b>差异化定位</b>，避免内容同质化竞争',
+   '共建':'代理IP孵化需配套 <b>培训+激励</b>，提升代理自主产出能力'
+  };
+  suggestions.push(campAdvice[camp.short]||'');
+  var card=document.createElement('div');card.className='plan-card';
+  card.innerHTML='<div class="pc-bar" style="background:'+camp.color+'"></div>'
+   +'<div class="pc-title"><span class="pc-tag" style="background:'+camp.color+'">'+camp.short+'</span>'+camp.name+'</div>'
+   +'<ul>'+suggestions.map(function(s){return '<li>'+s+'</li>'}).join('')+'</ul>';
+  campCards.appendChild(card);
+ });
+ box.appendChild(campCards);
+ // 全局优先级建议
+ var summary=document.createElement('div');summary.className='plan-summary';
+ summary.innerHTML='<h4>全域矩阵引爆 · 优先级行动建议</h4>'
+  +'<p><b>① 补齐筹备账号</b><span class="ps-priority ps-high">高优先级</span><br>公益品牌号（万物有言/掌灯计划）、华南区域号、代理工具箱小程序尚在筹备，建议在项目启动前完成搭建，避免声量缺口。</p>'
+  +'<p><b>② 强化L1-L2流量链路</b><span class="ps-priority ps-high">高优先级</span><br>3个L1核心主号（主理人公社/一姐/上线夜校）需保持周更3次以上，L2分发账号同步搬运，确保品牌声量持续输出。</p>'
+  +'<p><b>③ 代理素材日更机制</b><span class="ps-priority ps-mid">中优先级</span><br>零售素材号（小红书/抖音/公众号）需建立日更素材库，代理直接搬运即可获客，降低代理执行门槛。</p>'
+  +'<p><b>④ 市场推广5类差异化</b><span class="ps-priority ps-mid">中优先级</span><br>科普/测评/种草/IP/媒体5类账号需明确内容边界，科普做认知、测评做背书、种草抓流量、IP建人设、媒体铺广度。</p>'
+  +'<p><b>⑤ 代理IP孵化SOP</b><span class="ps-priority ps-low">低优先级</span><br>为代理提供个人IP孵化SOP（定位→内容→涨粉→变现四步法），配合代理工具箱，实现代理自主造血裂变。</p>';
+ box.appendChild(summary);
+ wrap.appendChild(box);
+}
+
+function showDetail(a,camp){
+ var pc=PCOLOR[a.platform]||'p-gzh';
+ var st=a.status==='已运营'?'green':a.status==='筹备中'?'gold':'gray';
+ var lvlColor=LEVELCOLOR[a.level]||'#8d8577';
+ // 查找下级承接账号
+ var children=[];
+ CAMPS.forEach(function(c){c.groups.forEach(function(g){g.items.forEach(function(x){
+  if(x.parent===a.platform||x.parent===a.name){children.push(x)}
+ })})});
+ // 构建层级链路（向上溯源）
+ var chain=[];
+ var cur=a;
+ while(cur&&cur.parent){
+  var found=null;
+  CAMPS.forEach(function(c){c.groups.forEach(function(g){g.items.forEach(function(x){
+   if(!found&&(x.platform===cur.parent||x.name===cur.parent)){found=x}
+  })})});
+  if(found){chain.unshift(found);cur=found}else{break}
+ }
+ document.getElementById('detailTitle').textContent=a.name;
+ var dc=document.getElementById('detailCamp');
+ dc.textContent=camp?camp.name:'';
+ dc.style.background=camp?camp.color:'#8d8577';
+ var chainHtml=chain.length?'<div style="font-size:11px;color:#8d8577;margin-top:6px;line-height:1.6">'
+  +chain.map(function(p){return '<span style="color:#a3762a;font-weight:700">'+p.name+'·'+p.platform+'</span> <span style="color:#c9a05c">→</span> '}).join('')+'<span style="color:#4a443b;font-weight:800">当前</span></div>':'<span style="color:#a3762a;font-size:11px">★ 流量源头（顶级主号）</span>';
+ var childHtml=children.length?'<div style="margin-top:6px">'+children.map(function(ch){
+  var chLvlColor=LEVELCOLOR[ch.level]||'#8d8577';
+  return '<span style="display:inline-block;margin:3px 4px 3px 0;padding:3px 9px;border-radius:6px;background:#f7f0e0;border-left:3px solid '+chLvlColor+';font-size:11px;font-weight:700;color:#4a443b">'+ch.name+'·'+ch.platform+' <span style="color:'+chLvlColor+';font-size:10px">'+(ch.level||'')+'</span></span>';
+ }).join('')+'</div>':'<span style="color:#a39b8e;font-size:11px">无下级承接（末端账号）</span>';
+ document.getElementById('detailBody').innerHTML=
+  '<div class="d-row"><div class="d-label">所属阵营</div><div class="d-val"><span class="d-tag" style="background:'+(camp?camp.color:'#8d8577')+';color:#fff">'+(camp?camp.name:'—')+'</span></div></div>'
+  +'<div class="d-row"><div class="d-label">平台</div><div class="d-val"><span class="acct-platform '+pc+'">'+a.platform+'</span></div></div>'
+  +'<div class="d-row"><div class="d-label">账号层级</div><div class="d-val"><span style="display:inline-block;padding:3px 10px;border-radius:6px;color:#fff;font-size:12px;font-weight:700;background:'+lvlColor+'">'+(a.level||'未分级')+'</span></div></div>'
+  +'<div class="d-row"><div class="d-label">层级链路 · 向上溯源</div><div class="d-val">'+chainHtml+'</div></div>'
+  +'<div class="d-row"><div class="d-label">下级承接账号 · 向下分流</div><div class="d-val">'+childHtml+'</div></div>'
+  +'<div class="d-row"><div class="d-label">定位</div><div class="d-val">'+a.pos+'</div></div>'
+  +'<div class="d-row"><div class="d-label">负责人</div><div class="d-val">'+a.owner+'</div></div>'
+  +'<div class="d-row"><div class="d-label">内容方向</div><div class="d-val">'+a.content+'</div></div>'
+  +'<div class="d-row"><div class="d-label">状态</div><div class="d-val"><span class="d-tag '+st+'">'+a.status+'</span></div></div>'
+  +'<div class="d-row"><div class="d-label">粉丝量</div><div class="d-val">'+a.fans+'</div></div>'
+  +'<div class="d-row"><div class="d-label">账号说明</div><div class="d-val">'+a.desc+'</div></div>';
+ document.getElementById('detail').classList.add('show');
+}
+function closeDetail(){document.getElementById('detail').classList.remove('show')}
+
+renderCampBar();renderMindmap();renderTreeCampBar();renderTree();renderList();renderStat();
+</script>
+</body>
+</html>

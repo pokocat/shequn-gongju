@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>随心榜 · 2026年9月 · 上线夜校</title>
+<style>
+:root{
+  --gold:#b8893a; --gold-l:#d4a851; --gold-d:#8a6328;
+  --ink:#1a1a1a; --ink-2:#4a4a4a; --ink-3:#888;
+  --paper:#fbf6ec; --paper-2:#f3ebd8; --card:#ffffff;
+  --line:#e8dfc8;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  background:linear-gradient(180deg,#f7f1e2 0%,#fbf6ec 100%);
+  color:var(--ink);line-height:1.75;font-size:15px;
+  min-height:100vh;
+}
+.wrap{max-width:920px;margin:0 auto;padding:32px 20px 80px}
+
+/* Hero */
+.hero{
+  background:linear-gradient(135deg,#1a1a1a 0%,#3a2e1a 100%);
+  color:#f3ebd8;border-radius:20px;padding:40px 32px;
+  position:relative;overflow:hidden;margin-bottom:24px;
+  box-shadow:0 12px 40px rgba(184,137,58,.18);
+}
+.hero::before{
+  content:"◆";position:absolute;top:-20px;right:-10px;
+  font-size:180px;color:rgba(184,137,58,.08);font-weight:100;
+}
+.hero-tag{
+  display:inline-block;padding:4px 14px;
+  border:1px solid var(--gold-l);color:var(--gold-l);
+  border-radius:20px;font-size:12px;letter-spacing:2px;
+  margin-bottom:16px;
+}
+.hero h1{
+  font-size:32px;font-weight:600;letter-spacing:1px;
+  margin-bottom:8px;
+}
+.hero h1 .mon{color:var(--gold-l);font-weight:500}
+.hero-sub{color:#b8a988;font-size:14px;margin-bottom:28px}
+.hero-num{
+  font-size:48px;font-weight:200;color:#fff;
+  letter-spacing:-1px;line-height:1;
+}
+.hero-num small{font-size:18px;color:var(--gold-l);margin-left:6px;font-weight:400}
+.hero-meta{
+  display:flex;gap:32px;margin-top:20px;
+  padding-top:20px;border-top:1px solid rgba(184,137,58,.2);
+}
+.hero-meta div{flex:1}
+.hero-meta .lbl{font-size:11px;color:#8a7d5e;letter-spacing:1px;margin-bottom:4px}
+.hero-meta .val{font-size:18px;color:#f3ebd8;font-weight:500}
+
+/* Tab */
+.tabs{
+  display:flex;gap:8px;margin-bottom:20px;
+  background:var(--card);padding:6px;border-radius:14px;
+  box-shadow:0 2px 12px rgba(0,0,0,.04);
+}
+.tab{
+  flex:1;padding:12px;text-align:center;
+  border-radius:10px;cursor:pointer;font-size:14px;
+  color:var(--ink-3);transition:all .25s;
+  font-weight:500;
+}
+.tab.active{
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold-d) 100%);
+  color:#fff;box-shadow:0 4px 12px rgba(184,137,58,.3);
+}
+
+/* Card */
+.card{
+  background:var(--card);border-radius:16px;padding:24px;
+  margin-bottom:16px;box-shadow:0 2px 12px rgba(0,0,0,.04);
+  border:1px solid var(--line);
+}
+.card h2{
+  font-size:17px;font-weight:600;color:var(--ink);
+  margin-bottom:16px;padding-bottom:12px;
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:8px;
+}
+.card h2::before{
+  content:"";width:4px;height:18px;
+  background:linear-gradient(180deg,var(--gold-l),var(--gold-d));
+  border-radius:2px;
+}
+
+/* Distribution */
+.dist{display:flex;align-items:flex-end;gap:12px;height:140px;padding:0 8px}
+.dist-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.dist-bar{
+  width:100%;border-radius:6px 6px 0 0;
+  background:linear-gradient(180deg,var(--gold-l) 0%,var(--gold) 100%);
+  position:relative;transition:height .6s ease;
+  min-height:8px;
+}
+.dist-col.t0 .dist-bar{background:linear-gradient(180deg,#c8c8c8,#888)}
+.dist-col.t4 .dist-bar{
+  background:linear-gradient(180deg,#1a1a1a 0%,#3a2e1a 100%);
+}
+.dist-val{font-size:13px;font-weight:600;color:var(--ink)}
+.dist-lbl{font-size:11px;color:var(--ink-3)}
+.dist-tag{font-size:10px;color:var(--ink-3);margin-top:-4px}
+
+/* Class list */
+.class-item{
+  display:flex;align-items:center;padding:14px 0;
+  border-bottom:1px dashed var(--line);
+}
+.class-item:last-child{border-bottom:none}
+.class-rank{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--paper-2);color:var(--ink-2);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:13px;margin-right:14px;
+}
+.class-rank.top1{background:linear-gradient(135deg,var(--gold-l),var(--gold-d));color:#fff}
+.class-rank.top2{background:linear-gradient(135deg,#d4d4d4,#888);color:#fff}
+.class-rank.top3{background:linear-gradient(135deg,#d4a851,#8a6328);color:#fff;opacity:.7}
+.class-info{flex:1}
+.class-name{font-size:14px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.class-meta{font-size:12px;color:var(--ink-3)}
+.class-bracket{
+  padding:4px 10px;background:var(--paper-2);
+  border-radius:12px;font-size:12px;color:var(--gold-d);
+  font-weight:500;
+}
+
+/* Leader wall */
+.leader-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px}
+.leader-card{
+  background:linear-gradient(180deg,#fff 0%,var(--paper) 100%);
+  border:1px solid var(--line);border-radius:12px;
+  padding:18px 14px;text-align:center;
+}
+.leader-avatar{
+  width:54px;height:54px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-l),var(--gold-d));
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:20px;font-weight:600;margin:0 auto 10px;
+}
+.leader-name{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.leader-meta{font-size:11px;color:var(--ink-3);margin-bottom:8px}
+.leader-share{
+  font-size:18px;font-weight:300;color:var(--gold-d);
+  letter-spacing:-0.5px;
+}
+.leader-share small{font-size:11px;color:var(--ink-3);display:block;margin-top:2px}
+.leader-score{
+  display:inline-block;margin-top:8px;
+  padding:2px 8px;background:#fff8e6;
+  border:1px solid var(--gold-l);border-radius:10px;
+  font-size:11px;color:var(--gold-d);
+}
+
+/* Trust */
+.trust{
+  background:linear-gradient(135deg,#1a1a1a 0%,#2a2418 100%);
+  color:#e8dfc8;border-radius:16px;padding:28px;
+  margin-top:20px;
+}
+.trust h3{color:var(--gold-l);font-size:15px;margin-bottom:16px;letter-spacing:1px}
+.trust-row{display:flex;gap:20px;flex-wrap:wrap}
+.trust-item{flex:1;min-width:200px}
+.trust-item .ti-t{font-size:13px;color:#fff;margin-bottom:4px;font-weight:500}
+.trust-item .ti-d{font-size:12px;color:#8a7d5e;line-height:1.6}
+
+/* Footer */
+.foot{
+  text-align:center;padding:32px 20px;
+  color:var(--ink-3);font-size:12px;line-height:1.8;
+}
+.foot .next{
+  background:var(--card);border:1px dashed var(--gold-l);
+  border-radius:12px;padding:16px;margin-bottom:20px;
+  color:var(--ink-2);
+}
+.foot .next b{color:var(--gold-d)}
+
+/* Notice */
+.notice{
+  background:#fff8e6;border-left:3px solid var(--gold-l);
+  padding:12px 16px;border-radius:0 8px 8px 0;
+  font-size:12px;color:var(--ink-2);margin-bottom:16px;
+  line-height:1.7;
+}
+.notice b{color:var(--gold-d)}
+
+/* Switch view */
+.view{display:none}
+.view.active{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Hero -->
+  <div class="hero">
+    <span class="hero-tag">SUIXIN BILL · VOL.01</span>
+    <h1>随心榜 · <span class="mon">2026年9月</span></h1>
+    <div class="hero-sub">上线夜校 · AI 普及班 · 首期 5 班齐开 · 月度账单公示</div>
+    <div class="hero-num">12,860<small>元 · 学员自愿支持总额</small></div>
+    <div class="hero-meta">
+      <div><div class="lbl">参与班级</div><div class="val">5 班</div></div>
+      <div><div class="lbl">学员总数</div><div class="val">312 人</div></div>
+      <div><div class="lbl">支持人数</div><div class="val">87 人</div></div>
+      <div><div class="lbl">参与率</div><div class="val">27.9%</div></div>
+    </div>
+  </div>
+
+  <!-- Privacy notice -->
+  <div class="notice">
+    <b>隐私声明</b>：所有公示仅显示金额分布与匿名统计，绝不显示「姓名+金额」对应关系。
+    学员可查自己的，不可查他人的。T3/T4 大额学员只在班榜显示「有 X 位大额支持者」。
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchView('global',this)">总榜</div>
+    <div class="tab" onclick="switchView('class',this)">班榜</div>
+    <div class="tab" onclick="switchView('leader',this)">团长榜</div>
+  </div>
+
+  <!-- 总榜 -->
+  <div class="view active" id="view-global">
+    <div class="card">
+      <h2>金额档位分布</h2>
+      <div class="dist">
+        <div class="dist-col t0">
+          <div class="dist-val">225</div>
+          <div class="dist-bar" style="height:88%"></div>
+          <div class="dist-lbl">T0</div>
+          <div class="dist-tag">0元学完</div>
+        </div>
+        <div class="dist-col t1">
+          <div class="dist-val">42</div>
+          <div class="dist-bar" style="height:16%"></div>
+          <div class="dist-lbl">T1</div>
+          <div class="dist-tag">1-9元</div>
+        </div>
+        <div class="dist-col t2">
+          <div class="dist-val">28</div>
+          <div class="dist-bar" style="height:11%"></div>
+          <div class="dist-lbl">T2</div>
+          <div class="dist-tag">10-99元</div>
+        </div>
+        <div class="dist-col t3">
+          <div class="dist-val">13</div>
+          <div class="dist-bar" style="height:5%"></div>
+          <div class="dist-lbl">T3</div>
+          <div class="dist-tag">100-499元</div>
+        </div>
+        <div class="dist-col t4">
+          <div class="dist-val">4</div>
+          <div class="dist-bar" style="height:2%"></div>
+          <div class="dist-lbl">T4</div>
+          <div class="dist-tag">500元+</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:12px;color:var(--ink-3);text-align:center">
+        中位数支持额 <b style="color:var(--gold-d)">30 元</b> · 平均支持额 <b style="color:var(--gold-d)">147.82 元</b> · 主流档位 <b style="color:var(--gold-d)">100-499 元</b>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>三重安全垫</h2>
+      <div class="trust">
+        <h3>◆ 为什么我们敢公示</h3>
+        <div class="trust-row">
+          <div class="trust-item">
+            <div class="ti-t">100% 对公收款</div>
+            <div class="ti-d">所有随心付进入主理人公社（杭州）传媒科技有限公司对公账户，不经过个人码。</div>
+          </div>
+          <div class="trust-item">
+            <div class="ti-t">24h 无条件退款</div>
+            <div class="ti-d">任何支付 24 小时内联系客服无条件退款，不需要理由，不需要解释。</div>
+          </div>
+          <div class="trust-item">
+            <div class="ti-t">50% 团长分润公示</div>
+            <div class="ti-d">每位团长本月分润总额已在「团长榜」公示，分润比例写进合作协议。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 班榜 -->
+  <div class="view" id="view-class">
+    <div class="card">
+      <h2>班级人均档位排行</h2>
+      <div class="class-item">
+        <div class="class-rank top1">1</div>
+        <div class="class-info">
+          <div class="class-name">上线夜校·AI普及·第1班（一姐）</div>
+          <div class="class-meta">78 人 · 支持 24 人 · 参与率 30.8%</div>
+        </div>
+        <div class="class-bracket">100-499 档</div>
+      </div>
+      <div class="class-item">
+        <div class="class-rank top2">2</div>
+        <div class="class-info">
+          <div class="class-name">上线夜校·AI普及·第2班（陈书言）</div>
+          <div class="class-meta">68 人 · 支持 19 人 · 参与率 27.9%</div>
+        </div>
+        <div class="class-bracket">30-99 档</div>
+      </div>
+      <div class="class-item">
+        <div class="class-rank top3">3</div>
+        <div class="class-info">
+          <div class="class-name">上线夜校·AI普及·第3班（漫姐）</div>
+          <div class="class-meta">62 人 · 支持 16 人 · 参与率 25.8%</div>
+        </div>
+        <div class="class-bracket">30-99 档</div>
+      </div>
+      <div class="class-item">
+        <div class="class-rank">4</div>
+        <div class="class-info">
+          <div class="class-name">上线夜校·AI普及·第4班（天选姐）</div>
+          <div class="class-meta">56 人 · 支持 15 人 · 参与率 26.8%</div>
+        </div>
+        <div class="class-bracket">9.9-30 档</div>
+      </div>
+      <div class="class-item">
+        <div class="class-rank">5</div>
+        <div class="class-info">
+          <div class="class-name">上线夜校·AI普及·第5班（王炸）</div>
+          <div class="class-meta">48 人 · 支持 13 人 · 参与率 27.1%</div>
+        </div>
+        <div class="class-bracket">9.9-30 档</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>大额支持者公示（脱敏）</h2>
+      <div style="font-size:13px;color:var(--ink-2);line-height:2">
+        本月共有 <b style="color:var(--gold-d)">17 位</b> 大额支持者（T3+T4）<br>
+        分布于 5 个班级，其中：<br>
+        · 第 1 班 3 位（含 1 位 T4）<br>
+        · 第 2 班 4 位<br>
+        · 第 3 班 3 位<br>
+        · 第 4 班 4 位<br>
+        · 第 5 班 3 位<br>
+        <span style="color:var(--ink-3);font-size:12px;display:block;margin-top:8px">
+          注：大额支持者默认不公示姓名与金额，如学员主动要求晒单，需书面授权后单独公示。
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 团长榜 -->
+  <div class="view" id="view-leader">
+    <div class="card">
+      <h2>团长分润公示（本月总额）</h2>
+      <div class="leader-grid">
+        <div class="leader-card">
+          <div class="leader-avatar">一</div>
+          <div class="leader-name">一姐</div>
+          <div class="leader-meta">第1班 · 78人</div>
+          <div class="leader-share">1,560<small>元 · 本月分润</small></div>
+          <div class="leader-score">服务分 4.8</div>
+        </div>
+        <div class="leader-card">
+          <div class="leader-avatar">陈</div>
+          <div class="leader-name">陈书言</div>
+          <div class="leader-meta">第2班 · 68人</div>
+          <div class="leader-share">1,235<small>元 · 本月分润</small></div>
+          <div class="leader-score">服务分 4.7</div>
+        </div>
+        <div class="leader-card">
+          <div class="leader-avatar">漫</div>
+          <div class="leader-name">漫姐</div>
+          <div class="leader-meta">第3班 · 62人</div>
+          <div class="leader-share">1,040<small>元 · 本月分润</small></div>
+          <div class="leader-score">服务分 4.9</div>
+        </div>
+        <div class="leader-card">
+          <div class="leader-avatar">天</div>
+          <div class="leader-name">天选姐</div>
+          <div class="leader-meta">第4班 · 56人</div>
+          <div class="leader-share">975<small>元 · 本月分润</small></div>
+          <div class="leader-score">服务分 4.6</div>
+        </div>
+        <div class="leader-card">
+          <div class="leader-avatar">王</div>
+          <div class="leader-name">王炸</div>
+          <div class="leader-meta">第5班 · 48人</div>
+          <div class="leader-share">845<small>元 · 本月分润</small></div>
+          <div class="leader-score">服务分 4.7</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;font-size:12px;color:var(--ink-3);text-align:center">
+        团长分润总额 <b style="color:var(--gold-d)">5,655 元</b> · 平台留存 <b style="color:var(--gold-d)">5,655 元</b> · 分润比例 50%（写进合作协议）
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>优秀学员故事（授权公示）</h2>
+      <div style="font-size:13px;color:var(--ink-2);line-height:1.9">
+        <p style="margin-bottom:10px"><b style="color:var(--gold-d)">A 同学（第1班 · T3）</b><br>
+        「7 天前我连 AI 是什么都不知道，现在我用它每天写 10 条朋友圈。这次随心付是因为——值。」</p>
+        <p style="margin-bottom:10px"><b style="color:var(--gold-d)">B 同学（第2班 · T2）</b><br>
+        「本来想付 0 元的，但 Day 5 那节课让我的小红书涨了 200 粉，就付了杯奶茶钱。」</p>
+        <p><b style="color:var(--gold-d)">C 同学（第3班 · T1）</b><br>
+        「9.9 元，是我对一姐的信任投票。下个月主题班见。」</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="foot">
+    <div class="next">
+      <b>◆ 10 月预告</b><br>
+      10 月新增 3 个班级（第 6-8 班），招募团长 3 席<br>
+      上线《AI 主题班·9.9 元》3 天专攻一个场景（写文案/做海报/剪视频）<br>
+      一姐上车卡（1,000 元）10 月还剩 <b>12 席</b>
+    </div>
+    <div>
+      主理人公社（杭州）传媒科技有限公司 · 上线夜校 出品<br>
+      本公示由「随心榜系统 V1」自动生成 · 数据锁定时间 2026-10-01 00:00<br>
+      退款 SLA：24h 无条件 · 客服微信：shangxianyexiao<br>
+      © 2026 One&Co CLUB · All Rights Reserved
+    </div>
+  </div>
+
+</div>
+
+<script>
+function switchView(name,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  el.classList.add('active');
+}
+</script>
+</body>
+</html>

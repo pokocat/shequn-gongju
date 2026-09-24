@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>普惠班首期开班包 V1 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># 普惠班首期开班包 V1（5 班齐开执行件）
+
+> 执行：W2-4 AI 工作包 · 2026-09-18
+> 组合：团长 SOP 手册 V1 + 七天课件包 V1 + 蓄水 SOP V1
+> 验收：5 位种子团长领包即可同日开班
+
+---
+
+## 一、开班前置检查（开班前 1 天，团长逐项打钩）
+
+| # | 检查项 | 依赖 |
+| --- | --- | --- |
+| 1 | 群建好、群名规范：`上线夜校·AI普及·第X班（团长XX）` | — |
+| 2 | 群规+开营词已存草稿 | 本文 §2/§3 |
+| 3 | 7 天课程链接每日定时任务设好 | 课件包 |
+| 4 | 随心付说明文案存草稿（**不改动一字**） | 本文 §4 |
+| 5 | 雷达上报表建好 | 本文 §5 |
+| 6 | 首班人数 ≥50（不足 30 延期，不硬开） | 团长 SOP 规则 |
+| 7 | 团长侧：AI 老师「上线」点评账号已由总部授权接入 | 总部 |
+
+## 二、群公告三件套
+
+**建群公告（进群即见）**
+> 欢迎来到上线夜校 · AI 普及班！
+> 我们做什么：7 天，每天 10 分钟，从「完全不会」到「让 AI 替你干活」。
+> 三条群规：①每天 8 点发课，当日看完 ②作业发群里，AI 老师上线会点评 ③不刷屏不广告。
+> 成本：**0 元，可学完 7 天全部内容。**
+> 团长：XX ｜ 主理人公社 One&Co 出品
+
+**每日课程公告（每天 8:00 定时发）**
+> 【上线夜校 · Day X】今天的课来了：《XX》（10 分钟）。
+> 看完回来扣「1」，作业直接发群里——上线老师 12:30 会点评。
+> 昨天的优秀作业：@某某 的 XX（点名表扬，轮着来）。
+
+**结营公告（Day 7 晚）**
+> 7 天毕业快乐！今晚 20:00 毕业典礼直播间见——有颁奖、有彩蛋、有下期预告。
+
+## 三、开营词（Day 1 晚 20:00 团长发 + 一姐语音 60 秒）
+
+**团长版**：
+> 大家晚上好，我是 XX。这 7 天我只干三件事：每天早上把课发到群里、中午把作业晒出来、晚上陪大家聊 10 分钟。
+> 你们不用有任何压力——0 元、每天 10 分钟、学不完没关系，群一直在。
+> 但我有一个小要求：**Day 1 今晚就把课看完**。因为明天早上你会发现：AI 比你想象的简单 100 倍。
+> 现在，开课！
+
+**一姐语音版（总部统一发）**：
+> 「晚上好，我是一姐。今晚，你上线。这 7 天，你的 AI 老师『上线』会全程陪跑——它是我们公社的 AI 创始人，001 号主理人。7 天后，你会拥有一个自己的数字分身。开课！」
+
+## 四、随心付说明话术（固定文案 · 禁改动）
+
+**Day 3 晚（随图课发布后 1 小时，只发一次）**
+> 跟大家说明成本这件事：这套课按内容对得起 1000 元的体系（我们的上车卡就是这个价，真实在售）。
+> 但普及期一分不收——0 元可以学完 7 天全部内容，这是规则。
+> 如果你觉得有用，想支持：随心付，金额你定，付 0 也完全没问题。
+> 你的打赏不是给我，是给 AI 老师上线充算力——下一节课的免费，是大家充出来的。
+
+**Day 7 毕业礼（直播间+群同步）**
+> 随心付通道今晚正式开启（群公告附收款码）。三句话说清：
+> ① 0 元学完全部 7 天——这是承诺，已兑现；
+> ② 觉得值，随心付，多少都行——你的算力账单每月公示；
+> ③ 不付，一样欢迎留下——下期主题班 9.9 押金制，学完退还。
+
+## 五、雷达上报表（团长 Day 7 晚 22:30 提交总部）
+
+| 层级 | 判定 | 动作 |
+| --- | --- | --- |
+| T0 未看完 | 课程完成 <3 天 | 下期召回名单，不推荐 |
+| T1 学完零付 | 完成 ≥6 天+0 付 | 推 9.9 主题班（养信任） |
+| T2 学完小额 | 随心付 1-99 | 推上线会员 99/月 |
+| T3 学完中额 | 随心付 100-499 | **团长 1v1**：推上车卡 1,000 |
+| T4 学完大额 | 随心付 ≥500 | **报总部，一姐出面**：上车卡+王炸社 Tier 预沟通 |
+| 特殊 | 作业优秀/主动要定制数字人 | 单列「重点名单」（Day6 埋点线索） |
+
+**上报表格式**：`班级 / 总人数 / 完成率 / T0-T4 人数 / 随心付总额 / 重点名单（姓名+线索）`。
+
+## 六、5 班并行节奏（总部视角）
+
+| 时间 | 总部动作 |
+| --- | --- |
+| D-1 | 团长群检查会（§1 逐项过）+ 一姐语音包下发 |
+| D1 | 5 班同晚开营 + 总部巡群（随机 2 群潜水观察） |
+| D3 | 随心付文案执行抽查（必须原文）+ 冷群预警 |
+| D5 | 中期数据：完成率 <50% 的班，团长加推（私聊唤醒模板） |
+| D7 | 毕业礼直播间（5 班合流）+ 雷达上报表回收 |
+| D8 | 总部复盘：首批 T3/T4 名单转交招商组 + 优秀团长评估（升县代加分） |
+
+## 七、应急预案
+
+- **冷群（Day 2 群消息 <10 条）**：团长发起「晒作业抽奖」——晒作业抽 3 人送一姐 1v1 答疑（总部提供名额）；
+- **负面质疑「是不是卖课的」**：照 SOP 坦然话术回应 + 甩真心榜公示链接；
+- **随心付翻车（有人嘲讽金额）**：「付 0 元和付 999 的同学，课程和服务完全一样——付多付少是心意，不是门槛。」
+- **课程链接失效**：团长群 5 分钟响应（总部值班）。
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260918_普惠班首期开班包_V1.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260918_普惠班首期开班包_V1.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260917 代理合作协议 V1 四级分层 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># 代理合作协议 V1（四级分层签署版 · 业务稿）
+
+> **使用说明**：本协议为业务稿模板，覆盖团长/区县代理/市代理/省市分公司四级（同一框架+分档附表）。正式启用前须：① 填入甲方主体全称；② 律师复核定稿（重点标注见附三）；③ 与意向金协议、价格公示页三处口径逐字核对。
+
+---
+
+**甲方（授权方）**：【公司全称】（「王炸社」品牌运营主体）
+统一社会信用代码：【 】
+
+**乙方（合作方）**：【姓名/名称】
+身份证号/统一社会信用代码：【 】
+合作档位：☐ 社群团长 ☐ 区县代理 ☐ 市代理 ☐ 省市分公司
+合作区域：【 】（市代理按「一城限 3 席」执行；区县代理按「一区一位」执行）
+价格档与批次：【如：市代理·创始批（1 折）· ¥12,000】（以价格公示页为准）
+
+鉴于双方已于【 】签署《创始席位意向金协议》/或乙方直接按当期价格档签约，就代理合作事宜达成如下协议：
+
+## 第一条 合作性质与内容
+
+1.1 甲方授权乙方在约定区域内开展「王炸社」体系内的代理合作，具体授权范围、权益与限制见**附一《分档权益表》**。
+
+1.2 本协议为**商业合作合同**，双方为独立民事主体，不构成劳动、合伙、雇佣或特许经营关系；乙方不得以甲方名义对外从事本协议外的任何行为。
+
+1.3 各档位授权范围（概要）：
+
+| 档位 | 席位价（常价） | 核心授权 |
+| --- | --- | --- |
+| 社群团长 | 1 万 | 开班运营、随心付一级分账、课程分销 |
+| 区县代理 | 3 万 | 区县独家授权、发展团长、团长陪跑 |
+| 市代理 | 12 万 | 地级市授权（一城 3 席）、发展区县代理、线下活动主办 |
+| 省市分公司 | 50 万 | 城市运营中心（另行签署《城市运营中心服务合作协议》） |
+
+1.4 **卡位期条款**：乙方以 1–3 折档位签约的，享有卡位期权益（开班授权+一级分账+区域意向锁定 6 个月）；**区域独家授权与发展下级代理权**自乙方补差至当期 4 折及以上价格档后激活。
+
+## 第二条 价格、付款与升级账户
+
+2.1 合作价款：¥【 】（按签约当期公示价格档执行，详见价格公示页）。
+
+2.2 乙方已支付的意向金/上车卡款项**全额抵扣**本条价款；该等款项连同本协议价款一并计入乙方**升级账户**，乙方后续升级更高档位时按累计已付金额抵扣、仅补差价。
+
+2.3 付款方式：对公转账至甲方指定账户；甲方依约开票（服务类）。
+
+2.4 **涨价锁**：乙方签约后，甲方后续任何价格调整不影响乙方已获权益；升级时按「乙方已付累计金额 → 目标档当期价格」补差执行。
+
+## 第三条 区域规则
+
+3.1 市代理档位实行一城限 3 席；区县代理一区一位。区域席位的分配以签约付款时间为准。
+
+3.2 意向锁定：卡位期区域意向优先权 6 个月，自签约日起算；期满未补差激活正式授权的，区域释放，甲方可另行授权。
+
+3.3 乙方跨区域经营需经甲方书面同意；未经同意的跨区域推广、招揽行为视为违约。
+
+## 第四条 分账与结算（核心条款）
+
+4.1 乙方收入构成及结算规则：
+
+| 收入线 | 规则 | 结算 |
+| --- | --- | --- |
+| 普惠班随心付款 | 开班团长得 **50%** | 按月 |
+| 课程/会员成交 | 乙方专属码成交的 **30%** | 按月 |
+| 进阶课/实战营 | 20%（县代及以上 25%） | 按月 |
+| 线下产品 | 按主办/联营协议另行约定 | 单独结算 |
+| 推荐费 | 推荐团长 **500**/人、县代 **1,000**/人、市代 **2,000**/人（**仅一层**，年封顶 20,000） | 按月 |
+| 服务产品 | 乙方作为卖方销售陪跑年卡（见 4.3） | 按月 |
+
+4.2 **团队计酬红线**：乙方不得以任何形式从其推荐的下级代理的业绩、销售额中抽成、返利；所有代理与甲方直签，款项全部经甲方对公账户结算。违反本条的，甲方有权立即解除协议并取消全部未结分账。
+
+4.3 服务年卡（自愿购买）：乙方可自愿购买/销售甲方体系内的陪跑服务年卡（团长陪跑年卡 1,980/年、区县陪跑年卡 5,000/年、市代运营体系年卡 20,000/年）。**服务年卡不构成任何档位代理资格的前提条件，不与授权捆绑。**
+
+4.4 甲方保证价格公示页、结算系统数据的真实、准确；乙方可随时查询本人相关数据。
+
+## 第五条 双方权利义务
+
+5.1 甲方义务：提供课程体系、AI 答疑工具、开班 SOP、话术库与培训支持；按第四条及时足额结算；公示价格、名额、区域规则并真实执行。
+
+5.2 乙方义务：依法合规经营；按甲方统一规范开展社群运营（含「0 元可学完、不设参考价、付款与权益脱锅」的随心付三底线）；如实向学员传达产品信息；妥善处理学员投诉。
+
+5.3 乙方对外宣传不得使用「卡位、躺赚、下级、代理分成、团队收益、月入 X 万、保证回本」等表述；不得以甲方名义承诺任何收益。
+
+## 第六条 冷静期与退出
+
+6.1 签署后 **3 个自然日内**，乙方可无条件书面通知甲方解除本协议，甲方在扣除已实际发生的服务成本（如有）后退还剩余价款（意向金抵扣部分同步处理）。
+
+6.2 冷静期外退出的：已消耗权益（已开班分账、已发放物料与服务）按实际发生结算，剩余部分双方协商退还方案；区域授权同步释放。
+
+6.3 甲方违约（价格/名额/结算不实、未按约结算）的，乙方有权解除协议，甲方退还相应未消耗价款并承担违约责任。
+
+## 第七条 数据与隐私
+
+7.1 双方就合作中获取的学员信息、经营数据负保密义务；乙方遵守个人信息保护相关法律法规。
+
+7.2 甲方对平台运营数据享有所有权；乙方对其私域用户关系在合规范围内的运营权受本协议保护。
+
+## 第八条 协议期限
+
+8.1 有效期【1】年，期满前 30 日双方无异议则自动续期一年；任一方可于期满前 30 日书面通知不再续期。
+
+## 第九条 违约责任与争议解决
+
+9.1 任何一方违约给对方造成损失的，应承担赔偿责任。
+
+9.2 本协议适用中华人民共和国法律；争议协商不成的，提交甲方所在地有管辖权的人民法院。
+
+## 第十条 其他
+
+10.1 本协议自双方签署（含电子签）且价款到账之日起生效。
+
+10.2 附件与本协议具有同等效力：附一《分档权益表》、附二《随心付三底线与宣传合规清单》、价格公示页（签约当期版本存档）。
+
+10.3 本协议一式两份，双方各执一份。
+
+**甲方（盖章）**：＿＿＿＿＿＿　**乙方（签字）**：＿＿＿＿＿＿　日期：＿＿＿＿＿＿
+
+---
+
+## 附一《分档权益表》
+
+| 权益项 | 社群团长（1万） | 区县代理（3万） | 市代理（12万） | 省市分公司（50万） |
+| --- | --- | --- | --- | --- |
+| 开班授权+随心付 50% | ✓ | ✓（自开班） | —（可开班） | — |
+| 课程/会员分销 30% | ✓ | ✓ | ✓ | ✓ |
+| 进阶课分销 | 20% | 25% | 25% | 25% |
+| 区域授权 | 意向锁定 6 个月 | 区县独家 | 一城 3 席 | 城市运营中心 |
+| 发展下级 | ✗（补差后解锁） | 发展团长 | 发展区县代理 | 推荐市代理 |
+| 推荐费 | 团长 500 | 县代 1,000 | 市代 2,000 | 市代 2,000 |
+| 服务年卡销售权 | — | 团长陪跑年卡 | 区县陪跑年卡 | 市代体系年卡 |
+| 线下产品 | 联营席位 | 联营 | 主办方 | 联办 |
+| 操盘手营/师徒制 | 分销 20% | 分销 25% | 联营 | 联营 |
+| 项目承接 | — | 项目劳务 | 服务费合同 | 大项目联营 |
+
+## 附二《随心付三底线与宣传合规清单》
+
+1. 0 元可学完：不付款也能完成 7 天全部课程；
+2. 不设参考价：不得向学员明示或暗示「建议付多少」；
+3. 付款与权益脱钩：付款金额与课程权益完全无关，付款者仅获荣誉性认可；
+4. 禁用词：卡位/躺赚/下级/代理分成/团队收益/月入 X 万/保证回本/稳赚；
+5. AI 生成内容标识：AI 老师相关物料须标注「AI 数字人」。
+
+## 附三：法务复核重点（内部 · 不随协议对外）
+
+| 条款 | 复核点 |
+| --- | --- |
+| 1.4 卡位期条款 | 「补差激活」表述的公平性与明确性 |
+| 2.2 升级账户 | 抵扣计算口径、退款时的账户处理 |
+| 3.2 区域释放 | 6 个月锁定释放的通知程序 |
+| 4.2 团队计酬红线 | 与《禁止传销条例》的边界确认 |
+| 4.3 服务年卡 | 「自愿、不捆绑」表述是否足以规避变相入门费认定 |
+| 6.1 冷静期 | 扣除「实际发生服务成本」的凭证与计算标准 |
+| 整体 | 特许经营资质边界（是否构成商业特许经营——品牌授权+经营模式+收费三要素对照） |
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-17 | 四级分层签署版业务稿：卡位期补差激活 · 升级账户全额累计抵扣 · 涨价锁 · 一城3席/一区一位/6个月锁定释放 · 分账七线月结 · 团队计酬红线（4.2）· 服务年卡自愿不捆绑（4.3）· 3 天冷静期 · 附一分档权益表 · 附二合规清单 · 附三法务复核重点 |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260917_代理合作协议_V1_四级分层.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260917_代理合作协议_V1_四级分层.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

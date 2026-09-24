@@ -1,0 +1,6 @@
+{"type":"click","text":"A\n      \n        富卡片操作闭环\n        点击“查看计划”“开始复盘”后弹出详情抽屉或进入对应任务页，让推送信息可以直接执行。","choice":"quick-actions","id":null,"timestamp":1789408945322}
+{"type":"click","text":"B\n      \n        输入栏状态反馈\n        补充点击输入框、语音、表情和加号后的静态反馈，让页面更像真实微信聊天。","choice":"composer","id":null,"timestamp":1789408946355}
+{"type":"click","text":"C\n      \n        消息阅读与定位\n        支持新消息分隔、已读状态、回到最新消息和长列表定位，强化连续对话的阅读体验。","choice":"read-state","id":null,"timestamp":1789408947121}
+{"type":"click","text":"C\n      \n        消息阅读与定位\n        支持新消息分隔、已读状态、回到最新消息和长列表定位，强化连续对话的阅读体验。","choice":"read-state","id":null,"timestamp":1789408948358}
+{"type":"click","text":"B\n      \n        输入栏状态反馈\n        补充点击输入框、语音、表情和加号后的静态反馈，让页面更像真实微信聊天。","choice":"composer","id":null,"timestamp":1789408948988}
+{"type":"click","text":"A\n      \n        富卡片操作闭环\n        点击“查看计划”“开始复盘”后弹出详情抽屉或进入对应任务页，让推送信息可以直接执行。","choice":"quick-actions","id":null,"timestamp":1789408949755}

@@ -928,7 +928,7 @@
     {
       "slug": "tasks",
       "name": "tasks",
-      "title": "我的任务",
+      "title": "主理台",
       "variant": "",
       "route": "/pages/tasks/index",
       "group": "代理与任务"
@@ -936,7 +936,7 @@
     {
       "slug": "tasks--全部完成",
       "name": "tasks",
-      "title": "我的任务",
+      "title": "主理台",
       "variant": "全部完成",
       "route": "/pages/tasks/index",
       "group": "代理与任务"
@@ -944,7 +944,7 @@
     {
       "slug": "tasks--还没有任务",
       "name": "tasks",
-      "title": "我的任务",
+      "title": "主理台",
       "variant": "还没有任务",
       "route": "/pages/tasks/index",
       "group": "代理与任务"

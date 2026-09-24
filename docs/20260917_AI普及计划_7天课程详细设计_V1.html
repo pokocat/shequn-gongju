@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260917 AI普及计划 7天课程详细设计 V1 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># AI 普及计划 · 7 天课程详细设计 V1
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档编号 | 20260917_AI普及计划_7天课程详细设计_V1 |
+| 状态 | V1 待确认 |
+| 定位 | **全体系唯一引流课**——招商物料/路演 PPT/团长 SOP 中的「普惠班」即本课程，沿用随心付玩法，不另造 |
+| 玩法依据 | [[20260916_AI普惠计划_随心付分账方案_V2]]（0 元起随心付 · 三底线 · 雷达 T0–T4 · 团长 50%） |
+| 执行依据 | [[20260917_团长SOP手册_开营7天_V1]]（每日三动作 · Day3 随心付说明 · Day7 随心榜） |
+| 单课规格 | 10 分钟视频（8:00 推送）+ 文字版讲义 + 作业模板 |
+
+---
+
+## 一、课程总架构
+
+| 天 | 主题 | 一句话钩子 | 教学目标（学员毕业时能…） |
+| --- | --- | --- | --- |
+| Day 1 | AI 是什么 | 「AI 不神秘，就是个特别好用的工具」 | 装好工具，和 AI 完成第一次对话 |
+| Day 2 | AI 写作 | 「让 AI 替你写，你只管改」 | 用万能提示词公式写文案/周报 |
+| Day 3 | AI 做图 | 「一句话，出一张图」 | 生成海报/头像/电商图 |
+| Day 4 | AI 查资料 | 「3 分钟读完 30 页报告」 | 长文档总结/对比/翻译 |
+| Day 5 | AI 处理表格 | 「表格的活，交给它」 | 整理名单/数据/生成公式 |
+| Day 6 | AI 数字人与视频 | 「给自己做个数字分身」 | 录 15 秒数字人问候+写短视频脚本 |
+| Day 7 | 毕业礼 | 「7 天，你已经超过 90% 的人」 | 建立技能地图，进入进阶路径 |
+
+**课程衔接逻辑**：破冰（会用）→ 输入输出（会写会画）→ 效率（会查会算）→ 声量（会播）→ 收口（知道下一步学什么）。
+
+## 二、单课结构模板（10 分钟视频）
+
+```
+0:00–0:30   钩子：一个真实场景痛点（"周五交周报，你还在憋字吗？"）
+0:30–3:00   原理 2 分钟：今天这个能力是什么（3 个生活化比喻）
+3:00–7:30   演示 4 分半：屏幕录制，真实操作 2 个案例（一个简单+一个进阶）
+7:30–9:00   作业讲解：今天的作业模板怎么填、发群里怎么发
+9:00–9:30   明日预告：「明天，让你一句话出一张图」+ AI 老师「上线」的一句话点评
+```
+
+**素材包**（总部统一制作，每课四件）：视频 MP4 · 文字版讲义（通勤可读）· 作业模板（可复制填空）· 群发文案（团长直接转发）。
+
+## 三、每日详细设计
+
+### Day 1 · AI 是什么（认知破冰日）
+
+- **原理**：大模型 = 读遍了图书馆的实习生（比喻一）/ 计算器 vs 算盘（比喻二）/ 它不会读心，会听话（比喻三）
+- **演示案例**：① 装工具（免费 AI 助手，手机 3 分钟）② 第一句对话：「帮我用大白话解释什么是 AI」→ 追问三层
+- **作业**：让 AI 自我介绍 + 问它三个关于你行业的问题，截图发群
+- **互动设计**（团长午间晒）：最有趣对话截图评选
+
+### Day 2 · AI 写作（万能公式日）
+
+- **原理**：万能提示词公式 = **角色 + 任务 + 要求 + 示例**（「你是一位资深文案，帮我写一条朋友圈，要求口语化 50 字内，示例：……」）
+- **演示案例**：① 朋友圈卖货文案（改 3 版对比）② 工作周报（从流水账到汇报体）
+- **作业**：用公式写一条自己业务的朋友圈文案，发群互评
+- **雷达埋点**：优秀作业次日由 AI 老师「上线」点评（示范 AI 能力，为随心付铺垫）
+
+### Day 3 · AI 做图（视觉冲击日）
+
+- **原理**：文生图提示词 = **主体 + 场景 + 风格 + 光线**（「一只橘猫，咖啡馆窗边，水彩风格，午后暖光」）
+- **演示案例**：① 节日海报（改风格词对比）② 电商产品图/头像
+- **作业**：生成一张自己的节日海报，发群
+- **★ 晚间固定动作**：团长发「随心付说明」（SOP 3.6 模板，照抄不改动，只发一次）——选在 Day 3 的原因：视觉冲击日满意度峰值，且距结营还有 4 天沉淀期，不显功利
+
+### Day 4 · AI 查资料（效率震撼日）
+
+- **原理**：长文档三步法 = **贴全文 → 要结构化总结 → 追问细节**
+- **演示案例**：① 30 页行业报告 → 1 页要点（表格化）② 两个产品对比分析 ③ 中英互译保持语气
+- **作业**：把一份自己行业的报告/文章让 AI 总结成 5 条要点
+
+### Day 5 · AI 处理表格（职场刚需日）
+
+- **原理**：「不用学公式，用说的」——描述需求让 AI 出公式/出整理方案
+- **演示案例**：① 客户名单去重分类 ② 数据透视逻辑生成 ③ Excel 公式即问即得
+- **作业**：用 AI 整理一份自己的客户/好友名单（行业+城市+备注）
+
+### Day 6 · AI 数字人与视频（未来感日）
+
+- **原理**：数字人 = 你的声音+形象+AI 的大脑；短视频脚本的「黄金 3 秒」结构
+- **演示案例**：① 用平台录一段 15 秒数字人问候 ② 一条带货口播脚本的 AI 生成过程
+- **作业**：录一段 15 秒数字人问候发群
+- **内容边界**：本课展示的数字人能力由总部平台提供，团员若有定制需求 → **雷达 T3+ 线索**（升单通道：数字人定制属项目承接）
+
+### Day 7 · 毕业礼（收口日）
+
+- **内容**：7 天技能地图（一页图回顾六项能力）· 每人电子毕业证书 · 优秀学员榜
+- **进阶路径展示**（对应升单承接）：主题班 9.9（写作/做图深化）→ 上线会员 99/月（AI 军师工具）→ 实战营 399+
+- **20:00 随心付通道开启**（SOP 3.8）· 21:00/22:00 随心榜播报 · 22:30 雷达上报
+
+## 四、AI 老师「上线」的角色设计（贯穿 7 天）
+
+| 时点 | 动作 |
+| --- | --- |
+| 每日 12:30 | 群内点评 1–2 份优秀作业（AI 生成+标注） |
+| 每日晚间 | 回答 3 个高频问题（答疑精选） |
+| Day 2/5 | 发 1 条「技能彩蛋」（课外的实用小技巧） |
+| 全程 | 群昵称「AI 老师·上线」，所有内容由数字人形象发出+角标「AI 数字人」 |
+
+**价值**：学员对 AI 的信任 = 对课程的信任 = 对随心付的认可——AI 老师本身就是课程最大的成果展示。
+
+## 五、玩法闭环（收口确认 · 与既定方案一字不差）
+
+```
+接龙报名（0 元）→ 7 天课（0 元可学完）
+→ Day 3 晚随心付说明（只发一次照抄）→ Day 7 随心付通道+随心榜
+→ 22:30 雷达五层上报（T4≥1000 天选姐出面 / T3 上车卡 1v1 / T2 9.9 主题班）
+→ 次月结算：团长 50% / 总部 50%
+```
+
+三底线（铁律）：0 元可学完 · 不设参考价 · 付款与权益脱钩。
+
+## 六、总部制作清单（课件生产线）
+
+| 素材 | 数量 | 优先级 |
+| --- | --- | --- |
+| 10 分钟视频 ×7 | 7 支 | P0（首期开班前必须齐） |
+| 文字版讲义 ×7 | 7 份 | P0 |
+| 作业模板 ×7 | 7 份 | P0 |
+| 群发文案包（对应 SOP 模板） | 1 套 | P0 |
+| 电子毕业证书模板 | 1 套 | P1 |
+| 7 天技能地图一页图 | 1 张 | P1 |
+| AI 老师「上线」数字人形象+声音 | 1 套 | P0 |
+| Day 2/5 彩蛋内容 ×2 | 2 份 | P2 |
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-17 | 引流课口径收口：全体系唯一引流课=AI 普及计划（随心付玩法）；新增课程详细设计：7 天教学目标+钩子、单课 10 分钟结构模板、每日详细设计（原理比喻/演示双案例/作业/互动/雷达埋点）、Day 3 发随心付说明的时点理由、AI 老师贯穿设计、总部课件生产线清单 |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260917_AI普及计划_7天课程详细设计_V1.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260917_AI普及计划_7天课程详细设计_V1.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

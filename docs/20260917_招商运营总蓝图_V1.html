@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260917 招商运营总蓝图 V1 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># 主理人公社 · 招商运营总蓝图 V1（全体系集成）
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档编号 | 20260917_招商运营总蓝图_V1 |
+| 状态 | **V1 已确认**（创始人 2026-09-17 拍板：按本方案执行，含全部推荐决策项） |
+| 集成来源 | 品牌整合版 · 四级代理体系 V2 · 随心付分账 V2 · 升单承接体系 · 招商时间进度表 V6（9 个月已拍板）· 招募营销包 V4 |
+| 一句话 | **9 个月，1,000 市代 + 5,000 团长 + 2,000 县代，B 端 7,000 万 + C 端 2,300 万的理论盘子** |
+
+---
+
+## 一、项目全景一页图
+
+```
+品牌层：王炸社（总品牌）· 天选姐（创始人IP）· 上线（AI创始人/001号主理人）
+   │
+   ├─ B 端四级：团长 1 万 → 县代 3 万 → 市代 12 万 → 省市分公司 50 万
+   │     （预备通道：1,000 上车卡 / 体验期 30 天）
+   │
+   ├─ C 端产品线：普惠班（0元随心付）→ 会员（99/月·699/年）→ 实战营（399-1,980）
+   │     → 操盘手营 2,980 → 师徒制（19,800/49,800）→ 项目承接
+   │
+   ├─ 招商节奏：9 个月三波闸门（M2 团长闸 / M4 县代闸 / 折扣月月涨）
+   │
+   └─ 运营节奏：普惠班滚动 → 随心付雷达分层 → 升单触发器 → 大事件日历
+```
+
+## 二、各级别招募目标总表（9 个月）
+
+| 级别 | 招募目标 | 折扣结构（人数×价格） | 营收 | 到位节奏 |
+| --- | --- | --- | --- | --- |
+| 市代理 | **1,000 席** | 1折 500×1.2万 / 2折 200×2.4万 / 3折 100×3.6万 / 4折 100×4.8万 / 5折 50×6万 / 原价 50×12万 | **2,820 万** | M1–M8（M1-2 铺 1 折大部队） |
+| 社群团长 | **5,000 人** | 同构：1折 2,500×1,000 / 2折 1,000×2,000 / 3折 500×3,000 / 4折 500×4,000 / 5折 250×5,000 / 常价 250×1万 | **1,175 万** | M2–M6（月均 1,000+） |
+| 区县代理 | **2,000 区**（一区一位） | 团长升级补差：早批 1,000 区×补 1 万（减半）+ 后批 1,000 区×补 2 万 | **3,000 万** | M4–M7 |
+| 省市分公司 | **首城 1–3 席** | 19.8 万卡位起（常价 50 万） | 60–150 万 | M6–M9 |
+| **B 端合计** | — | — | **≈7,000 万** | — |
+
+## 三、各级别盈利模型（怎么挣钱 · 多久回本）
+
+### 3.1 社群团长（门槛 1 万 / 1 折进场 1,000）
+
+| 收入线 | 机制 | 月收入模型（活跃团长） |
+| --- | --- | --- |
+| ① 普惠班随心付 | 学员随心付款的 **50%** | 每月 2 期班×80 人×30% 付款率×50 元均值×50% = **2,000** |
+| ② 课程/会员成交 | 专属码成交的 **30%** | 每期 8 单×99 元×30%×2 期 = **475** |
+| ③ 进阶课/实战营 | **20%** | 每期 2 单×399×20%×2 期 = **320** |
+| 合计 | — | **约 2,800/月**（活跃中位） |
+
+- **回本周期**：1 折进场（1,000）→ 1 期班即回；常价 1 万 → 约 4 个月（中位）/8 个月（保守）
+- **头部团长**（班均 150 人+开班 4 期/月）：月 6,000+，1 个月回本
+- **升级出口**：优秀团长升县代（M4 后补差减半通道）
+
+### 3.2 区县代理（门槛 3 万 / 折扣期补差 1 万）
+
+| 收入线 | 机制 | 月收入模型（成熟县代） |
+| --- | --- | --- |
+| ① 自营分润 | 同团长（自开班+零售） | 3,000 |
+| ② 团长陪跑年卡 | 卖给辖区团长 1,980/年（自愿购买） | 辖区 30 团长×50% 购买÷12 = **2,475** |
+| ③ 推荐费 | 推荐团长 500/人 | 月均 2 人 = 1,000 |
+| 合计 | — | **约 6,500/月** |
+
+- **回本周期**：折扣期补差 1 万 → 约 2 个月；全价 3 万 → 约 5 个月
+- **关键资产**：辖区团长的开班数据 = 县代的「带兵成绩单」
+
+### 3.3 市代理（门槛 12 万 / 1 折进场 1.2 万）★ 体系核心
+
+| 收入线 | 机制 | 月收入模型（成熟市代） |
+| --- | --- | --- |
+| ① 自营+直属团队零售 | 自营分润 30% | 3,000 |
+| ② 区县陪跑年卡 | 卖给辖区县代 5,000/年 | 10 县代×60%÷12 = **2,500** |
+| ③ 推荐费 | 县代 1,000 / 团长 500 | 月均 1 县代+2 团长 = **2,000** |
+| ④ 市域活动 | 一日营（598）主办方分成 | 场均 50 人×毛利 200 = 10,000/场×月 1 场 |
+| 合计 | — | **约 17,500/月**（含活动） |
+
+- **回本周期**：1 折进场 1.2 万 → **1–2 个月**；2–3 折进场 → 3–5 个月；原价 12 万 → 8–12 个月
+- **1 折大部队的价值逻辑**：进场便宜 → 回本极快 → 案例速成 → 吸引后批涨价进场者（50/20/10/10/5/5 结构的自我实现）
+- **红线**：市代不拿团长/县代业绩抽成——收入=自营+服务年卡+定额推荐费+活动分成
+
+### 3.4 省市分公司（门槛 50 万 / 卡位 19.8 万）
+
+| 收入线 | 机制 | 年收入模型 |
+| --- | --- | --- |
+| ① 市代运营体系年卡 | 20,000/年×市代数 | 30 市代×60% = **36 万/年** |
+| ② 大项目联营 | 数字人/代运营/行业方案（合同制） | 50–200 万/年 |
+| ③ 线下联办 | 游学 9,800/人、天选之夜 | 20–50 万/年 |
+| 合计 | — | **100–300 万/年** |
+
+- **回本周期**：卡位 19.8 万 → 12–18 个月；含团队成本 18–24 个月
+- 六项门槛不变（注册公司/团队≥3 人/运营资金等）
+
+### 3.5 总部盈利模型
+
+| 收入线 | 9 个月理论值 |
+| --- | --- |
+| B 端门槛费 | 7,000 万 |
+| C 端随心付（50%） | 1,000 万 |
+| C 端课程/会员（约 70%） | 670 万 |
+| C 端实战营/进阶（80%） | 480 万 |
+| 师徒制（19,800/49,800） | 180 万 |
+| **合计** | **≈9,300 万**（内部理论满额，含折扣期让利；不含项目线/分公司） |
+
+> C 端测算口径：M2–M9 共 8 个月，5,000 团长×平均开 2 期班×80 人 = **80 万人次学员流水量**；随心付均值 25 元/人次。
+
+## 四、招商节奏深度分析（9 个月三波闸门）
+
+| 闸门 | 触发 | 动作 | 目的 |
+| --- | --- | --- | --- |
+| 起盘 | W1–W2 意向金蓄水 ≥800 人 | M1 起盘发布会，1 折 500 席开闸（首日目标 100 单） | 大部队低门槛进场 |
+| 团长闸 | M1 中旬市达 100 人 | M2 初开（1 折 1,000） | 为市代造兵 |
+| 县代闸 | M3 末团长达 2,000 人 | M4 开（团长升级补差减半） | 给团长升级出口 |
+| 满员 | M8 市代 1,000 席 | 常价锁定 | M9 天选之夜+下一波（上调 50%） |
+
+**涨价节奏**：M3 起月月涨一档（每月 1 号公示）；**兜底铁律：人数没到不涨价**（顺延不强涨，进度表是基准不是死线）。
+
+**结构自洽性**：1 折进场的人回本最快（市代 1–2 个月）→ 他们的成功案例是 2–5 折进场者的信心来源 → 原价 50 人看到的是已验证的完整体系——**越晚越贵但越稳**，这就是 50/20/10/10/5/5 结构的内在逻辑。
+
+## 五、运营节奏深度分析（三条线并行）
+
+### 5.1 普惠班滚动循环（C 端现金流+雷达）
+
+```
+团长开班（7天课）→ 学员随心付 → 雷达分层（0元/1-99/100-499/500-999/≥1000）
+   → 低层学分培育 → 中层推9.9主题班 → 高层推会员99/月
+   → ≥500触发团长1v1推上车卡 → ≥1000天选姐出面推B端
+```
+
+- M3 起普惠班规模化（M4 目标 100 班/月在跑）；
+- 随心付三底线：0 元可学完 / 不设参考价 / 付款与权益脱钩。
+
+### 5.2 升单触发器（八层自动承接）
+
+毕业课推「今晚正式上线」→ 押金退瞬间发 88 折券 → 月付 30 天转年卡 → 实战营优秀者面谈上车卡 → 打赏≥500 雷达触发 → 一日营诊断双推 → 师徒制（掌灯门徒 19,800/天选门徒 49,800 限 9 席）→ 项目承接。
+
+### 5.3 大事件日历（9 个月）
+
+| 月份 | 事件 |
+| --- | --- |
+| M1 | 起盘发布会（首日 100 单） |
+| M2 | 通电大会（团长闸开启仪式） |
+| M4 | 掌灯计划首发 + 城市发布会双周制启动 |
+| M5 | 游学社首期 |
+| M8 | 1,000 席满员公告 |
+| M9 | **天选之夜**（年度盛典）+ 下一波发布会（门槛上调 50% 公示） |
+
+## 六、风险与兜底
+
+| 风险 | 兜底 |
+| --- | --- |
+| 1 折期进度不达（<250 人/月） | 意向金加推+双周发布会加密+**顺延不涨** |
+| 团长铺量慢（兵不够） | 团长折扣加深/延长，1 折窗口不关 |
+| 高级别招不满冷场 | 底部铺量持续造势（双螺旋）；市代可先降档进（升级账户全额抵扣） |
+| 团队计酬红线 | 市代零抽成铁律写入所有协议；结算永远一层 |
+| 折扣真实性 | 每档人数定死售罄即跳、后台可查、公示 |
+
+## 七、决策项总清单（2026-09-17 全部拍板 ✅）
+
+| # | 项 | 决定 |
+| --- | --- | --- |
+| 1 | 品牌总名定稿 | ✅ 王炸社 |
+| 2 | 1 折 500 席一城限购 | ✅ 一城 3 席 |
+| 3 | 团长折扣同构分布 | ✅ 50/20/10/10/5/5 |
+| 4 | 县代满额 | ✅ 2,000 区 |
+| 5 | 天选门徒定价 | ✅ 49,800（限 9 席） |
+| 6 | 上车卡 | ✅ 固定 1,000 不涨 |
+| 7 | M9 天选之夜地点 | ⏳ 待定（唯一遗留项） |
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-17 | 总蓝图集成：品牌+B端四级+C端产品+9个月节奏（V6 已拍板）；新增各级别盈利模型（收入线×月模型×回本周期：团长 4 个月/县代 5 个月/市代 1 折 1–2 个月/分公司 12–18 个月）与总部营收模型（B 7,000 万+C 2,300 万≈9,300 万理论满额） |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260917_招商运营总蓝图_V1.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260917_招商运营总蓝图_V1.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

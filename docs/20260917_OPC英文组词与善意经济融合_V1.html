@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260917 OPC英文组词与善意经济融合 V1 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># OPC 英文组词 · 艺名策略 · 善意经济学融合 V1
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档编号 | 20260917_OPC英文组词与善意经济融合_V1 |
+| 状态 | V1 待创始人拍板 |
+| 输入源 | 创始人偏好（One&Co 很喜欢；真名是否回避）· 本地演讲稿《善意经济学：AI 驱动》《善意经济学：创始人 IP 如何用公益裂变重构行业增长话语权》· AI 数字人三套方案 V1 |
+| 一句话 | **善意经济学是思想顶层，One&Co 是品牌载体，天选姐是人格化身——三层全部来自你自己的真实资产。** |
+
+---
+
+## 一、OPC 组词清单（前后加字母/词 · 附寓意与注册友好度）
+
+### 1.1 One&Co 家族（创始人偏爱 · 主推）
+
+| 组词 | 寓意 | 注册友好 |
+| --- | --- | --- |
+| **One&Co** | 一个「&」四层含义：One **P**erson（一个人）· **Co**mpany（一家公司）· **Co**mmune（公社）· **Co**operation（合作）——「一个人，一家公司，一群同路人」 | 中（文字标检索后定） |
+| **ONE&CO CLUB** | One&Co + CLUB（社群/俱乐部），公社的实体感 | 较高 |
+| **One&Co Lab** | One&Co + 实验室——AI 创业试验场气质 | 较高 |
+| **One&Care** | 一个人 + Care（关怀）——善意经济学的温度 | 高 |
+
+### 1.2 OPC 加前后缀家族
+
+| 组词 | 寓意 | 注册友好 |
+| --- | --- | --- |
+| **OPCOMM** | OPC + Commune（公社） | 高 |
+| **OPC Planet** | OPC 星球——超级个体的星球 | 高 |
+| **OPC Lab** | OPC 实验室 | 中高 |
+| **OPC Union** | OPC 联盟 | 中 |
+| **GO-OPC / OPCGO** | 行动感（上车/开干） | 高 |
+| **NEO-OPC** | 新 OPC（新一人公司时代） | 高 |
+
+### 1.3 善意经济学家族（结合演讲稿 · 思想品牌）
+
+| 组词 | 寓意 | 注册友好 |
+| --- | --- | --- |
+| **Beneconomy** | Benevolent（善意）+ Economy（经济）= 善意经济学的英文——**全新造词，注册友好度最高**，可注册为独立思想品牌 | ★★★★★ |
+| **BeneOPC** | Bene（善意拉丁词根）+ OPC | 高 |
+| **GOODOPC** | Good + OPC | 高 |
+| **OPC&Kindness** | 善意与一人公司 | 中高 |
+
+### 1.4 推荐定案组合
+
+| 层 | 方案 |
+| --- | --- |
+| 社群英文商标 | **ONE&CO CLUB**（主申请）＋裸 **One&Co**（防御） |
+| 思想品牌商标 | **Beneconomy**（善意经济学——独立注册，内容矩阵用） |
+| 体系词 | OPC（One Person Company，不可独占，仅内部统一用语） |
+| slogan | **One Person, One Company. 一个人，一家公司。** |
+
+## 二、陈彬彬真名与艺名策略（结论：真名用于实，艺名用于势）
+
+| 层 | 用名 | 理由 |
+| --- | --- | --- |
+| **法律/工商层** | 陈彬彬（真名） | 公司法人、商标授权主体、协议签署——**真名是信用资产，不可也不必回避**（工商信息本就公开可查，回避反而显刻意） |
+| **内容/IP 层** | **天选姐**（艺名） | 对外一切内容、社群、直播、数字人——打造可交易、可传承的独立 IP 资产 |
+| **关系表述** | 「陈彬彬，人称天选姐」 | 招商场景首次介绍用，此后全程天选姐——既真实又不依赖真名 |
+
+**艺名定案推荐**：**天选姐**（已确认的创始人 IP 名，视觉系统 V1.1 已完成，直接沿用）；数字人分身随之定名：
+
+| 数字人 | 定名（回避真名版） | 说明 |
+| --- | --- | --- |
+| 真身分身（方案 A） | **天选一号**（TX-1） | 天选姐的数字分身——「天选姐的时间放大器」，不再用「彬姐一号」 |
+| 原生传人（方案 B） | **上线**（沿用）或 **BIN**（Built In Numbers） | 完全不含真名字根 |
+
+> 效果：全 IP 链（天选姐→天选一号→上线）无一真名字根，但故事内核全部来自陈彬彬的真实历史——**资产是你的，名字是品牌的。**
+
+## 三、善意经济学融合（演讲稿 → 体系顶层）
+
+### 3.1 理论定位（重大升级）
+
+善意经济学从「一篇演讲稿」升格为**全体系的思想顶层**：
+
+```
+善意经济学（思想顶层：Beneconomy）
+   「善意举动 → 价值提供 → 信任建立 → 商业回报」
+        ↓ 落地为
+One&Co 主理人公社（品牌层）· 天选姐（人格层）· AI 数字人（引擎层）
+        ↓ 方法论 = 
+随心付四步（操作层）：0 元可学完（善意）→ 7 天课（价值）→ 雷达分层（信任）→ 升单（回报）
+```
+
+**对齐关系**（演讲稿概念 ↔ 现有体系，一字不改即自洽）：
+
+| 演讲稿概念 | 体系落地 |
+| --- | --- |
+| 善意举动→价值→信任→回报 | 随心付普惠班四步 |
+| 信息不对称→信任不对称 | 招商叙事（公示三铁律=信任建设） |
+| 公益裂变重构行业话语权 | 掌灯计划+为 X 发声矩阵 |
+| 创始人 IP = 信任的终极节点 | 天选姐 IP 体系 |
+| AI 数字人 = 善意传播的技术杠杆 | AI 数字人创始人三套方案 |
+| 社会资本账户 | 可新增「善意账户」游戏化（学员利他行为积分，后续设计） |
+
+### 3.2 数字人方案的使命重定义（关键优化）
+
+三套方案的叙事升级——数字人创始人的使命从「讲故事」升格为演讲稿原文的定位：
+
+> **「真人的善意是有限的，AI 让善意规模化。数字人不是噱头，是善意与专业的传播桥梁——一次分身，让善意日更。」**
+
+- 方案 A（天选一号）= 善意的**规模化传播引擎**（真身分身日更善意内容）
+- 方案 B（上线）= 善意的**交互触点**（夜校答疑/雷达承接——每一次回答都是善意存款）
+- 方案 C（双生）= 善意经济学两位使者
+
+### 3.3 新增内容资产（演讲稿的栏目化）
+
+数字人首批栏目即用演讲稿原生素材：
+
+| 栏目 | 内容 | 来源 |
+| --- | --- | --- |
+| 《善意经济学》系列演讲 | 数字人版演讲（三重变革/三重战略价值/公式） | 演讲稿直接数字化 |
+| 《善意的账本》 | 案例故事：每一次善意如何变成商业回报 | 善意经济学案例框架 |
+| 天选之夜固定环节 | 「年度善意账单」——把体系的公益与普惠数据公示成内容 | 掌灯计划+随心榜数据 |
+
+## 五、决策项（2026-09-17 定案 ✅）
+
+| # | 决策 | 结果 |
+| --- | --- | --- |
+| 1 | 社群英文商标 | 待定（30 套方案中选） |
+| 2 | 思想品牌 | Beneconomy（善意经济学独立注册） |
+| 3 | 艺名结构 | 真名（法律）+ 艺名（IP，弃用天选姐，从 30 套方案中选） |
+| 4 | **善意经济与 OPC 的关系（本轮定案）** | **双身份结构**（见第六节） |
+
+## 六、善意经济 × OPC 关系定案（双身份结构 · 2026-09-17 拍板）
+
+**关系本质（必然关系，非硬凑）**：一人公司没有资本、没有团队、没有品牌——唯一启动资产是「信任」，而善意是建立信任最便宜的方式（演讲稿原文）。OPC 与善意经济互为定义性互补。
+
+**关系公式**：
+- **OPC 回答「你是什么」**：一个人，一家公司（组织形态）；
+- **善意经济回答「你靠什么赢」**：善意 → 价值 → 信任 → 回报（经营哲学）；
+- **OPC 是壳，善意是魂。**
+- 金句：「一人公司的护城河，不是资本，是善意。」（One Person Company's moat is not capital, but goodwill.）
+
+**双身份**：
+| 身份 | 定位 | 功能 |
+| --- | --- | --- |
+| ① 独立思想 IP（对外） | 善意经济学 = 陈彬彬个人思想品牌（Beneconomy） | 演讲/出书/课程/咨询——独立升值 |
+| ② 社群操作系统（对内） | 善意经济学 = One&Co 方法论内核 | 随心付四步=善意飞轮产品化实证 |
+
+**功能双向流**：思想→品牌（信任背书+差异化标签）；品牌→思想（随心付数据/掌灯案例反哺演讲素材）。
+
+**对外一句话**：主理人公社，用善意经济学经营一人公司。
+
+## 七、交付物
+
+- HTML 品牌架构总览页：20260917_善意经济×One&Co品牌架构总览.html（白金视觉 · 已浏览器验证）
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-17 | OPC 组词三家族（One&Co 家族/OPC 前后缀家族/善意经济家族共 14 词）；艺名策略「真名用于实、艺名用于势」（数字人更名天选一号/上线，全链无真名字根）；善意经济学升格思想顶层（四步公式与随心付同构映射、数字人使命重定义为善意规模化传播引擎、演讲稿栏目化）；推荐定案 ONE&CO CLUB + Beneconomy + OPC 体系词 |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260917_OPC英文组词与善意经济融合_V1.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260917_OPC英文组词与善意经济融合_V1.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260917 品牌包装30套方案 V1 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># 品牌包装 30 套方案 · 商标×艺名×善意经济 V1
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档编号 | 20260917_品牌包装30套方案_V1 |
+| 状态 | V1 待创始人选择 |
+| 输入 | 创始人圈定商标：One&Co（最爱）/ OPC Planet / OPC Lab / GO-OPC / NEO-OPC / OPC CLUB / S-OPC · 艺名不用「天选姐」· 需与善意经济学融合 |
+| 设计公式 | **英文商标（骨架）× 艺名（人格）× 善意机制（灵魂）= 品牌包装** |
+
+---
+
+## 一、七大家族总览
+
+| 家族 | 商标 | 气质 | 善意融合总方向 |
+| --- | --- | --- | --- |
+| A | **One&Co** | 一个人的精品公司，「&」是温度 | Co = Company/Commune/**Care**（关怀）——善意写进词根 |
+| B | **OPC Planet** | 星球文明，超级个体的家园 | 善意是这颗星球的「法律」 |
+| C | **OPC Lab** | 实验室，一人公司试验场 | 善意经济学是常设课题 |
+| D | **GO-OPC** | 行动派，说干就干 | 每一次 GO 都是一次善意举动 |
+| E | **NEO-OPC** | 新纪元，新商业文明 | 善意经济 = 新商业文明 |
+| F | **OPC CLUB** | 俱乐部，会员制的尊贵 | 善意是社章（入社即承诺） |
+| G | **S-OPC** | 超级一人公司 | 善意是超能力 |
+
+## 二、30 套方案总表
+
+### A · One&Co 家族（#1–7）
+
+**#1（本组推荐）**：**One&Co CLUB**｜主理人公社｜艺名**一姐**｜数字人**蔻蔻（Co-1）**｜slogan「一个人，一家公司，一群同路人」｜善意机制：**社章制**——入社签「善意经营承诺」，善意账户积分可视化｜气质：温暖商务。一姐=One Person 的中文双关（行业头牌）。
+
+**#2**：One&Co｜主理人公社｜**堡主**｜蔻蔻｜「十年前一座城堡，今天一家公司」｜善意机制：**城堡新法**——女王城堡升级叙事，城堡的新规矩就是善意经济｜气质：传承叙事。
+
+**#3**：One&&Care（One and Care）｜善意公社｜**善姐**｜**善善**｜「把关怀写进名字」｜善意机制：**品牌本体**——Care 直接入名，随心付三底线就是品牌底线｜气质：治愈系。
+
+**#4**：One&Co Lab｜一人公司实验室｜一姐｜蔻蔻｜「把自己当成一家公司来做实验」｜善意机制：**课题制**——每季一个善意经济学公开实验（如「0 元课能不能活」）｜气质：理性实验。
+
+**#5**：ONE&CO｜主理人公社｜**社长**｜蔻蔻｜「社长，也是 One 长」｜善意机制：**社长责任**——社长带头日更善意（创始人 IP 的善意示范义务）｜气质：社团制。
+
+**#6**：One&Co｜一人公司联盟｜一姐｜蔻蔻｜「One 是你，Co 是我们」｜善意机制：**互补制**——一人公司互为客户/互为伙伴（善意内循环）｜气质：联盟感。
+
+**#7**：One&Co Club｜掌灯公社｜**掌门**｜蔻蔻｜衔接掌灯计划公益线｜善意机制：**掌灯制**——每位主理人认领一盏灯（公益发声任务）｜气质：公益融合。
+
+### B · OPC Planet 星球家族（#8–12）
+
+**#8（本组推荐）**：**OPC Planet**｜一人公司星球｜艺名**星主**｜数字人**小星（Planet-1）**｜「每个一人公司，都是一颗自带引力的星」｜善意机制：**星球公约**——善意是星球引力（利他者聚人）；善意账户=「星力值」｜气质：浪漫宏大。
+
+**#9**：OPC Planet｜主理人星球｜**舰长**｜小星｜「一人驾驶，星际远航」｜善意机制：**领航制**——老主理人为新人领航（善意传承的具象化）｜气质：冒险探索。
+
+**#10**：OPC Planet｜善意星球｜星主｜小星｜「善意是这个星球的氧气」｜善意机制：**星球生态**——公益项目=星球生态建设（掌灯计划=种树）｜气质：理想主义。
+
+**#11**：OPC Planet｜曦光公社｜**曦姐**（八字喜火沿用）｜小星｜「每个日出，都是上线」｜善意机制：**日出口号**——善意如晨光，日更即日出｜气质：晨光温暖。
+
+**#12**：OPC Planet｜一人星｜**球长**｜小星｜「一人一星，星球成海」｜善意机制：**星海制**——个人善意汇成星海（公益数据可视化大屏）｜气质：科幻社区。
+
+### C · OPC Lab 实验室家族（#13–16）
+
+**#13（本组推荐）**：**OPC Lab**｜一人公司实验室｜艺名**所长**｜数字人**阿博（Lab-1）**｜「把创业当成可实验的科学」｜善意机制：**公开实验**——善意经济学每个公式都做公开实验并公示结果（透明=善意）｜气质：科学严谨。
+
+**#14**：OPC Lab｜善意实验室｜所长｜阿博｜「善意是可以被实验和复制的」｜善意机制：**善意配方**——把「善意→回报」做成可复制的标准动作库（SOP 化的善意）｜气质：方法论感。
+
+**#15**：OPC Lab｜主理人研究所｜**主理员**｜阿博｜「研究自己这家公司」｜善意机制：**样本共享**——成员的一人公司数据匿名共享，集体研究（互助式善意）｜气质：智库感。
+
+**#16**：OPC Lab｜一号实验室｜**一号**｜阿博｜「你是自己人生的一号研究员」｜善意机制：**001 编号**——每位主理人有编号，001 号主理人是 AI 创始人（沿用既定叙事）｜气质：编号仪式感。
+
+### D · GO-OPC 行动家族（#17–20）
+
+**#17（本组推荐）**：**GO-OPC**｜出发公社｜艺名**队长**｜数字人**小G（GO-1）**｜「一个人，也要立刻出发」｜善意机制：**GO 即善意**——每次行动绑定一个利他动作（开班=公益科普）｜气质：行动力爆棚。
+
+**#18**：GO-OPC｜一人出发｜队长｜小G｜「GO，就是一个人最好的公司」｜善意机制：**同行制**——出发者必须带一个同行者（老带新的善意结构）｜气质：互助热血。
+
+**#19**：GO-OPC｜善意出发地｜**G 姐**｜小G｜「从善意出发，向回报抵达」｜善意机制：**起终点**——善意是 GO 的起点，商业回报是自然终点（善意飞轮的动词化）｜气质：公路片感。
+
+**#20**：GO-OPC｜上线公社｜**上线姐**｜**上线**（数字人沿用名）｜「今晚，你上线」｜善意机制：**上线仪式**——每晚上线学习=日行一善（知识普惠）｜气质：夜行动感。
+
+### E · NEO-OPC 新纪元家族（#21–23）
+
+**#21（本组推荐）**：**NEO-OPC**｜新一人公司纪元｜艺名**Neo 姐**｜数字人**妮奥（Neo-1）**｜「旧商业已死，善意是新纪元的货币」｜善意机制：**新旧对照**——零和博弈（旧）vs 共生共赢（新），善意经济即新纪元宪法｜气质：宣言感。
+
+**#22**：NEO-OPC｜善意新纪元｜Neo 姐｜妮奥｜「第一次，善意成了硬通货」｜善意机制：**善意货币**——善意账户积分可兑换权益（善意资本化的游戏化）｜气质：经济实验。
+
+**#23**：NEO-OPC｜新主理人公社｜**新姐**｜妮奥｜「每天都是新的公司」｜善意机制：**日新制**——每日一善（日更善意的组织化）｜气质：日日新哲学。
+
+### F · OPC CLUB 俱乐部家族（#24–27）
+
+**#24（本组推荐）**：**OPC CLUB**｜主理人俱乐部｜艺名**社长**｜数字人**小欧（CLUB-1）**｜「一人公司创始人的私人俱乐部」｜善意机制：**社章誓言**——入社宣誓善意经营（仪式感+约束力+传播素材）｜气质：会员尊贵。
+
+**#25**：OPC CLUB｜善意俱乐部｜**会长**｜小欧｜「以善意为会费」｜善意机制：**善意会费**——会员资格的维持=持续善意行为（替代金钱会费的资格设计）｜气质：荣誉社团。
+
+**#26**：OPC CLUB｜一人公司俱乐部｜社长｜小欧｜「一个人，但不孤单」｜善意机制：**陪伴制**——俱乐部成员一对一守望（一人公司最大的痛是孤独，善意=陪伴）｜气质：温度社交。
+
+**#27**：OPC CLUB｜主理人社｜**社姐**｜小欧｜「社交的社，善意为社」｜善意机制：**社交即善意**——所有社群活动的第一目标设定为利他（次级目标才是转化）｜气质：轻社交。
+
+### G · S-OPC 超级家族（#28–30）
+
+**#28（本组推荐）**：**S-OPC**｜超级一人公司｜艺名**超姐**｜数字人**S 妹（S-1）**｜「Super 级的一人公司，Super 级的善意」｜善意机制：**超能力设定**——善意是一人公司唯一的超能力（无团队无背景者的破局点）｜气质：热血超英。
+
+**#29**：S-OPC｜超级个体公社｜超姐｜S 妹｜「一个人，活成一支队伍」｜善意机制：**S 评级**——成员评级看善意值不看营收（善意账户积分定段位）｜气质：段位文化。
+
+**#30**：S-OPC｜善力公社｜**S 姐**｜S 妹｜「S = 善（Shan）的首字母」｜善意机制：**双关词根**——S 既 Super 又 Shan（善），善意直接写进字母｜气质：中文双关。
+
+## 三、Top 5 综合推荐（跨家族）
+
+| 排名 | 方案 | 为什么 |
+| --- | --- | --- |
+| 🥇 | **#1 One&Co CLUB · 一姐 · 蔻蔻** | 你最爱的 One&Co + CLUB 实体感；一姐=One Person 中文双关（行业头牌）；蔻蔻（Co-1）可爱可注册；&=Company/Commune/Care 三关；善意社章制仪式感强 |
+| 🥈 | **#8 OPC Planet · 星主 · 小星** | 星球叙事最浪漫宏大；「善意是星球的引力」把善意经济讲成了世界观；星力值游戏化顺滑 |
+| 🥉 | **#13 OPC Lab · 所长 · 阿博** | 实验室气质最理性可信；「善意经济学公开实验」与演讲稿内容天然一体；适合做严肃课程品牌 |
+| 4 | **#17 GO-OPC · 队长 · 小G** | 行动感最强；「GO 即善意」机制最简单好懂；适合快节奏招商 |
+| 5 | **#21 NEO-OPC · Neo 姐 · 妮奥** | 宣言感最强；「善意是新纪元的货币」最有金句相；NEO 与「重构行业话语权」的演讲主题呼应 |
+
+## 四、五强与善意经济学的融合矩阵
+
+| 方案 | 善意飞轮角色 | 数字人使命表述 |
+| --- | --- | --- |
+| One&Co CLUB | 社章（善意是入社承诺） | 「蔻蔻替一姐把善意日更」 |
+| OPC Planet | 星球公约（善意是引力） | 「小星让善意像光一样播撒星球」 |
+| OPC Lab | 公开实验（善意可验证） | 「阿博负责善意经济学的实验记录」 |
+| GO-OPC | 行动绑定（GO 即善举） | 「小G 每天喊你出发做一件善事」 |
+| NEO-OPC | 新纪元货币（善意是硬通货） | 「妮奥是新纪元善意银行行长」 |
+
+## 五、决策项
+
+| # | 决策 | 选项 |
+| --- | --- | --- |
+| 1 | 30 选 1 或组合（如 One&Co CLUB 为主品牌 + OPC Lab 为课程线 + OPC Planet 为社区产品线——**一商标一用途的多商标矩阵也可行**） | 单选 / 矩阵 |
+| 2 | 艺名 | 一姐 / 星主 / 所长 / 队长 / Neo 姐 / 超姐 |
+| 3 | 数字人名 | 蔻蔻 / 小星 / 阿博 / 小G / 妮奥 / S 妹 |
+| 4 | 商标注册批次 | 主商标（35/41/42）+ 数字人名（41 类）同步送检 |
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-17 | 30 套品牌包装：7 商标家族（One&Co×7 / Planet×5 / Lab×4 / GO×4 / NEO×3 / CLUB×4 / S-OPC×3）× 独立艺名 × 独立数字人 × 独立善意机制；艺名弃用天选姐（新池：一姐/堡主/善姐/社长/星主/舰长/曦姐/所长/队长/Neo 姐/超姐等）；数字人新池（蔻蔻/小星/阿博/小G/妮奥/S 妹）；Top 5 推荐与善意融合矩阵；提出「多商标矩阵」选项 |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260917_品牌包装30套方案_V1.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260917_品牌包装30套方案_V1.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

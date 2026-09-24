@@ -1,0 +1,404 @@
+- generic: 聚域
+- generic: PRIVATE DOMAIN OS
+- button "收起导航栏":
+- generic: 2 RISK ITEMS
+- navigation:
+  - generic: 工作台
+  - button "跨项目工作台":
+    - generic: 跨项目工作台
+  - button "项目与生态":
+    - generic: 项目与生态
+  - generic: 配置中心
+  - button "账号资产中心 2":
+    - generic: 账号资产中心
+    - generic: "2"
+  - button "员工与服务资源":
+    - generic: 员工与服务资源
+  - button "渠道流量绑定":
+    - generic: 渠道流量绑定
+  - button "城市分站":
+    - generic: 城市分站
+  - generic: 日常运营
+  - button "会员运营工作台":
+    - generic: 会员运营工作台
+  - button "会员权益":
+    - generic: 会员权益
+  - generic: 服务与交易
+  - button "支付订单 3":
+    - generic: 支付订单
+    - generic: "3"
+  - button "工单中心 12":
+    - generic: 工单中心
+    - generic: "12"
+  - button "审批中心 18":
+    - generic: 审批中心
+    - generic: "18"
+  - button "分销佣金":
+    - generic: 分销佣金
+  - generic: 数据分析
+  - button "数据报表中心":
+    - generic: 数据报表中心
+- generic: 创
+- generic: 王总·创始人
+- generic: ROOT ACCESS
+- button "视图：PC 后台 · 点击切换":
+  - generic: VIEW
+  - generic: PC
+- generic: SUPER
+- generic: /
+- generic: ECO
+- generic: /
+- generic: SAAS
+- generic: /
+- generic: 会员运营工作台
+- textbox "SEARCH..."
+- button "暗黑模式：跟随系统（实际明亮） · 点击选择":
+  - generic: A
+- button "主题风格：日落 · 点击选择":
+  - generic: VIBE
+  - generic: 🌅
+  - generic: 日落
+- generic: "3"
+- generic: 2026-07-05
+- banner:
+  - heading "会员运营工作台" [level=1]
+  - generic: 日常运营
+  - paragraph: 围绕会员执行触达、活动与持续运营
+  - generic: 当前项目 · 会员项目
+  - tablist "会员运营工作台功能":
+    - tab "会员运营 会员任务、画像、关系链与订单服务" [selected]:
+      - generic: 会员运营
+      - generic: 会员任务、画像、关系链与订单服务
+    - tab "推送任务 3 触达计划、模板与执行日志":
+      - generic: 推送任务
+      - generic: "3"
+      - generic: 触达计划、模板与执行日志
+    - tab "活动运营 活动、课程与报名运营":
+      - generic: 活动运营
+      - generic: 活动、课程与报名运营
+- generic: 任务中心
+- button "收起任务中心":
+- button "待处理的任务 12":
+  - generic: 待处理的任务
+  - generic: "12"
+- button "我发布的任务 5":
+  - generic: 我发布的任务
+  - generic: "5"
+- button "朋友圈的任务 28":
+  - generic: 朋友圈的任务
+  - generic: "28"
+- button "附近的任务 7":
+  - generic: 附近的任务
+  - generic: "7"
+- generic: 会员产品下午3点代发
+- generic: "3"
+- generic: 14:30
+- generic: 进行中
+- generic: 晒单截图任务-7月第二周
+- generic: "1"
+- generic: 10:00
+- generic: 待处理
+- generic: 朋友圈转发活动邀请
+- generic: 09:00
+- generic: 进行中
+- generic: 评论互动任务-体验官群
+- generic: 16:00
+- generic: 已完成
+- generic: 拉新任务-北京PRO群
+- generic: "2"
+- generic: 11:00
+- generic: 进行中
+- group "数据视角切换":
+  - generic: 数据视角
+  - button "会员数据" [pressed]
+  - button "社群数据"
+  - button "项目数据"
+  - button "代理数据"
+- generic "数据搜索与筛选":
+  - textbox "搜索会员、微信号、城市…"
+  - generic: 排行时间
+  - combobox:
+    - option "今日排行" [selected]
+    - option "本周排行"
+    - option "本月排行"
+    - option "总排行"
+  - combobox:
+    - option "全部年份" [selected]
+    - option "2026"
+    - option "2025"
+  - combobox:
+    - option "全部月份" [selected]
+    - option "1 月"
+    - option "2 月"
+    - option "3 月"
+    - option "4 月"
+    - option "5 月"
+    - option "6 月"
+    - option "7 月"
+  - button "应用筛选"
+  - button "重置"
+  - button "全部"
+  - button "高影响力"
+  - button "PRO会员"
+  - button "高价值客户"
+  - button "潜在升级"
+  - button "复购关注"
+  - button "活跃互动"
+  - button "待回访"
+  - button "新会员"
+  - button "社群活跃"
+  - generic: 5 位会员
+- generic "会员排行横向滚动表格":
+  - generic: 排名
+  - generic: 头像
+  - generic: 排名
+  - generic: 微信名
+  - generic: 性别
+  - generic: 城市
+  - generic: 职业
+  - generic: 进群
+  - generic: 待处理
+  - generic: 发布
+  - generic: 完成
+  - generic: 总用户
+  - generic: 影响力
+  - generic: 评分
+  - generic: "1"
+  - img "盛光年"
+  - generic: "#1"
+  - generic: 盛光年
+  - generic: 男
+  - generic: 北京-朝阳
+  - generic: 工人-工地
+  - generic: 是
+  - generic: "80"
+  - generic: "80"
+  - generic: "91"
+  - generic: 8,023
+  - generic: 3,510
+  - generic: 4,858
+  - generic: "2"
+  - img "皮卡丘"
+  - generic: "#2"
+  - generic: 皮卡丘
+  - generic: 男
+  - generic: 北京-海淀
+  - generic: 工人-工地
+  - generic: 是
+  - generic: "71"
+  - generic: "91"
+  - generic: "54"
+  - generic: 6,544
+  - generic: 2,877
+  - generic: 3,918
+  - generic: "3"
+  - img "文泽"
+  - generic: "#3"
+  - generic: 文泽
+  - generic: 男
+  - generic: 北京-朝阳
+  - generic: 工人-工地
+  - generic: 是
+  - generic: "47"
+  - generic: "21"
+  - generic: "84"
+  - generic: 5,231
+  - generic: 2,104
+  - generic: 2,976
+  - generic: "4"
+  - img "梓几"
+  - generic: "#4"
+  - generic: 梓几
+  - generic: 男
+  - generic: 北京-西城
+  - generic: 工人-工地
+  - generic: 是
+  - generic: "37"
+  - generic: "44"
+  - generic: "27"
+  - generic: 4,102
+  - generic: 1,754
+  - generic: 2,341
+  - generic: "5"
+  - img "海槽"
+  - generic: "#5"
+  - generic: 海槽
+  - generic: 男
+  - generic: 北京-东城
+  - generic: 工人-工地
+  - generic: 是
+  - generic: "29"
+  - generic: "38"
+  - generic: "63"
+  - generic: 3,788
+  - generic: 1,432
+  - generic: 2,109
+- generic: 关系链
+- generic: 拖拽右下角调整宽度
+- textbox "搜索..."
+- generic: 皮卡丘
+- generic: 会员产品下午3...
+- generic: 会员产品下午3...
+- generic: 梓几
+- generic: 海槽
+- generic: 海槽(0人)
+- generic: 运营操作台
+- generic: 针对 盛光年 登记问题或发起运营动作
+- generic: 当前会员
+- tablist "运营操作类型":
+  - tab "问题登记" [selected]:
+    - text: 问题登记
+  - tab "推送任务":
+    - text: 推送任务
+  - tab "活动运营":
+    - text: 活动运营
+  - tab "朋友圈":
+    - text: 朋友圈
+- generic: 问题分类
+- combobox:
+  - option "售后问题" [selected]
+  - option "产品咨询"
+  - option "社群服务"
+  - option "投诉建议"
+- generic: 处理部门
+- combobox:
+  - option "会员运营部" [selected]
+  - option "客服部"
+  - option "社群运营部"
+  - option "财务部"
+- generic: 优先级
+- combobox:
+  - option "普通"
+  - option "重要" [selected]
+  - option "紧急"
+- generic: 指派处理人
+- combobox:
+  - option "吴思远" [selected]
+  - option "林小燕"
+  - option "客服组"
+- textbox "登记 盛光年 的问题描述..."
+- button "清空"
+- button "登记并指派":
+  - text: 登记并指派
+- complementary:
+  - generic: 会员档案
+  - generic: 统一承载资料、画像与权益
+  - generic: 统一档案
+  - button "收起会员档案栏":
+  - img "盛光年"
+  - generic: 盛光年
+  - generic: THEv424 · 北京-朝阳
+  - generic: 高影响力
+  - generic: PRO会员
+  - generic: 高价值客户
+  - generic: 潜在升级
+  - button "编辑"
+  - button "查看会员二维码":
+  - generic: 会员编号
+  - generic: U-00001
+  - generic: 微信号
+  - generic: THEv424
+  - generic: 会员等级
+  - generic: 尊享官
+  - generic: 入群状态
+  - generic: 已入群
+  - generic: 影响力
+  - generic: 3,510
+  - generic: 评分
+  - generic: 4,858
+  - generic: 城市
+  - generic: 北京-朝阳
+  - generic: 推荐人
+  - generic: 盛光年
+  - generic: 经营摘要
+  - generic: 同步于 今天 10:42
+  - generic: 订单
+  - generic: 3 单
+  - generic: 所在群
+  - generic: 2 群
+  - generic: 影响力
+  - generic: 3,510
+  - generic: 最近活跃
+  - generic: 今天
+  - generic: 分层指标
+  - generic: 基于画像标签计算
+  - generic: R 最近活跃
+  - generic: 2 天内
+  - generic: F 购买频次
+  - generic: 近30天 3次
+  - generic: M 累计消费
+  - generic: ¥1,240
+  - generic: RFM 分层
+  - generic: 冠军客户
+  - button "待处理"
+  - button "订单详情"
+  - button "历史操作记录"
+  - button "回访单"
+  - button "所有订单 (2)":
+    - text: 所有订单
+    - generic: (2)
+  - button "待付款 (0)":
+    - text: 待付款
+    - generic: (0)
+  - button "待发货 (0)":
+    - text: 待发货
+    - generic: (0)
+  - button "待收货 (1)":
+    - text: 待收货
+    - generic: (1)
+  - button "已完成 (1)":
+    - text: 已完成
+    - generic: (1)
+  - button "退款/换货 (0)":
+    - text: 退款/换货
+    - generic: (0)
+  - textbox "搜索订单号或商品"
+  - button "查询"
+  - combobox "订单日期范围":
+    - option "全部日期" [selected]
+    - option "近 7 天"
+    - option "近 30 天"
+  - button "重置"
+  - generic: 所有订单 · 2 笔
+  - generic: 当前会员：盛光年
+  - generic: 按订单、包裹与商品处理
+  - article:
+    - generic: 订单号：ORD-202607-01842
+    - generic: 购买日期：2026-07-03 12:10
+    - generic: 待收货
+    - generic: 实收 ¥2,480 · 优惠 ¥500
+    - button "查看详情"
+    - generic: 包裹 1
+    - generic: SF128346821484695215
+    - button "确认收货"
+    - generic: PRO 会员年卡
+    - generic: 1 年权益
+    - generic: ¥2,480
+    - generic: x1
+    - generic: 会员成长礼包
+    - generic: 电子权益
+    - generic: ¥0
+    - generic: x1
+    - generic: 服务状态：待回访
+    - button "售后/退款"
+    - button "发起回访"
+  - article:
+    - generic: 订单号：ORD-202603-00419
+    - generic: 购买日期：2026-03-15 10:30
+    - generic: 已完成
+    - generic: 实收 ¥2,980 · 优惠 ¥0
+    - button "查看详情"
+    - generic: 包裹 1
+    - generic: 电子权益已到账
+    - button "交易成功"
+    - generic: PRO 会员年卡
+    - generic: 1 年权益
+    - generic: ¥2,980
+    - generic: x1
+    - generic: 服务状态：已回访
+    - button "售后/退款"
+    - button "发起回访"
+  - button "‹"
+  - generic: "1"
+  - button "›"
+  - generic: 共 2 笔

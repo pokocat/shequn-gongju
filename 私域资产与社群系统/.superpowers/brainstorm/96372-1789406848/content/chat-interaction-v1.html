@@ -1,0 +1,57 @@
+<h2>聊天页交互优化方向</h2>
+<p class="subtitle">先选择你希望优先完善的交互方式，当前展示的是聊天页的视觉草案，不会修改正式页面。</p>
+
+<div class="section">
+  <div class="label">当前页面可增强的关键点</div>
+  <div class="options" data-multiselect>
+    <div class="option" data-choice="quick-actions" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>富卡片操作闭环</h3>
+        <p>点击“查看计划”“开始复盘”后弹出详情抽屉或进入对应任务页，让推送信息可以直接执行。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="composer" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>输入栏状态反馈</h3>
+        <p>补充点击输入框、语音、表情和加号后的静态反馈，让页面更像真实微信聊天。</p>
+      </div>
+    </div>
+    <div class="option" data-choice="read-state" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>消息阅读与定位</h3>
+        <p>支持新消息分隔、已读状态、回到最新消息和长列表定位，强化连续对话的阅读体验。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="label">页面状态预览</div>
+  <div class="mockup">
+    <div class="mockup-header">成长教练 · 交互状态示意</div>
+    <div class="mockup-body" style="background:linear-gradient(180deg,#fff8ef,#fde8d2);padding:18px;border-radius:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+        <strong>成长教练 · Dr. Chen</strong>
+        <span style="padding:5px 9px;border-radius:99px;background:#f6dfce;color:#96765e;font-size:12px;">在线</span>
+      </div>
+      <div style="max-width:82%;padding:12px 14px;background:#fffdfa;border:1px solid #f1dfcf;border-radius:14px;margin-bottom:10px;">
+        今日成长计划已生成，建议完成商品复盘。
+      </div>
+      <div style="padding:14px;background:#fff;border:1px solid #ead9ed;border-radius:15px;box-shadow:0 6px 18px rgba(93,57,35,.08);">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><strong>今日成长计划 · 3 项任务</strong><span style="color:#7c3aed;">›</span></div>
+        <div style="display:grid;gap:7px;font-size:13px;color:#725c4a;">
+          <div style="display:flex;justify-content:space-between;"><span>任务一</span><b>商品复盘</b></div>
+          <div style="display:flex;justify-content:space-between;"><span>任务二</span><b>完成第 3 节</b></div>
+          <div style="display:flex;justify-content:space-between;"><span>任务三</span><b>更新选品清单</b></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:13px;"><button class="mock-button" style="flex:1;">查看计划</button><button class="mock-button" style="flex:1;background:#f2e8fb;color:#7c3aed;">开始复盘</button></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:14px;"><span style="font-size:22px;">◉</span><div class="mock-input" style="flex:1;margin:0;">发送消息…</div><span style="font-size:20px;">☺</span><span style="font-size:20px;">＋</span></div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle">可多选。请点击你希望优先完善的方向；如果你更关注其他交互，也可以直接在对话中说明。</p>

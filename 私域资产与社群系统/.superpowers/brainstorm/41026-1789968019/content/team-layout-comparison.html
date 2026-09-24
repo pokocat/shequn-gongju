@@ -1,0 +1,37 @@
+<h2>团队工作台布局对比</h2>
+<p class="subtitle">围绕“影响力 + 预计收益 + 代理管理”比较三种团队页结构。点击一个方案即可记录偏好。</p>
+<div class="cards" data-multiselect>
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f7f2ec;padding:14px;border-radius:12px;min-height:330px;color:#302c38;font-family:Arial,sans-serif">
+        <div style="background:linear-gradient(145deg,#5b21b6,#9b7bea);padding:12px;border-radius:12px;color:white">
+          <div style="font-size:11px;opacity:.75">团队影响力</div><div style="font-size:24px;font-weight:800;margin-top:8px">128 <span style="font-size:11px;font-weight:400">人</span></div>
+          <div style="display:flex;gap:8px;margin-top:12px"><div style="background:white;color:#302c38;border-radius:8px;padding:8px;flex:1;text-align:center"><b>¥8,420</b><small style="display:block;color:#777;margin-top:3px">预计收益</small></div><div style="background:white;color:#302c38;border-radius:8px;padding:8px;flex:1;text-align:center"><b>12</b><small style="display:block;color:#777;margin-top:3px">待审核代理</small></div></div>
+        </div>
+        <div style="background:white;border-radius:12px;padding:12px;margin-top:10px"><b style="font-size:13px">团队成员</b><div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #eee;font-size:12px"><span>代理增长榜</span><span style="color:#7c3aed">查看全部 →</span></div><div style="display:flex;justify-content:space-between;padding:12px 0;font-size:12px"><span>审核代理申请</span><span style="color:#ef4444">12 条 →</span></div></div>
+      </div>
+    </div>
+    <div class="card-body"><h3>A｜总览优先</h3><p>先看影响力与收益，再进入成员和审核。适合每天快速判断团队状态。</p></div>
+  </div>
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f7f2ec;padding:14px;border-radius:12px;min-height:330px;color:#302c38;font-family:Arial,sans-serif">
+        <div style="background:white;border-radius:12px;padding:12px"><div style="display:flex;justify-content:space-between;align-items:center"><b>团队</b><span style="font-size:11px;color:#7c3aed">全部代理 →</span></div><div style="display:flex;gap:8px;margin-top:12px"><div style="background:#f1eaff;border-radius:8px;padding:10px;flex:1"><small>直属代理</small><strong style="display:block;font-size:20px;margin-top:4px">36</strong></div><div style="background:#fff1e9;border-radius:8px;padding:10px;flex:1"><small>团队总数</small><strong style="display:block;font-size:20px;margin-top:4px">128</strong></div></div><div style="margin-top:12px;font-size:12px;color:#666">张琳 <span style="float:right;color:#16a34a">活跃 · ¥2,180</span></div><div style="margin-top:12px;font-size:12px;color:#666">李然 <span style="float:right;color:#f59e0b">待培训</span></div></div>
+        <div style="background:white;border-radius:12px;padding:12px;margin-top:10px"><b style="font-size:13px">影响力与收益</b><div style="height:90px;display:flex;align-items:center;justify-content:center;gap:18px"><div style="width:62px;height:62px;border-radius:50%;background:conic-gradient(#7c3aed 0 62%,#f3e8ff 62%);position:relative"><div style="position:absolute;inset:13px;background:white;border-radius:50%"></div></div><div><strong style="font-size:20px">¥8,420</strong><small style="display:block;color:#777">本月预计收益</small></div></div></div>
+        <div style="background:#5b21b6;color:white;border-radius:10px;padding:11px;text-align:center;margin-top:10px;font-size:12px">审核代理申请 · 12 条待处理</div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B｜成员管理优先</h3><p>团队成员直接成为首屏主体，影响力和收益作为分析模块。适合高频管理代理的负责人。</p></div>
+  </div>
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div style="background:#f7f2ec;padding:14px;border-radius:12px;min-height:330px;color:#302c38;font-family:Arial,sans-serif">
+        <div style="background:linear-gradient(145deg,#5b21b6,#9b7bea);padding:14px;border-radius:12px;color:white;text-align:center"><div style="font-size:11px;opacity:.75">我的影响力</div><div style="font-size:30px;font-weight:800;margin-top:6px">128</div><div style="font-size:11px;opacity:.8">团队成员</div></div>
+        <div style="display:flex;gap:8px;margin-top:10px"><div style="background:white;border-radius:10px;padding:11px;flex:1;text-align:center"><div style="font-size:18px;font-weight:800">¥8,420</div><small style="color:#777">预计收益</small></div><div style="background:white;border-radius:10px;padding:11px;flex:1;text-align:center"><div style="font-size:18px;font-weight:800;color:#ef4444">12</div><small style="color:#777">待审核</small></div></div>
+        <div style="background:white;border-radius:12px;padding:12px;margin-top:10px"><div style="display:flex;gap:18px;border-bottom:1px solid #eee;padding-bottom:8px;font-size:12px"><b style="color:#7c3aed">团队</b><span>收益</span><span>审核</span></div><div style="padding:13px 0;font-size:12px;display:flex;justify-content:space-between"><span>代理信息</span><span>业绩 · 活跃 · 培训状态 →</span></div><div style="padding:13px 0;font-size:12px;display:flex;justify-content:space-between"><span>影响力明细</span><span>3×3 数据表 →</span></div></div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C｜指标与导航并重</h3><p>影响力和收益先建立全局感知，再用团队/收益/审核切换管理对象。推荐作为当前版本方向。</p></div>
+  </div>
+</div>
+<p class="subtitle" style="margin-top:20px">推荐：C。它保留参考页面的影响力视觉重点，同时把代理审核和代理信息页作为明确入口，不会让团队页变成单纯的收益报表。</p>

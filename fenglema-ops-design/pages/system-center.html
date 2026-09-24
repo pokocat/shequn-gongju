@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN" class="light">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蜂乐玛运营系统中心</title>
+    <style id="theme-vars">
+:root {
+  /* 语义化品牌映射（head contract 所需） */
+  --accent-background: #050914;
+  --accent-foreground: #eef4ff;
+  --accent-card: rgba(11, 19, 36, 0.92);
+  --accent-primary: #cb47ff;
+  --accent-border: rgba(132, 160, 210, 0.22);
+  --accent-radius-sm: 6px;
+  --accent-radius-md: 10px;
+  --accent-radius-lg: 16px;
+
+  /* 背景与面板 */
+  --bg: #050914;
+  --panel: rgba(11, 19, 36, 0.92);
+  --panel2: rgba(16, 26, 48, 0.92);
+  --panel-soft: #101a30;
+
+  /* 文字 */
+  --ink: #eef4ff;
+  --muted: #92a3bf;
+
+  /* 分隔线 */
+  --line: rgba(132, 160, 210, 0.22);
+
+  /* 品牌色 */
+  --accent: #cb47ff;
+  --accent-soft: rgba(203, 71, 255, 0.14);
+  --accent-strong: #f09cff;
+  --blue: #316bff;
+  --cyan: #2fd4ff;
+
+  /* 状态色 */
+  --good: #39d98a;
+  --green: #12805c;
+  --warn: #ffbd4a;
+  --bad: #ff6678;
+
+  /* 深度 */
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.38);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--accent-background);
+    --color-foreground: var(--accent-foreground);
+    --color-card: var(--accent-card);
+    --color-primary: var(--accent-primary);
+    --color-border: var(--accent-border);
+    --color-muted: var(--muted);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --radius-sm: var(--accent-radius-sm);
+    --radius-md: var(--accent-radius-md);
+    --radius-lg: var(--accent-radius-lg);
+  }
+  @layer base {
+    body { background: var(--accent-background); color: var(--accent-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--accent-background); }
+      .text-background { color: var(--accent-background); }
+      .border-background { border-color: var(--accent-background); }
+      .ring-background { --tw-ring-color: var(--accent-background); }
+      .bg-foreground { background-color: var(--accent-foreground); }
+      .text-foreground { color: var(--accent-foreground); }
+      .border-foreground { border-color: var(--accent-foreground); }
+      .ring-foreground { --tw-ring-color: var(--accent-foreground); }
+      .bg-card { background-color: var(--accent-card); }
+      .text-card { color: var(--accent-card); }
+      .border-card { border-color: var(--accent-card); }
+      .ring-card { --tw-ring-color: var(--accent-card); }
+      .bg-primary { background-color: var(--accent-primary); }
+      .text-primary { color: var(--accent-primary); }
+      .border-primary { border-color: var(--accent-primary); }
+      .ring-primary { --tw-ring-color: var(--accent-primary); }
+      .bg-border { background-color: var(--accent-border); }
+      .text-border { color: var(--accent-border); }
+      .border-border { border-color: var(--accent-border); }
+      .ring-border { --tw-ring-color: var(--accent-border); }
+      .bg-muted { background-color: var(--muted); }
+      .text-muted { color: var(--muted); }
+      .border-muted { border-color: var(--muted); }
+      .ring-muted { --tw-ring-color: var(--muted); }
+      .bg-accent { background-color: var(--accent); }
+      .text-accent { color: var(--accent); }
+      .border-accent { border-color: var(--accent); }
+      .ring-accent { --tw-ring-color: var(--accent); }
+      .bg-accent-foreground { background-color: var(--accent-foreground); }
+      .text-accent-foreground { color: var(--accent-foreground); }
+      .border-accent-foreground { border-color: var(--accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+    <link rel="stylesheet" href="../styles.css" />
+</head>
+  <body>
+    <div id="app">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">蜂</span>
+          <div>
+            <h1>蜂乐玛</h1>
+            <p>运营系统中心</p>
+          </div>
+        </div>
+
+        <label class="search">
+          <span>搜索</span>
+          <input id="searchInput" type="search" placeholder="页面 / 系统名称" />
+        </label>
+
+        <button id="overviewButton" class="overview-button is-active" type="button">
+          <span>业务总览</span>
+          <strong>工作台</strong>
+        </button>
+
+        <p class="nav-label">系统模块</p>
+        <nav id="systemNav" class="system-nav"></nav>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p id="systemType" class="eyebrow">加载中</p>
+            <h2 id="systemTitle">正在整理素材</h2>
+          </div>
+          <div class="toolbar">
+            <button id="systemButton" class="view-button is-active" type="button">系统</button>
+            <button id="gridButton" class="icon-button is-active" type="button" title="缩略图视图" aria-label="缩略图视图">
+              <span class="icon-grid"></span>
+            </button>
+            <button id="previewButton" class="icon-button" type="button" title="单页预览" aria-label="单页预览">
+              <span class="icon-preview"></span>
+            </button>
+            <a class="ghost-button" href="./pc-backstage.html" data-dom-id="enter-prototype">进入系统原型</a>
+            <a id="openSource" class="ghost-button" target="_blank" rel="noreferrer">打开原型</a>
+          </div>
+        </header>
+
+        <section id="summary" class="summary"></section>
+
+        <section id="content" class="content"></section>
+      </main>
+    </div>
+
+    <template id="systemTemplate">
+      <button class="system-button" type="button">
+        <span class="system-name"></span>
+        <span class="system-count"></span>
+      </button>
+    </template>
+
+    <script src="../app.js" type="module"></script>
+  </body>
+</html>

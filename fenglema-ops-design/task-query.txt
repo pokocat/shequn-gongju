@@ -1,0 +1,11 @@
+Create a comparison page for the account assets module (账号资产中心) in the Fenglema private-domain community operations system. The current page is at pages/full-pc-accounts.html (a wrapper around the built React app). Generate a new static HTML page at pages/full-pc-accounts-v2.html that implements two combined optimizations:
+
+1. Navigation simplification: move the view-dimension selector (按账号类型 / 按项目 / 按人) from the top header into a left sidebar, keeping only category tabs and status tabs at the top. Keep subtypes accessible but compact.
+
+2. Lightweight list + right detail panel: reduce the 14-column account table to 9 core columns (selection, account name, type, project, owner, status, lifecycle, risk, operations). Move low-frequency fields (recovery email, backup phone, last login, bind devices, logs, tags, notes) into a slide-out right detail panel that opens when a row is selected.
+
+Design style: dark SaaS theme with deep navy background (#050914), glassmorphism panels, purple/blue accent (#cb47ff / #316bff), white text (#eef4ff), muted secondary text (#92a3bf). Use clean borders, subtle shadows, and the same visual language as the existing system.
+
+The page should be a complete, self-contained static HTML file with embedded CSS and minimal JavaScript for the row selection / detail panel interactions. Use semantic HTML, responsive layout for 1440px desktop, and apply the head contract structure (or keep it simple enough to apply afterwards).
+
+Reference the existing React component structure and data fields from the source project, but do not depend on the React build. Produce a standalone comparison page that can be registered as a new page node in the .design file.

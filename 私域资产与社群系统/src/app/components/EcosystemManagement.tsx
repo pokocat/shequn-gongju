@@ -12,6 +12,7 @@ import { createApproval } from "../data/approvalTypes";
 import InviteDrawer from "./InviteDrawer";
 import InviteReviewDrawer from "./InviteReviewDrawer";
 import { S, useThemeSingleton } from "../theme";
+import { memberLevelOptions } from "../data/levelConfig";
 // ─── 四层架构定义（工厂函数，counts 动态联动） ────────────────
 type TierCounts = { eco: number; saas: number; platforms: number; projects: number; users: number; groups: number };
 function buildTiers(c: TierCounts) {
@@ -123,11 +124,17 @@ type ProjectRecord = {
   mechanism: { welcome: string; cadence: string; route: string; escalation: string };
   visibility: Record<string, boolean>;
 };
-const defaultTiers: ProjectTier[] = [
-  { name: "普通会员", rule: "入群即享", group: "新客体验群", service: "48小时响应" },
-  { name: "核心会员", rule: "累计消费 ¥1,000", group: "核心会员群", service: "24小时响应" },
-  { name: "城市合伙人", rule: "完成认证", group: "城市合伙人群", service: "专属运营" },
-];
+const defaultTierRules = [
+  ["游客", "注册或关注即可", "游客引流群", "基础响应"],
+  ["体验官", "完成体验官报名", "体验官群", "48小时响应"],
+  ["PRO会员", "购买 PRO 会员", "PRO会员群", "24小时响应"],
+  ["VIP", "购买 VIP 会员", "VIP 私享群", "专属运营"],
+  ["黑金", "邀请制或年度黑金资格", "黑金私董群", "专属顾问"],
+] as const;
+const defaultTiers: ProjectTier[] = memberLevelOptions.map((name, index) => {
+  const configured = defaultTierRules.find(rule => rule[0] === name) || defaultTierRules[index];
+  return { name, rule: configured[1], group: configured[2], service: configured[3] };
+});
 const projects: ProjectRecord[] = [
   { id: 1,  name: "PRO会员",      platform: "健康运营平台", saas: "私域工具",   eco: "健康医药美业生态", users: 1023, groups: 12, teacher: "吴思远/林小燕", cities: ["北京","上海","深圳"],       revenue: "¥28万/月",   status: "主力项目", enterpriseWx: "健康企业微信", enterpriseProjectCount: 3, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "欢迎语 + 入群任务",         cadence: "每周 2 次", route: "按城市 + 会员等级分群", escalation: "异常自动通知项目负责人" }, visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
   { id: 2,  name: "体验官",       platform: "健康运营平台", saas: "私域工具",   eco: "健康医药美业生态", users: 387,  groups: 8,  teacher: "刘刚/李梦华",   cities: ["广州","成都","杭州"],       revenue: "¥12万/月",   status: "增长中",   enterpriseWx: "健康企业微信", enterpriseProjectCount: 3, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "欢迎语 + 新人打卡",         cadence: "每周 3 次", route: "按城市分群",             escalation: "低活跃会员提醒客服" },     visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },

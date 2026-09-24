@@ -1,0 +1,654 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>取名系统 · 主理人公社</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;background:#faf7f0;color:#4a443b;min-height:100vh;display:flex;flex-direction:column}
+.topbar{background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 12px rgba(185,138,47,.2);flex-shrink:0}
+.topbar h1{font-size:16px;font-weight:800;letter-spacing:.05em}
+.topbar .back{font-size:12px;background:rgba(255,255,255,.2);padding:6px 14px;border-radius:20px;text-decoration:none;color:#fff;transition:.15s}
+.topbar .back:hover{background:rgba(255,255,255,.35)}
+.main{flex:1;display:grid;grid-template-columns:380px 1fr;overflow:hidden}
+/* 左侧 AI 对话框 */
+.ai-panel{background:#fff;border-right:1px solid #eadfce;display:flex;flex-direction:column;overflow:hidden}
+.ai-head{padding:16px 20px;border-bottom:1px solid #eadfce;background:#fdf9f0}
+.ai-head h2{font-size:14px;color:#8a6d2f;font-weight:800;display:flex;align-items:center;gap:8px}
+.ai-head h2 .dot{width:8px;height:8px;border-radius:50%;background:#8a9a4a;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ai-head p{font-size:11px;color:#a39b8e;margin-top:4px}
+.chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:88%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6;word-break:break-word}
+.msg.ai{background:#f7f0e0;color:#4a443b;border-bottom-left-radius:4px;align-self:flex-start}
+.msg.user{background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.msg.sys{background:#f0e7d6;color:#8a6d2f;border-radius:8px;font-size:11px;text-align:center;align-self:center;padding:6px 12px}
+.msg .time{font-size:9px;opacity:.5;margin-top:4px;text-align:right}
+.quick{padding:10px 16px;border-top:1px solid #eadfce;display:flex;flex-wrap:wrap;gap:6px}
+.quick span{font-size:11px;background:#f7f0e0;color:#8a6d2f;padding:5px 10px;border-radius:12px;cursor:pointer;transition:.15s;border:1px solid #eee5d3}
+.quick span:hover{background:#e5d5ab;border-color:#d9bc7f}
+.input-bar{padding:12px 16px;border-top:1px solid #eadfce;background:#fff}
+.input-row{display:flex;gap:8px}
+.input-row input{flex:1;border:1px solid #eadfce;border-radius:20px;padding:9px 16px;font-size:13px;font-family:inherit;outline:none;transition:.15s}
+.input-row input:focus{border-color:#c9a05c}
+.input-row button{border:none;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;border-radius:50%;width:38px;height:38px;font-size:16px;cursor:pointer;transition:.15s;flex-shrink:0}
+.input-row button:hover{transform:scale(1.05)}
+/* 右侧结果区 */
+.result-panel{overflow-y:auto;padding:20px 24px}
+.sec{margin-bottom:24px}
+.sec h3{font-size:14px;color:#8a6d2f;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec h3::before{content:'';width:4px;height:16px;background:linear-gradient(135deg,#c9a05c,#a3762a);border-radius:2px}
+.brand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.brand-card{background:#fff;border:1px solid #eadfce;border-radius:12px;padding:14px 16px;transition:.15s}
+.brand-card:hover{border-color:#c9a05c;box-shadow:0 4px 14px rgba(201,160,92,.12)}
+.brand-card.primary{border-color:#c9a05c;background:linear-gradient(135deg,#fdf6ec,#fbf3df)}
+.brand-card .label{font-size:10px;font-weight:800;color:#c9a05c;letter-spacing:.06em;margin-bottom:4px}
+.brand-card .name{font-size:16px;font-weight:800;color:#4a443b;margin-bottom:4px}
+.brand-card .desc{font-size:11px;color:#8d8577;line-height:1.5}
+.cand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.cand-card{background:#fff;border:1px solid #eee5d3;border-radius:12px;padding:14px;transition:.15s;position:relative}
+.cand-card:hover{border-color:#c9a05c;box-shadow:0 4px 14px rgba(201,160,92,.12);transform:translateY(-2px)}
+.cand-card.liked{border-color:#e0a050;background:linear-gradient(135deg,#fdf6ec,#fbf3df)}
+.cand-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cand-name{font-size:18px;font-weight:800;color:#4a443b}
+.cand-wx{font-size:10px;font-weight:700;color:#8a6d2f;background:#f7f0e0;padding:2px 8px;border-radius:6px}
+.cand-hook{font-size:11px;color:#8d8577;line-height:1.6;margin-bottom:10px}
+.cand-score{height:5px;background:#f0e7d6;border-radius:3px;overflow:hidden;margin-bottom:10px}
+.cand-score-fill{height:100%;background:linear-gradient(90deg,#c9a05c,#a3762a);border-radius:3px}
+.cand-actions{display:flex;gap:8px}
+.cand-actions button{flex:1;padding:6px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:.15s}
+.btn-like{background:#f7f0e0;color:#8a6d2f}
+.btn-like.on{background:linear-gradient(135deg,#e0a050,#c98a2f);color:#fff}
+.btn-pick{background:#f0e7d6;color:#6b6154}
+.btn-pick.on{background:linear-gradient(135deg,#8a9a4a,#6b7a35);color:#fff}
+.picked-area{background:linear-gradient(135deg,#f7f0e0,#f3ead4);border:1px solid #e5d5ab;border-radius:12px;padding:14px 16px}
+.picked-area h4{font-size:13px;color:#8a6d2f;margin-bottom:10px}
+.picked-list{display:flex;flex-wrap:wrap;gap:8px}
+.picked-tag{background:#fff;border:1px solid #d9bc7f;border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:#8a6d2f;display:flex;align-items:center;gap:5px}
+.picked-tag .del{cursor:pointer;color:#c9a05c;font-weight:800}
+.empty{text-align:center;padding:30px 20px;color:#b5ad9e;font-size:13px}
+.empty .big{font-size:40px;margin-bottom:8px;opacity:.5}
+.namelist{display:flex;flex-direction:column;gap:10px}
+.ng-card{background:#fff;border:1px solid #eadfce;border-radius:12px;overflow:hidden;transition:.15s}
+.ng-card:hover{box-shadow:0 4px 14px rgba(201,160,92,.1)}
+.ng-head{padding:14px 18px;cursor:pointer;display:flex;align-items:center;gap:12px;background:#fdf9f0;transition:.15s;user-select:none}
+.ng-head:hover{background:#faf3e4}
+.ng-card.open .ng-head{background:linear-gradient(135deg,#fdf6ec,#fbf3df);border-bottom:1px solid #eadfce}
+.ng-arrow{font-size:12px;color:#a3762a;transition:.2s;flex-shrink:0;width:14px;text-align:center}
+.ng-card.open .ng-arrow{transform:rotate(90deg)}
+.ng-title{flex:1}
+.ng-title h4{font-size:14px;font-weight:800;color:#4a443b;margin:0}
+.ng-title p{font-size:11px;color:#8d8577;margin:3px 0 0;line-height:1.4}
+.ng-level{font-size:10px;font-weight:700;color:#8a6d2f;background:#f7f0e0;padding:3px 10px;border-radius:6px;flex-shrink:0}
+.ng-progress{font-size:11px;font-weight:700;color:#6b7a35;flex-shrink:0}
+.ng-progress.partial{color:#a3762a}
+.ng-body{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.ng-card.open .ng-body{max-height:2000px}
+.nl-table{width:100%;border-collapse:collapse;min-width:860px}
+.nl-table-wrap{overflow-x:auto;padding:0 10px 10px}
+.nl-table th{background:#f7f0e0;font-size:11px;font-weight:800;color:#8a6d2f;padding:8px 10px;text-align:left;letter-spacing:.04em;position:sticky;top:0}
+.nl-table td{padding:8px 10px;font-size:12px;border-bottom:1px solid #f5efe2;vertical-align:middle}
+.nl-table tr:last-child td{border-bottom:none}
+.nl-table tr:hover td{background:#fdf9f0}
+.nl-no{font-size:11px;color:#a39b8e;font-weight:700;width:30px;text-align:center}
+.nl-cat{font-weight:700;color:#4a443b;min-width:120px}
+.nl-platform{font-size:11px;color:#6b6154;line-height:1.4;min-width:140px}
+.nl-name{font-weight:700;color:#8a6d2f;min-width:140px}
+.nl-name.todo{color:#c8c0b0;font-style:italic}
+.nl-tmclass{font-size:11px;font-weight:700;color:#a3762a;font-family:monospace;white-space:nowrap}
+.nl-tmneed{font-size:11px;font-weight:700;text-align:center;white-space:nowrap}
+.tm-yes{color:#c3272b}
+.tm-no{color:#8d8577}
+.tm-def{color:#a3762a}
+.nl-priority{font-size:10px;font-weight:700;color:#8a6d2f;background:#f7f0e0;padding:3px 8px;border-radius:6px;text-align:center;white-space:nowrap}
+.nl-status{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;text-align:center;letter-spacing:.03em;white-space:nowrap}
+.st-done{background:#e8f0d4;color:#6b7a35}
+.st-alt{background:#fbf6ea;color:#a3762a}
+.st-todo{background:#f0ece4;color:#a39b8e}
+/* Tab 切换 */
+.tabs{display:flex;gap:4px;padding:10px 0 16px;border-bottom:1px solid #eadfce;margin-bottom:16px}
+.tab{padding:8px 18px;font-size:13px;font-weight:700;color:#8d8577;border-radius:20px;cursor:pointer;transition:.15s;background:transparent}
+.tab:hover{background:#f7f0e0;color:#8a6d2f}
+.tab.on{background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff}
+.tab-panel{display:none}
+.tab-panel.on{display:block;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* 已选名字方案详情 */
+.picked-detail{display:flex;flex-direction:column;gap:12px}
+.pd-card{background:#fff;border:1px solid #eadfce;border-radius:12px;overflow:hidden;transition:.15s}
+.pd-card:hover{box-shadow:0 4px 14px rgba(201,160,92,.12)}
+.pd-head{padding:14px 18px;display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,#fdf6ec,#fbf3df);cursor:pointer;user-select:none}
+.pd-arrow{font-size:12px;color:#a3762a;transition:.2s;flex-shrink:0;width:14px;text-align:center}
+.pd-card.open .pd-arrow{transform:rotate(90deg)}
+.pd-name{font-size:18px;font-weight:800;color:#4a443b;flex:1}
+.pd-wx{font-size:11px;font-weight:700;color:#8a6d2f;background:#fff;padding:3px 10px;border-radius:6px}
+.pd-score{font-size:11px;font-weight:700;color:#6b7a35}
+.pd-del{background:#f0ece4;border:none;color:#a39b8e;width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:14px;font-weight:800;transition:.15s}
+.pd-del:hover{background:#e8d5d5;color:#c3272b}
+.pd-body{max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 18px}
+.pd-card.open .pd-body{max-height:600px;padding:0 18px 18px}
+.pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.pd-item{background:#faf7f0;border-radius:8px;padding:10px 12px}
+.pd-item .lbl{font-size:10px;font-weight:800;color:#a39b8e;letter-spacing:.06em;margin-bottom:4px}
+.pd-item .val{font-size:12px;color:#4a443b;font-weight:600;line-height:1.5}
+.pd-item.full{grid-column:1/-1}
+/* 名字库 */
+.lib-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:14px}
+.lib-search{flex:1;border:1px solid #eadfce;border-radius:20px;padding:8px 16px;font-size:13px;font-family:inherit;outline:none;transition:.15s}
+.lib-search:focus{border-color:#c9a05c}
+.lib-count{font-size:12px;color:#a39b8e;font-weight:700;white-space:nowrap}
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.lib-card{background:#fff;border:1px solid #eee5d3;border-radius:10px;padding:12px 14px;transition:.15s;cursor:pointer}
+.lib-card:hover{border-color:#c9a05c;box-shadow:0 3px 10px rgba(201,160,92,.12)}
+.lib-card .ln{font-size:15px;font-weight:800;color:#4a443b;margin-bottom:4px}
+.lib-card .lmeta{display:flex;justify-content:space-between;font-size:10px;color:#a39b8e}
+.lib-card .lmeta .lw{font-weight:700;color:#8a6d2f}
+.lib-card.preset{border-left:3px solid #c9a05c;background:linear-gradient(135deg,#fdf9f0,#fff)}
+.lib-card .ltag{font-size:9px;font-weight:800;color:#c9a05c;background:#fbf6ea;padding:1px 6px;border-radius:4px;margin-left:4px}
+.lib-cats{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.lib-cat{font-size:11px;padding:5px 12px;border-radius:14px;cursor:pointer;transition:.15s;background:#f0e7d6;color:#8d8577;font-weight:700;border:1px solid #e0d5bd}
+.lib-cat:hover{background:#f7f0e0}
+.lib-cat.on{background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;border-color:transparent}
+/* 商标库 */
+.tm-table-wrap{background:#fff;border:1px solid #eadfce;border-radius:12px;overflow:hidden;overflow-x:auto}
+.tm-table{width:100%;border-collapse:collapse;min-width:700px}
+.tm-table th{background:#f7f0e0;font-size:11px;font-weight:800;color:#8a6d2f;padding:10px 14px;text-align:left;letter-spacing:.04em}
+.tm-table td{padding:10px 14px;font-size:12px;border-bottom:1px solid #f5efe2}
+.tm-table tr:last-child td{border-bottom:none}
+.tm-table tr:hover td{background:#fdf9f0}
+.tm-name{font-weight:700;color:#8a6d2f}
+.tm-class{font-family:monospace;font-weight:700;color:#a3762a}
+.tm-priority{font-size:10px;font-weight:700;color:#8a6d2f;background:#f7f0e0;padding:3px 10px;border-radius:6px}
+.tm-status{font-size:10px;font-weight:800;padding:4px 10px;border-radius:6px;text-align:center}
+.tm-st-done{background:#e8f0d4;color:#6b7a35}
+.tm-st-doing{background:#fbf6ea;color:#a3762a}
+.tm-st-todo{background:#f0ece4;color:#a39b8e}
+@media(max-width:800px){.main{grid-template-columns:1fr}.ai-panel{max-height:40vh;border-right:none;border-bottom:1px solid #eadfce}}
+</style></head><body>
+<div class="topbar"><h1>◆ 取名系统 · 品牌命名工作台</h1><a class="back" href="cockpit.html#mg">← 返回驾驶舱</a></div>
+<div class="main">
+ <div class="ai-panel">
+  <div class="ai-head"><h2><span class="dot"></span>AI 命名顾问</h2><p>告诉我你的命名需求，我来生成候选方案</p></div>
+  <div class="chat" id="chat"><div class="msg ai">你好，我是 AI 命名顾问。<br>请告诉我：<br>1. 想要什么风格？（燃系/光系/星宇系/电流系/口语系/古典系）<br>2. 有什么关键词偏好？<br>3. 用于什么场景？（社群/品牌/栏目/IP）<br><br>例如：「我想要燃系的社群名字，关键词是光」<div class="time">刚刚</div></div></div>
+  <div class="quick" id="quick"></div>
+  <div class="input-bar"><div class="input-row"><input id="ipt" placeholder="输入命名需求，如：燃系社群名，关键词光" onkeydown="if(event.key==='Enter')send()"><button onclick="send()">→</button></div></div>
+ </div>
+ <div class="result-panel">
+  <div class="tabs" id="tabs">
+   <span class="tab on" data-tab="list">取名清单</span>
+   <span class="tab" data-tab="cand">候选方案</span>
+   <span class="tab" data-tab="lib">名字库</span>
+   <span class="tab" data-tab="tm">商标库</span>
+  </div>
+  <div class="tab-panel on" id="panel-list">
+   <div class="sec">
+    <h3>品牌取名清单 <span style="font-weight:400;font-size:12px;color:#a39b8e;margin-left:8px">操盘新项目必取的 25 项名字</span></h3>
+    <div class="namelist" id="nameList"></div>
+   </div>
+  </div>
+  <div class="tab-panel" id="panel-cand">
+   <div class="sec">
+    <h3>AI 生成候选名 <span id="cnt" style="font-weight:400;font-size:12px;color:#a39b8e;margin-left:8px"></span></h3>
+    <div class="cand-grid" id="candGrid"><div class="empty" style="grid-column:1/-1"><div class="big">✦</div>在左侧与 AI 对话，生成候选名字</div></div>
+   </div>
+   <div class="sec" id="pickedSec" style="display:none">
+    <h3>★ 已选定名字方案 <span id="pickedCnt" style="font-weight:400;font-size:12px;color:#a39b8e;margin-left:8px"></span></h3>
+    <div class="picked-detail" id="pickedDetail"></div>
+   </div>
+  </div>
+  <div class="tab-panel" id="panel-lib">
+   <div class="sec">
+    <h3>名字库 <span style="font-weight:400;font-size:12px;color:#a39b8e;margin-left:8px">所有生成过的名字，可复用于后续项目</span></h3>
+    <div class="lib-cats" id="libCats"></div>
+    <div class="lib-toolbar"><input class="lib-search" id="libSearch" placeholder="搜索名字…" oninput="renderLib()"><span class="lib-count" id="libCount"></span></div>
+    <div class="lib-grid" id="libGrid"><div class="empty" style="grid-column:1/-1"><div class="big">📚</div>暂无名字，先生成一些候选名吧</div></div>
+   </div>
+  </div>
+  <div class="tab-panel" id="panel-tm">
+   <div class="sec">
+    <h3>商标库 <span style="font-weight:400;font-size:12px;color:#a39b8e;margin-left:8px">需要注册的商标及注册状态</span></h3>
+    <div class="tm-table-wrap"><table class="tm-table" id="tmTable"></table></div>
+   </div>
+  </div>
+ </div>
+</div>
+<script>
+var STYLES=[
+ {id:'ran',name:'燃系',root:['燃','焰','火','炬','热','炽']},
+ {id:'guang',name:'光系',root:['光','曜','曦','晓','明','灯']},
+ {id:'xing',name:'星宇系',root:['星','辰','宇','穹','界','维']},
+ {id:'dian',name:'电流系',root:['电','线','零','码','核','链']},
+ {id:'kou',name:'口语系',root:['上','冲','炸','起','整','干']},
+ {id:'gu',name:'古典系',root:['坤','钧','鉴','铎','铭','砚']}
+];
+var BRANDS=[
+ {label:'主选 · 中文主品牌',name:'主理人公社',desc:'公司字号即社群名，三位一体（备选：理人社）',primary:true},
+ {label:'主选 · 英文商标',name:'One&Co CLUB',desc:'One Person · Company · Commune · Care 四层含义',primary:true},
+ {label:'主选 · 创始人艺名',name:'一姐',desc:'One Person 中文双关：行业头牌 + 一个人',primary:true},
+ {label:'主选 · 起盘入口',name:'上线夜校',desc:'AI 创始人名 + 项目上线 + 今晚你上线',primary:true},
+ {label:'主选 · 公益总品牌',name:'万物有言',desc:'延展性最强，配掌灯/千灯做子栏目',primary:true},
+ {label:'备选 · 英文商标',name:'OPC Planet',desc:'One&Co 冲突时递补；多商标矩阵防御布局'},
+ {label:'备选 · 艺名',name:'星主',desc:'随英文商标家族联动（Planet→星主）'},
+ {label:'备选 · 入口名',name:'追光夜校',desc:'追光保留为栏目名（公益直播课）'},
+ {label:'备选 · 公益品牌',name:'掌灯计划',desc:'万物有言冲突时递补；可降级为志愿者体系名'},
+ {label:'备选 · 中文品牌',name:'理人社',desc:'主理人公社 35/41/42 类被阻断时启用'},
+ {label:'图形标 · 印记',name:'One&Co 印记',desc:'四角星形金印，固定用于 IP 眉心/封面角标'},
+ {label:'图形标 · 金骰',name:'金骰',desc:'悬浮金骰元素（掷出天选之数）'}
+];
+// 预置名字库（已有品牌方案，按分类组织）
+var PRESETLIBS=[
+ {name:'主理人公社',cat:'品牌主名',style:'gu',wx:'金土',hook:'主理人公社，三位一体',score:95,preset:true,desc:'公司字号即社群名，三位一体'},
+ {name:'理人社',cat:'品牌主名',style:'gu',wx:'金土',hook:'主理人公社备选名',score:82,preset:true,desc:'主理人公社商标被阻断时启用'},
+ {name:'One&Co CLUB',cat:'英文商标',style:'dian',wx:'金',hook:'One Person·Company·Commune·Care',score:94,preset:true,desc:'主选·四层含义：一人·公司·公社·关怀'},
+ {name:'OPC Planet',cat:'英文商标',style:'xing',wx:'金',hook:'One Person Company 的星球',score:85,preset:true,desc:'递补·多商标矩阵防御布局'},
+ {name:'One Person',cat:'英文商标',style:'kou',wx:'金土',hook:'一个人也能成事',score:88,preset:true,desc:'核心概念全称，主品牌英文基底'},
+ {name:'One&Co',cat:'英文商标',style:'dian',wx:'金',hook:'One Person & Company',score:91,preset:true,desc:'简洁版核心标，适合图形标组合'},
+ {name:'OPC',cat:'英文商标',style:'dian',wx:'金',hook:'Three letters, one person',score:82,preset:true,desc:'三字缩写标，生态统一用语'},
+ {name:'OPC CLUB',cat:'英文商标',style:'dian',wx:'金',hook:'俱乐部，会员制的尊贵',score:90,preset:true,desc:'七大家族F·善意是社章，入社即承诺'},
+ {name:'OPC Lab',cat:'英文商标',style:'dian',wx:'金',hook:'实验室，一人公司试验场',score:89,preset:true,desc:'七大家族C·善意经济学是常设课题'},
+ {name:'GO-OPC',cat:'英文商标',style:'ran',wx:'金火',hook:'行动派，说干就干',score:87,preset:true,desc:'七大家族D·每一次 GO 都是一次善意举动'},
+ {name:'NEO-OPC',cat:'英文商标',style:'xing',wx:'金火',hook:'新纪元，新商业文明',score:86,preset:true,desc:'七大家族E·善意经济 = 新商业文明'},
+ {name:'S-OPC',cat:'英文商标',style:'ran',wx:'金火',hook:'超级一人公司',score:84,preset:true,desc:'七大家族G·善意是超能力'},
+ {name:'One&Co Lab',cat:'英文商标',style:'dian',wx:'金',hook:'一人公司实验室',score:83,preset:true,desc:'One&Co 家族·把自己当成公司做实验'},
+ {name:'One&Care',cat:'英文商标',style:'dian',wx:'金火',hook:'One and Care，把关怀写进名字',score:85,preset:true,desc:'善意直接入名，随心付三底线即品牌底线'},
+ {name:'OPCOMM',cat:'英文商标',style:'dian',wx:'金',hook:'OPC Commune 缩写',score:78,preset:true,desc:'字母组合显著性高于裸 OPC，检索后可注册'},
+ {name:'Ignite',cat:'英文商标',style:'ran',wx:'火',hook:'点燃，从 0 到 1',score:86,preset:true,desc:'燃系英文标，寓意点燃梦想'},
+ {name:'Flame Up',cat:'英文商标',style:'ran',wx:'火',hook:'燃起来，升上去',score:83,preset:true,desc:'燃系双词标，动感强'},
+ {name:'LightWorks',cat:'英文商标',style:'guang',wx:'火',hook:'光之工坊',score:87,preset:true,desc:'光系英文标，适合科技/教育'},
+ {name:'Lumina',cat:'英文商标',style:'guang',wx:'火',hook:'光的拉丁词源',score:84,preset:true,desc:'光系单字标，国际化好记'},
+ {name:'ChaseLight',cat:'英文商标',style:'guang',wx:'火',hook:'追光',score:80,preset:true,desc:'追光主题英文标'},
+ {name:'Galaxy One',cat:'英文商标',style:'xing',wx:'金',hook:'星系中的一号',score:81,preset:true,desc:'星宇系标，未来感强'},
+ {name:'Nova',cat:'英文商标',style:'xing',wx:'火',hook:'新星爆发',score:85,preset:true,desc:'星宇系单字标，简洁有冲击力'},
+ {name:'WeLink',cat:'英文商标',style:'dian',wx:'金木',hook:'我们链接彼此',score:79,preset:true,desc:'社群属性标，强调连接'},
+ {name:'HubOne',cat:'英文商标',style:'dian',wx:'水',hook:'一号枢纽',score:78,preset:true,desc:'社群枢纽标，适合平台定位'},
+ {name:'Orbit',cat:'英文商标',style:'xing',wx:'金',hook:'围绕你转的轨道',score:77,preset:true,desc:'星宇系标，寓意用户中心'},
+ {name:'一姐',cat:'艺名/IP',style:'kou',wx:'火',hook:'行业头牌 + 一个人',score:90,preset:true,desc:'One Person 中文双关'},
+ {name:'星主',cat:'艺名/IP',style:'xing',wx:'金',hook:'随英文商标家族联动',score:80,preset:true,desc:'Planet→星主'},
+ {name:'上线夜校',cat:'入口/产品',style:'guang',wx:'火土',hook:'今晚你上线',score:92,preset:true,desc:'AI 创始人名 + 项目上线'},
+ {name:'追光夜校',cat:'入口/产品',style:'guang',wx:'火土',hook:'追光者的夜校',score:78,preset:true,desc:'追光保留为栏目名'},
+ {name:'万物有言',cat:'入口/产品',style:'gu',wx:'土木',hook:'延展性最强的公益品牌',score:93,preset:true,desc:'配掌灯/千灯做子栏目'},
+ {name:'掌灯计划',cat:'入口/产品',style:'guang',wx:'火土',hook:'为你掌一盏灯',score:88,preset:true,desc:'万物有言冲突时递补'},
+ {name:'千灯计划',cat:'入口/产品',style:'guang',wx:'火',hook:'千灯千言',score:86,preset:true,desc:'公益子栏目名'},
+ {name:'7天AI普及计划',cat:'入口/产品',style:'dian',wx:'火木',hook:'7天入门AI',score:84,preset:true,desc:'付费课程产品名'},
+ {name:'M1起盘发布会',cat:'活动名',style:'kou',wx:'水木',hook:'M1里程碑',score:80,preset:true,desc:'起盘发布会活动名'},
+ {name:'王炸社',cat:'活动名',style:'ran',wx:'金土',hook:'王炸级席位',score:89,preset:true,desc:'招商席位品牌'},
+ {name:'印记',cat:'图形标',style:'gu',wx:'金',hook:'四角星形金印',score:90,preset:true,desc:'固定用于IP眉心/封面角标'},
+ {name:'金骰',cat:'图形标',style:'ran',wx:'金',hook:'掷出天选之数',score:87,preset:true,desc:'悬浮金骰元素'},
+ {name:'锦囊',cat:'图形标',style:'gu',wx:'火',hook:'妙计锦囊',score:83,preset:true,desc:'锦囊图形标'},
+ {name:'篆印',cat:'图形标',style:'gu',wx:'土',hook:'古风篆印',score:81,preset:true,desc:'篆印图形标'}
+];
+var NAMEGROUPS=[
+ {gid:'g1',title:'第一层 · 品牌根基',desc:'所有项目最先要定的底层名字，决定整个命名体系的基因',level:'基础层',done:5,total:5,items:[
+  {no:1,cat:'公司主体名',platform:'工商注册·对公账户',name:'主理人公社（杭州）传媒科技有限公司',tmClass:'—',tmNeed:'否',priority:'已落地',status:'done'},
+  {no:2,cat:'中文主品牌',platform:'全平台主名·对外传播·物料',name:'主理人公社',tmClass:'35/41/42/9',tmNeed:'是（命门标）',priority:'重点查',status:'done'},
+  {no:3,cat:'英文商标',platform:'海外场景·高端物料·商标防御',name:'One&Co CLUB',tmClass:'35/41/42',tmNeed:'是',priority:'并行',status:'done'},
+  {no:4,cat:'创始人艺名',platform:'创始人IP·直播间·短视频人设',name:'一姐',tmClass:'—（图形标组合保护）',tmNeed:'否（显著性弱）',priority:'不单独注册',status:'done'},
+  {no:5,cat:'AI 数字人名',platform:'AI班主任·客服·数字人形象',name:'上线',tmClass:'41/9',tmNeed:'是',priority:'并行',status:'done'}
+ ]},
+ {gid:'g2',title:'第二层 · 产品入口',desc:'基于品牌根基衍生的产品与入口名字',level:'产品层',done:3,total:3,items:[
+  {no:6,cat:'起盘入口名',platform:'课程产品·落地页·报名入口',name:'上线夜校',tmClass:'41/9',tmNeed:'是',priority:'并行',status:'done'},
+  {no:7,cat:'公益总品牌',platform:'公益板块·公益直播·公益物料',name:'万物有言',tmClass:'35/16/41',tmNeed:'是',priority:'先落',status:'done'},
+  {no:8,cat:'招商席位品牌',platform:'招商页·代理体系·席位公示',name:'王炸社',tmClass:'35/41',tmNeed:'是',priority:'重点查',status:'done'}
+ ]},
+ {gid:'g3',title:'第三层 · 账号矩阵',desc:'用品牌名和艺名去各平台占位，一套名字打天下',level:'账号层',done:13,total:13,items:[
+  {no:9,cat:'视频号·品牌号',platform:'微信视频号主账号',name:'主理人公社',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:10,cat:'视频号·创始人号',platform:'微信视频号IP人设号',name:'一姐',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:11,cat:'视频号·课程号',platform:'微信视频号课程入口号',name:'上线夜校',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:12,cat:'小红书·品牌号',platform:'小红书种草主账号',name:'主理人公社',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:13,cat:'小红书·创始人号',platform:'小红书IP人设号',name:'一姐',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:14,cat:'抖音·品牌号',platform:'抖音短视频主账号',name:'主理人公社',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:15,cat:'公众号·服务号',platform:'微信服务号·交易·通知',name:'主理人公社',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:16,cat:'公众号·订阅号',platform:'微信订阅号·内容推送',name:'主理人公社夜校',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:17,cat:'小程序名',platform:'微信小程序·会员系统·交易',name:'主理人公社',tmClass:'9/42',tmNeed:'是',priority:'并行',status:'done'},
+  {no:18,cat:'企业微信名',platform:'企业微信·对外品牌名',name:'主理人公社',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:19,cat:'个人微信·创始人号',platform:'个人微信·私域承接',name:'一姐',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:20,cat:'B站·品牌号',platform:'B站长视频主账号',name:'主理人公社',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'},
+  {no:21,cat:'知乎·品牌号',platform:'知乎问答·内容背书',name:'主理人公社',tmClass:'—（依附主品牌）',tmNeed:'否（账号占位）',priority:'全平台占位',status:'done'}
+ ]},
+ {gid:'g4',title:'第四层 · 内容产品',desc:'子栏目与课程产品名，部分已定、部分待设计',level:'内容层',done:0,total:2,items:[
+  {no:22,cat:'公益子栏目名',platform:'公益直播课·专栏·活动',name:'掌灯计划 / 千灯计划',tmClass:'41/16',tmNeed:'是',priority:'先落',status:'alt'},
+  {no:23,cat:'课程产品名',platform:'付费课程·训练营·课件',name:'7 天 AI 普及计划',tmClass:'41/9',tmNeed:'是',priority:'并行',status:'alt'}
+ ]},
+ {gid:'g5',title:'第五层 · 活动视觉',desc:'活动名与视觉锤图形标',level:'视觉层',done:2,total:2,items:[
+  {no:24,cat:'发布会活动名',platform:'起盘发布会·大型活动',name:'M1 起盘发布会',tmClass:'—（活动名不注册）',tmNeed:'否',priority:'不注册',status:'done'},
+  {no:25,cat:'视觉锤图形标',platform:'Logo·IP眉心·封面角标·物料',name:'印记 / 金骰 / 锦囊 / 篆印',tmClass:'35/41/9/16',tmNeed:'是（图形标）',priority:'与文字标分开提交',status:'done'}
+ ]}
+];
+var WX={燃:'火',焰:'火',火:'火',炬:'火',热:'火',炽:'火',光:'火',曜:'火',曦:'火',晓:'火',明:'火',灯:'火',星:'金',辰:'土',宇:'土',穹:'金',界:'木',维:'土',电:'火',线:'金',零:'金',码:'水',核:'木',链:'金',上:'金',冲:'金',炸:'火',起:'木',整:'金',干:'木',坤:'土',钧:'金',鉴:'金',铎:'金',铭:'金',砚:'土',社:'金',野:'土',夜:'土',校:'木',阵:'金',遇:'木',种:'火',点:'火',值:'火',力:'火',姐:'火',人:'金',原:'土',塘:'土',炉:'火'}
+var SUFFIX=['社','野','夜校','阵','遇','火种','炬光','点','炽热','燎原','火塘','围炉','燃姐','燃力','燃值','执炬','重燃','长燃','烈马','烈阳','烈风','骄阳','赤焰','丹焰','金焰','凤凰','浴火','复燃','燃起','逐焰','追焰','御火','守焰','掌灯','点灯','燃爆','光社','曜日','曦和','破晓','明灯','曦光','光野','追光','曜野','燃灯','星光','星辰','星野','星穹','辰光','辰野','星阵','星界','星维','星海','星核','星链','辰阵','宇光','穹顶','界域','维度','星宇','电光','电弧','电核','电阵','火线','链阵','核心','零一','码阵','电野','上垒','冲阵','炸场','起跑','整活','干饭','上头','冲鸭','炸街','起飞','坤元','钧天','鉴心','铎声','铭心','砚田','坤社','钧鉴','金石','鉴野','铭社','砚社']
+var HOOKS={
+ ran:['进燃社，做燃的事','白天打工人，晚上燃野人','每晚八点，燃一盏灯','从 0 开始烧','火焰矩阵','每个人都是火种','一炬燃百炬','着火点＝引爆点','保持炽热','星星之火可以燎原','围炉夜话的火塘','冷场的地方，燃姐来了','人生重燃计划','长燃不熄'],
+ guang:['追光的人终会光芒万丈','破晓之光，照见未来','每晚燃一盏灯','曦和御日','明灯三千','光是答案','追光者','光而不耀','与光同尘','向光而行','燃灯者','曜日当空'],
+ xing:['星辰大海','手可摘星辰','星穹之上','维度之外','星海无垠','星核共振','星链计划','星辰是坐标','宇宙级浪漫','穿越维度'],
+ dian:['电流穿过大脑','零一之间','核能级爆发','链接一切','代码即诗','赛博空间','闪电出击','电到你了'],
+ kou:['就是干','上头了','冲就完了','炸场','起飞','整活','干饭人','上垒','冲鸭'],
+ gu:['厚德载物','钧天广乐','鉴古知今','铎声振振','铭心刻骨','砚田笔耕','金石为开','坤厚载物']
+}
+var QUICK=['燃系社群名，关键词光','光系品牌名，要励志','星宇系，未来感','古典系，国风','口语系，喊出来就火','给我10个燃系名字'];
+
+var liked=new Set(),picked=new Set();
+var pickedDetail={},nameLib=[],curLibCat='全部';
+function rand(a){return a[Math.floor(Math.random()*a.length)]}
+function detectStyle(text){
+ for(var i=0;i<STYLES.length;i++){
+  var s=STYLES[i];
+  for(var j=0;j<s.root.length;j++){if(text.indexOf(s.root[j])>=0)return s.id}
+ }
+ var map={燃:'ran',光:'guang',星:'xing',宇:'xing',电:'dian',赛博:'dian',口:'kou',古:'gu',风:'gu',国:'gu'};
+ for(var k in map){if(text.indexOf(k)>=0)return map[k]}
+ return null;
+}
+function genName(style,kw){
+ var s=STYLES.filter(function(x){return x.id===style})[0];
+ if(!s)return genName('ran',kw);
+ var r=rand(s.root);
+ var suf=rand(SUFFIX);
+ var name;
+ if(kw && Math.random()>.4){name=kw.charAt(0)+suf}
+ else{name=(Math.random()>.4?r:'')+suf}
+ if(name.length>6||name.length<2)return genName(style,kw);
+ return name;
+}
+function getWX(name){
+ var map={};
+ for(var i=0;i<name.length;i++){var w=WX[name[i]];if(w)map[w]=(map[w]||0)+1}
+ var arr=Object.keys(map);
+ return arr.length?arr.join(''):'待定';
+}
+function getHook(style,name){return rand(HOOKS[style]||HOOKS.ran)}
+function score(name){
+ var len=name.length,s=60;
+ if(len>=2&&len<=4)s+=20;else if(len<=5)s+=10;
+ if(/[燃火光曜星辰电钧]/.test(name))s+=10;
+ if(/社$|野$|校$|阵$/.test(name))s+=5;
+ if(len===2)s+=5;
+ s+=Math.floor(Math.random()*8);
+ return Math.min(s,98);
+}
+function addMsg(text,type){
+ var c=document.getElementById('chat');
+ var d=document.createElement('div');d.className='msg '+type;
+ if(type==='sys')d.textContent=text;
+ else d.innerHTML=text+'<div class="time">'+new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})+'</div>';
+ c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+function send(){
+ var ipt=document.getElementById('ipt');var text=ipt.value.trim();if(!text)return;
+ addMsg(text,'user');ipt.value='';
+ var style=detectStyle(text);
+ var kw='';
+ var m=text.match(/关键词[：:]?\s*(\S+)/);if(m)kw=m[1];
+ else{var m2=text.match(/[，,。\s](\S{1,3})[，,]?$/);if(m2&&m2[1].length<=3)kw=m2[1]}
+ setTimeout(function(){
+  var sname=style?STYLES.filter(function(x){return x.id===style})[0].name:'燃系（默认）';
+  addMsg('好的，为你生成 <b>'+sname+'</b>'+(kw?'，关键词「'+kw+'」':'')+'的候选名字 8 个：','ai');
+  genCands(style||'ran',kw);
+ },600);
+}
+function genCands(style,kw){
+ var grid=document.getElementById('candGrid');grid.innerHTML='';
+ var shown={},n=8;
+ for(var i=0;i<n;i++){
+  var name=genName(style,kw),tries=0;
+  while(shown[name]&&tries<20){name=genName(style,kw);tries++}
+  shown[name]=1;
+  var wx=getWX(name),hook=getHook(style,name),sc=score(name);
+  // 存入名字库
+  saveToLib({name:name,style:style,wx:wx,hook:hook,score:sc,time:Date.now()});
+  var card=document.createElement('div');card.className='cand-card';
+  card.innerHTML='<div class="cand-top"><span class="cand-name">'+name+'</span><span class="cand-wx">'+wx+'</span></div>'
+   +'<div class="cand-hook">'+hook+'</div>'
+   +'<div class="cand-score"><div class="cand-score-fill" style="width:'+sc+'%"></div></div>'
+   +'<div class="cand-actions"><button class="btn-like'+(liked.has(name)?' on':'')+'" onclick="like(this,\''+name+'\')">'+(liked.has(name)?'★ 已收藏':'☆ 收藏')+'</button>'
+   +'<button class="btn-pick'+(picked.has(name)?' on':'')+'" onclick="pick(this,\''+name+'\',\''+style+'\',\''+wx+'\',\''+hook.replace(/'/g,"\\'")+'\','+sc+')">'+(picked.has(name)?'✓ 已选':'选定')+'</button></div>';
+  grid.appendChild(card);
+ }
+ var sname=STYLES.filter(function(x){return x.id===style})[0].name;
+ document.getElementById('cnt').textContent='('+Object.keys(shown).length+' 个 · '+sname+')';
+ renderLib();
+}
+function like(b,name){
+ if(liked.has(name)){liked.delete(name);b.classList.remove('on');b.textContent='☆ 收藏'}
+ else{liked.add(name);b.classList.add('on');b.textContent='★ 已收藏'}
+}
+function pick(b,name,style,wx,hook,sc){
+ if(picked.has(name)){picked.delete(name);delete pickedDetail[name];b.classList.remove('on');b.textContent='选定'}
+ else{picked.add(name);pickedDetail[name]={style:style,wx:wx,hook:hook,score:sc};b.classList.add('on');b.textContent='✓ 已选'}
+ renderPicked();saveState();
+}
+function renderPicked(){
+ var sec=document.getElementById('pickedSec'),detail=document.getElementById('pickedDetail'),cnt=document.getElementById('pickedCnt');
+ if(picked.size===0){sec.style.display='none';return}
+ sec.style.display='';cnt.textContent='('+picked.size+' 个)';
+ detail.innerHTML='';
+ picked.forEach(function(name){
+  var d=pickedDetail[name]||{};
+  var sname=STYLES.filter(function(x){return x.id===d.style})[0]?.name||'燃系';
+  var card=document.createElement('div');card.className='pd-card';
+  card.innerHTML='<div class="pd-head" onclick="this.parentElement.classList.toggle(\'open\')">'
+   +'<span class="pd-arrow">▶</span>'
+   +'<span class="pd-name">'+name+'</span>'
+   +'<span class="pd-wx">'+(d.wx||'')+'</span>'
+   +'<span class="pd-score">传播力 '+d.score+'</span>'
+   +'<button class="pd-del" onclick="event.stopPropagation();removePick(\''+name+'\')">×</button>'
+   +'</div>'
+   +'<div class="pd-body"><div class="pd-grid">'
+   +'<div class="pd-item"><div class="lbl">风格</div><div class="val">'+sname+'</div></div>'
+   +'<div class="pd-item"><div class="lbl">五行属性</div><div class="val">'+(d.wx||'待定')+'</div></div>'
+   +'<div class="pd-item"><div class="lbl">传播钩子</div><div class="val">'+(d.hook||'')+'</div></div>'
+   +'<div class="pd-item"><div class="lbl">传播力评分</div><div class="val">'+d.score+' / 100</div></div>'
+   +'<div class="pd-item full"><div class="lbl">商标注册建议</div><div class="val">'+getTmAdvice(name,d)+'</div></div>'
+   +'<div class="pd-item full"><div class="lbl">使用场景建议</div><div class="val">适合作为'+sname+'风格的社群/品牌/栏目名，配套视觉锤（Logo/图形标）形成完整品牌资产；账号矩阵直接复用此名占位</div></div>'
+   +'<div class="pd-item full"><div class="lbl">视觉建议</div><div class="val">配色以'+sname+'主色调为基础，搭配白金体系；图形标可从印记/金骰/锦囊/篆印中选择组合</div></div>'
+   +'</div></div>';
+  detail.appendChild(card);
+ });
+}
+// 根据名字特征生成定制化商标注册建议
+function getTmAdvice(name,d){
+ var isEn=/^[A-Za-z0-9&\- ]+$/.test(name);
+ var len=name.replace(/[A-Za-z0-9&\- ]/g,'').length||name.length;
+ var preset=PRESETLIBS.find(function(p){return p.name===name});
+ var cat=preset?preset.cat:'';
+ // 基础类别建议
+ var classes=['35'];
+ if(cat.indexOf('产品')>=0||cat.indexOf('入口')>=0)classes.push('41','9');
+ else if(cat.indexOf('艺名')>=0)classes=[];
+ else classes.push('41');
+ // 小程序需增注9类
+ var notes=[];
+ var risk='低';
+ // 显著性判断
+ if(isEn){
+  if(name.length<=4)risk='高';
+  else if(name.length<=7)risk='中';
+  notes.push('英文'+name.length+'字母，显著性'+(name.length<=4?'弱（需加图形标组合）':name.length<=7?'中等':'较强'));
+ }else{
+  if(len<=2){risk='中';notes.push('中文'+len+'字，字数偏少，建议与图形标组合增强显著性')}
+  else notes.push('中文'+len+'字，显著性较强');
+ }
+ // 类别说明
+ var clsDesc={
+  '9':'科学仪器（小程序/App/软件）',
+  '35':'广告销售（商业运营/招商）',
+  '41':'教育娱乐（课程/培训/直播）',
+  '42':'科技服务（软件开发/技术）',
+  '16':'办公用品（物料/印刷品）'
+ };
+ var clsList=classes.map(function(c){return c+'类（'+clsDesc[c]+'）'}).join('、');
+ // 防御建议
+ var defense=[];
+ if(isEn&&name.indexOf('OPC')>=0){
+  defense.push('OPC 三字母在先注册极多，建议作为生态统一用语而非独占商标；可注册 OPCOMM 等显著性更高的变体进行防御');
+ }
+ if(cat==='品牌主名'){
+  defense.push('命门标，建议 35/41/42/9 全类别覆盖 + 图形标分开提交');
+  risk='重点查';
+ }
+ if(cat==='英文商标'){
+  defense.push('建议与中文主品牌形成中英文双语商标矩阵，防御他人抢注近似英文');
+ }
+ if(cat==='艺名/IP'){
+  classes=[];risk='不单独注册';
+  notes.push('艺名单独注册显著性弱，建议用创始人姓名+图形标组合，或并入主品牌保护');
+ }
+ if(cat==='活动名'){
+  classes=[];risk='不注册';
+  notes.push('活动名一般不注册商标，通过版权和在先使用保护');
+ }
+ var mainAdvice=classes.length>0?('建议注册 '+clsList):'无需单独注册商标';
+ var riskTag=risk==='低'?'<span style="color:#6b7a35">● 风险低</span>':
+  risk==='中'?'<span style="color:#a3762a">● 风险中</span>':
+  risk==='高'?'<span style="color:#c3272b">● 风险高</span>':
+  risk==='重点查'?'<span style="color:#c3272b">● 重点查重</span>':
+  '<span style="color:#8d8577">● '+risk+'</span>';
+ return mainAdvice+(notes.length?'<br><span style="font-size:11px;color:#6b6154">'+notes.join('；')+'</span>':'')+
+  '<br>'+riskTag+
+  (defense.length?'<br><span style="font-size:11px;color:#a3762a">防御策略：'+defense.join('；')+'</span>':'');
+}
+function removePick(name){
+ picked.delete(name);delete pickedDetail[name];
+ document.querySelectorAll('.btn-pick').forEach(function(b){
+  if(b.getAttribute('onclick')&&b.getAttribute('onclick').indexOf("'"+name+"'")>=0){b.classList.remove('on');b.textContent='选定'}
+ });
+ renderPicked();saveState();
+}
+// 名字库
+function saveToLib(item){
+ if(!nameLib.find(function(x){return x.name===item.name})){
+  nameLib.push(item);
+  try{localStorage.setItem('nameLib',JSON.stringify(nameLib))}catch(e){}
+ }
+}
+function renderLibCats(){
+ var wrap=document.getElementById('libCats');
+ var cats=['全部','AI生成','品牌主名','英文商标','艺名/IP','入口/产品','活动名','图形标'];
+ wrap.innerHTML='';
+ cats.forEach(function(c){
+  var s=document.createElement('span');s.className='lib-cat'+(curLibCat===c?' on':'');s.textContent=c;
+  s.onclick=function(){curLibCat=c;renderLibCats();renderLib()};
+  wrap.appendChild(s);
+ });
+}
+function renderLib(){
+ var grid=document.getElementById('libGrid'),cnt=document.getElementById('libCount'),kw=document.getElementById('libSearch').value.trim();
+ // 合并预置库和AI生成库，按分类筛选
+ var all=PRESETLIBS.concat(nameLib.filter(function(x){return !PRESETLIBS.find(function(p){return p.name===x.name})}));
+ var list=all;
+ if(curLibCat!=='全部'){
+  if(curLibCat==='AI生成')list=nameLib;
+  else list=all.filter(function(x){return x.cat===curLibCat});
+ }
+ if(kw)list=list.filter(function(x){return x.name.indexOf(kw)>=0||(x.hook&&x.hook.indexOf(kw)>=0)});
+ cnt.textContent='共 '+list.length+' 个';
+ if(list.length===0){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="big">📚</div>'+(kw?'没有匹配的名字':'该分类暂无名字')+'</div>';return}
+ grid.innerHTML='';
+ list.forEach(function(item){
+  var sname=STYLES.filter(function(x){return x.id===item.style})[0]?.name||'';
+  var isPreset=item.preset;
+  var card=document.createElement('div');card.className='lib-card'+(isPreset?' preset':'');
+  card.innerHTML='<div class="ln">'+item.name+(isPreset?'<span class="ltag">'+(item.cat||'预置')+'</span>':'')+'</div>'
+   +'<div class="lmeta"><span class="lw">'+(item.wx||'')+'</span><span>'+(sname||'')+(sname?' · ':'')+item.score+'分</span></div>'
+   +'<div style="font-size:10px;color:#8d8577;margin-top:4px;line-height:1.4">'+(item.hook||item.desc||'')+'</div>';
+  card.onclick=function(){
+   if(!picked.has(item.name)){picked.add(item.name);pickedDetail[item.name]={style:item.style,wx:item.wx,hook:item.hook,score:item.score};renderPicked();saveState()}
+   switchTab('cand');
+  };
+  grid.appendChild(card);
+ });
+}
+// 商标库
+function renderTm(){
+ var table=document.getElementById('tmTable');
+ var html='<thead><tr><th>商标名</th><th>商标类别</th><th>使用范围</th><th>注册优先级</th><th>注册状态</th></tr></thead><tbody>';
+ NAMEGROUPS.forEach(function(grp){
+  grp.items.forEach(function(n){
+   if(n.tmNeed.indexOf('是')===0){
+    var st=n.status==='done'?'已注册':n.status==='alt'?'备选':'待注册';
+    var stc=n.status==='done'?'tm-st-done':n.status==='alt'?'tm-st-doing':'tm-st-todo';
+    html+='<tr><td class="tm-name">'+n.name+'</td><td class="tm-class">'+n.tmClass+'</td><td>'+n.platform+'</td>'
+     +'<td><span class="tm-priority">'+n.priority+'</span></td>'
+     +'<td><span class="tm-status '+stc+'">'+st+'</span></td></tr>';
+   }
+  });
+ });
+ html+='</tbody>';
+ table.innerHTML=html;
+}
+// Tab 切换
+function switchTab(id){
+ document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.getAttribute('data-tab')===id)});
+ document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.toggle('on',p.id==='panel-'+id)});
+}
+// localStorage 持久化
+function saveState(){
+ try{localStorage.setItem('pickedNames',JSON.stringify([...picked]));localStorage.setItem('pickedDetail',JSON.stringify(pickedDetail))}catch(e){}
+}
+function loadState(){
+ try{
+  var p=localStorage.getItem('pickedNames');if(p)picked=new Set(JSON.parse(p));
+  var d=localStorage.getItem('pickedDetail');if(d)pickedDetail=JSON.parse(d);
+  var l=localStorage.getItem('nameLib');if(l)nameLib=JSON.parse(l);
+ }catch(e){}
+}
+// 初始化品牌方案
+function initBrands(){
+ var g=document.getElementById('brandGrid');
+ BRANDS.forEach(function(b){
+  var c=document.createElement('div');c.className='brand-card'+(b.primary?' primary':'');
+  c.innerHTML='<div class="label">'+b.label+'</div><div class="name">'+b.name+'</div><div class="desc">'+b.desc+'</div>';
+  g.appendChild(c);
+ });
+}
+// 初始化取名清单（分组可折叠）
+function initNameList(){
+ var g=document.getElementById('nameList');
+ NAMEGROUPS.forEach(function(grp,idx){
+  var card=document.createElement('div');card.className='ng-card'+(idx===0?' open':'');
+  card.setAttribute('data-gid',grp.gid);
+  var progCls=grp.done<grp.total?'partial':'';
+  var progText=grp.done+'/'+grp.total+' 已定';
+  card.innerHTML='<div class="ng-head" onclick="toggleGroup(\''+grp.gid+'\')">'
+   +'<span class="ng-arrow">▶</span>'
+   +'<div class="ng-title"><h4>'+grp.title+'</h4><p>'+grp.desc+'</p></div>'
+   +'<span class="ng-level">'+grp.level+'</span>'
+   +'<span class="ng-progress '+progCls+'">'+progText+'</span>'
+   +'</div>'
+   +'<div class="ng-body"><div class="nl-table-wrap"><table class="nl-table">'
+   +'<thead><tr><th class="nl-no">#</th><th>取名类别</th><th>使用平台/账号</th><th>当前取名</th><th>商标类别</th><th>是否注册</th><th>注册优先级</th><th>状态</th></tr></thead>'
+   +'<tbody></tbody></table></div></div>';
+  g.appendChild(card);
+  var tbody=card.querySelector('tbody');
+  grp.items.forEach(function(n){
+   var st=n.status==='done'?'已定':n.status==='alt'?'备选':'待定';
+   var stc=n.status==='done'?'st-done':n.status==='alt'?'st-alt':'st-todo';
+   var tmc=n.tmNeed.indexOf('是')===0?'tm-yes':n.tmNeed.indexOf('否')===0?'tm-no':'tm-def';
+   var tr=document.createElement('tr');
+   tr.innerHTML='<td class="nl-no">'+n.no+'</td><td class="nl-cat">'+n.cat+'</td><td class="nl-platform">'+n.platform+'</td>'
+    +'<td class="nl-name'+(n.status==='todo'?' todo':'')+'">'+(n.name||'待取')+'</td>'
+    +'<td class="nl-tmclass">'+n.tmClass+'</td>'
+    +'<td class="nl-tmneed '+tmc+'">'+n.tmNeed+'</td>'
+    +'<td class="nl-priority">'+n.priority+'</td>'
+    +'<td class="nl-status '+stc+'">'+st+'</td>';
+   tbody.appendChild(tr);
+  });
+ });
+}
+function toggleGroup(gid){
+ var card=document.querySelector('.ng-card[data-gid="'+gid+'"]');
+ if(card)card.classList.toggle('open');
+}
+// 初始化快捷词
+function initQuick(){
+ var q=document.getElementById('quick');
+ QUICK.forEach(function(t){
+  var s=document.createElement('span');s.textContent=t;
+  s.onclick=function(){document.getElementById('ipt').value=t;send()};
+  q.appendChild(s);
+ });
+}
+function initTabs(){
+ document.querySelectorAll('.tab').forEach(function(t){
+  t.onclick=function(){switchTab(t.getAttribute('data-tab'))};
+ });
+}
+loadState();
+initNameList();initQuick();initTabs();renderLibCats();
+renderLib();renderTm();renderPicked();
+</script></body></html>

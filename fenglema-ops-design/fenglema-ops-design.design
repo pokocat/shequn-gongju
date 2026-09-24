@@ -1,0 +1,320 @@
+{
+  "data": [
+    {
+      "id": "page-system-center",
+      "title": "系统中心（旧原型）",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789667600000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-c0ddfb42",
+          "measuredAt": 1789667844475
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/system-center.html",
+        "interactions": [
+          {
+            "domId": "enter-prototype",
+            "targetPageId": "page-pc-backstage",
+            "hideEdge": true,
+            "transitionLabel": "进入系统原型"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-pc-backstage",
+      "title": "PC 后台原型（旧）",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789667600000,
+      "canvasData": {
+        "x": 480,
+        "y": 0,
+        "group": 0,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-d9e5ef51",
+          "measuredAt": 1789667844475
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/pc-backstage.html",
+        "interactions": [
+          {
+            "domId": "back-home",
+            "targetPageId": "page-system-center",
+            "hideEdge": true,
+            "transitionLabel": "返回运营首页"
+          }
+        ]
+      }
+    },
+    {
+      "id": "page-full-landing",
+      "title": "落地页",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 0,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-83b85cfc",
+          "measuredAt": 1789668275986
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-landing.html"
+      }
+    },
+    {
+      "id": "page-full-pc-overview",
+      "title": "PC 总览",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 480,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-0b4fe0e6",
+          "measuredAt": 1789668275986
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-overview.html"
+      }
+    },
+    {
+      "id": "page-full-pc-accounts",
+      "title": "账号资产中心",
+      "type": "page",
+      "version": 2,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 960,
+        "y": 373,
+        "group": 1
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-accounts.html"
+      }
+    },
+    {
+      "id": "page-full-pc-wechat",
+      "title": "微信账号管理",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 1440,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-4db15b59",
+          "measuredAt": 1789668275986
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-wechat.html"
+      }
+    },
+    {
+      "id": "page-full-pc-community",
+      "title": "社群管理",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 1920,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-28f000de",
+          "measuredAt": 1789668275986
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-community.html"
+      }
+    },
+    {
+      "id": "page-full-pc-users",
+      "title": "用户运营工作台",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 2400,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-61c7e01f",
+          "measuredAt": 1789669148904
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-users.html"
+      }
+    },
+    {
+      "id": "page-full-pc-orders",
+      "title": "订单中心",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 2880,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-b3a883f2",
+          "measuredAt": 1789669148904
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-orders.html"
+      }
+    },
+    {
+      "id": "page-full-pc-tickets",
+      "title": "工单中心",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 3360,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-239111ca",
+          "measuredAt": 1789669148904
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-tickets.html"
+      }
+    },
+    {
+      "id": "page-full-pc-approval",
+      "title": "审批中心",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 3840,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-71863fa4",
+          "measuredAt": 1789669148904
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-approval.html"
+      }
+    },
+    {
+      "id": "page-full-pc-permissions",
+      "title": "权限管理",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 4320,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-659fb74f",
+          "measuredAt": 1789669148904
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-permissions.html"
+      }
+    },
+    {
+      "id": "page-full-pc-members",
+      "title": "会员权益",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 4800,
+        "y": 373,
+        "group": 1,
+        "layoutSnapshot": {
+          "version": 1,
+          "contentHeight": 900,
+          "viewportWidth": 1440,
+          "sourceHash": "fnv1a-c2d4c898",
+          "measuredAt": 1789669148904
+        }
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-members.html"
+      }
+    },
+    {
+      "id": "page-full-pc-reports",
+      "title": "报表中心",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1789668000000,
+      "canvasData": {
+        "x": 5280,
+        "y": 373,
+        "group": 1
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/full-pc-reports.html"
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": true,
+    "deviceType": "desktop",
+    "projectName": "蜂乐玛私域社群运营中台",
+    "designLibrary": null
+  }
+}

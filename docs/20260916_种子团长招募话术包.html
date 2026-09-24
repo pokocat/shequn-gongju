@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260916 种子团长招募话术包 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># 种子团长招募话术包（AI 普及计划首期）
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档编号 | 20260916_种子团长招募话术包 |
+| 状态 | V1 待确认 |
+| 关联 | [[20260916_AI普及计划_公益接龙打赏方案]] · [[20260916_社群运营计划_品牌整合版]] |
+| 适用 | 首期 3–5 位种子团长的招募（天选姐/总部直接发起） |
+
+---
+
+## 〇、招募定位（先想清楚再开口）
+
+| 项 | 定位 |
+| --- | --- |
+| 招的是什么 | 首期开班的「种子团长」——把 AI 普及班开到自己圈子里的人 |
+| 不是什么 | **不是招代理**（正式代理走后面的摘星计划）；不是招免费劳力（给陪跑、给通道、给身份） |
+| 招募人 | 天选姐本人 / 总部核心（首期必须创始人亲自出面） |
+| 数量 | 首期限量 3–5 位（稀缺感是话术的一部分） |
+| 底层叙事 | 「我不是在招人，是在选人」——天选叙事贯穿始终 |
+
+## 一、种子团长画像（发给谁）
+
+- 手上有一个能触达的圈子：宝妈群、门店客户、老团队、行业协会、粉丝；
+- 每天能稳定投 1 小时，连续 7 天；
+- 认可「先做事再谈回报」，对纯拉人头敏感；
+- 加分项：在圈子里人缘好（人缘 > 人脉广）。
+
+## 二、给什么（权益，只能按这个说）
+
+1. **总部全包**：课程、直播、话术、SOP、天选姐团队一对一陪跑第一期；
+2. **专属接龙码**：私域流量全部归团长自己沉淀；
+3. **首批城市先行者身份**：名字进首份「算力账单」公示，获「小太阳勋章」；
+4. **优先通道**：跑通第一期且愿意深做的，优先进入正式城市合作通道（后续摘星计划，1 万起档）——**只说通道，不说收入**。
+
+---
+
+## 三、黄金私聊话术（一对一，分 5 条发，节奏感）
+
+> 每条之间隔对方回复，不要一次刷屏。
+
+**第 1 条 · 开场（点名+事件）**
+
+> 「XX，问你个事。我在做一个 AI 普及的公益计划——免费教普通人用 AI，7 天一个班。第一期我准备开 3–5 个班，正在选第一批开班的团长。我第一个想到的就是你。」
+
+**第 2 条 · 说清楚是什么（防误解）**
+
+> 「不是卖课，是真公益：学员 0 元进群学 7 天，觉得有用随心打赏，我们连打赏流向都每月公示。但公益要跑起来，得每个圈子有人把班开起来——这个人就是团长。」
+
+**第 3 条 · 他要干什么 + 得到什么**
+
+> 「团长干三件事：拉自己的接龙群、每天发课程链接、陪大家打卡。剩下的总部全包——讲课的是我们的老师和 AI 老师，我的团队一对一陪你跑第一期。
+> 你的收获：① 你的圈子被 AI 时代激活；② 专属接龙码，私域全归你；③ 首批城市先行者，名字进第一份算力账单；④ 跑通了的，优先进入我们正式的城市合作通道。」
+
+**第 4 条 · 门槛（筛选感）**
+
+> 「丑话说在前面：我只要 3–5 个人，三个条件——① 你手上至少有一个能触达的圈子；② 每天能挤 1 小时，连 7 天；③ 认可公益这件事，先做事再谈回报。」
+
+**第 5 条 · 行动指令**
+
+> 「感兴趣的话回我一个「1」，今晚 8 点我语音跟你讲 15 分钟具体玩法。名额我先给你留到今晚。」
+
+## 四、朋友圈招募文案（三个版本）
+
+**版本 A · 天选叙事**
+
+> 招 3 个开班的人。
+> 我在做一个 AI 普及公益——7 天，免费，教普通人用上 AI。
+> 公益要落地，得有人把班开到自己的城市去。
+> 我需要：有圈子、每天 1 小时、先做事再谈回报的人。
+> 不承诺收入，但承诺：总部全包，我的团队手把手带你开第一期。
+> 私信「团长」，只聊前 5 位。
+
+**版本 B · 算力梗**
+
+> 今晚在给夜校挑第一批团长。
+> 要求不高：有个群，肯花 1 小时，认可公益。
+> 好处很实在：课程、直播、话术全由总部出，你只管把人聚起来。
+> 「为 AI 老师充电」这个玩法，第一期只开 3–5 个城市。
+> 想上车的，私信我。
+
+**版本 C · 反套路（建立信任）**
+
+> 招团长，但我先把丑话说完：
+> 种子期没有一分钱报酬，打赏我们也不分账——那是公益的钱，要公示的。
+> 给你的是：总部全包陪跑、你的私域、首批先行者身份，和跑通之后正式合作的优先权。
+> 图快钱的别来；看好 AI、想给自己的圈子做点事的，私信「团长」。
+
+## 五、群发短版（30 秒可读完）
+
+> 「跟你说个事：我在做 AI 普及公益班，7 天免费教普通人用 AI，打赏随心、流向公示。首期招 3–5 位团长把班开到各自圈子，总部出课程出陪跑，你的私域你沉淀。有圈子、每天 1 小时、认可先做事再谈回报的，回「1」我细说。」
+
+## 六、异议应对库（六问六答）
+
+**Q1：能赚多少钱？**
+
+> 「种子期我不跟你谈收入——一上来就谈收入的，都是想让你交钱的。第一期你先把班开起来，帮我们把公益跑通。跑通了，正式的城市合作通道优先给你，那时候赚的是课程和工具零售的合法差价、还有服务费。公益期就是公益期，打赏一分不进团长的口袋——这条写在我们公示里的。」
+
+**Q2：是不是拉人头 / 传销？**
+
+> 「这个问题问得好，说明你想得清楚。三个区别：① 学员 0 元免费，没有任何门槛费；② 打赏纯自愿、每月公示流向，不给团长分一分；③ 我们赚的是后面课程工具的零售差价，跟你拉了多少人无关，跟你能服务好多少人有关。这三条欢迎截图监督。」
+
+**Q3：我不懂 AI，能带班吗？**
+
+> 「不用你懂。讲课的是总部老师和 AI 老师——你没听错，我们有个 AI 老师叫「上线」。你只需要会拉群、会发通知、会鼓励人。说白了，团长得是个热心肠。」
+
+**Q4：我人脉不行，圈子小。**
+
+> 「我选你不是因为你人脉广，是因为你人缘好。第一期哪怕只有 20 个人、留下 10 个活跃的，就是好班。公益这事，人多热闹，人少暖心。」
+
+**Q5：没时间。**
+
+> 「一天 1 小时，发 3 条消息的事。只是首期我就开 3–5 个班——这一班过了，下一期就是别人先跑起来了。」
+
+**Q6：做着做着要收费吧？**
+
+> 「公益班永久免费，这条是我们公示的铁律。收费的是另外的产品线（进阶会员、工具），那是两码事，团长可以选择推或不推，推了拿的是明码标价的零售差价。」
+
+## 七、人群变体（开场一句不同，后面接黄金话术）
+
+| 人群 | 开场定制 |
+| --- | --- |
+| 实体店老板 | 「X 老板，你店里天天人来人往，这些客人攒进私域了吗？我这有个现成由头——AI 公益扫盲班，0 元，你的客人免费学 AI，觉得你有用，人就是你的。」 |
+| 宝妈群主 | 「宝妈群里最常问的是『有没有靠谱副业』。与其推别人产品，不如自己开个班——姐妹们免费学 AI，你做团长，圈子是你的，后面的通道也优先是你的。」 |
+| 老 team 长（微商/保险） | 「你不缺产品，缺一个不消耗人脉的理由。AI 扫盲公益就是——姐妹们免费学东西，最后感谢的是你。这可能是你这些年第一个『只加分不扣分』的动作。」 |
+| 知识博主/老师 | 「你有粉丝但缺一个低门槛的服务抓手。AI 公益普及，免费、涨信任、还公益——跑通了再挂正式合作，不冲突。」
+
+## 八、语音/面谈要点（15 分钟结构）
+
+1. 3 分钟：讲计划（公益逻辑 + 算力账单玩法，重点讲流向公示）；
+2. 4 分钟：讲团长三件事 + 总部全包清单；
+3. 4 分钟：问对方（圈子情况/时间/意愿——见筛选题）；
+4. 3 分钟：讲通道（正式合作优先权，不谈具体收入）+ 定行动（下周开营时间）；
+5. 1 分钟：确认承诺（「首期我只带 3–5 个人，决定了我就把 SOP 包发你」）。
+
+## 九、团长申请筛选题（面谈时问）
+
+| # | 问题 | 看什么 |
+| --- | --- | --- |
+| 1 | 你现在手里有哪些群/圈子？大概多少人？ | 资源真实性 |
+| 2 | 每天 1 小时连 7 天，能坚持吗？ | 投入度 |
+| 3 | 你觉得身边谁最需要学 AI？ | 有没有真的想过 |
+| 4 | 如果班开了、没人打赏，你会怎么办？ | 心态（公益初心 vs 快钱预期） |
+| 5 | 跑通之后，正式的城市合作（1 万起档）你想了解吗？ | 商业意愿（不承诺、不催促） |
+
+## 十、话术纪律（禁用词 + 必守三条）
+
+**禁用词**：躺赚 / 下级 / 代理分成 / 卡位 / 卡位发财 / 发展团队收益 / 保证收入 / 月入 X 万 / 打赏分成 / 头寸 / 占位。
+
+**必守三条**：
+1. 种子期不谈收入数字，只谈通道和优先权；
+2. 打赏不分账必须主动讲（这是最强信任背书，不是减分项）；
+3. 每条话术出口前自检：这句话截图发到网上，我敢认吗？
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-16 | 初稿：黄金私聊五步话术 + 朋友圈三版本 + 群发版 + 六问六答异议库 + 四类人群变体 + 面谈结构与筛选题 + 禁用词清单 |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260916_种子团长招募话术包.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260916_种子团长招募话术包.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

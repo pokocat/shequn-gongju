@@ -1,0 +1,61 @@
+<h2>平台模式配置：两层规则结构</h2>
+<p class="subtitle">参考一人公司系统的信息架构，将“上线预置规则”和“运营可调参数”分离；只有管理员 / D1 可以进入配置态</p>
+
+<div class="mockup" style="margin-top:24px">
+  <div class="mockup-header">平台建设 / 模式配置</div>
+  <div class="mockup-body" style="padding:0;background:#f7f8fa;color:#1f2937">
+    <div style="display:flex;gap:0;border-bottom:1px solid #e5e7eb;background:#fff">
+      <div style="padding:14px 20px;border-bottom:3px solid #f97316;color:#c2410c;font-weight:700">配置总览</div>
+      <div style="padding:14px 20px;color:#6b7280">公司角色 D1-D3</div>
+      <div style="padding:14px 20px;color:#6b7280">代理角色 D4-D5</div>
+      <div style="padding:14px 20px;color:#6b7280">变更记录</div>
+    </div>
+    <div style="padding:20px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px">
+        <div>
+          <div style="font-size:20px;font-weight:800">平台分销模式</div>
+          <div style="font-size:12px;color:#6b7280;margin-top:6px">规则版本 V1.0 · 已发布 · 2026-09-23 生效</div>
+        </div>
+        <div style="padding:7px 11px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:12px;font-weight:700">当前身份：D1 / 可配置</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+        <div style="background:#fff;border:1px solid #fed7aa;border-radius:12px;padding:16px">
+          <div style="font-size:12px;color:#9a3412;font-weight:700">平台预置规则 · 上线时确定</div>
+          <div style="font-size:15px;font-weight:800;margin-top:7px">身份与等级骨架</div>
+          <div style="font-size:12px;color:#6b7280;line-height:1.7;margin-top:8px">D1-D3 公司角色；D4-D5 代理角色。角色名称、层级归属、基础权限边界、可招募范围由平台初始化。</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px"><span style="padding:5px 8px;border-radius:6px;background:#fff7ed;color:#9a3412;font-size:11px">不可删除</span><span style="padding:5px 8px;border-radius:6px;background:#fff7ed;color:#9a3412;font-size:11px">不可改层级</span><span style="padding:5px 8px;border-radius:6px;background:#fff7ed;color:#9a3412;font-size:11px">版本化</span></div>
+        </div>
+        <div style="background:#fff;border:1px solid #fed7aa;border-radius:12px;padding:16px">
+          <div style="font-size:12px;color:#9a3412;font-weight:700">运营可调参数 · 日常经营调整</div>
+          <div style="font-size:15px;font-weight:800;margin-top:7px">规则数值与开关</div>
+          <div style="font-size:12px;color:#6b7280;line-height:1.7;margin-top:8px">分润比例、审核方式、招募名额、升级指标、活动周期等可调整参数，发布后按生效时间执行。</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:12px"><span style="padding:5px 8px;border-radius:6px;background:#ecfdf5;color:#047857;font-size:11px">可编辑</span><span style="padding:5px 8px;border-radius:6px;background:#ecfdf5;color:#047857;font-size:11px">需发布</span><span style="padding:5px 8px;border-radius:6px;background:#ecfdf5;color:#047857;font-size:11px">留痕</span></div>
+        </div>
+      </div>
+      <div style="margin-top:16px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
+        <div style="padding:13px 16px;border-bottom:1px solid #e5e7eb;font-size:14px;font-weight:800">等级结构预览</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+          <div style="padding:15px 16px;border-right:1px solid #e5e7eb">
+            <div style="font-size:12px;color:#6b7280;margin-bottom:10px">公司角色</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span style="padding:9px 12px;border-radius:8px;background:#fff7ed;border:1px solid #fdba74;font-size:12px"><b>D1</b> 创始人</span><span style="padding:9px 12px;border-radius:8px;background:#fff7ed;border:1px solid #fdba74;font-size:12px"><b>D2</b> 核心合伙人</span><span style="padding:9px 12px;border-radius:8px;background:#fff7ed;border:1px solid #fdba74;font-size:12px"><b>D3</b> 事业合伙人</span></div>
+          </div>
+          <div style="padding:15px 16px">
+            <div style="font-size:12px;color:#6b7280;margin-bottom:10px">代理角色</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap"><span style="padding:9px 12px;border-radius:8px;background:#fff7ed;border:1px solid #fdba74;font-size:12px"><b>D4</b> 分公司负责人</span><span style="padding:9px 12px;border-radius:8px;background:#fff7ed;border:1px solid #fdba74;font-size:12px"><b>D5</b> 分公司合伙人</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;background:#111827;color:#fff;border-radius:12px;padding:15px 16px;display:flex;justify-content:space-between;gap:20px;align-items:center">
+        <div><div style="font-weight:800;font-size:13px">配置权限边界</div><div style="font-size:12px;color:#cbd5e1;margin-top:5px">管理员 / D1：编辑、发布、回滚　·　D2-D5：查看生效规则、不可修改</div></div>
+        <div style="padding:8px 12px;border-radius:7px;background:#f97316;color:#fff;font-size:12px;font-weight:800;white-space:nowrap">管理配置</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top:28px">两层配置说明</h3>
+<div class="options" data-multiselect>
+  <div class="option" data-choice="preset" onclick="toggleSelect(this)"><div class="letter">1</div><div class="content"><h3>平台预置规则</h3><p>小程序上线初始化：角色分组、D1-D5层级、角色名称、基础权限、归属关系、可配置权限边界。上线后不允许普通身份修改。</p></div></div>
+  <div class="option" data-choice="runtime" onclick="toggleSelect(this)"><div class="letter">2</div><div class="content"><h3>运营可调参数</h3><p>管理员 / D1 调整：分润比例、审核开关、招募名额、晋升指标、活动周期和业务阈值。每次修改先保存草稿，再发布生效。</p></div></div>
+  <div class="option" data-choice="audit" onclick="toggleSelect(this)"><div class="letter">3</div><div class="content"><h3>版本与审计</h3><p>每次发布生成配置版本，记录修改人、生效时间、影响范围；支持查看历史版本和回滚，已产生的订单按原生效规则结算。</p></div></div>
+</div>

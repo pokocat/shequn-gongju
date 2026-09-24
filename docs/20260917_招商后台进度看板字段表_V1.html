@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>20260917 招商后台进度看板字段表 V1 · 设计页</title>
+<style>
+  :root{
+    --bg:#FFFFFF; --paper:#FBF9F5; --ink:#2B2620; --sub:#6B6459;
+    --gold:#D4B57A; --gold-deep:#C99A3C; --gold-soft:#F3E9D7; --line:#EFE9DE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:"PingFang SC","HarmonyOS Sans","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.85}
+  .bar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+  .bar-in{max-width:880px;margin:0 auto;padding:12px 22px;display:flex;justify-content:space-between;align-items:center}
+  .back{color:var(--gold-deep);text-decoration:none;font-size:13px;font-weight:700}
+  .fname{font-size:12px;color:#A39B8E;max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .content{max-width:880px;margin:0 auto;padding:36px 22px 90px;min-height:60vh}
+  /* 阅读进度条 */
+  #readbar{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--gold-deep));width:0;z-index:99}
+  /* 侧边目录 */
+  #toc{position:fixed;right:18px;top:96px;width:180px;max-height:calc(100vh - 200px);overflow-y:auto;z-index:15;background:rgba(255,255,255,.9);border:1px solid var(--line);border-radius:14px;padding:14px 10px;backdrop-filter:blur(6px);display:none;scrollbar-width:thin}
+  @media(min-width:1300px){#toc.has{display:block}}
+  #toc .cap{font-size:10px;color:#A39B8E;letter-spacing:.2em;font-weight:800;margin:0 8px 8px}
+  #toc a{display:block;font-size:11.5px;color:var(--sub);text-decoration:none;padding:4px 10px;border-radius:7px;line-height:1.45;border-left:2px solid transparent;margin-bottom:1px}
+  #toc a:hover{color:var(--ink);background:var(--paper)}
+  #toc a.on{color:var(--gold-deep);border-left-color:var(--gold-deep);background:var(--gold-soft);font-weight:700}
+  #toc a.h3{padding-left:22px;font-size:10.5px}
+  /* 回顶 */
+  #top-btn{position:fixed;right:22px;bottom:26px;z-index:20;width:42px;height:42px;border-radius:99px;border:1px solid var(--line);background:rgba(255,255,255,.95);color:var(--gold-deep);font-size:16px;cursor:pointer;opacity:0;pointer-events:none;transition:all .3s;backdrop-filter:blur(6px);box-shadow:0 4px 14px rgba(43,38,32,.08)}
+  #top-btn.on{opacity:1;pointer-events:auto}
+  #top-btn:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 18px rgba(201,154,60,.25)}
+  h1{font-size:30px;font-weight:800;margin-bottom:14px;padding-bottom:14px;border-bottom:2px solid var(--gold)}
+  h2{font-size:21px;font-weight:800;margin:34px 0 12px;padding-left:12px;border-left:4px solid var(--gold)}
+  h3{font-size:16.5px;font-weight:800;margin:24px 0 10px;color:var(--ink)}
+  h4{font-size:14.5px;margin:18px 0 8px}
+  p{margin:10px 0;font-size:14.5px}
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;background:#fff;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,32,.04)}
+  th{background:var(--gold-soft);color:#6E5314;font-weight:700;padding:10px 12px;font-size:12.5px;text-align:left}
+  td{padding:9px 12px;border-top:1px solid var(--line);font-size:13px}
+  tr:nth-child(even) td{background:var(--paper)}
+  code{background:var(--gold-soft);color:#8A6A1F;border-radius:5px;padding:1px 7px;font-size:12.5px;font-family:"SF Mono",Consolas,monospace}
+  pre{background:#2B2620;color:#F3E9D7;border-radius:12px;padding:18px 20px;overflow-x:auto;margin:16px 0;font-size:12.5px;line-height:1.7}
+  pre code{background:none;color:inherit;padding:0}
+  blockquote{border-left:4px solid var(--gold);background:var(--paper);border-radius:0 12px 12px 0;padding:12px 18px;margin:14px 0;color:var(--sub);font-size:13.5px}
+  blockquote b{color:var(--ink)}
+  ul,ol{margin:10px 0 10px 24px;font-size:14.5px}
+  li{margin:5px 0}
+  li::marker{color:var(--gold-deep)}
+  hr{border:none;border-top:1px solid var(--line);margin:26px 0}
+  strong,b{color:var(--ink)}
+  .center{text-align:center}
+  .err{background:#FFF5F5;border:1px solid #E8C4C4;color:#9B3A3A;border-radius:12px;padding:20px;margin:40px 0;font-size:14px}
+  .toc-hint{font-size:12px;color:#A39B8E;margin-bottom:24px}
+
+/* ===== 可读性升级 2.0 ===== */
+body{font-size:15.5px;-webkit-font-smoothing:antialiased}
+.content{max-width:780px;line-height:1.92}
+.content h1{font-size:27px;font-weight:800;color:#2b2620;letter-spacing:.02em;line-height:1.45;margin:34px 0 18px;padding-bottom:14px;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,#b98a2f,#e8d5a8 60%,transparent) 1}
+.content h2{font-size:20px;font-weight:800;color:#2b2620;margin:30px 0 12px;padding:8px 0 8px 14px;border-left:4px solid #b98a2f;background:linear-gradient(90deg,rgba(233,213,171,.18),transparent 70%);border-radius:0 8px 8px 0}
+.content h3{font-size:16.5px;font-weight:800;color:#4a3c1c;margin:22px 0 10px;padding-left:10px;border-left:3px solid #d9bc7f}
+.content h4{font-size:14.5px;font-weight:800;color:#8a6d2f;margin:18px 0 8px}
+.content p{margin:10px 0;color:#3d3830}
+.content strong{color:#8a6d2f;font-weight:800}
+.content table{border-collapse:separate;border-spacing:0;margin:16px 0;font-size:13.5px;border:1px solid #e5dcc8;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(122,86,31,.06)}
+.content th{background:linear-gradient(180deg,#f7efdd,#f0e6cd);color:#5e4620;font-weight:800;padding:10px 13px;text-align:left;border-bottom:2px solid #d9bc7f}
+.content td{padding:9px 13px;border-bottom:1px solid #f0ead9;color:#4a443b;vertical-align:top}
+.content tr:nth-child(even) td{background:#fbf8f1}
+.content tr:hover td{background:#f6efdf}
+.content tr:last-child td{border-bottom:none}
+.content blockquote{margin:14px 0;padding:12px 18px;background:linear-gradient(90deg,#fbf6ea,#fdfcf8);border-left:4px solid #c9a05c;border-radius:0 10px 10px 0;color:#6b5d33}
+.content code{background:#f7f1e2;border:1px solid #eee0c4;border-radius:5px;padding:1px 7px;font-size:13px;color:#7a561f}
+.content pre{background:#faf6ec;border:1px solid #eee0c4;border-radius:10px;padding:14px 16px;font-size:12.5px;line-height:1.75;color:#4a443b;overflow-x:auto}
+.content pre code{background:none;border:none;padding:0}
+.content ul,.content ol{padding-left:6px;margin:10px 0}
+.content li{margin:7px 0;padding-left:8px}
+.content ul li::marker{color:#b98a2f;font-size:1.05em}
+.content ol li::marker{color:#b98a2f;font-weight:800}
+.content hr{border:none;height:2px;background:linear-gradient(90deg,transparent,#d9bc7f,transparent);margin:26px 0}
+.content a{color:#b98a2f;font-weight:700;text-decoration:none;border-bottom:1px dashed #d9bc7f}
+.content a:hover{color:#8a6d2f}
+.content table+* , .content h2+table{margin-top:12px}
+
+/* ===== 方案设计器 · 设计模式 ===== */
+body.design{background:linear-gradient(180deg,#fbf8f1,#f7f2e6 240px,#fdfbf7)}
+.design .content{max-width:860px}
+.design .content h1{font-size:32px;text-align:center;margin:44px 0 10px;padding:34px 30px 26px;background:linear-gradient(135deg,#fffdf8,#f7efdd);border:1px solid #e8dcc0;border-radius:18px;border-bottom:none;box-shadow:0 2px 12px rgba(122,86,31,.08);letter-spacing:.04em}
+.design .content h1::before{content:'◆';display:block;font-size:15px;color:#c9a05c;margin-bottom:12px;letter-spacing:.5em}
+.design .content h1::after{content:'';display:block;width:88px;height:3px;margin:20px auto 0;background:linear-gradient(90deg,transparent,#b98a2f,transparent)}
+.design .content h2{counter-increment:sec;position:relative;margin:40px 0 14px;padding:16px 18px 14px 66px;background:#fff;border:1px solid #e8dcc0;border-radius:14px;box-shadow:0 1px 8px rgba(122,86,31,.05);font-size:19px}
+.design .content h2::before{content:'0' counter(sec);position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:26px;font-weight:900;color:#d9bc7f;letter-spacing:-1px}
+.design .content h3{font-size:16px}
+.design .content blockquote{position:relative;margin:20px 0;padding:22px 26px 20px 56px;background:linear-gradient(135deg,#fffdf8,#faf4e6);border:1px solid #e8dcc0;border-left:4px solid #c9a05c;border-radius:14px;font-size:15.5px;line-height:1.85;text-align:left}
+.design .content blockquote::before{content:'"';position:absolute;left:18px;top:8px;font-size:44px;color:#d9bc7f;font-family:Georgia,serif;line-height:1}
+.design .content li{background:#fff;border:1px solid #f0e8d5;border-radius:10px;padding:9px 14px;margin:8px 0;list-style:none;position:relative;box-shadow:0 1px 4px rgba(122,86,31,.04)}
+.design .content ul li::before{content:'▸';color:#b98a2f;font-weight:800;margin-right:9px}
+.design .content ol li{counter-increment:li;list-style:none}
+.design .content ol li::before{content:counter(li);display:inline-block;width:22px;height:22px;line-height:22px;text-align:center;border-radius:50%;background:linear-gradient(135deg,#c9a05c,#b98a2f);color:#fff;font-size:11.5px;font-weight:800;margin-right:10px}
+.design .content ol{counter-reset:li}
+.design .content{counter-reset:sec}
+.design .content hr{height:1px;margin:34px 0}
+.design .content table{box-shadow:0 2px 10px rgba(122,86,31,.09);font-size:14px}
+.design .content th{font-size:13px;letter-spacing:.04em}
+.design .content strong{background:linear-gradient(180deg,transparent 62%,rgba(217,188,127,.38) 62%)}
+.design .bar{background:linear-gradient(90deg,#f7f0e0,#fdfbf7)}
+</style>
+</head>
+<body>
+<div id="readbar"></div>
+<div id="toc"><div class="cap">本文目录</div></div>
+<button id="top-btn" title="返回顶部">↑</button>
+<div class="bar"><div class="bar-in">
+  <a class="back" href="cockpit.html">← 返回驾驶舱 · 设计版</a>
+  <a class="back" style="margin-left:14px;color:#8a6d2f" href="20260917_文档阅读器.html?file=" id="plainLink">切换普通阅读版</a>
+  <span class="fname" id="fname"></span>
+</div></div>
+<script type="text/markdown" id="mdsrc"># 招商后台进度看板字段表 V1
+
+| 字段 | 内容 |
+| --- | --- |
+| 文档编号 | 20260917_招商后台进度看板字段表_V1 |
+| 状态 | V1 待确认（系统/小程序开发的数据字典基础） |
+| 用途 | 支撑 V6 时间进度表的**控盘杠杆**：人数触发涨价、闸门触发、雷达分层、升级账户——全部以本表字段为准 |
+| 使用方 | 招商中控（每日看）· 财务（分账与退款）· 系统开发（建表） |
+
+---
+
+## 一、席位进度表 `seat_progress`（市代/团长/县代通用）
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| level | enum | `district_leader`(团长) / `county`(县代) / `city`(市代) / `branch`(分公司) |
+| batch_no | int | 批次号（市代 1–6：1折/2折/3折/4折/5折/常价） |
+| batch_name | varchar | 如「创始批（1 折）」 |
+| unit_price | decimal | 当批单席价 |
+| quota_total | int | 批次总席位（市代：500/200/100/100/50/50） |
+| quota_filled | int | 已签约数（实时） |
+| quota_intent_locked | int | 意向金已锁定本批席位数（1 折优先队列） |
+| status | enum | `upcoming`(未开放) / `recruiting`(招募中) / `sold_out`(售罄) |
+| opened_at / closed_at | datetime | 批次开闸/售罄时间（涨价触发留痕） |
+| city_limit | int | 一城限购数（市代=3；NULL 为不限） |
+
+**触发器规则**：`quota_filled + quota_intent_locked ≥ quota_total` → 本批 `sold_out` → 下一批 `recruiting`（自动+短信通知中控）。
+
+## 二、意向金管理表 `intent_deposit`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| intent_id | uuid | 意向金单号 |
+| user_id / name / phone | — | 缴纳人 |
+| amount | decimal | 固定 1,000 |
+| paid_at | datetime | **到账时间（1 折排序唯一依据）** |
+| target_level | enum | 意向档位（city/district_leader/county） |
+| queue_rank | int | 在目标档 1 折队列中的实时排名 |
+| status | enum | `active`(有效) / `converted`(已签约抵扣) / `refunded`(已退) |
+| expire_at | datetime | 起盘日+30 天 |
+| refund_requested_at | datetime | 退款申请时间（SLA：7 个工作日） |
+| refund_completed_at | datetime | 退款完成时间 |
+
+## 三、升级账户流水表 `upgrade_account`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| account_id / user_id | — | 一人一账户 |
+| entry_id | uuid | 流水号 |
+| amount_in | decimal | 入账金额（意向金/各级合作款/上车卡全部累计） |
+| source | enum | `intent_deposit` / `boarding_card` / `district_leader` / `county` / `city` / `branch` |
+| deducted_against | varchar | 抵扣指向（如「市代创始批合作款」） |
+| balance | decimal | 账户累计可用抵扣余额 |
+| created_at | datetime | — |
+
+> 规则：**所有已付款项全额累计抵扣**（1,000→1,000→…一路抵上来）；升级只补差价，退款按规则原路退。
+
+## 四、普惠班运营表 `class_campaign`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| class_id | uuid | 班级号 |
+| leader_id | — | 开班团长 |
+| start_date / day_count | date/int | 开班日/天数（7 天） |
+| enrolled / attended | int | 报名/实际打卡人数 |
+| tip_total | decimal | 随心付总金额（本班） |
+| tip_split_leader / tip_split_hq | decimal | 团长 50% / 总部 50% |
+| tier_counts | json | 雷达五层人数 `{t0:.., t1_99:.., t100_499:.., t500_999:.., t1000_plus:..}` |
+| conversion | json | 会员/实战营/上车卡成交数 |
+| leaderboard_rank | int | 随心榜排名（月度） |
+
+## 五、雷达分层与升单表 `radar_funnel`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| user_id / class_id | — | — |
+| pay_amount | decimal | 该学员随心付金额（分档依据） |
+| tier | enum | `T0`(0元) / `T1`(1–99) / `T2`(100–499) / `T3`(500–999) / `T4`(≥1000) |
+| follow_up_owner | — | 承接人（T3=团长1v1 / T4=天选姐出面） |
+| upgraded_to | enum | 后续成交产品（monthly_member/yearly_member/camp/boarding_card/agent） |
+| followup_at / result | — | 跟进记录 |
+
+## 六、闸门与控盘触发器表 `gate_control`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| gate_id | enum | `leader_gate`(团长闸) / `county_gate`(县代闸) / `price_step`(涨价) / `next_wave`(下一波) |
+| trigger_rule | varchar | 如 `city_agents_total ≥ 100` / `leaders_total ≥ 2000` / `batch sold_out` |
+| current_value | int | 当前值（实时） |
+| threshold | int | 阈值 |
+| status | enum | `watching`(监控中) / `triggered`(已触发) / `executed`(已执行) |
+| executed_at / operator | — | 触发执行留痕（谁开的闸、何时） |
+
+**预设规则（对接 V6 时间表）**：
+
+| 闸门 | 触发条件 | 执行动作 |
+| --- | --- | --- |
+| 团长闸 | 市代累计 ≥100 人 | 开放团长 1 折通道（1,000 元） |
+| 县代闸 | 团长累计 ≥2,000 人 | 开放团长升级县代补差减半 |
+| 涨价 | 各批 `sold_out` | 下一批自动开放+公示 |
+| 顺延 | 月进度 < 目标（市代 <250 人/月） | **不涨价**，中控加推动作记录 |
+| 下一波 | 市代 1,000 席满 | M9 发布会门槛上调 50% 公示 |
+
+## 七、城市/区域表 `region_control`
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| region_code / name | — | 城市编码/名称 |
+| region_level | enum | `county`(区县) / `city`(地级市) |
+| quota | int | 区域席位数（县代一区一位=1；市代一城 3 席） |
+| locked_by / locked_until | — | 意向锁定人/截止（6 个月释放规则） |
+| exclusive_holder | — | 独家授权持有人（补差激活后） |
+
+## 八、权限与合规位
+
+| 项 | 设计 |
+| --- | --- |
+| 看板角色 | 中控（全量）/ 财务（分账退款）/ 市代（仅自家数据）/ 团长（仅自家班级） |
+| 数字真实性 | 对外公示页的所有数字（剩余席位/进度）由本系统单源输出——**一处维护，多处展示** |
+| 留痕 | 每次涨价、开闸、退款均留 operator + timestamp（应对质疑的审计链） |
+| 敏感数据 | 用户身份信息脱敏展示（中控层可见明细） |
+
+## 九、开发优先级建议
+
+| 优先级 | 模块 | 理由 |
+| --- | --- | --- |
+| P0 | 席位进度表 + 意向金管理 + 收款凭证 | W1–W2 蓄水即用 |
+| P0 | 升级账户流水 | 签约当天就要抵扣 |
+| P1 | 普惠班运营 + 雷达分层 | M2 团长闸开启后 |
+| P1 | 闸门触发器 | M1 中旬市达 100 人前 |
+| P2 | 区域表 + 市代侧看板 | M3 后规模化 |
+
+---
+
+## 版本记录
+
+| 版本 | 日期 | 变更 |
+| --- | --- | --- |
+| V1（现行） | 2026-09-17 | 看板数据字典：8 张核心表（席位进度/意向金/升级账户/普惠班/雷达/闸门触发器/区域/权限）+ 自动触发规则 + 留痕审计 + 开发优先级 |
+</script>
+<div class="content" id="content"><p style="color:#A39B8E">渲染中…</p></div>
+
+<script>
+// 硬编码文件名（由生成脚本写入）
+document.getElementById('fname').textContent = '20260917_招商后台进度看板字段表_V1.md';
+document.body.classList.add('design');
+document.getElementById('plainLink').href = '20260917_文档阅读器.html?file=' + encodeURIComponent('20260917_招商后台进度看板字段表_V1.md');
+
+// 从内嵌 script 读取 md 原文并渲染
+const md = document.getElementById('mdsrc').textContent;
+renderDoc(render(md));
+
+// 渲染后：生成目录 + 绑定滚动
+function renderDoc(html){
+  document.getElementById('content').innerHTML = html;
+  const toc = document.getElementById('toc');
+  const hs = [...document.querySelectorAll('#content h2,#content h3')];
+  hs.forEach((h, i) => {
+    h.id = 'sec' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    if (h.tagName === 'H3') a.className = 'h3';
+    toc.appendChild(a);
+  });
+  if (hs.length > 0) toc.classList.add('has');
+  const ta = [...toc.querySelectorAll('a')];
+  addEventListener('scroll', () => {
+    const d = document.documentElement;
+    document.getElementById('readbar').style.width = (d.scrollTop / (d.scrollHeight - d.clientHeight) * 100) + '%';
+    document.getElementById('top-btn').classList.toggle('on', d.scrollTop > 400);
+    let cur = -1;
+    hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 120) cur = i; });
+    ta.forEach((a, i) => a.classList.toggle('on', i === cur));
+  }, { passive: true });
+}
+document.getElementById('top-btn').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function inline(s) {
+  s = esc(s);
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color:var(--gold-deep)">$1</a>');
+  return s;
+}
+function render(md) {
+  const lines = md.split('\n');
+  let out = [], i = 0;
+  while (i < lines.length) {
+    const L = lines[i];
+    if (/^```/.test(L)) { let buf = []; i++; while (i < lines.length && !/^```/.test(lines[i])) { buf.push(lines[i]); i++; }
+      out.push('<pre><code>' + esc(buf.join('\n')) + '</code></pre>'); i++; continue; }
+    if (/^\|/.test(L) && i + 1 < lines.length && /^\|[\s:|-]+\|?$/.test(lines[i + 1])) {
+      let rows = []; let head = L.split('|').slice(1, -1);
+      i += 2;
+      while (i < lines.length && /^\|/.test(lines[i])) { rows.push(lines[i].split('|').slice(1, -1)); i++; }
+      let h = '<table><tr>' + head.map(c => '<th>' + inline(c.trim()) + '</th>').join('') + '</tr>';
+      rows.forEach(r => { h += '<tr>' + r.map(c => '<td>' + inline(c.trim()) + '</td>').join('') + '</tr>'; });
+      out.push(h + '</table>'); continue;
+    }
+    if (/^#{1,4}\s/.test(L)) {
+      const m = L.match(/^(#{1,4})\s+(.*)/);
+      const lv = m[1].length, txt = inline(m[2]);
+      out.push('<h' + lv + '>' + txt + '</h' + lv + '>'); i++; continue;
+    }
+    if (/^>\s?/.test(L)) { let buf = []; while (i < lines.length && /^>\s?/.test(lines[i])) { buf.push(lines[i].replace(/^>\s?/, '')); i++; }
+      out.push('<blockquote>' + buf.map(b => inline(b)).join('<br>') + '</blockquote>'); continue; }
+    if (/^(---|\*\*\*)\s*$/.test(L)) { out.push('<hr>'); i++; continue; }
+    if (/^[-*]\s/.test(L)) { let buf = []; while (i < lines.length && /^[-*]\s/.test(lines[i])) { buf.push(lines[i].replace(/^[-*]\s/, '')); i++; }
+      out.push('<ul>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ul>'); continue; }
+    if (/^\d+\.\s/.test(L)) { let buf = []; while (i < lines.length && /^\d+\.\s/.test(lines[i])) { buf.push(lines[i].replace(/^\d+\.\s/, '')); i++; }
+      out.push('<ol>' + buf.map(b => '<li>' + inline(b) + '</li>').join('') + '</ol>'); continue; }
+    if (/^\s*$/.test(L)) { i++; continue; }
+    let buf = [L]; i++;
+    while (i < lines.length && !/^\s*$/.test(lines[i]) && !/^(#|>|\||```|[-*]\s|\d+\.\s|---)/.test(lines[i])) { buf.push(lines[i]); i++; }
+    out.push('<p>' + inline(buf.join(' ')) + '</p>');
+  }
+  return out.join('\n');
+}
+</script>
+</body>
+</html>

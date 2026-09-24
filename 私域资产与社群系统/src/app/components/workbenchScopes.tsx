@@ -130,7 +130,7 @@ const community: ScopeConfig = {
     ["活跃度", "92%", "#00a978"], ["进群率", "96%", "#00a978"],
     ["退群率", "1.2%", "#00a978"], ["群质量", "A级", "#7445d8"],
   ],
-  profileTabs: ["群公告", "群成员", "群活动", "操作记录"],
+  profileTabs: ["群公告", "群成员", "群活动", "群资产配置", "操作记录"],
   profileRecords: {
     "群公告": [
       { title: "9 月新课表已发布", desc: "含 4 场直播与 2 场闭门会", status: "置顶" },
@@ -146,6 +146,7 @@ const community: ScopeConfig = {
       { title: "直播观赛打卡", desc: "9 月 3 日 20:00 · 观赛领积分", status: "进行中" },
       { title: "晒单周赛 · 7 月第二周", desc: "截图上传赢成长值", status: "报名中" },
     ],
+    "群资产配置": [],
     "操作记录": [
       { title: "群公告发布", desc: "运营 · 林小燕 · 今天 09:12", status: "成功" },
       { title: "移出违规成员", desc: "运营 · 林小燕 · 昨天", status: "已处理" },
@@ -302,11 +303,11 @@ const agent: ScopeConfig = {
     { label: "状态", width: 54, tone: "muted" },
   ],
   rows: [
-    { rank: 1, name: "皮卡丘", initial: "皮", filter: "活跃", cells: ["皮卡丘", "金牌", "北京-朝阳", "326", "18", "¥42,600", "已结算", "正常"] },
-    { rank: 2, name: "文泽", initial: "文", filter: "活跃", cells: ["文泽", "金牌", "北京-海淀", "284", "15", "¥38,200", "已结算", "正常"] },
-    { rank: 3, name: "梓几", initial: "梓", filter: "活跃", cells: ["梓几", "银牌", "北京-西城", "196", "11", "¥21,400", "待结算", "正常"] },
-    { rank: 4, name: "海槽", initial: "海", filter: "待跟进", cells: ["海槽", "银牌", "北京-东城", "152", "9", "¥16,800", "已结算", "正常"] },
-    { rank: 5, name: "王强", initial: "王", filter: "待安置", cells: ["王强", "新代理", "北京-通州", "0", "3", "¥0", "—", "待安置"] },
+    { rank: 1, name: "皮卡丘", initial: "皮", filter: "活跃", cells: ["皮卡丘", "一级代理", "北京-朝阳", "326", "18", "¥42,600", "已结算", "正常"] },
+    { rank: 2, name: "文泽", initial: "文", filter: "活跃", cells: ["文泽", "一级代理", "北京-海淀", "284", "15", "¥38,200", "已结算", "正常"] },
+    { rank: 3, name: "梓几", initial: "梓", filter: "活跃", cells: ["梓几", "二级代理", "北京-西城", "196", "11", "¥21,400", "待结算", "正常"] },
+    { rank: 4, name: "海槽", initial: "海", filter: "待跟进", cells: ["海槽", "二级代理", "北京-东城", "152", "9", "¥16,800", "已结算", "正常"] },
+    { rank: 5, name: "王强", initial: "王", filter: "待安置", cells: ["王强", "三级代理", "北京-通州", "0", "3", "¥0", "—", "待安置"] },
   ],
   tree: {
     name: "总部",
@@ -326,13 +327,13 @@ const agent: ScopeConfig = {
     { id: "moments", label: "考核登记", icon: ClipboardCheck, button: "登记考核" },
   ],
   profileTags: [
-    { label: "金牌代理", background: "#fff0db", color: "#e77800" },
+    { label: "一级代理", background: "#fff0db", color: "#e77800" },
     { label: "业绩Top1", background: "#effed4", color: "#253800" },
     { label: "高活跃", background: "#e8fbf4", color: "#00a978" },
   ],
-  profileSub: "金牌代理 · 北京",
+  profileSub: "一级代理 · 北京",
   profileFields: [
-    ["代理编号", "A-00002"], ["代理等级", "金牌"],
+    ["代理编号", "A-00002"], ["代理等级", "一级代理"],
     ["负责城市", "北京"], ["加入时间", "2026-02-20"],
     ["下线会员", "326 人"], ["本月招募", "18 人"],
     ["累计佣金", "¥42,600"], ["代理状态", "正常"],

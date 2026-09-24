@@ -1,0 +1,44 @@
+:root {
+  /* 语义化品牌映射（head contract 所需） */
+  --accent-background: #050914;
+  --accent-foreground: #eef4ff;
+  --accent-card: rgba(11, 19, 36, 0.92);
+  --accent-primary: #cb47ff;
+  --accent-border: rgba(132, 160, 210, 0.22);
+  --accent-radius-sm: 6px;
+  --accent-radius-md: 10px;
+  --accent-radius-lg: 16px;
+
+  /* 背景与面板 */
+  --bg: #050914;
+  --panel: rgba(11, 19, 36, 0.92);
+  --panel2: rgba(16, 26, 48, 0.92);
+  --panel-soft: #101a30;
+
+  /* 文字 */
+  --ink: #eef4ff;
+  --muted: #92a3bf;
+
+  /* 分隔线 */
+  --line: rgba(132, 160, 210, 0.22);
+
+  /* 品牌色 */
+  --accent: #cb47ff;
+  --accent-soft: rgba(203, 71, 255, 0.14);
+  --accent-strong: #f09cff;
+  --blue: #316bff;
+  --cyan: #2fd4ff;
+
+  /* 状态色 */
+  --good: #39d98a;
+  --green: #12805c;
+  --warn: #ffbd4a;
+  --bad: #ff6678;
+
+  /* 深度 */
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.38);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}

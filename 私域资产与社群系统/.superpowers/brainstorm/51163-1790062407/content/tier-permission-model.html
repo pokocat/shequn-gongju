@@ -1,0 +1,50 @@
+<style>
+  .canvas { display:grid; gap:18px; }
+  .policy { display:grid; grid-template-columns:1.15fr .85fr; gap:16px; }
+  .panel { border:1px solid #dfe5ea; border-radius:18px; background:#fff; overflow:hidden; }
+  .panel-head { padding:16px 18px; background:linear-gradient(135deg,#17212b,#293847); color:#fff; }
+  .panel-head h3 { margin:0; font-size:18px; }
+  .panel-head p { margin:5px 0 0; opacity:.78; font-size:13px; }
+  .role-stack { padding:14px; display:grid; gap:10px; }
+  .role { display:grid; grid-template-columns:58px 1fr auto; gap:12px; align-items:center; border:1px solid #e8edf0; border-radius:14px; padding:12px; }
+  .badge { width:48px; height:48px; display:grid; place-items:center; border-radius:14px; color:#111827; font-weight:800; }
+  .d1{background:#ffd8e9;color:#a21459}.d2{background:#e8dcff;color:#6430b7}.d3{background:#fff0bd;color:#9a6800}.d4{background:#d8ffd9;color:#18813b}.d5{background:#d9f7ff;color:#007e9d}
+  .role h4 { margin:0; font-size:15px; }.role p {margin:4px 0 0;font-size:12px;color:#64748b}.lock {font-size:12px;background:#f1f5f9;color:#475569;border-radius:999px;padding:5px 8px}.allow{background:#e8fbef;color:#15803d}
+  .phone { background:#0b1016; border-radius:32px; padding:12px; box-shadow:0 14px 35px #1f293740; max-width:360px; margin:auto; }
+  .phone-screen { border-radius:23px; overflow:hidden; background:#f8fafc; min-height:490px; }
+  .bar {background:#d9ff4d;padding:22px 16px 16px;font-weight:800;font-size:17px}.sub{font-size:12px;font-weight:500;display:block;margin-top:4px;color:#52611a}.mini-card{margin:14px;border-radius:16px;background:#fff;padding:14px;border:1px solid #e6eaee}.mini-card h4{margin:0 0 7px;font-size:15px}.row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid #eff2f4;font-size:13px}.row:first-of-type{border-top:0}.on{color:#15803d;font-weight:700}.off{color:#94a3b8}.cta{margin:14px;border-radius:12px;background:#111827;color:#fff;text-align:center;padding:12px;font-weight:700}.disabled{background:#e5e7eb;color:#94a3b8}
+  .note {padding:14px 16px;border-top:1px solid #e5e7eb;background:#fbfdff;font-size:13px;line-height:1.6;color:#475569}.highlight{color:#dc6b00;font-weight:700}
+  @media(max-width:720px){.policy{grid-template-columns:1fr}}
+</style>
+<h2>等级配置权限：小程序预置，D1 统一管理</h2>
+<p class="subtitle">配置在小程序上线时由平台初始化；运行期间仅管理员 / D1 可维护。D2–D5 只能查看自己当前等级、权益、招商范围与升级进度。</p>
+
+<div class="canvas">
+  <div class="policy">
+    <section class="panel">
+      <div class="panel-head"><h3>角色与配置权边界</h3><p>公司角色负责治理，渠道等级负责招商与经营执行。</p></div>
+      <div class="role-stack">
+        <div class="role"><div class="badge d1">D1</div><div><h4>创始人 / 平台管理员</h4><p>唯一可修改：等级名称、分润规则、招商范围、审核模式、升级条件与模板版本。</p></div><span class="lock allow">可配置</span></div>
+        <div class="role"><div class="badge d2">D2</div><div><h4>核心合伙人</h4><p>查看全局规则与经营数据；按 D1 授权参与审核，不可编辑规则。</p></div><span class="lock">仅查看</span></div>
+        <div class="role"><div class="badge d3">D3</div><div><h4>事业合伙人</h4><p>查看自身经营、团队与授权范围；执行招商和协同审核，不可配置层级。</p></div><span class="lock">仅查看</span></div>
+        <div class="role"><div class="badge d4">D4</div><div><h4>分公司负责人</h4><p>按预设规则发展 D5、管理供应商与渠道；不可修改分润或招商边界。</p></div><span class="lock">仅查看</span></div>
+        <div class="role"><div class="badge d5">D5</div><div><h4>分公司合伙人</h4><p>按预设规则执行招商与推广；仅查看自己可招商范围与升级条件。</p></div><span class="lock">仅查看</span></div>
+      </div>
+      <div class="note"><span class="highlight">关键原则：</span>分润、招商资格与升级条件是平台治理规则，不随个人身份开放编辑；D1 修改后以新版本生效，并保留版本记录与生效时间。</div>
+    </section>
+
+    <section class="phone">
+      <div class="phone-screen">
+        <div class="bar">等级权益与规则<span class="sub">当前身份：D3 · 事业合伙人</span></div>
+        <div class="mini-card"><h4>我的等级权限</h4><div class="row"><span>招商权限</span><span class="on">可发展 D4、D5</span></div><div class="row"><span>审批权限</span><span class="on">按平台规则协同审核</span></div><div class="row"><span>分润规则</span><span>按 D1 配置执行</span></div></div>
+        <div class="mini-card"><h4>升级进度</h4><div class="row"><span>供应商目标</span><span>6 / 10 家</span></div><div class="row"><span>经营任务</span><span>已完成 72%</span></div><div class="row"><span>规则配置</span><span class="off">仅 D1 可编辑</span></div></div>
+        <div class="cta disabled">配置规则 · 仅管理员 / D1 可用</div>
+        <div class="note">D2–D5 进入时只展示“规则说明、当前权益、升级进度、适用版本”，不显示可操作的配置入口。</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="options">
+    <div class="option" data-choice="permission-model" onclick="toggleSelect(this)"><div class="letter">✓</div><div class="content"><h3>建议采用：上线初始化 + D1 唯一配置</h3><p>所有等级规则以平台模板初始化，D1 在“平台模式”集中管理；其他角色只读，避免渠道侧随意改动分润、招商和升级标准。</p></div></div>
+  </div>
+</div>

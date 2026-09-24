@@ -13,14 +13,12 @@ import {
   ExternalLink,
   Archive,
   Users,
-  ShieldCheck,
   UserRoundCog,
   BriefcaseBusiness,
   MapPin,
 } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 import { mockAccounts, roleKeyMeta } from "../data/accountTypes";
-import Permissions from "./Permissions";
 const PAGE_SIZE = 8;
 const unifiedRoleOptions = [
   "平台管理员",
@@ -1249,6 +1247,8 @@ function EmployeeConfigModal({
     projects: string[];
     area2: string;
     serviceOfficer: string;
+    serviceOfficerQualified: boolean;
+    backupOfficer: string;
   }) => void;
 }) {
   const [roles, setRoles] = useState<string[]>(
@@ -1283,6 +1283,12 @@ function EmployeeConfigModal({
   );
   const [serviceOfficer, setServiceOfficer] = useState(
     staff.serviceOfficer === "—" ? "" : staff.serviceOfficer,
+  );
+  const [serviceOfficerQualified, setServiceOfficerQualified] = useState(
+    Boolean((staff as any).serviceOfficerQualified),
+  );
+  const [backupOfficer, setBackupOfficer] = useState(
+    (staff as any).backupOfficer || "",
   );
   const serviceRole = roles.some((role) =>
     ["客服专员", "服务老师", "社群运营", "探哥", "假面"].includes(role),
@@ -1377,55 +1383,55 @@ function EmployeeConfigModal({
             style={{ borderTop: `1px solid ${S.border}` }}
           >
             <div className="text-xs font-semibold" style={{ color: S.text }}>
-              服务关系
+              服务关系与服务官资格
             </div>
-            <div className="mt-2 grid grid-cols-2 gap-3">
-              <label className="block col-span-2">
-                <span
-                  className="block mb-1 text-[10px]"
-                  style={{ color: S.muted }}
-                >
-                  服务项目
-                </span>
-                <input
-                  value={projects.join("、")}
-                  onChange={(event) =>
-                    setProjects(
-                      event.target.value
-                        .split("、")
-                        .map((value) => value.trim())
-                        .filter(Boolean),
-                    )
-                  }
-                  placeholder="北京 PRO 会员、上海体验官"
-                  className="w-full px-3 py-2 text-xs outline-none"
-                  style={{
-                    background: S.bg,
-                    border: `1px solid ${S.borderMed}`,
-                    borderRadius: S.radiusSm,
-                  }}
-                />
-              </label>
-              <label className="block col-span-2">
-                <span
-                  className="block mb-1 text-[10px]"
-                  style={{ color: S.muted }}
-                >
-                  服务地区
-                </span>
-                <input
-                  value={area}
-                  onChange={(event) => setArea(event.target.value)}
-                  placeholder="北京、上海、吉林市"
-                  className="w-full px-3 py-2 text-xs outline-none"
-                  style={{
-                    background: S.bg,
-                    border: `1px solid ${S.borderMed}`,
-                    borderRadius: S.radiusSm,
-                  }}
-                />
-              </label>
-              {serviceRole && (
+            {serviceRole ? (
+              <div className="mt-2 grid grid-cols-2 gap-3">
+                <label className="block col-span-2">
+                  <span
+                    className="block mb-1 text-[10px]"
+                    style={{ color: S.muted }}
+                  >
+                    服务项目
+                  </span>
+                  <input
+                    value={projects.join("、")}
+                    onChange={(event) =>
+                      setProjects(
+                        event.target.value
+                          .split("、")
+                          .map((value) => value.trim())
+                          .filter(Boolean),
+                      )
+                    }
+                    placeholder="北京 PRO 会员、上海体验官"
+                    className="w-full px-3 py-2 text-xs outline-none"
+                    style={{
+                      background: S.bg,
+                      border: `1px solid ${S.borderMed}`,
+                      borderRadius: S.radiusSm,
+                    }}
+                  />
+                </label>
+                <label className="block col-span-2">
+                  <span
+                    className="block mb-1 text-[10px]"
+                    style={{ color: S.muted }}
+                  >
+                    服务地区
+                  </span>
+                  <input
+                    value={area}
+                    onChange={(event) => setArea(event.target.value)}
+                    placeholder="北京、上海、吉林市"
+                    className="w-full px-3 py-2 text-xs outline-none"
+                    style={{
+                      background: S.bg,
+                      border: `1px solid ${S.borderMed}`,
+                      borderRadius: S.radiusSm,
+                    }}
+                  />
+                </label>
                 <label className="block col-span-2">
                   <span
                     className="block mb-1 text-[10px]"
@@ -1449,11 +1455,74 @@ function EmployeeConfigModal({
                     ))}
                   </select>
                 </label>
-              )}
-            </div>
-            {!serviceRole && (
+              </div>
+            ) : (
               <div className="mt-2 text-[10px]" style={{ color: S.muted }}>
-                当前岗位不属于服务类岗位，不需要配置主服务官。
+                选择客服专员、服务老师或社群运营岗位角色后，可配置服务关系和服务官资格。
+              </div>
+            )}
+            {serviceRole && (
+              <div
+                className="mt-3 pt-3"
+                style={{ borderTop: `1px solid ${S.border}` }}
+              >
+                <label
+                  className="flex items-center justify-between px-3 py-2.5 cursor-pointer"
+                  style={{
+                    background: serviceOfficerQualified ? S.accentLight : S.bg,
+                    border: `1px solid ${serviceOfficerQualified ? S.accentMid : S.border}`,
+                    borderRadius: S.radiusSm,
+                  }}
+                >
+                  <span>
+                    <span
+                      className="block text-xs font-semibold"
+                      style={{ color: S.text }}
+                    >
+                      服务官资格
+                    </span>
+                    <span
+                      className="block mt-0.5 text-[10px]"
+                      style={{ color: S.muted }}
+                    >
+                      启用后，该员工可被其他服务成员选择为主服务官
+                    </span>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={serviceOfficerQualified}
+                    onChange={(event) =>
+                      setServiceOfficerQualified(event.target.checked)
+                    }
+                  />
+                </label>
+                {serviceOfficerQualified && (
+                  <label className="block mt-3">
+                    <span
+                      className="block mb-1 text-[10px]"
+                      style={{ color: S.muted }}
+                    >
+                      备份服务官（可选）
+                    </span>
+                    <select
+                      value={backupOfficer}
+                      onChange={(event) => setBackupOfficer(event.target.value)}
+                      className="w-full px-3 py-2 text-xs outline-none"
+                      style={{
+                        background: S.bg,
+                        border: `1px solid ${S.borderMed}`,
+                        borderRadius: S.radiusSm,
+                      }}
+                    >
+                      <option value="">暂不设置</option>
+                      {officerNames
+                        .filter((name) => name !== staff.name)
+                        .map((name) => (
+                          <option key={name}>{name}</option>
+                        ))}
+                    </select>
+                  </label>
+                )}
               </div>
             )}
           </section>
@@ -1486,6 +1555,9 @@ function EmployeeConfigModal({
                 projects,
                 area2: area || "待配置服务范围",
                 serviceOfficer: serviceRole ? serviceOfficer || "待配置" : "—",
+                serviceOfficerQualified: serviceRole && serviceOfficerQualified,
+                backupOfficer:
+                  serviceRole && serviceOfficerQualified ? backupOfficer : "",
               })
             }
             className="px-3 py-2 text-xs font-bold"
@@ -2273,9 +2345,9 @@ function StaffDetail({
 // ─── 主列表页 ─────────────────────────────────────────────────
 export default function CustomerService() {
   useThemeSingleton();
-  const [section, setSection] = useState<
-    "employees" | "relationships" | "permissions"
-  >("employees");
+  const [section, setSection] = useState<"employees" | "relationships">(
+    "employees",
+  );
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
@@ -2289,6 +2361,17 @@ export default function CustomerService() {
   >({});
   const [archivedStaff, setArchivedStaff] = useState<string[]>([]);
   const [notice, setNotice] = useState("");
+  const [showAudit, setShowAudit] = useState(false);
+  const [qualifiedOfficerNames, setQualifiedOfficerNames] = useState<string[]>(
+    () =>
+      serviceOfficerRows
+        .filter((officer) =>
+          ["acc_wusiyuan", "acc_linxiaoyan", "acc_limenghua"].includes(
+            officer.uid,
+          ),
+        )
+        .map((officer) => officer.name),
+  );
   const [officerOverrides, setOfficerOverrides] = useState<
     Record<string, { projects: string; cities: string; backup: string }>
   >({});
@@ -2348,11 +2431,33 @@ export default function CustomerService() {
   const roleFilters = unifiedRoleOptions;
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
-  const tabs = [
-    { key: "employees", label: "员工台账", icon: Users },
-    { key: "relationships", label: "服务关系", icon: UserRoundCog },
-    { key: "permissions", label: "岗位权限模板", icon: ShieldCheck },
-  ] as const;
+  const tabs = [{ key: "employees", label: "员工台账", icon: Users }] as const;
+  const auditLogs = [
+    {
+      action: "创建员工",
+      detail: "皮卡丘 · EMP-000011",
+      operator: "王总",
+      time: "刚刚",
+    },
+    {
+      action: "调整岗位角色",
+      detail: "林小燕 · 服务老师 / 社群运营",
+      operator: "张副总",
+      time: "今天 10:32",
+    },
+    {
+      action: "配置服务关系",
+      detail: "北京 PRO 会员 → 主服务官吴思远",
+      operator: "王总",
+      time: "今天 09:18",
+    },
+    {
+      action: "停用员工",
+      detail: "陈小芬 · EMP-000010",
+      operator: "李运营总",
+      time: "昨天 16:40",
+    },
+  ];
   const saveEmployee = (form: {
     gender: string;
     name: string;
@@ -2410,6 +2515,8 @@ export default function CustomerService() {
     projects: string[];
     area2: string;
     serviceOfficer: string;
+    serviceOfficerQualified: boolean;
+    backupOfficer: string;
   }) => {
     if (!configStaff) return;
     setEmployeeRows((current) =>
@@ -2425,9 +2532,16 @@ export default function CustomerService() {
               area2: draft.area2,
               area: draft.area2,
               serviceOfficer: draft.serviceOfficer,
+              serviceOfficerQualified: draft.serviceOfficerQualified,
+              backupOfficer: draft.backupOfficer,
             }
           : staff,
       ),
+    );
+    setQualifiedOfficerNames((current) =>
+      draft.serviceOfficerQualified
+        ? Array.from(new Set([...current, configStaff.name]))
+        : current.filter((name) => name !== configStaff.name),
     );
     setConfigStaff(null);
     setNotice(`${configStaff.name} 的岗位、权限继承与服务关系已保存`);
@@ -2481,7 +2595,7 @@ export default function CustomerService() {
       {configStaff && (
         <EmployeeConfigModal
           staff={configStaff}
-          officerNames={qualifiedOfficers.map((officer) => officer.name)}
+          officerNames={qualifiedOfficerNames}
           onClose={() => setConfigStaff(null)}
           onSave={saveEmployeeConfig}
         />
@@ -2688,6 +2802,93 @@ export default function CustomerService() {
           </div>
         </div>
       )}
+      {showAudit && (
+        <div
+          className="fixed inset-0 z-50 flex justify-end"
+          style={{ background: "rgba(15,23,42,0.28)" }}
+          onClick={() => setShowAudit(false)}
+        >
+          <aside
+            className="h-full w-[420px] max-w-[calc(100vw-24px)] flex flex-col"
+            style={{
+              background: S.surface,
+              boxShadow: "-16px 0 40px rgba(15,23,42,0.16)",
+            }}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div
+              className="flex items-center justify-between px-5 py-4"
+              style={{
+                borderBottom: `1px solid ${S.border}`,
+                background: "#f8fafc",
+              }}
+            >
+              <div>
+                <div className="font-semibold" style={{ color: S.text }}>
+                  操作审计
+                </div>
+                <div className="mt-0.5 text-[10px]" style={{ color: S.muted }}>
+                  记录员工、岗位角色与服务关系的关键变更
+                </div>
+              </div>
+              <button
+                type="button"
+                aria-label="关闭操作审计"
+                onClick={() => setShowAudit(false)}
+              >
+                <X size={16} style={{ color: S.muted }} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-auto p-5 space-y-3">
+              {auditLogs.map((log, index) => (
+                <div
+                  key={`${log.action}-${index}`}
+                  className="relative pl-4 pb-3"
+                  style={{ borderLeft: `1px solid ${S.borderMed}` }}
+                >
+                  <span
+                    className="absolute -left-[4px] top-1.5 w-[7px] h-[7px]"
+                    style={{
+                      background: index === 0 ? S.accent : S.mutedLight,
+                      borderRadius: "50%",
+                    }}
+                  />
+                  <div
+                    className="text-xs font-semibold"
+                    style={{ color: S.text }}
+                  >
+                    {log.action}
+                  </div>
+                  <div className="mt-1 text-xs" style={{ color: S.textSec }}>
+                    {log.detail}
+                  </div>
+                  <div className="mt-1 text-[10px]" style={{ color: S.muted }}>
+                    {log.operator} · {log.time}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div
+              className="px-5 py-4"
+              style={{ borderTop: `1px solid ${S.border}` }}
+            >
+              <button
+                type="button"
+                className="w-full py-2 text-xs font-semibold"
+                style={{
+                  background: S.bg,
+                  color: S.textSec,
+                  border: `1px solid ${S.borderMed}`,
+                  borderRadius: S.radiusSm,
+                }}
+                onClick={() => setShowAudit(false)}
+              >
+                关闭审计
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
       {notice && (
         <div
           role="status"
@@ -2726,10 +2927,23 @@ export default function CustomerService() {
             className="text-xs mt-0.5"
             style={{ color: S.muted, fontFamily: "monospace" }}
           >
-            统一管理员工档案、岗位角色、服务官覆盖范围与客服服务关系
+            统一管理员工档案、岗位角色、服务关系配置与关键操作审计
           </p>
         </div>
-        {section !== "permissions" && (
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="px-3 py-2 text-xs font-semibold"
+            style={{
+              background: S.surface,
+              color: S.textSec,
+              border: `1px solid ${S.borderMed}`,
+              borderRadius: S.radiusSm,
+            }}
+            onClick={() => setShowAudit(true)}
+          >
+            操作审计
+          </button>
           <button
             className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold"
             style={{
@@ -2742,7 +2956,7 @@ export default function CustomerService() {
           >
             <Plus size={15} /> 新建员工
           </button>
-        )}
+        </div>
       </div>
       <div
         className="flex items-center gap-2 flex-shrink-0"
@@ -2779,11 +2993,7 @@ export default function CustomerService() {
           );
         })}
       </div>
-      {section === "permissions" ? (
-        <div className="flex-1 min-h-0 overflow-hidden">
-          <Permissions embedded />
-        </div>
-      ) : section === "relationships" ? (
+      {section === "relationships" ? (
         <div className="flex-1 min-h-0 overflow-auto space-y-4">
           <div
             className="p-4"
@@ -3074,7 +3284,7 @@ export default function CustomerService() {
                     ["员工账号", 130],
                     ["岗位/身份", 180],
                     ["服务范围", 190],
-                    ["主服务官", 100],
+                    ["服务官 / 主服务官", 120],
                     ["账号资产", 90],
                     ["状态", 70],
                     ["操作", 170],
@@ -3161,9 +3371,11 @@ export default function CustomerService() {
                       </div>
                       <div
                         className="flex-shrink-0"
-                        style={{ width: 100, color: S.textSec }}
+                        style={{ width: 120, color: S.textSec }}
                       >
-                        {(staff as any).serviceOfficer || "—"}
+                        {(staff as any).serviceOfficerQualified
+                          ? `服务官 · ${(staff as any).serviceOfficer || "待配置"}`
+                          : (staff as any).serviceOfficer || "—"}
                       </div>
                       <div
                         className="flex-shrink-0"
@@ -3176,8 +3388,17 @@ export default function CustomerService() {
                           className="px-1.5 py-0.5 text-xs font-bold"
                           style={{
                             background:
-                              status === "启用" ? "#f0fff4" : "#f1f5f9",
-                            color: status === "启用" ? "#276749" : S.muted,
+                              status === "启用"
+                                ? "#f0fff4"
+                                : status === "待配置"
+                                  ? "#fffbeb"
+                                  : "#f1f5f9",
+                            color:
+                              status === "启用"
+                                ? "#276749"
+                                : status === "待配置"
+                                  ? "#b45309"
+                                  : S.muted,
                             borderRadius: S.radiusSm,
                           }}
                         >
@@ -3209,13 +3430,16 @@ export default function CustomerService() {
                             borderRadius: S.radiusSm,
                           }}
                           onClick={() =>
-                            setStatusOverrides((current) => ({
-                              ...current,
-                              [staff.no]: status === "启用" ? "停用" : "启用",
-                            }))
+                            setStatusOverrides((current) => {
+                              if (status === "停用") {
+                                const { [staff.no]: _, ...rest } = current;
+                                return rest;
+                              }
+                              return { ...current, [staff.no]: "停用" };
+                            })
                           }
                         >
-                          {status === "启用" ? "停用" : "启用"}
+                          {status === "停用" ? "启用" : "停用"}
                         </button>
                         <button
                           type="button"

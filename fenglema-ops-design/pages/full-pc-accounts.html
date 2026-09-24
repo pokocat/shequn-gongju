@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="accent light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账号资产中心</title>
+    <style id="theme-vars">
+:root {
+  /* 语义化品牌映射（head contract 所需） */
+  --accent-background: #050914;
+  --accent-foreground: #eef4ff;
+  --accent-card: rgba(11, 19, 36, 0.92);
+  --accent-primary: #cb47ff;
+  --accent-border: rgba(132, 160, 210, 0.22);
+  --accent-radius-sm: 6px;
+  --accent-radius-md: 10px;
+  --accent-radius-lg: 16px;
+
+  /* 背景与面板 */
+  --bg: #050914;
+  --panel: rgba(11, 19, 36, 0.92);
+  --panel2: rgba(16, 26, 48, 0.92);
+  --panel-soft: #101a30;
+
+  /* 文字 */
+  --ink: #eef4ff;
+  --muted: #92a3bf;
+
+  /* 分隔线 */
+  --line: rgba(132, 160, 210, 0.22);
+
+  /* 品牌色 */
+  --accent: #cb47ff;
+  --accent-soft: rgba(203, 71, 255, 0.14);
+  --accent-strong: #f09cff;
+  --blue: #316bff;
+  --cyan: #2fd4ff;
+
+  /* 状态色 */
+  --good: #39d98a;
+  --green: #12805c;
+  --warn: #ffbd4a;
+  --bad: #ff6678;
+
+  /* 深度 */
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.38);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-background: var(--accent-background);
+    --color-foreground: var(--accent-foreground);
+    --color-card: var(--accent-card);
+    --color-primary: var(--accent-primary);
+    --color-border: var(--accent-border);
+    --color-muted: var(--muted);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --radius-sm: var(--accent-radius-sm);
+    --radius-md: var(--accent-radius-md);
+    --radius-lg: var(--accent-radius-lg);
+  }
+  @layer base {
+    body { background: var(--accent-background); color: var(--accent-foreground); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style id="semantic-token-fallback">
+      .bg-background { background-color: var(--accent-background); }
+      .text-background { color: var(--accent-background); }
+      .border-background { border-color: var(--accent-background); }
+      .ring-background { --tw-ring-color: var(--accent-background); }
+      .bg-foreground { background-color: var(--accent-foreground); }
+      .text-foreground { color: var(--accent-foreground); }
+      .border-foreground { border-color: var(--accent-foreground); }
+      .ring-foreground { --tw-ring-color: var(--accent-foreground); }
+      .bg-card { background-color: var(--accent-card); }
+      .text-card { color: var(--accent-card); }
+      .border-card { border-color: var(--accent-card); }
+      .ring-card { --tw-ring-color: var(--accent-card); }
+      .bg-primary { background-color: var(--accent-primary); }
+      .text-primary { color: var(--accent-primary); }
+      .border-primary { border-color: var(--accent-primary); }
+      .ring-primary { --tw-ring-color: var(--accent-primary); }
+      .bg-border { background-color: var(--accent-border); }
+      .text-border { color: var(--accent-border); }
+      .border-border { border-color: var(--accent-border); }
+      .ring-border { --tw-ring-color: var(--accent-border); }
+      .bg-muted { background-color: var(--muted); }
+      .text-muted { color: var(--muted); }
+      .border-muted { border-color: var(--muted); }
+      .ring-muted { --tw-ring-color: var(--muted); }
+      .bg-accent { background-color: var(--accent); }
+      .text-accent { color: var(--accent); }
+      .border-accent { border-color: var(--accent); }
+      .ring-accent { --tw-ring-color: var(--accent); }
+      .bg-accent-foreground { background-color: var(--accent-foreground); }
+      .text-accent-foreground { color: var(--accent-foreground); }
+      .border-accent-foreground { border-color: var(--accent-foreground); }
+      .ring-accent-foreground { --tw-ring-color: var(--accent-foreground); }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body>
+  <!-- 顶部导航 -->
+  <header class="top-nav">
+    <div class="top-nav-left">
+      <div class="logo">F</div>
+      <span class="module-title">账号资产中心</span>
+    </div>
+    <div class="top-nav-right">
+      <div class="global-search">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </span>
+        <input type="text" placeholder="搜索账号 / 项目 / 负责人...">
+      </div>
+      <button class="icon-btn">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+        </span>
+        <span class="badge-dot"></span>
+      </button>
+      <div class="avatar" title="当前用户：陈斌">陈</div>
+    </div>
+  </header>
+
+  <div class="app-layout">
+    <!-- 左侧边栏 -->
+    <aside class="sidebar">
+      <div>
+        <div class="sidebar-section-title">查看维度</div>
+        <div class="view-dimension-list">
+          <button class="dimension-item active">
+            <span class="dimension-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect></svg>
+            </span>
+            按账号类型
+          </button>
+          <button class="dimension-item">
+            <span class="dimension-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><rect width="20" height="14" x="2" y="6" rx="2"></rect></svg>
+            </span>
+            按项目
+          </button>
+          <button class="dimension-item">
+            <span class="dimension-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+            按人
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">快速筛选</div>
+        <div class="quick-filters">
+          <div class="filter-field">
+            <label>项目</label>
+            <select>
+              <option>全部项目</option>
+              <option>乐马私域 2.0</option>
+              <option>品牌增长中台</option>
+              <option>AI 客服矩阵</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>城市</label>
+            <select>
+              <option>全部城市</option>
+              <option>上海</option>
+              <option>北京</option>
+              <option>深圳</option>
+              <option>杭州</option>
+            </select>
+          </div>
+          <div class="filter-field">
+            <label>部门</label>
+            <select>
+              <option>全部部门</option>
+              <option>增长运营</option>
+              <option>内容中台</option>
+              <option>技术研发</option>
+              <option>客户成功</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button class="cta-btn">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+        </span>
+        注册入库
+      </button>
+    </aside>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+      <div class="main-panel">
+        <div class="tabs-header">
+          <div class="tab-row">
+            <button class="tab active">全部</button>
+            <button class="tab">通讯与身份</button>
+            <button class="tab">内容</button>
+            <button class="tab">协作 AI</button>
+            <button class="tab">开发</button>
+            <button class="tab">业务系统</button>
+            <span class="tab-divider"></span>
+            <button class="tab active">正常</button>
+            <button class="tab">待审批</button>
+            <button class="tab">停用</button>
+            <button class="tab">已注销</button>
+          </div>
+          <div class="subtype-pills">
+            <button class="pill active">全部子类型</button>
+            <button class="pill">企业微信</button>
+            <button class="pill">微信公众号</button>
+            <button class="pill">视频号</button>
+            <button class="pill">抖音号</button>
+            <button class="pill">小红书</button>
+            <button class="pill">微博</button>
+            <button class="pill">邮箱账号</button>
+            <button class="pill">云盘</button>
+            <button class="pill">代码仓库</button>
+            <button class="pill">设计工具</button>
+            <button class="pill">CRM</button>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <select class="toolbar-select">
+              <option>全部项目</option>
+              <option>乐马私域 2.0</option>
+              <option>品牌增长中台</option>
+            </select>
+            <select class="toolbar-select">
+              <option>全部城市</option>
+              <option>上海</option>
+              <option>北京</option>
+            </select>
+            <select class="toolbar-select">
+              <option>全部部门</option>
+              <option>增长运营</option>
+              <option>内容中台</option>
+            </select>
+            <select class="toolbar-select">
+              <option>全部服务</option>
+              <option>企业微信</option>
+              <option>抖音企业号</option>
+            </select>
+            <select class="toolbar-select">
+              <option>全部容量</option>
+              <option>5,000 好友以下</option>
+              <option>5,000 - 10,000</option>
+              <option>10,000 以上</option>
+            </select>
+          </div>
+          <div class="toolbar-right">
+            <div class="toggle-group">
+              <button class="toggle-btn active">
+                <span class="icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M3 12h18"></path><path d="M3 18h18"></path></svg>
+                </span>
+                列表
+              </button>
+              <button class="toggle-btn">
+                <span class="icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+                </span>
+                表格
+              </button>
+            </div>
+            <button class="action-btn">
+              <span class="icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+              </span>
+              导出
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th style="width: 40px;"><input type="checkbox" class="checkbox" id="selectAll"></th>
+                <th>账号名称</th>
+                <th>类型</th>
+                <th>所属项目</th>
+                <th>负责人</th>
+                <th>状态</th>
+                <th>生命周期阶段</th>
+                <th>风险等级</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="accountTableBody">
+              <tr data-id="1">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">乐马私域主号</div>
+                  <div class="account-id">ID: AC-2024-001</div>
+                </td>
+                <td><span class="tag tag-type">企业微信</span></td>
+                <td>乐马私域 2.0</td>
+                <td>张晓明</td>
+                <td><span class="tag tag-status-normal">正常</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--good);"></span>
+                    成熟期
+                  </div>
+                </td>
+                <td class="risk-low">低</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">编辑</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-id="2">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">品牌增长中台</div>
+                  <div class="account-id">ID: AC-2024-017</div>
+                </td>
+                <td><span class="tag tag-type">微信公众号</span></td>
+                <td>品牌增长中台</td>
+                <td>李婉清</td>
+                <td><span class="tag tag-status-normal">正常</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--good);"></span>
+                    成长期
+                  </div>
+                </td>
+                <td class="risk-low">低</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">编辑</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-id="3">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">AI 客服矩阵 01</div>
+                  <div class="account-id">ID: AC-2024-042</div>
+                </td>
+                <td><span class="tag tag-type">抖音号</span></td>
+                <td>AI 客服矩阵</td>
+                <td>王浩宇</td>
+                <td><span class="tag tag-status-pending">待审批</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--warn);"></span>
+                    引入期
+                  </div>
+                </td>
+                <td class="risk-medium">中</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">审批</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-id="4">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">设计协作文档库</div>
+                  <div class="account-id">ID: AC-2024-063</div>
+                </td>
+                <td><span class="tag tag-type">云盘</span></td>
+                <td>内容中台</td>
+                <td>陈思琪</td>
+                <td><span class="tag tag-status-normal">正常</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--good);"></span>
+                    成熟期
+                  </div>
+                </td>
+                <td class="risk-low">低</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">编辑</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-id="5">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">客户成功小助手</div>
+                  <div class="account-id">ID: AC-2024-089</div>
+                </td>
+                <td><span class="tag tag-type">企业微信</span></td>
+                <td>客户成功部</td>
+                <td>刘子轩</td>
+                <td><span class="tag tag-status-disabled">停用</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--bad);"></span>
+                    衰退期
+                  </div>
+                </td>
+                <td class="risk-high">高</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">启用</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-id="6">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">前端组件库仓库</div>
+                  <div class="account-id">ID: AC-2024-105</div>
+                </td>
+                <td><span class="tag tag-type">代码仓库</span></td>
+                <td>技术中台</td>
+                <td>赵俊杰</td>
+                <td><span class="tag tag-status-normal">正常</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--good);"></span>
+                    成熟期
+                  </div>
+                </td>
+                <td class="risk-low">低</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">编辑</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-id="7">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">小红书种草号</div>
+                  <div class="account-id">ID: AC-2024-128</div>
+                </td>
+                <td><span class="tag tag-type">小红书</span></td>
+                <td>品牌增长中台</td>
+                <td>周雨彤</td>
+                <td><span class="tag tag-status-archived">已注销</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--muted);"></span>
+                    已归档
+                  </div>
+                </td>
+                <td class="risk-low">低</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">恢复</button>
+                  </div>
+                </td>
+              </tr>
+              <tr data-id="8">
+                <td><input type="checkbox" class="checkbox"></td>
+                <td>
+                  <div class="account-name">CRM 销售线索池</div>
+                  <div class="account-id">ID: AC-2024-156</div>
+                </td>
+                <td><span class="tag tag-type">业务系统</span></td>
+                <td>销售运营</td>
+                <td>吴佳怡</td>
+                <td><span class="tag tag-status-normal">正常</span></td>
+                <td>
+                  <div class="lifecycle-bar">
+                    <span class="lifecycle-dot" style="background: var(--warn);"></span>
+                    成长期
+                  </div>
+                </td>
+                <td class="risk-medium">中</td>
+                <td>
+                  <div class="row-actions">
+                    <button class="row-action">详情</button>
+                    <button class="row-action">编辑</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 详情面板遮罩 -->
+  <div class="detail-overlay" id="detailOverlay"></div>
+
+  <!-- 右侧详情面板 -->
+  <aside class="detail-panel" id="detailPanel">
+    <div class="detail-header">
+      <div class="detail-title-group">
+        <h2 class="detail-title" id="detailName">乐马私域主号</h2>
+        <div class="detail-subtitle" id="detailId">ID: AC-2024-001 · 企业微信</div>
+      </div>
+      <button class="detail-close" id="detailClose">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </span>
+      </button>
+    </div>
+
+    <div class="detail-body">
+      <div class="detail-section">
+        <div class="detail-section-title">账号信息</div>
+        <div class="detail-grid">
+          <div class="detail-field">
+            <span class="detail-field-label">账号名称</span>
+            <span class="detail-field-value" id="detailAccountName">乐马私域主号</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">类型</span>
+            <span class="detail-field-value" id="detailType">企业微信</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">所属项目</span>
+            <span class="detail-field-value" id="detailProject">乐马私域 2.0</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">负责人</span>
+            <span class="detail-field-value" id="detailOwner">张晓明</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">状态</span>
+            <span class="detail-field-value" id="detailStatus">正常</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">生命周期阶段</span>
+            <span class="detail-field-value" id="detailLifecycle">成熟期</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">风险等级</span>
+            <span class="detail-field-value risk-low" id="detailRisk">低</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">容量</span>
+            <span class="detail-field-value">12,580 / 20,000</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">安全与联系</div>
+        <div class="detail-grid">
+          <div class="detail-field full">
+            <span class="detail-field-label">恢复邮箱</span>
+            <span class="detail-field-value">recovery@fenglema.com</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">备用手机</span>
+            <span class="detail-field-value">138 **** 4521</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-field-label">绑定设备</span>
+            <span class="detail-field-value">2 台（iPhone 15、MacBook Pro）</span>
+          </div>
+          <div class="detail-field full">
+            <span class="detail-field-label">最近登录</span>
+            <span class="detail-field-value">2024-09-18 14:32:07 · 上海 IP</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">标签与备注</div>
+        <div class="detail-tags">
+          <span class="detail-tag">核心资产</span>
+          <span class="detail-tag">高频使用</span>
+          <span class="detail-tag">私域入口</span>
+        </div>
+        <div class="detail-field" style="margin-top: 12px;">
+          <span class="detail-field-label">备注</span>
+          <span class="detail-field-value">该账号为乐马私域 2.0 核心入口账号，需定期更换密码并完成双因素认证校验。交接前必须完成设备解绑与操作日志审计。</span>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <div class="detail-section-title">操作日志</div>
+        <div class="detail-field">
+          <span class="detail-field-value">2024-09-17 10:15 · 张晓明 修改了账号密码</span>
+        </div>
+        <div class="detail-field">
+          <span class="detail-field-value">2024-09-12 16:42 · 李婉清 更新了负责人</span>
+        </div>
+        <div class="detail-field">
+          <span class="detail-field-value">2024-09-01 09:20 · 系统 完成月度安全扫描</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-footer">
+      <button class="detail-action primary">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"></path></svg>
+        </span>
+        编辑
+      </button>
+      <button class="detail-action">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="m22 7-3 3-3-3"></path><path d="M16 10V4h6v6"></path></svg>
+        </span>
+        交接
+      </button>
+      <button class="detail-action">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" x2="12" y1="15" y2="3"></line></svg>
+        </span>
+        导出
+      </button>
+      <button class="detail-action danger">
+        <span class="icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" x2="12" y1="9" y2="13"></line><line x1="12" x2="12.01" y1="17" y2="17"></line></svg>
+        </span>
+        停用
+      </button>
+    </div>
+  </aside>
+
+  <script>
+    // 详情数据
+    const accountDetails = {
+      1: {
+        name: "乐马私域主号",
+        id: "AC-2024-001",
+        type: "企业微信",
+        project: "乐马私域 2.0",
+        owner: "张晓明",
+        status: "正常",
+        lifecycle: "成熟期",
+        risk: "低",
+        riskClass: "risk-low",
+        recoveryEmail: "recovery@fenglema.com",
+        backupPhone: "138 **** 4521",
+        devices: "2 台（iPhone 15、MacBook Pro）",
+        lastLogin: "2024-09-18 14:32:07 · 上海 IP",
+        tags: ["核心资产", "高频使用", "私域入口"],
+        remark: "该账号为乐马私域 2.0 核心入口账号，需定期更换密码并完成双因素认证校验。交接前必须完成设备解绑与操作日志审计。",
+        logs: [
+          "2024-09-17 10:15 · 张晓明 修改了账号密码",
+          "2024-09-12 16:42 · 李婉清 更新了负责人",
+          "2024-09-01 09:20 · 系统 完成月度安全扫描"
+        ]
+      },
+      2: {
+        name: "品牌增长中台",
+        id: "AC-2024-017",
+        type: "微信公众号",
+        project: "品牌增长中台",
+        owner: "李婉清",
+        status: "正常",
+        lifecycle: "成长期",
+        risk: "低",
+        riskClass: "risk-low",
+        recoveryEmail: "brand@fenglema.com",
+        backupPhone: "139 **** 8823",
+        devices: "1 台（Windows 工作站）",
+        lastLogin: "2024-09-18 11:20:33 · 北京 IP",
+        tags: ["品牌官方", "内容发布"],
+        remark: "品牌增长中台官方公众号，用于发布产品动态与行业洞察。",
+        logs: [
+          "2024-09-16 09:30 · 李婉清 发布了文章",
+          "2024-09-10 14:22 · 系统 完成账号安全检测"
+        ]
+      },
+      3: {
+        name: "AI 客服矩阵 01",
+        id: "AC-2024-042",
+        type: "抖音号",
+        project: "AI 客服矩阵",
+        owner: "王浩宇",
+        status: "待审批",
+        lifecycle: "引入期",
+        risk: "中",
+        riskClass: "risk-medium",
+        recoveryEmail: "ai-matrix@fenglema.com",
+        backupPhone: "137 **** 1190",
+        devices: "未绑定",
+        lastLogin: "2024-09-17 16:45:12 · 深圳 IP",
+        tags: ["待审批", "AI 测试"],
+        remark: "新申请的抖音企业号，用于 AI 客服矩阵场景验证，待部门负责人审批。",
+        logs: [
+          "2024-09-17 16:45 · 王浩宇 提交入库申请",
+          "2024-09-17 17:02 · 系统 等待审批"
+        ]
+      },
+      4: {
+        name: "设计协作文档库",
+        id: "AC-2024-063",
+        type: "云盘",
+        project: "内容中台",
+        owner: "陈思琪",
+        status: "正常",
+        lifecycle: "成熟期",
+        risk: "低",
+        riskClass: "risk-low",
+        recoveryEmail: "design@fenglema.com",
+        backupPhone: "136 **** 7742",
+        devices: "3 台（MacBook、iPad、iPhone）",
+        lastLogin: "2024-09-18 09:10:55 · 上海 IP",
+        tags: ["设计资产", "团队协作"],
+        remark: "存放品牌视觉素材与设计源文件，访问权限需按项目隔离。",
+        logs: [
+          "2024-09-15 11:30 · 陈思琪 上传了 12 个文件",
+          "2024-09-08 10:00 · 系统 完成容量扩容"
+        ]
+      },
+      5: {
+        name: "客户成功小助手",
+        id: "AC-2024-089",
+        type: "企业微信",
+        project: "客户成功部",
+        owner: "刘子轩",
+        status: "停用",
+        lifecycle: "衰退期",
+        risk: "高",
+        riskClass: "risk-high",
+        recoveryEmail: "cs@fenglema.com",
+        backupPhone: "135 **** 3366",
+        devices: "1 台（Android）",
+        lastLogin: "2024-08-30 18:22:09 · 杭州 IP",
+        tags: ["停用", "需清理"],
+        remark: "因业务调整已停用，建议 30 天内完成数据归档并注销账号。",
+        logs: [
+          "2024-08-30 18:25 · 刘子轩 提交停用申请",
+          "2024-08-31 09:00 · 系统 停用账号"
+        ]
+      },
+      6: {
+        name: "前端组件库仓库",
+        id: "AC-2024-105",
+        type: "代码仓库",
+        project: "技术中台",
+        owner: "赵俊杰",
+        status: "正常",
+        lifecycle: "成熟期",
+        risk: "低",
+        riskClass: "risk-low",
+        recoveryEmail: "dev@fenglema.com",
+        backupPhone: "188 **** 9901",
+        devices: "2 台（MacBook Pro、Linux 服务器）",
+        lastLogin: "2024-09-18 13:05:41 · 上海 IP",
+        tags: ["研发资产", "高频提交"],
+        remark: "前端组件库主仓库，需严格管理权限与合并策略。",
+        logs: [
+          "2024-09-18 10:12 · 赵俊杰 合并了 PR #324",
+          "2024-09-14 16:30 · 系统 完成依赖安全扫描"
+        ]
+      },
+      7: {
+        name: "小红书种草号",
+        id: "AC-2024-128",
+        type: "小红书",
+        project: "品牌增长中台",
+        owner: "周雨彤",
+        status: "已注销",
+        lifecycle: "已归档",
+        risk: "低",
+        riskClass: "risk-low",
+        recoveryEmail: "已释放",
+        backupPhone: "已解绑",
+        devices: "无",
+        lastLogin: "2024-06-15 10:00:00 · 上海 IP",
+        tags: ["已注销", "历史账号"],
+        remark: "已注销账号，仅保留历史数据用于审计。",
+        logs: [
+          "2024-06-15 10:00 · 周雨彤 提交注销申请",
+          "2024-06-16 09:00 · 系统 完成账号注销"
+        ]
+      },
+      8: {
+        name: "CRM 销售线索池",
+        id: "AC-2024-156",
+        type: "业务系统",
+        project: "销售运营",
+        owner: "吴佳怡",
+        status: "正常",
+        lifecycle: "成长期",
+        risk: "中",
+        riskClass: "risk-medium",
+        recoveryEmail: "crm@fenglema.com",
+        backupPhone: "150 **** 2244",
+        devices: "4 台（销售团队共用）",
+        lastLogin: "2024-09-18 15:18:22 · 北京 IP",
+        tags: ["销售核心", "数据敏感"],
+        remark: "CRM 系统销售线索池账号，涉及客户敏感数据，需加强访问审计。",
+        logs: [
+          "2024-09-18 14:00 · 吴佳怡 导出了线索报表",
+          "2024-09-11 11:20 · 系统 完成权限复核"
+        ]
+      }
+    };
+
+    // 元素引用
+    const detailOverlay = document.getElementById('detailOverlay');
+    const detailPanel = document.getElementById('detailPanel');
+    const detailClose = document.getElementById('detailClose');
+    const selectAll = document.getElementById('selectAll');
+    const tableBody = document.getElementById('accountTableBody');
+    const rowCheckboxes = tableBody.querySelectorAll('.checkbox');
+
+    function openDetail(id) {
+      const data = accountDetails[id];
+      if (!data) return;
+
+      document.getElementById('detailName').textContent = data.name;
+      document.getElementById('detailId').textContent = `ID: ${data.id} · ${data.type}`;
+      document.getElementById('detailAccountName').textContent = data.name;
+      document.getElementById('detailType').textContent = data.type;
+      document.getElementById('detailProject').textContent = data.project;
+      document.getElementById('detailOwner').textContent = data.owner;
+      document.getElementById('detailStatus').textContent = data.status;
+      document.getElementById('detailLifecycle').textContent = data.lifecycle;
+
+      const detailRisk = document.getElementById('detailRisk');
+      detailRisk.textContent = data.risk;
+      detailRisk.className = `detail-field-value ${data.riskClass}`;
+
+      // 安全与联系
+      const fields = detailPanel.querySelectorAll('.detail-field-value');
+      const detailSections = detailPanel.querySelectorAll('.detail-section');
+      const securitySection = detailSections[1];
+      const securityValues = securitySection.querySelectorAll('.detail-field-value');
+      securityValues[0].textContent = data.recoveryEmail;
+      securityValues[1].textContent = data.backupPhone;
+      securityValues[2].textContent = data.devices;
+      securityValues[3].textContent = data.lastLogin;
+
+      // 标签
+      const tagsContainer = detailSections[2].querySelector('.detail-tags');
+      tagsContainer.innerHTML = data.tags.map(tag => `<span class="detail-tag">${tag}</span>`).join('');
+
+      // 备注
+      const remarkField = detailSections[2].querySelectorAll('.detail-field-value');
+      remarkField[remarkField.length - 1].textContent = data.remark;
+
+      // 日志
+      const logsSection = detailSections[3];
+      logsSection.innerHTML = '<div class="detail-section-title">操作日志</div>' +
+        data.logs.map(log => `<div class="detail-field"><span class="detail-field-value">${log}</span></div>`).join('');
+
+      detailOverlay.classList.add('open');
+      detailPanel.classList.add('open');
+    }
+
+    function closeDetail() {
+      detailOverlay.classList.remove('open');
+      detailPanel.classList.remove('open');
+      document.querySelectorAll('.data-table tbody tr.selected').forEach(row => row.classList.remove('selected'));
+    }
+
+    // 行点击打开详情
+    tableBody.querySelectorAll('tr').forEach(row => {
+      row.addEventListener('click', function(e) {
+        if (e.target.closest('.checkbox') || e.target.closest('.row-action')) return;
+        const id = this.dataset.id;
+        tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+        this.classList.add('selected');
+        openDetail(id);
+      });
+    });
+
+    // 行内详情按钮
+    tableBody.querySelectorAll('.row-action').forEach(btn => {
+      if (btn.textContent === '详情') {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const row = this.closest('tr');
+          const id = row.dataset.id;
+          tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('selected'));
+          row.classList.add('selected');
+          openDetail(id);
+        });
+      }
+    });
+
+    detailClose.addEventListener('click', closeDetail);
+    detailOverlay.addEventListener('click', closeDetail);
+
+    // 全选
+    selectAll.addEventListener('change', function() {
+      rowCheckboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    // Tab 切换效果（视觉）
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', function() {
+        const row = this.closest('.tab-row');
+        const siblings = row.querySelectorAll('.tab');
+        siblings.forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', function() {
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.dimension-item').forEach(item => {
+      item.addEventListener('click', function() {
+        document.querySelectorAll('.dimension-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    document.querySelectorAll('.toggle-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>
