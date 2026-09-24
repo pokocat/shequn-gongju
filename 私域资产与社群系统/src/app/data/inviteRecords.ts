@@ -50,9 +50,11 @@ export function genInviteCode(len = 8): string {
 }
 
 export function daysLater(days: number): string {
+  // 本地时区的 `YYYY-MM-DD HH:mm`（toISOString().slice() 切的是 UTC，会差 8 小时/错一天）。
   const d = new Date();
   d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 16).replace("T", " ");
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 // 6 条 mock 邀请，覆盖 5 种状态各至少 1 条

@@ -195,7 +195,10 @@ export const approvalStatusMeta: Record<
 
 // ─── 引擎函数 ───────────────────────────────────────────────
 function nowStr(): string {
-  return new Date().toISOString().slice(0, 16).replace("T", " ");
+  // 本地时区的 `YYYY-MM-DD HH:mm`（toISOString().slice() 切的是 UTC，会差 8 小时/错一天）。
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 function genId(): string {
