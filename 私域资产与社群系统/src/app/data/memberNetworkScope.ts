@@ -23,6 +23,8 @@ export type MemberNetworkScope = {
   selfId: string;
   role: MemberNetworkRole;
   directCommunityIds: string[];
+  directLeaderIds: string[];
+  directAgentIds: string[];
   developedAgentIds: string[];
   developedLeaderIds: string[];
   recommendedMemberIds: string[];
@@ -128,6 +130,13 @@ export const calculateMemberNetworkScope = (
   relations: MemberNetworkRelation[],
 ): MemberNetworkScope => {
   const directCommunityIds = relatedIds(selfId, relations, "operation");
+  const directOwnershipIds = relatedIds(selfId, relations, "direct_ownership");
+  const directLeaderIds = directOwnershipIds.filter(
+    id => entities.find(entity => entity.id === id)?.kind === "leader",
+  );
+  const directAgentIds = directOwnershipIds.filter(
+    id => entities.find(entity => entity.id === id)?.kind === "agent",
+  );
   const maxDepth = role === "agent" ? 2 : 1;
   const developedIds = collectDevelopedIds(selfId, relations, maxDepth);
   const recommended = collectRecommendedIds(selfId, entities, relations);
@@ -146,6 +155,8 @@ export const calculateMemberNetworkScope = (
     selfId,
     role,
     directCommunityIds,
+    directLeaderIds,
+    directAgentIds,
     developedAgentIds,
     developedLeaderIds,
     recommendedMemberIds: recommended.recommendedMemberIds,
@@ -165,7 +176,12 @@ export const getMemberNetworkViews = (
       title: "我的社群",
       description: "只展示你直接运营和服务的社群。",
       relationLabel: "直接运营",
-      entityIds: scope.directCommunityIds,
+      entityIds: unique([
+      scope.selfId,
+      ...scope.directCommunityIds,
+      ...scope.directLeaderIds,
+      ...scope.directAgentIds,
+    ]),
       aggregateOnly: false,
     },
   ];
@@ -235,15 +251,23 @@ export const memberNetworkExample = {
     { id: "agent-child", name: "发展代理", kind: "agent" },
     { id: "leader-direct", name: "直属团长", kind: "leader", parentId: "agent-self" },
     { id: "leader-child", name: "下属代理发展的团长", kind: "leader", parentId: "agent-child" },
+    { id: "leader-recommended", name: "推荐团长", kind: "leader" },
     { id: "member-recommended", name: "推荐成员", kind: "member" },
     { id: "community-self", name: "我的社群", kind: "community" },
+    { id: "community-leader", name: "团长社群", kind: "community" },
     { id: "community-child", name: "下属团长社群", kind: "community" },
+    { id: "community-recommended", name: "推荐链路社群", kind: "community" },
   ] satisfies MemberNetworkEntity[],
   relations: [
     { fromId: "agent-self", toId: "community-self", type: "operation" },
     { fromId: "agent-self", toId: "agent-child", type: "development" },
+    { fromId: "agent-self", toId: "leader-direct", type: "direct_ownership" },
+    { fromId: "leader-direct", toId: "community-leader", type: "operation" },
     { fromId: "agent-child", toId: "leader-child", type: "development" },
     { fromId: "leader-child", toId: "community-child", type: "operation" },
     { fromId: "agent-self", toId: "member-recommended", type: "recommendation" },
+    { fromId: "member-recommended", toId: "leader-recommended", type: "development" },
+    { fromId: "leader-recommended", toId: "community-recommended", type: "operation" },
+    { fromId: "leader-direct", toId: "member-recommended", type: "recommendation" },
   ] satisfies MemberNetworkRelation[],
 } as const;

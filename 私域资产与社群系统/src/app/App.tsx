@@ -16,6 +16,7 @@ import Permissions from "./components/Permissions";
 import PlatformModeConfig from "./components/PlatformModeConfig";
 import CityBranch from "./components/CityBranch";
 import ReportCenter from "./components/ReportCenter";
+import MiniProgramCenter from "./components/MiniProgramCenter";
 import MemberBenefits from "./components/MemberBenefits";
 import Commission from "./components/Commission";
 import MobileApp from "./components/MobileApp";
@@ -49,6 +50,7 @@ const moduleMap: Record<string, React.ComponentType> = {
   cities:     CityBranch,
   commission: Commission,
   reports:    ReportCenter,
+  miniPrograms: MiniProgramCenter,
   ecosystem:  EcosystemManagement,
 };
 

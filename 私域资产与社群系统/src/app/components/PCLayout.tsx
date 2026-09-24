@@ -4,7 +4,7 @@ import {
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
   BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
-  Globe, Monitor, Smartphone, ChevronDown, Check
+  Globe, Monitor, Smartphone, ChevronDown, Check, Store
 } from "lucide-react";
 import { S, useThemeSingleton, ThemeControls } from "../theme";
 import { useProjectContext } from "../App";
@@ -16,6 +16,7 @@ const navGroups = [
   { label: "工作台", items: [
     { id: "overview",   label: "跨项目工作台",   icon: LayoutDashboard, badge: null },
     { id: "ecosystem",  label: "项目与生态",     icon: Layers,          badge: null },
+    { id: "miniPrograms", label: "小程序中心",     icon: Store,           badge: "4" },
   ]},
   { label: "配置中心", items: [
     { id: "wechat",     label: "账号资产中心",    icon: CreditCard,      badge: "2"  },

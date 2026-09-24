@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch } from "lucide-react";
+import { useMemo, useEffect, useState } from "react";
+import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch, Users, Store, ShieldCheck } from "lucide-react";
 import { getAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
 import { SCOPE_CONFIGS, dataScopeOptions, type DataScope, type ScopeOperationId, type ScopeRow, type ScopeTreeNode } from "./workbenchScopes";
 import { agentLevelOptions, memberLevelForRank, memberLevelOptions } from "../data/levelConfig";
+import { calculateMemberNetworkScope, getMemberNetworkViews, memberNetworkExample, type MemberNetworkRole } from "../data/memberNetworkScope";
 import { useProjectContext } from "../App";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const taskCategories = [
@@ -201,6 +202,7 @@ function TreeNode({ node, depth = 0 }: { node: RelationNode; depth?: number }) {
           {node.children.map((c, i) => <TreeNode key={i} node={c} depth={depth + 1} />)}
         </div>
       )}
+
     </div>
   );
 }
@@ -217,6 +219,47 @@ const relationshipForRank = (rank: number) => [
   { personal: "添加失败", enterprise: "未添加", group: "已退出", spend: "¥1,680", ai: "冲突" },
   { personal: "已通过", enterprise: "已通过", group: "已入群", spend: "¥890", ai: "一致" },
 ][rank - 1] || { personal: "未添加", enterprise: "未添加", group: "未分配群", spend: "¥0", ai: "待确认" };
+type RelationshipRecord = ReturnType<typeof relationshipForRank>;
+const relationshipStatusOptions = ["未添加", "已申请", "已通过", "添加失败"];
+const groupStatusOptions = ["未分配群", "待入群", "已入群", "已退出"];
+
+type InfluenceEntityKind = "community" | "leader" | "agent";
+type InfluenceRelationScope = "direct" | "development" | "recommendation";
+type InfluenceEntity = {
+  id: string;
+  kind: InfluenceEntityKind;
+  name: string;
+  count: number;
+  amount: string;
+  description: string;
+  scope: InfluenceRelationScope;
+  aggregateOnly: boolean;
+  parent?: string;
+};
+
+const influenceEntities: InfluenceEntity[] = [
+  { id: "community-self", kind: "community", name: "我的社群", count: 12, amount: "8,023 人", description: "直接运营与服务的社群", scope: "direct", aggregateOnly: false },
+  { id: "community-leader", kind: "community", name: "团长社群", count: 3, amount: "1,240 人", description: "当前团长直接运营的社群", scope: "direct", aggregateOnly: false },
+  { id: "leader-direct", kind: "leader", name: "直属团长", count: 8, amount: "¥86,420", description: "直属团长推广成交贡献", scope: "direct", aggregateOnly: false, parent: "agent-self" },
+  { id: "agent-self", kind: "agent", name: "当前代理", count: 1, amount: "¥128,600", description: "库存、履约与经营收益", scope: "direct", aggregateOnly: false },
+  { id: "agent-child", kind: "agent", name: "发展代理", count: 2, amount: "¥64,800", description: "发展网络经营汇总", scope: "development", aggregateOnly: true },
+  { id: "leader-child", kind: "leader", name: "发展网络团长", count: 5, amount: "¥42,180", description: "下属代理发展的团长聚合", scope: "development", aggregateOnly: true, parent: "agent-child" },
+  { id: "community-child", kind: "community", name: "发展网络社群", count: 6, amount: "1,986 人", description: "下属团长社群聚合", scope: "development", aggregateOnly: true },
+  { id: "member-recommended", kind: "community", name: "推荐网络", count: 12, amount: "4,210 人", description: "推荐人及其社群聚合", scope: "recommendation", aggregateOnly: true },
+  { id: "leader-recommended", kind: "leader", name: "推荐团长", count: 4, amount: "¥31,600", description: "推荐链路团长聚合", scope: "recommendation", aggregateOnly: true },
+];
+
+const influenceKindMeta: Record<InfluenceEntityKind, { label: string; icon: typeof Users; color: string }> = {
+  community: { label: "社群", icon: Users, color: "#2385c8" },
+  leader: { label: "团长", icon: Store, color: "#00a978" },
+  agent: { label: "代理", icon: ShieldCheck, color: "#d97706" },
+};
+
+const influenceScopeMeta: Record<InfluenceRelationScope, { label: string; description: string }> = {
+  direct: { label: "直接运营", description: "可进入详情并执行允许的运营操作" },
+  development: { label: "发展网络", description: "仅展示发展链路的只读聚合数据" },
+  recommendation: { label: "推荐网络", description: "仅展示推荐链路的只读聚合数据" },
+};
 
 // ─── 主组件 ───────────────────────────────────────────────────
 // dataScope：数据视角（会员/社群/项目/代理），切换器位于排行表格上方。
@@ -252,6 +295,9 @@ export default function InfluenceRanking() {
   const [isOperationCollapsed, setIsOperationCollapsed] = useState(false);
   const [isDataScopeCollapsed, setIsDataScopeCollapsed] = useState(false);
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
+  const [relationshipMember, setRelationshipMember] = useState<number | null>(null);
+  const [relationshipDraft, setRelationshipDraft] = useState<RelationshipRecord | null>(null);
+  const [relationshipOverrides, setRelationshipOverrides] = useState<Record<number, RelationshipRecord>>({});
   const [activeOrderStatus, setActiveOrderStatus] = useState(orderStatusTabs[0]);
   const [selectedOrderNo, setSelectedOrderNo] = useState<string | null>(null);
   const [orderSearchInput, setOrderSearchInput] = useState("");
@@ -266,6 +312,39 @@ export default function InfluenceRanking() {
     capacity: "500",
     status: "正常",
   });
+  const [influenceScope, setInfluenceScope] = useState<InfluenceRelationScope>("direct");
+  const [selectedInfluenceId, setSelectedInfluenceId] = useState("community-self");
+  const [operatorNotice, setOperatorNotice] = useState("");
+  const influenceRole: MemberNetworkRole = isAgentScope ? "agent" : "leader";
+  const memberNetworkScope = useMemo(
+    () => calculateMemberNetworkScope(
+      influenceRole === "agent" ? "agent-self" : "leader-direct",
+      influenceRole,
+      memberNetworkExample.entities,
+      memberNetworkExample.relations,
+    ),
+    [influenceRole],
+  );
+  const networkViews = useMemo(() => getMemberNetworkViews(memberNetworkScope), [memberNetworkScope]);
+  const visibleInfluenceEntities = useMemo(
+    () => influenceEntities.filter(entity => {
+      const networkView = networkViews.find(view => view.scope === entity.scope);
+      const isInNetwork = networkView?.entityIds.includes(entity.id) ?? false;
+      if (!isInNetwork || entity.scope !== influenceScope) return false;
+       if (influenceRole === "leader" && entity.kind === "agent") return false;
+      return true;
+    }),
+    [influenceRole, influenceScope, networkViews],
+  );
+  const selectedInfluence = influenceEntities.find(entity => entity.id === selectedInfluenceId)
+    ?? visibleInfluenceEntities[0]
+    ?? influenceEntities[0];
+  const selectedInfluenceMeta = influenceKindMeta[selectedInfluence.kind];
+  const setInfluenceSelection = (entity: InfluenceEntity) => {
+    setSelectedInfluenceId(entity.id);
+    setInfluenceScope(entity.scope);
+    setOperatorNotice(entity.aggregateOnly ? `${entity.name}为只读聚合对象，已切换为查看模式` : `已选中${entity.name}，运营商表单已同步`);
+  };
   useEffect(() => {
     setDataScope(project.includes("代理") ? "agent" : "members");
     setTableSearch("");
@@ -285,6 +364,11 @@ export default function InfluenceRanking() {
   };
 
   const selectedTags = memberTags[selectedUser.rank] ?? defaultMemberTags;
+  const relationshipForUser = (rank: number) => relationshipOverrides[rank] ?? relationshipForRank(rank);
+  const updateRelationshipStatus = (rank: number, key: "personal" | "enterprise" | "group", value: string) => {
+    setRelationshipOverrides(current => ({ ...current, [rank]: { ...relationshipForUser(rank), [key]: value } }));
+    showProfileNotice("关系状态已更新");
+  };
   const activeListsRecord = activeLists as Record<string, typeof taskSideList>;
   const visibleTaskList = activeListsRecord[activeTaskCategory] ?? (taskSource === "scope" ? activeListsRecord[scopeCfg!.taskCategories[0].label] : taskSideList);
   // 操作台 / 档案的当前对象名：会员视角用选中会员，其余视角用选中行
@@ -440,7 +524,68 @@ export default function InfluenceRanking() {
           </div>}
         </div>
 
-        <div className="mx-4 mt-2 flex items-center gap-1.5 overflow-x-auto flex-shrink-0" aria-label="数据搜索与筛选">
+        <div className="mx-4 mt-3 grid grid-cols-2 xl:grid-cols-4 gap-2" aria-label="我的影响力总览">
+          {[
+            ["影响人数", "12,680", "较上周 +18.6%"],
+            ["预计收入", isAgentScope ? "¥128,600" : "¥36,480", isAgentScope ? "经营利润 · 含库存收益" : "佣金 · 待结算"],
+            ["直接运营", "20", "12 个社群 · 8 位团长"],
+            ["关系网络", isAgentScope ? "28" : "15", isAgentScope ? "发展 + 推荐聚合" : "推荐链路聚合"],
+          ].map(([label, value, note]) => (
+            <div key={label} className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+              <div className="text-[11px]" style={{ color: S.muted }}>{label}</div>
+              <div className="text-xl font-bold mt-1" style={{ color: S.text }}>{value}</div>
+              <div className="text-[10px] mt-1" style={{ color: label === "影响人数" ? "#00a978" : S.muted }}>{note}</div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mx-4 mt-3 grid grid-cols-1 xl:grid-cols-[1.05fr_1.95fr] gap-3">
+          <section className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <div className="text-sm font-bold" style={{ color: S.text }}>预计收入分析</div>
+                <div className="text-[10px] mt-1" style={{ color: S.muted }}>按当前关系范围汇总，不混合不可见链路</div>
+              </div>
+              <TrendingUp size={15} style={{ color: S.accent }} />
+            </div>
+            <div className="flex items-end gap-1 h-20 mt-3 px-2" aria-label="预计收入趋势">
+              {[42, 58, 46, 72, 63, 84, 76].map((height, index) => <div key={index} className="flex-1" style={{ height: `${height}%`, background: index === 6 ? S.accent : "#dce8c0", borderRadius: "3px 3px 0 0" }} />)}
+            </div>
+            <div className="flex items-center justify-between text-[10px] mt-1" style={{ color: S.muted }}><span>近 7 日</span><span>本周 +18.6%</span></div>
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              {(isAgentScope ? [["销售回款", "¥82,400"], ["库存收益", "¥31,200"], ["履约利润", "¥15,000"]] : [["预计佣金", "¥24,800"], ["待结算", "¥8,640"], ["已结算", "¥3,040"]]).map(([label, value]) => <div key={label} className="px-2 py-1.5" style={{ background: S.bg, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>{label}</div><div className="text-xs font-bold mt-1" style={{ color: S.text }}>{value}</div></div>)}
+            </div>
+          </section>
+
+          <section className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+            <div className="flex items-center justify-between gap-2">
+              <div><div className="text-sm font-bold" style={{ color: S.text }}>影响力详情</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>直接运营、发展网络、推荐网络统一口径</div></div>
+              <div className="flex items-center gap-1" role="tablist" aria-label="影响力关系范围">
+                {(["direct", "development", "recommendation"] as InfluenceRelationScope[]).filter(scope => influenceRole === "agent" || scope !== "development").map(scope => <button key={scope} type="button" role="tab" aria-selected={influenceScope === scope} onClick={() => { setInfluenceScope(scope); const first = influenceEntities.find(entity => entity.scope === scope && (influenceRole === "agent" || entity.kind !== "agent")); if (first) setSelectedInfluenceId(first.id); }} className="px-2 py-1 text-[10px] font-bold" style={{ background: influenceScope === scope ? "#1e293b" : S.bg, color: influenceScope === scope ? S.accent : S.muted, border: `1px solid ${influenceScope === scope ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>{influenceScopeMeta[scope].label}</button>)}
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2 mt-3">
+              {visibleInfluenceEntities.map(entity => { const Meta = influenceKindMeta[entity.kind]; const Icon = Meta.icon; return <button key={entity.id} type="button" onClick={() => setInfluenceSelection(entity)} className="text-left p-2.5" style={{ background: selectedInfluenceId === entity.id ? S.accentLight : S.bg, border: `1px solid ${selectedInfluenceId === entity.id ? S.accent : S.border}`, borderRadius: S.radiusSm }}><div className="flex items-center gap-1.5"><Icon size={13} style={{ color: Meta.color }} /><span className="text-[10px] font-bold" style={{ color: Meta.color }}>{Meta.label}</span>{entity.aggregateOnly && <span className="text-[9px]" style={{ color: S.muted }}>只读</span>}</div><div className="text-base font-bold mt-2" style={{ color: S.text }}>{entity.count}</div><div className="text-[10px] truncate mt-0.5" style={{ color: S.muted }}>{entity.name}</div><div className="text-[10px] truncate mt-1" style={{ color: S.textSec }}>{entity.amount}</div></button>; })}
+            </div>
+          </section>
+        </div>
+
+        <section className="mx-4 mt-3 p-3" aria-label="社群团长代理统一关系区" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+          <div className="flex items-center justify-between gap-2"><div><div className="text-sm font-bold" style={{ color: S.text }}>社群 · 团长 · 代理</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>{influenceScopeMeta[influenceScope].description}</div></div><span className="text-[10px] px-2 py-1" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{networkViews.find(view => view.scope === influenceScope)?.relationLabel ?? influenceScopeMeta[influenceScope].label}</span></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-3">
+            {visibleInfluenceEntities.map(entity => { const Meta = influenceKindMeta[entity.kind]; const Icon = Meta.icon; return <button key={`relation-${entity.id}`} type="button" onClick={() => setInfluenceSelection(entity)} className="flex items-start gap-2 p-3 text-left" style={{ background: selectedInfluenceId === entity.id ? S.accentLight : S.bg, border: `1px solid ${selectedInfluenceId === entity.id ? S.accent : S.border}`, borderRadius: S.radiusSm }}><div className="w-8 h-8 flex items-center justify-center" style={{ background: `${Meta.color}16`, color: Meta.color, borderRadius: S.radiusSm }}><Icon size={16} /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-1.5"><span className="text-xs font-bold truncate" style={{ color: S.text }}>{entity.name}</span><span className="text-[9px] px-1 py-0.5" style={{ color: Meta.color, background: `${Meta.color}16`, borderRadius: "999px" }}>{Meta.label}</span></div><div className="text-[10px] mt-1" style={{ color: S.muted }}>{entity.description}</div><div className="flex items-center gap-3 mt-2"><span className="text-xs font-bold" style={{ color: S.text }}>{entity.count}</span><span className="text-[10px]" style={{ color: S.textSec }}>{entity.amount}</span></div></div><ChevronRight size={13} style={{ color: S.muted }} /></button>; })}
+          </div>
+        </section>
+
+        <div className="mx-4 mt-3 flex items-center justify-between gap-2 px-3 py-2" style={{ background: "#1e293b", color: "#ffffff", borderRadius: S.radius }}><div className="flex items-center gap-2"><Users size={14} style={{ color: S.accent }} /><span className="text-xs font-bold">旗下运营商</span><span className="text-[10px]" style={{ color: "#cbd5e1" }}>直属 8 · 推荐 4 · 发展网络 5</span></div><button type="button" onClick={() => setOperatorNotice("已打开旗下运营商汇总") } className="text-[10px] font-bold px-2 py-1" style={{ background: S.accent, color: S.onAccent, borderRadius: S.radiusSm }}>查看汇总</button></div>
+
+        <section className="mx-4 mt-3 p-3" aria-label="运营商表单" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+          <div className="flex items-center justify-between gap-2"><div><div className="text-sm font-bold" style={{ color: S.text }}>运营商表单</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>{selectedInfluenceMeta.label} · {selectedInfluence.name} · {selectedInfluence.aggregateOnly ? "只读聚合" : "直属可管理"}</div></div><button type="button" onClick={() => setOperatorNotice(selectedInfluence.aggregateOnly ? "发展与推荐网络对象仅支持查看聚合数据" : `已保存${selectedInfluence.name}的运营商资料`)} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: selectedInfluence.aggregateOnly ? S.bg : "#1e293b", color: selectedInfluence.aggregateOnly ? S.muted : S.accent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>{selectedInfluence.aggregateOnly ? "只读聚合" : "保存资料"}</button></div>
+          <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 mt-3">{(selectedInfluence.kind === "agent" ? [["姓名", selectedInfluence.name], ["身份", "D4 分公司负责人"], ["直属团长数", "8 位"], ["履约范围", "北京 · 自有库存"]] : selectedInfluence.kind === "leader" ? [["姓名", selectedInfluence.name], ["身份", "团长"], ["所属代理", "当前代理"], ["佣金状态", "待结算 ¥8,640"]] : [["姓名", selectedInfluence.name], ["身份", "社群运营者"], ["所属社群", "北京PRO会员群"], ["资料状态", "已完善"]]).map(([label, value]) => <label key={label} className="block"><span className="block text-[10px] mb-1" style={{ color: S.muted }}>{label}</span><input readOnly={selectedInfluence.aggregateOnly} value={value} onChange={() => undefined} className="w-full px-2 py-1.5 text-xs outline-none" style={{ background: selectedInfluence.aggregateOnly ? "#f1f5f9" : S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} /></label>)}</div>
+          {operatorNotice && <div role="status" className="mt-2 px-2.5 py-2 text-[10px] font-bold" style={{ background: S.accentLight, color: S.text, borderLeft: `2px solid ${S.accent}` }}>{operatorNotice}</div>}
+        </section>
+
+        <div className="mx-4 mt-3 flex items-center gap-1.5 overflow-x-auto flex-shrink-0" aria-label="数据搜索与筛选">
           <div className="flex items-center gap-1.5 px-2 py-1 min-w-[170px]" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
             <Search size={13} style={{ color: S.muted }} />
             <input value={tableSearch} onChange={event => setTableSearch(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none text-xs" style={{ color: S.textSec }} placeholder={isMemberScope ? "搜索会员、微信号、城市…" : `搜索${scopeCfg?.noun || "数据"}…`} />
@@ -510,13 +655,16 @@ export default function InfluenceRanking() {
               <div className="flex-shrink-0 font-bold" style={{ width: 110, color: S.text }}>{u.name}</div>
               <div className="flex-shrink-0" style={{ width: 82 }}><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: S.radiusSm }}>{memberLevelForRank(u.rank)}</span></div>
               <div className="flex-shrink-0" style={{ width: 90, color: S.muted }}>{u.city}</div>
-              <div className="flex-shrink-0" style={{ width: 110 }}><span className="text-[10px] font-bold" style={{ color: relationshipForRank(u.rank).personal === "添加失败" ? "#c2410c" : S.textSec }}>个微 {relationshipForRank(u.rank).personal}</span><span className="block text-[10px]" style={{ color: S.muted }}>企微 {relationshipForRank(u.rank).enterprise}</span></div>
-              <div className="flex-shrink-0" style={{ width: 68 }}><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: relationshipForRank(u.rank).group === "已入群" ? "#e8fbf4" : "#fff0db", color: relationshipForRank(u.rank).group === "已入群" ? "#008565" : "#c2410c", borderRadius: S.radiusSm }}>{relationshipForRank(u.rank).group}</span></div>
-              <div className="flex-shrink-0 font-bold" style={{ width: 82, color: "#c2410c" }}>{relationshipForRank(u.rank).spend}</div>
+              <div className="flex-shrink-0 space-y-0.5" style={{ width: 110 }}>
+                <select aria-label={`${u.name} 个微好友状态`} value={relationshipForUser(u.rank).personal} onChange={event => updateRelationshipStatus(u.rank, "personal", event.target.value)} className="w-full px-1 py-0.5 text-[10px] outline-none font-bold" style={{ background: "transparent", color: relationshipForUser(u.rank).personal === "添加失败" ? "#c2410c" : S.textSec, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`personal-${option}`} value={option}>{`个微 ${option}`}</option>)}</select>
+                <select aria-label={`${u.name} 企微好友状态`} value={relationshipForUser(u.rank).enterprise} onChange={event => updateRelationshipStatus(u.rank, "enterprise", event.target.value)} className="w-full px-1 py-0.5 text-[10px] outline-none" style={{ background: "transparent", color: S.muted, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`enterprise-${option}`} value={option}>{`企微 ${option}`}</option>)}</select>
+              </div>
+              <div className="flex-shrink-0" style={{ width: 68 }}><select aria-label={`${u.name} 入群状态`} value={relationshipForUser(u.rank).group} onChange={event => updateRelationshipStatus(u.rank, "group", event.target.value)} className="w-full px-1 py-1 text-[10px] outline-none font-bold" style={{ background: relationshipForUser(u.rank).group === "已入群" ? "#e8fbf4" : "#fff0db", color: relationshipForUser(u.rank).group === "已入群" ? "#008565" : "#c2410c", border: 0, borderRadius: S.radiusSm }}>{groupStatusOptions.map(option => <option key={`group-${option}`}>{option}</option>)}</select></div>
+              <div className="flex-shrink-0 font-bold" style={{ width: 82, color: "#c2410c" }}>{relationshipForUser(u.rank).spend}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 82, color: S.text }}>{u.totalUsers.toLocaleString()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 68, color: S.text }}>{u.influence.toLocaleString()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 64, color: S.text }}>{u.score.toLocaleString()}</div>
-              <div className="flex-shrink-0" style={{ width: 72 }}><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={event => { event.stopPropagation(); showProfileNotice("会员关系处理入口已打开"); }}>处理关系</button></div>
+              <div className="flex-shrink-0" style={{ width: 72 }}><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={event => { event.stopPropagation(); setRelationshipMember(u.rank); setRelationshipDraft({ ...relationshipForUser(u.rank) }); }}>处理关系</button></div>
             </div>
           ))}
           {filteredRankingData.length === 0 && (
@@ -1013,6 +1161,25 @@ export default function InfluenceRanking() {
           </button>
         </div>
       )}
+
+      {relationshipMember !== null && relationshipDraft && (() => {
+        const member = rankingData.find(item => item.rank === relationshipMember) ?? rankingData[0];
+        const ai = relationshipForRank(relationshipMember);
+        const hasConflict = relationshipDraft.personal !== ai.personal || relationshipDraft.enterprise !== ai.enterprise || relationshipDraft.group !== ai.group;
+        return <>
+          <button type="button" aria-label="关闭关系处理" onClick={() => { setRelationshipMember(null); setRelationshipDraft(null); }} className="fixed inset-0 z-40" style={{ background: "rgba(15,23,42,0.18)" }} />
+          <aside className="fixed inset-y-0 right-0 z-50 w-[min(380px,92vw)] flex flex-col" style={{ background: S.surface, borderLeft: `1px solid ${S.border}`, boxShadow: "-8px 0 24px rgba(15,23,42,0.12)" }}>
+            <div className="flex items-center justify-between gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${S.border}` }}><div><div className="text-sm font-bold" style={{ color: S.text }}>处理会员关系</div><div className="text-[10px] mt-0.5" style={{ color: S.muted }}>{member.name} · {member.wechat}</div></div><button type="button" title="关闭" aria-label="关闭" onClick={() => { setRelationshipMember(null); setRelationshipDraft(null); }} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><X size={14} /></button></div>
+            <div className="flex-1 overflow-auto p-4 space-y-3">
+              <div className="grid grid-cols-2 gap-2"><div className="px-3 py-2" style={{ background: S.accentLight, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>累计消费</div><div className="text-base font-bold mt-1" style={{ color: "#c2410c" }}>{relationshipDraft.spend}</div></div><div className="px-3 py-2" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>会员级别</div><div className="text-xs font-bold mt-1" style={{ color: S.text }}>{memberLevelForRank(member.rank)}</div></div></div>
+              <div className="px-3 py-2 text-[10px] leading-relaxed" style={{ background: hasConflict ? "#fff7ed" : "#e8fbf4", color: hasConflict ? "#9a3412" : "#008565", border: `1px solid ${hasConflict ? "#fed7aa" : "#b7ead7"}`, borderRadius: S.radiusSm }}><b>AI 对比：</b>{hasConflict ? "检测到人工状态与 AI 识别不一致，请确认后保存。" : "人工状态与 AI 识别一致。"}<span className="block mt-1">AI 识别：个微 {ai.personal} · 企微 {ai.enterprise} · 入群 {ai.group}</span></div>
+              <div className="grid grid-cols-3 gap-2">{([["个微好友", relationshipDraft.personal], ["企微好友", relationshipDraft.enterprise], ["入群状态", relationshipDraft.group]] as const).map(([label, value]) => <div key={label} className="px-2.5 py-2" style={{ background: "#f8fafc", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>{label}</div><div className="text-xs font-bold mt-1 truncate" style={{ color: value === "已入群" || value === "已通过" ? "#008565" : "#c2410c" }}>{value}</div></div>)}</div>
+              <div className="px-3 py-2 text-[10px] leading-relaxed" style={{ background: "#f8fafc", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>保存后会记录人工处理人和时间；AI 识别结果保留用于后续复核，不会覆盖人工状态。</div>
+            </div>
+            <div className="flex items-center gap-2 px-4 py-3" style={{ borderTop: `1px solid ${S.border}` }}><button type="button" onClick={() => { setRelationshipDraft({ ...ai }); showProfileNotice("已恢复 AI 识别状态"); }} className="flex-1 py-2 text-xs font-bold" style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>采用 AI 结果</button><button type="button" onClick={() => { setRelationshipOverrides(current => ({ ...current, [relationshipMember]: relationshipDraft })); setRelationshipMember(null); setRelationshipDraft(null); showProfileNotice(`已保存 ${member.name} 的关系状态`); }} className="flex-1 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>保存人工状态</button></div>
+          </aside>
+        </>;
+      })()}
     </div>
   );
 }
