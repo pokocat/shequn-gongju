@@ -23,7 +23,11 @@ export default function PlatformModeConfig() {
   const [d1ConfigPermission, setD1ConfigPermission] = useState(true);
   const [config, setConfig] = useState(defaultPlatformModeConfig);
   const [draft, setDraft] = useState(config);
+  const [versionRoleSnapshots, setVersionRoleSnapshots] = useState<Record<string, typeof defaultPlatformModeConfig.roles>>({
+    [defaultPlatformModeConfig.operatingVersion]: defaultPlatformModeConfig.roles,
+  });
   const [notice, setNotice] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
   const canEdit = canConfigurePlatformMode(identity, d1ConfigPermission);
   const companyRoles = useMemo(() => config.roles.filter(role => role.group === "company"), [config.roles]);
   const agentRoles = useMemo(() => config.roles.filter(role => role.group === "agent"), [config.roles]);
@@ -54,8 +58,10 @@ export default function PlatformModeConfig() {
         changeSummary: "发布运营可调参数变更。",
       }, ...draft.versions],
     };
+    setVersionRoleSnapshots(current => ({ ...current, [nextVersion]: draft.roles }));
     setConfig(nextConfig);
     setDraft(nextConfig);
+    setShowPreview(false);
     setNotice(`已发布 ${nextVersion}，新业务将使用该版本`);
   };
 
@@ -65,7 +71,14 @@ export default function PlatformModeConfig() {
       setNotice("当前没有可回滚的历史版本");
       return;
     }
-    setNotice(`已生成回滚草稿，目标版本：${previous.version}`);
+    const previousRoles = versionRoleSnapshots[previous.version];
+    if (!previousRoles) {
+      setNotice(`找不到 ${previous.version} 的参数快照，无法生成回滚草稿`);
+      return;
+    }
+    setDraft(current => ({ ...current, operatingVersion: previous.version, roles: previousRoles }));
+    setShowPreview(true);
+    setNotice(`已生成回滚草稿，目标版本：${previous.version}；确认后发布生效`);
   };
 
   return (
@@ -104,7 +117,8 @@ export default function PlatformModeConfig() {
       <div className="p-4 mb-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
         <div className="flex items-center justify-between mb-3"><div><div className="text-sm font-bold" style={{ color: S.text }}>运营可调参数</div><div className="text-[11px] mt-1" style={{ color: S.muted }}>只读身份可查看当前生效值，配置身份可编辑草稿</div></div>{canEdit ? <div className="text-[11px]" style={{ color: "#15803d" }}>编辑权限已开启</div> : <div className="flex items-center gap-1 text-[11px]" style={{ color: S.muted }}><Eye size={13} />只读模式</div>}</div>
         <div className="overflow-hidden" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="grid grid-cols-5 px-3 py-2 text-[10px] font-bold" style={{ background: S.bg, color: S.muted }}><span>角色</span><span>审核方式</span><span>佣金比例</span><span>招募上限</span><span>预警阈值</span></div>{draft.roles.map(role => <div key={role.code} className="grid grid-cols-5 items-center px-3 py-2.5 text-[11px]" style={{ borderTop: `1px solid ${S.border}`, color: S.text }}><span className="font-bold">{role.code} · {role.name}</span><span>{role.operating.approvalMode === "agent_first_review" ? "代理初审" : "平台复审"}</span><input type="number" min="0" max="1" step="0.01" disabled={!canEdit} value={role.operating.commissionRate} onChange={event => updateRoleParameter(role.code, "commissionRate", Number(event.target.value))} className="w-20 px-2 py-1" style={{ background: canEdit ? S.surface : S.bg, border: `1px solid ${S.borderMed}`, borderRadius: 4, color: S.text }} /><input type="number" min="0" disabled={!canEdit} value={role.operating.recruitmentLimit} onChange={event => updateRoleParameter(role.code, "recruitmentLimit", Number(event.target.value))} className="w-20 px-2 py-1" style={{ background: canEdit ? S.surface : S.bg, border: `1px solid ${S.borderMed}`, borderRadius: 4, color: S.text }} /><span>{role.operating.warningThresholds.pendingReview} 条待审</span></div>)}</div>
-        <div className="flex items-center justify-between mt-4"><span className="text-[11px]" style={{ color: notice ? "#15803d" : S.muted }}>{notice || `当前生效时间：${config.effectiveAt}`}</span>{canEdit && <div className="flex gap-2"><button type="button" onClick={() => { setDraft(config); setNotice("已撤销未发布修改"); }} className="flex items-center gap-1 px-3 py-2 text-xs" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}><RotateCcw size={13} />撤销</button><button type="button" onClick={saveDraft} className="flex items-center gap-1 px-3 py-2 text-xs" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}><Save size={13} />保存草稿</button><button type="button" onClick={publish} className="flex items-center gap-1 px-3 py-2 text-xs font-bold" style={{ background: S.ink, color: S.accent, borderRadius: S.radiusSm }}><Check size={13} />发布生效</button><button type="button" onClick={rollback} className="px-3 py-2 text-xs" style={{ background: S.accentLight, color: S.text, borderRadius: S.radiusSm }}>回滚</button></div>}</div>
+        {canEdit && showPreview && <div className="mt-3 p-3 text-[11px]" style={{ background: S.accentLight, color: S.textSec, borderRadius: S.radiusSm }}><div className="flex items-center gap-1 font-bold" style={{ color: S.text }}><Eye size={13} />影响预览</div><div className="mt-1">将影响团长招募、库存履约和佣金结算；历史订单仍按下单时生效版本结算。</div></div>}
+        <div className="flex items-center justify-between mt-4"><span className="text-[11px]" style={{ color: notice ? "#15803d" : S.muted }}>{notice || `当前生效时间：${config.effectiveAt}`}</span>{canEdit && <div className="flex gap-2"><button type="button" onClick={() => { setDraft(config); setShowPreview(false); setNotice("已撤销未发布修改"); }} className="flex items-center gap-1 px-3 py-2 text-xs" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}><RotateCcw size={13} />撤销</button><button type="button" onClick={() => setShowPreview(value => !value)} className="flex items-center gap-1 px-3 py-2 text-xs" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}><Eye size={13} />影响预览</button><button type="button" onClick={saveDraft} className="flex items-center gap-1 px-3 py-2 text-xs" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}><Save size={13} />保存草稿</button><button type="button" onClick={publish} className="flex items-center gap-1 px-3 py-2 text-xs font-bold" style={{ background: S.ink, color: S.accent, borderRadius: S.radiusSm }}><Check size={13} />发布生效</button><button type="button" onClick={rollback} className="px-3 py-2 text-xs" style={{ background: S.accentLight, color: S.text, borderRadius: S.radiusSm }}>回滚</button></div>}</div>
       </div>
 
       <div className="p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-sm font-bold mb-3" style={{ color: S.text }}>版本与变更记录</div>{config.versions.map(version => <div key={version.version} className="flex items-start justify-between gap-4 py-3" style={{ borderTop: `1px solid ${S.border}` }}><div><div className="text-xs font-bold" style={{ color: S.text }}>{version.version} · {version.status === "published" ? "已发布" : "草稿"}</div><div className="text-[11px] mt-1" style={{ color: S.muted }}>{version.changeSummary}</div></div><div className="text-right text-[10px]" style={{ color: S.muted }}>{version.createdBy}<br />生效：{version.effectiveAt}</div></div>)}</div>

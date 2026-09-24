@@ -238,7 +238,7 @@ function loadProfile(){
     if (raw) {
       var p = JSON.parse(raw);
       if (p && p.name) {
-        if (p.pos === '认证代理' || p.pos === '主理人公社认证代理') p.pos = DEFAULT_PROFILE.pos;
+        if (!p.pos || p.pos === '平台成员') p.pos = DEFAULT_PROFILE.pos;
         return p;
       }
     }
