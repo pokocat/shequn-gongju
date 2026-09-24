@@ -2,7 +2,7 @@
 <html lang="zh-CN"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>我的任务</title>
+<title>主理台</title>
 <link rel="stylesheet" href="../css/app.css?v=20260917">
 <script>
 var q = location.search;
@@ -11,18 +11,267 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 </script>
 <style>.tk-layer{ padding-bottom: calc(22.933px + var(--sab)); }
 
+/* ===== 身份分段器（复用全局 topseg 组件 · 置顶吸住） ===== */
+.tk-topseg{
+  margin:96px 10.32px 0; /* 顶部避开状态栏(54px)+胶囊(至92px) */
+  position:sticky; top:96px; z-index:50;
+  background:#FFFCF6; /* 实色底：吸顶时遮住滚过的内容 */
+  box-shadow:0 2px 10px rgba(122,82,54,.08);
+}
+.tk-topseg .topseg-item{ cursor:pointer; transition:all .18s ease; }
+.tk-topseg .topseg-item:active{ transform:scale(.96); }
+.topseg-item--lock{ color:var(--ink-400); }
+.topseg-item--lock svg{ width:12.04px; height:12.04px; flex-shrink:0; }
+/* tab 页撑满机身：内容不足一屏时 tabbar 依然贴手机屏底 */
+.mp-page{ min-height:100%; display:flex; flex-direction:column; }
+.tabbar{ --sab:34px; } /* tabbar 移出 .mp-page 后补回安全区变量，高度与其他 tab 页一致 */
+.screen--tab{ flex:1 1 auto; display:flex; flex-direction:column; }
+.tk-layer{ flex:1 1 auto; }
+
+/* ===== hero 卡内周期分段 ===== */
+.tk-periods{ display:flex; gap:3.44px; padding:3.44px; border-radius:9.173px; background:var(--sunk-2); margin-bottom:11.467px; }
+.tk-per{
+  flex:1; text-align:center; padding:4.013px 0; border-radius:6.88px;
+  font-size:var(--fs-micro); font-weight:600; color:var(--ink-600);
+  cursor:pointer; transition:all .15s ease;
+}
+.tk-per--on{ background:#FFF; color:var(--signal-700); font-weight:700; box-shadow:0 1px 4px rgba(122,82,54,.12); }
+.tk-per:active{ transform:scale(.95); }
+
+/* ===== 工作台区（代理/团长视角内嵌） ===== */
+.stat3{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; padding:0 10.32px; margin-top:10.32px; }
+.stat3-cell{ text-align:center; padding:10.32px 4px; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line-soft); }
+.stat3-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); }
+.stat3-l{ display:block; margin-top:2.293px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 本周方向卡 */
+.dir-card{ margin:10.32px 10.32px 0; padding:13.76px; border-radius:var(--r-box); background:var(--grad-hero); border:0.573px solid var(--line-brand); box-shadow:0 3px 12px rgba(124,58,237,.10); }
+.dir-head{ display:flex; justify-content:space-between; align-items:center; }
+.dir-tag{ font-size:var(--fs-micro); font-weight:700; color:var(--signal-700); background:rgba(124,58,237,.1); padding:2.293px 6.88px; border-radius:5.733px; }
+.dir-t{ font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); margin-top:6.88px; }
+.dir-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:2.867px; line-height:1.5; }
+.dir-chips{ display:flex; gap:5.16px; margin-top:8.027px; flex-wrap:wrap; }
+.dir-chip{ font-size:var(--fs-micro); color:var(--ink-700); background:rgba(255,255,255,.55); padding:2.867px 8.027px; border-radius:5.733px; border:0.573px solid var(--line-soft); }
+/* 平台分发宫格 */
+.dist-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8.027px; }
+.dist-tile{ text-align:center; padding:11.467px 4px; border-radius:var(--r-box); background:var(--sunk-2); border:0.573px solid var(--line-soft); position:relative; cursor:pointer; transition:transform .15s; }
+.dist-tile:active{ transform:scale(.95); }
+.dist-ico{ width:36.8px; height:36.8px; margin:0 auto; border-radius:10.32px; display:flex; align-items:center; justify-content:center; color:var(--signal-700); background:var(--signal-50); border:0.573px solid var(--line-brand); }
+.dist-ico svg{ width:19px; height:19px; }
+.dist-n{ display:block; margin-top:5.16px; font-size:var(--fs-micro); font-weight:700; color:var(--ink-800); }
+.dist-c{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--pulse-600); font-weight:600; }
+/* 入口行 */
+.entry-row{ display:flex; align-items:center; gap:10.32px; padding:10.32px 0; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.entry-row:last-child{ border-bottom:none; }
+.entry-ico{ width:34.4px; height:34.4px; border-radius:9.173px; display:flex; align-items:center; justify-content:center; color:var(--signal-700); background:var(--signal-50); border:0.573px solid var(--line-brand); flex-shrink:0; }
+.entry-ico svg{ width:18px; height:18px; }
+.entry-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.entry-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.entry-go{ color:var(--ink-400); font-size:var(--fs-meta); flex-shrink:0; }
+/* 团队排行 */
+.rank-row{ display:flex; align-items:center; gap:8.027px; padding:8.027px 0; border-bottom:0.573px solid var(--line-soft); }
+.rank-row:last-child{ border-bottom:none; }
+.rank-n{ width:20.64px; height:20.64px; border-radius:6.88px; display:flex; align-items:center; justify-content:center; font-size:var(--fs-micro); font-weight:800; color:var(--signal-700); background:var(--sunk-3); flex-shrink:0; }
+.rank-n--top{ background:linear-gradient(135deg,#F7B65C,#E88C4A); color:#FFF; }
+.rank-info{ flex:1; min-width:0; }
+.rank-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.rank-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.rank-v{ font-size:var(--fs-meta); font-weight:800; color:var(--pulse-600); }
+
+/* ===== 工作台子应用（方案C）：数据头条 + 子页签 + 底部动作栏 ===== */
+.substat{ display:flex; margin:10.32px 10.32px 0; padding:9.173px 0; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line-soft); }
+.substat-cell{ flex:1; text-align:center; min-width:0; }
+.substat-cell + .substat-cell{ border-left:0.573px solid var(--line-soft); }
+.substat-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.substat-l{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 子页签（轻量 pill，与身份 topseg 形成层级差） */
+.subtab{ display:flex; gap:4.587px; padding:10.32px 10.32px 8.027px; }
+.subtab-pill{
+  flex:1; text-align:center; padding:5.16px 0; border-radius:7.45px;
+  font-size:var(--fs-micro); font-weight:600; color:var(--ink-600);
+  background:var(--sunk-2); border:0.573px solid var(--line-soft);
+  cursor:pointer; transition:all .15s ease;
+}
+.subtab-pill--on{ background:#FFF; color:var(--signal-700); font-weight:700; border-color:var(--line-brand); box-shadow:0 1px 5px rgba(124,58,237,.10); }
+.subtab-pill:active{ transform:scale(.95); }
+/* 子页内容区 */
+.subbody{ min-height:200px; }
+/* 底部动作栏（常驻 tabbar 上方） */
+.actbar{
+  position:sticky; bottom:87px; z-index:60; display:flex; gap:6.88px;
+  padding:10.32px 10.32px 8.027px;
+  background:linear-gradient(180deg,rgba(255,247,236,0),rgba(255,247,236,.97) 45%);
+}
+.actbar-btn{ flex:1; text-align:center; padding:10.32px 0; border-radius:10.893px; font-size:var(--fs-sec); font-weight:800; cursor:pointer; }
+.actbar-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; box-shadow:0 4px 14px rgba(109,40,217,.3); }
+.actbar-btn--ghost{ background:rgba(255,255,255,.94); color:var(--signal-700); border:0.573px solid var(--line-signal); }
+.actbar-btn:active{ transform:scale(.97); }
+
+/* ===== 数据驾驶舱（照参考图排版：渐变头部 + 周期下划线tab + 日期行 + 表格明细） ===== */
+.rep-head{
+  margin:10.32px 10.32px 0; border-radius:var(--r-box);
+  background:linear-gradient(160deg,#5B21B6 0%,#7C3AED 48%,#A98BF5 100%);
+  padding:14.907px 14.907px 0; color:#FFF7EC;
+  box-shadow:0 6px 22px rgba(91,33,182,.28);
+}
+.rep-l{ font-size:var(--fs-micro); font-weight:600; color:rgba(255,247,236,.72); }
+.rep-num{ font-size:34.4px; font-weight:800; font-family:var(--font-mono); line-height:1.25; margin-top:1.147px; }
+.rep-sub{ display:flex; justify-content:space-between; align-items:center; margin-top:2.293px; }
+.rep-wd{ font-size:var(--fs-micro); color:rgba(255,247,236,.85); }
+.rep-wd b{ font-family:var(--font-mono); font-weight:800; }
+.rep-btn{ padding:5.16px 14.907px; border-radius:16.053px; background:rgba(255,247,236,.95); color:var(--signal-800); font-size:var(--fs-micro); font-weight:800; cursor:pointer; }
+.rep-btn:active{ transform:scale(.95); }
+/* 周期下划线 tab（嵌在渐变头部内，参考「日报/月报」样式） */
+.rep-tabs{ display:flex; margin-top:11.467px; }
+.rep-tab{ flex:1; text-align:center; padding:6.88px 0 8.6px; font-size:var(--fs-meta); font-weight:600; color:rgba(255,247,236,.62); cursor:pointer; position:relative; transition:color .15s; }
+.rep-tab--on{ color:#FFF7EC; font-weight:800; }
+.rep-tab--on::after{ content:''; position:absolute; left:50%; transform:translateX(-50%); bottom:0; width:24.08px; height:2.293px; border-radius:1.147px; background:#F7B65C; }
+/* 日期行 */
+.rep-date{ display:flex; align-items:center; gap:5.733px; margin:8.027px 10.32px 0; padding:7.45px 11.467px; border-radius:9.173px; background:#FFF; border:0.573px solid var(--line-soft); font-size:var(--fs-micro); color:var(--ink-700); font-weight:600; cursor:pointer; }
+.rep-date svg{ width:12.04px; height:12.04px; color:var(--ink-500); flex-shrink:0; }
+.rep-date .d-arrow{ margin-left:auto; color:var(--ink-400); }
+/* 三列收益分解（表格式，白卡内分列） */
+.rep-split{ display:grid; grid-template-columns:repeat(3,1fr); }
+.rep-split-cell{ text-align:center; padding:9.173px 2px; min-width:0; }
+.rep-split-cell + .rep-split-cell{ border-left:0.573px solid var(--line-soft); }
+.rep-split-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); }
+.rep-split-l{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 团队发展漏斗（白底格，可下钻） */
+.funnel-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
+.funnel-cell{ text-align:center; padding:10.32px 2px 8.6px; border-radius:10.32px; background:#FFF; border:0.573px solid var(--line-soft); cursor:pointer; transition:transform .15s; position:relative; }
+.funnel-cell:active{ transform:scale(.95); }
+.funnel-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--signal-800); font-family:var(--font-mono); }
+.funnel-l{ display:block; margin-top:1.72px; font-size:var(--fs-micro); font-weight:600; color:var(--ink-600); }
+.funnel-go{ position:absolute; top:5.16px; right:6.88px; color:var(--ink-400); font-size:9px; }
+/* 收益状态三格 */
+.status-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
+.status-cell{ text-align:center; padding:9.173px 2px; border-radius:10.32px; background:var(--sunk); border:0.573px solid var(--line-soft); }
+.status-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); }
+.status-l{ display:block; font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.status-v--ok{ color:var(--ok); }
+/* 类别明细表格（参考「类别|订单量|预估收益」表头+下钻行） */
+.rep-table-h{ display:grid; grid-template-columns:1.5fr 1fr 1.1fr 16px; gap:4px; padding:6.88px 9.173px; border-radius:8.027px; background:rgba(124,58,237,.09); font-size:var(--fs-micro); font-weight:700; color:var(--signal-800); }
+.rep-table-r{ display:grid; grid-template-columns:1.5fr 1fr 1.1fr 16px; gap:4px; padding:8.6px 9.173px; font-size:var(--fs-micro); color:var(--ink-800); border-bottom:0.573px solid var(--line-soft); align-items:center; }
+.rep-table-r:last-child{ border-bottom:none; }
+.rep-table-r .m{ font-family:var(--font-mono); font-weight:700; }
+.rep-table-r .r-go{ color:var(--ink-400); text-align:right; }
+/* 团长方向入口条 */
+.dir-strip{ margin:10.32px 10.32px 0; padding:10.32px 12.04px; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line-soft); display:flex; align-items:center; gap:8.027px; cursor:pointer; }
+.dir-strip:active{ transform:scale(.98); }
+.dir-strip-ico{ width:30.16px; height:30.16px; border-radius:8.027px; background:linear-gradient(135deg,var(--signal-600),var(--signal-800)); color:#FFF; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.dir-strip-ico svg{ width:15px; height:15px; }
+.dir-strip-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.dir-strip-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+
+/* ===== 预计收入分析：环形图（参考我的影响力） ===== */
+.donut-wrap{ display:flex; align-items:center; gap:13.76px; }
+.donut{ flex-shrink:0; position:relative; width:126.5px; height:126.5px; }
+.donut svg{ transform:rotate(-90deg); }
+.donut-c{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.donut-cv{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); }
+.donut-cl{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.donut-legend{ flex:1; min-width:0; }
+.donut-li{ display:flex; align-items:center; gap:5.733px; padding:3.44px 0; font-size:var(--fs-micro); color:var(--ink-700); }
+.donut-dot{ width:8.027px; height:8.027px; border-radius:2.867px; flex-shrink:0; }
+.donut-li .dv{ margin-left:auto; font-family:var(--font-mono); font-weight:700; color:var(--ink-900); }
+
+/* ===== 影响力详情表格（参考我的影响力：3×3 + 彩点列头 + 红+N） ===== */
+.inf-table{ width:100%; border-collapse:collapse; }
+.inf-table th{ font-size:var(--fs-micro); font-weight:700; color:var(--ink-700); padding:5.16px 4px; text-align:center; border-bottom:0.573px solid var(--line-soft); }
+.inf-table th .th-dot{ display:inline-block; width:6.88px; height:6.88px; border-radius:50%; margin-right:3.44px; vertical-align:0.5px; }
+.inf-table td{ font-size:var(--fs-micro); color:var(--ink-800); padding:7.45px 4px; text-align:center; border-bottom:0.573px solid var(--line-soft); font-family:var(--font-mono); }
+.inf-table tr:last-child td{ border-bottom:none; }
+.inf-table td.row-h{ font-family:inherit; color:var(--ink-600); text-align:left; padding-left:2.293px; }
+.inf-add{ display:inline-block; margin-left:2.293px; color:#D93025; font-weight:800; font-size:9px; }
+.inf-note{ display:flex; align-items:center; gap:4.587px; margin-top:6.88px; font-size:var(--fs-micro); color:var(--ink-500); }
+.inf-plus{ width:12.04px; height:12.04px; border-radius:50%; background:rgba(217,48,37,.1); color:#D93025; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
+/* 旗下团队行（团长，参考旗下运营商） */
+.team-row{ display:flex; align-items:center; gap:8.027px; padding:8.6px 0; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.team-row:last-child{ border-bottom:none; }
+.team-row-t{ flex:1; font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.team-row-v{ font-size:var(--fs-meta); font-weight:800; color:var(--signal-700); font-family:var(--font-mono); }
+.team-row-go{ color:var(--ink-400); font-size:var(--fs-meta); }
+
+/* ===== 团队页：影响力双指标卡（参考我的影响力：渐变底+白卡两列） ===== */
+.inf-hero{
+  margin:10.32px 10.32px 0; padding:14.907px; border-radius:var(--r-box);
+  background:linear-gradient(160deg,#5B21B6 0%,#7C3AED 48%,#A98BF5 100%);
+  box-shadow:0 6px 22px rgba(91,33,182,.28);
+}
+.inf-hero-card{
+  background:rgba(255,252,246,.96); border-radius:10.893px; padding:13.76px 0;
+  display:flex; align-items:stretch;
+}
+.inf-hero-cell{ flex:1; text-align:center; min-width:0; }
+.inf-hero-cell + .inf-hero-cell{ border-left:0.573px solid var(--line-soft); }
+.inf-hero-v{ display:block; font-size:var(--fs-h2); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); line-height:1.25; }
+.inf-hero-l{ display:block; margin-top:2.293px; font-size:var(--fs-micro); color:var(--ink-600); }
+
+/* ===== 审核子页（管流程事：证据/审批/订单） ===== */
+.audit-todo{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
+.audit-todo-cell{ text-align:center; padding:10.32px 2px; border-radius:10.32px; background:var(--sunk); border:0.573px solid var(--line-soft); cursor:pointer; transition:transform .15s; }
+.audit-todo-cell:active{ transform:scale(.95); }
+.audit-todo-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--signal-800); font-family:var(--font-mono); }
+.audit-todo-l{ display:block; margin-top:1.72px; font-size:var(--fs-micro); font-weight:600; color:var(--ink-600); }
+.audit-row{ display:flex; align-items:center; gap:8.027px; padding:9.173px 0; border-bottom:0.573px solid var(--line-soft); }
+.audit-row:last-child{ border-bottom:none; }
+.audit-dot{ width:8.027px; height:8.027px; border-radius:50%; flex-shrink:0; }
+.audit-dot--amber{ background:#F7B65C; }
+.audit-dot--purple{ background:#A98BF5; }
+.audit-dot--green{ background:#34D399; }
+.audit-dot--red{ background:#F87171; }
+.audit-t{ flex:1; min-width:0; font-size:var(--fs-meta); font-weight:600; color:var(--ink-900); }
+.audit-d{ font-size:var(--fs-micro); color:var(--ink-500); margin-top:1.147px; }
+.audit-st{ font-size:var(--fs-micro); font-weight:700; flex-shrink:0; padding:2.293px 6.88px; border-radius:5.16px; }
+.audit-st--amber{ background:rgba(247,182,92,.14); color:#B45309; }
+.audit-st--purple{ background:rgba(124,58,237,.1); color:var(--signal-700); }
+.audit-st--green{ background:rgba(52,211,153,.14); color:#047857; }
+.audit-st--red{ background:rgba(248,113,113,.14); color:#B91C1C; }
+
+/* ===== AI 军师悬浮球 ===== */
+.ai-fab{
+  position:absolute; right:14.907px; bottom:calc(103.253px + var(--sab));
+  width:47.013px; height:47.013px; border-radius:50%; z-index:95;
+  background:linear-gradient(135deg,#8B5CF6,#5B21B6);
+  box-shadow:0 6px 18px rgba(91,33,182,.4), inset 0 1px 0 rgba(255,255,255,.25);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#FFF; cursor:pointer; transition:transform .15s;
+}
+.ai-fab:active{ transform:scale(.92); }
+.ai-fab svg{ width:19px; height:19px; }
+.ai-fab-t{ font-size:6.4px; font-weight:700; margin-top:1px; letter-spacing:.5px; }
+
+/* ===== 身份解锁弹层（居中弹窗） ===== */
+.unlock-mask{
+  position:fixed; inset:0; z-index:120; background:rgba(51,33,15,.42);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.unlock-mask.is-open{ opacity:1; pointer-events:auto; }
+.unlock-sheet{
+  width:315.6px; border-radius:16.053px; background:#FFF7EC; padding:17.2px 16.053px;
+  transform:scale(.8); transition:transform .2s;
+  box-shadow:0 20px 50px rgba(51,33,15,.25);
+}
+.unlock-mask.is-open .unlock-sheet{ transform:scale(1); }
+.unlock-h{ font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); text-align:center; }
+.unlock-d{ font-size:var(--fs-micro); color:var(--ink-600); text-align:center; margin-top:4.013px; }
+.unlock-list{ margin:12.04px 0; }
+.unlock-li{
+  display:flex; align-items:center; gap:8.027px; padding:6.88px 9.173px;
+  border-radius:8.027px; background:var(--sunk-2); margin-bottom:5.16px;
+  font-size:var(--fs-meta); color:var(--ink-800);
+}
+.unlock-li svg{ width:13.76px; height:13.76px; color:var(--ink-500); flex-shrink:0; }
+.unlock-btns{ display:flex; gap:6.88px; margin-top:12.04px; }
+.unlock-btn{ flex:1; text-align:center; padding:8.6px 0; border-radius:9.173px; font-size:var(--fs-meta); font-weight:700; cursor:pointer; }
+.unlock-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; }
+.unlock-btn--ghost{ background:var(--sunk-2); color:var(--ink-700); }
 
 .tk-hero{ padding: 16.053px; }
 .tk-count{ gap: 6.88px; align-items: baseline; }
 .tk-num{ font-size: var(--fs-display); font-weight: 700; line-height: 1.1; }
 .tk-total{ font-size: var(--fs-h3); color: var(--ink-600); }
-
 .tk-award{ font-size: var(--fs-meta); font-weight: 700; color: var(--pulse-600); }
-
-
-.tk-sk{ padding: 12.613px 0; border-top: 0.573px solid var(--line-soft); }
-.tk-sk:first-child{ border-top: none; }
-
 
 .tk-row{
   display: flex; align-items: flex-start; gap: 12.613px;
@@ -31,9 +280,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 }
 .tk-row:first-child{ border-top: none; }
 .tk-row:active{ opacity: 0.6; }
-
 .tk-row--done{ opacity: 0.55; }
-
 
 .tk-check{
   width: 21.787px; height: 21.787px; flex: 0 0 21.787px; border-radius: 50%;
@@ -43,13 +290,14 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 }
 .tk-check--urgent{ border-color: var(--danger); }
 .tk-check--done{ border-color: var(--ok-fill); background: var(--ok-fill); }
+.tk-arrow{ flex:0 0 auto; margin-top:4.587px; }
 
 .tk-title{ display: block; font-size: var(--fs-h4); font-weight: 700; color: var(--ink-900); line-height: 1.4; }
 .tk-title--done{ color: var(--ink-600); text-decoration: line-through; }
 .tk-meta{ gap: 9.173px; margin-top: 6.88px; }
 .tk-clock{ gap: 4.587px; }
 .tk-pt{ font-size: var(--fs-meta); font-weight: 600; color: var(--pulse-600); }
-
+.tk-pt--muted{ color: var(--ink-500); }
 
 .tk-meta .tag:not([class*="tag--"]){
   background: var(--sunk-3); color: var(--signal-800); border-color: var(--line-signal);
@@ -57,23 +305,24 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 
 @media (prefers-reduced-motion: reduce) {
   .tk-row{ transition: none; }
+  .role-pill{ transition: none; }
 }</style>
 </head>
 <body class="mp-body">
 <div class="mp-shell">
   <div class="mp-meta">
-    <h1>我的任务</h1>
+    <h1>主理台</h1>
     <code>/pages/tasks/index</code>
-    
+
   </div>
-  <p class="mp-note">两类任务刻意不合并（护栏 63）：会员成长任务由系统按业务事实派生；运营任务（opsTasks）是运营主动设计的内容动作，由人决定发不发。</p>
+  <p class="mp-note">按角色区分视角：会员看成长任务；代理/团长为工作台子应用（数据驾驶舱 + 分发 + 任务 + 资产），团队发展与收益数据优先。原型阶段用顶部切换器演示三种身份。</p>
   <div class="mp-bar">
     <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
     <button onclick="location.href='../index.html'">返回总览</button>
   </div>
   <div class="mp-frame">
     <div class="mp-page">
-      
+
 <div class="mp-statusbar">
   <span>9:41</span>
   <span class="mp-icons">
@@ -87,8 +336,10 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   <span class="mp-sep"></span>
   <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
 </div>
-      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer tk-layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">我的任务</span><div class="subbar-slot wx-view"></div></div></div></div><div class="card card--hero tk-hero wx-view"><div class="f-between wx-view"><div class="f tk-count wx-view"><span class="title-grad tk-num mono wx-text">2</span><span class="tk-total mono wx-text">/ 5</span><span class="t-meta wx-text">已完成</span></div><span class="tk-award wx-text">今日 <span class="mono wx-text">+180</span> 积分</span></div><div class="prog-track mt-14 wx-view"><div class="prog-fill wx-view" style="width:40%;"></div></div></div><div class="card card-pad gap wx-view"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">运营任务</span><span class="t-tiny wx-text">上级派发 · 共 <span class="mono wx-text">3</span> 项</span></div><div class="tk-row wx-view"><div class="f-1 wx-view"><span class="tk-title wx-text">转发《9 月新课表》到朋友圈</span><div class="f f-wrap tk-meta wx-view"><span class="tag wx-text">朋友圈</span><span class="t-meta wx-text">待执行</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">9 月 3 日 前发布</span></div></div></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="tk-row wx-view"><div class="f-1 wx-view"><span class="tk-title wx-text">在自己的群里转发闭门会报名</span><div class="f f-wrap tk-meta wx-view"><span class="tag wx-text">微信群</span><span class="t-meta wx-text">待回填证据</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">9 月 5 日 前发布</span></div></div></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="tk-row tk-row--done wx-view"><div class="f-1 wx-view"><span class="tk-title tk-title--done wx-text">公众号转载《私域第一课》</span><div class="f f-wrap tk-meta wx-view"><span class="tag wx-text">公众号</span><span class="t-meta wx-text">已完成</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">8 月 26 日已发布</span></div></div></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><div class="card card-pad gap wx-view"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">任务清单</span><span class="t-tiny wx-text">共 <span class="mono wx-text">5</span> 项</span></div><div class="tk-row wx-view"><div class="tk-check  tk-check--urgent wx-view"></div><div class="f-1 wx-view"><span class="tk-title wx-text">提交《社群冷启动》课后作业</span><div class="f f-wrap tk-meta wx-view"><span class="tag tag--amber wx-text">作业</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">9 月 3 日 18:00 截止</span></div><span class="tk-pt wx-text">+<span class="mono wx-text">60</span> 积分</span></div></div></div><div class="tk-row wx-view"><div class="tk-check wx-view"></div><div class="f-1 wx-view"><span class="tk-title wx-text">邀请 1 位主理人进群</span><div class="f f-wrap tk-meta wx-view"><span class="tag tag--purple wx-text">邀请</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">本周内</span></div><span class="tk-pt wx-text">+<span class="mono wx-text">120</span> 积分</span></div></div></div><div class="tk-row wx-view"><div class="tk-check wx-view"></div><div class="f-1 wx-view"><span class="tk-title wx-text">评价服务老师赵一川</span><div class="f f-wrap tk-meta wx-view"><span class="tag tag--purple wx-text">评价</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">无截止</span></div><span class="tk-pt wx-text">+<span class="mono wx-text">20</span> 积分</span></div></div></div><div class="tk-row tk-row--done wx-view"><div class="tk-check tk-check--done wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="tk-title tk-title--done wx-text">完善会员资料</span><div class="f f-wrap tk-meta wx-view"><span class="tag tag--green wx-text">档案</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">8 月 19 日完成</span></div><span class="tk-pt wx-text">+<span class="mono wx-text">60</span> 积分</span></div></div></div><div class="tk-row tk-row--done wx-view"><div class="tk-check tk-check--done wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="tk-title tk-title--done wx-text">加入班级微信群</span><div class="f f-wrap tk-meta wx-view"><span class="tag tag--green wx-text">入群</span><div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">8 月 18 日完成</span></div><span class="tk-pt wx-text">+<span class="mono wx-text">120</span> 积分</span></div></div></div></div></div></div>
-      
+      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer tk-layer wx-view"><div class="topseg tk-topseg" id="roleSw"></div><div id="tkHeroZone"></div><div id="tkWork"></div><div id="tkSections"></div><div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div></div></div>
+      <div class="tabbar wx-view"><div class="tab wx-view mp-nav" data-nav="notifications"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M22%2017a2%202%200%200%201-2%202H6.828a2%202%200%200%200-1.414.586l-2.202%202.202A.71.71%200%200%201%202%2021.286V5a2%202%200%200%201%202-2h16a2%202%200%200%201%202%202z%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div><span class="tab-badge wx-text">3</span></div><span class="tab-label wx-text">消息</span></div><div class="tab wx-view mp-nav" data-nav="group"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">微信群</span></div><div class="tab tab--on tab--center wx-view mp-nav" data-nav="tasks"><div class="tab-knob-box wx-view"><div class="tab-knob wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222.235%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div></div><span class="tab-label wx-text">主理台</span></div><div class="tab wx-view mp-nav" data-nav="index"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3Cpath%20d%3D%22M3%2015h18%22%20%2F%3E%3Cpath%20d%3D%22M9%203v18%22%20%2F%3E%3Cpath%20d%3D%22M15%203v18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">发现</span></div><div class="tab wx-view mp-nav" data-nav="mine"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236D28D9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M19%2021v-2a4%204%200%200%200-4-4H9a4%204%200%200%200-4%204v2%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">我的</span></div></div>
+
+      <div class="unlock-mask" id="unlockMask"><div class="unlock-sheet"><div class="unlock-h" id="unlockH"></div><div class="unlock-d" id="unlockD"></div><div class="unlock-list" id="unlockList"></div><div class="unlock-btns"><div class="unlock-btn unlock-btn--ghost" id="unlockClose">知道了</div><div class="unlock-btn unlock-btn--pri" id="unlockGo">演示解锁</div></div></div></div>
       <div class="mp-home"></div>
     </div>
   </div>
@@ -104,14 +355,347 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
     if (!el) return;
     e.preventDefault();
     var t = el.getAttribute("data-nav");
-    if (t === "__back__") {
-      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
-      if (history.length > 1) history.back();
-      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
-      return;
-    }
+    if (t === "__back__") { if (history.length > 1) history.back(); else location.href = "tasks.html" + location.search; return; }
     location.href = t + ".html" + location.search;
   });
 })();
+</script>
+<script>
+// ===== 主理台（身份解锁制 + 周期目标 + 推广闭环入口） =====
+// 图标模板（与全站 SVG 线条风格一致）
+var ICO_CLOCK = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_CHECK = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_ARROW = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_LOCK = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20x%3D%223%22%20y%3D%2211%22%20width%3D%2218%22%20height%3D%2211%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M7%2011V7a5%205%200%200%201%2010%200v4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_GEM = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+
+// 工作台区：平台图标与分发数据（代理/团长视角）
+var SVGW = function(d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.8 1.8) scale(0.85)">' + d + '</g></svg>'; };
+var PLATS = {
+  '朋友圈': SVGW('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'),
+  '视频号': SVGW('<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>'),
+  '公众号': SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
+  '知乎':   SVGW('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M9.5 8.5h5"/><path d="M12 8.5V14"/>'),
+  '小红书': SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h3"/>'),
+  '微信贴图': SVGW('<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/>')
+};
+var DIST = [
+  { n:'朋友圈', c:'12 条' }, { n:'视频号', c:'3 条' }, { n:'公众号', c:'2 篇' },
+  { n:'知乎', c:'1 篇' }, { n:'小红书', c:'8 篇' }, { n:'微信贴图', c:'2 组' }
+];
+var ENTRY_ICOS = {
+  matrix: SVGW('<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>'),
+  training: SVGW('<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>'),
+  invite: SVGW('<circle cx="9" cy="7" r="4"/><path d="M16 11h5"/><path d="M18.5 8.5v5"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>'),
+  earnings: SVGW('<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>')
+};
+
+var UNLOCKED = { member: true, agent: true, leader: true };
+var UNLOCK_RULES = {};
+var PERIODS = ['今日', '本周', '本月', '总'];
+var PERIOD = '本周';
+var TPERIOD = '本周';
+
+var ROLES = {
+  member: {
+    name: '会员',
+    hero: {
+      '今日': { done: 1, total: 2, award: '+60 积分' },
+      '本周': { done: 2, total: 5, award: '+180 积分' },
+      '本月': { done: 9, total: 22, award: '+960 积分' },
+      '总': { done: 46, total: 120, award: '累计 +5,240 积分' }
+    },
+    sections: [{ title: '任务清单', sub: '系统派生 · 共 5 项', type: 'growth', tasks: [
+      { t: '提交《社群冷启动》课后作业', tag: '作业', tagCls: 'tag--amber', time: '9 月 3 日 18:00 截止', pt: '+60 积分', urgent: true },
+      { t: '邀请 1 位主理人进群', tag: '邀请', tagCls: 'tag--purple', time: '本周内', pt: '+120 积分' },
+      { t: '评价服务老师赵一川', tag: '评价', tagCls: 'tag--purple', time: '无截止', pt: '+20 积分' }
+    ] }]
+  },
+  agent: {
+    name: '代理',
+    hero: {
+      '今日': { done: 2, total: 6, award: '待发货 3 单' },
+      '本周': { done: 8, total: 15, award: '预计利润 ¥1,246' },
+      '本月': { done: 26, total: 42, award: '库存价值 ¥8,620' },
+      '总': { done: 126, total: 180, award: '累计经营利润 ¥18,932' }
+    },
+    sections: [{ title: '本周待办', sub: '经营与履约 · 共 3 项', type: 'growth', tasks: [
+      { t: '初审 2 位团长申请', tag: '初审', tagCls: 'tag--amber', time: '今日内处理', pt: '2 人待审', ptMuted: true, urgent: true },
+      { t: '为 3 笔路由订单完成发货', tag: '发货', tagCls: 'tag--purple', time: '今日 18:00 前', pt: '库存已占用', ptMuted: true },
+      { t: '跟进低库存 SKU 补货', tag: '补货', tagCls: 'tag--green', time: '本周内', pt: '2 个预警', ptMuted: true }
+    ] }]
+  },
+  leader: {
+    name: '团长',
+    hero: {
+      '今日': { done: 2, total: 5, award: '预计佣金 ¥86' },
+      '本周': { done: 8, total: 14, award: '预计佣金 ¥1,120' },
+      '本月': { done: 25, total: 40, award: '本月佣金 ¥2,680' },
+      '总': { done: 116, total: 180, award: '累计佣金 ¥18,932' }
+    },
+    sections: [{ title: '本周推广任务', sub: '来自上级代理 · 共 3 项', type: 'growth', tasks: [
+      { t: '发布《社群成长清单》内容', tag: '内容', tagCls: 'tag--amber', time: '今日 20:00 前', pt: '待发布', ptMuted: true, urgent: true },
+      { t: '私聊跟进 6 位意向成员', tag: '跟进', tagCls: 'tag--purple', time: '本周内', pt: '已完成 3 人', ptMuted: true },
+      { t: '完成《社群成交服务》课程', tag: '培训', tagCls: 'tag--green', time: '9 月 30 日前', pt: '4 / 6 课时', ptMuted: true }
+    ] }]
+  }
+};
+var ROLE = 'member';
+
+function esc(s){ return String(s); }
+
+function rowHtml(task, type){
+  var done = !!task.done;
+  var main = '<span class="tk-title' + (done ? ' tk-title--done' : '') + ' wx-text">' + esc(task.t) + '</span>' +
+    '<div class="f f-wrap tk-meta wx-view"><span class="tag ' + (task.tagCls || '') + ' wx-text">' + esc(task.tag) + '</span>';
+  if (type === 'ops') main += '<span class="t-meta wx-text">' + esc(task.status) + '</span>';
+  else if (task.pt) main += '<span class="tk-pt' + (task.ptMuted ? ' tk-pt--muted' : '') + ' wx-text">' + esc(task.pt) + '</span>';
+  main += '<div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:' + ICO_CLOCK + ';background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">' + esc(task.time) + '</span></div></div>';
+  var side = type === 'ops'
+    ? '<div class="tk-arrow wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:' + ICO_ARROW + ';background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div>'
+    : '<div class="tk-check' + (done ? ' tk-check--done' : (task.urgent ? ' tk-check--urgent' : '')) + ' wx-view">' + (done ? '<div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:' + ICO_CHECK + ';background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div>' : '') + '</div>';
+  return '<div class="tk-row' + (done ? ' tk-row--done' : '') + ' wx-view">' + side + '<div class="f-1 wx-view">' + main + '</div></div>';
+}
+
+function renderPills(){
+  var html = '';
+  ['member', 'agent', 'leader'].forEach(function(key){
+    var on = key === ROLE;
+    var wk = ROLES[key].hero['本周'];
+    html += '<div class="topseg-item' + (on ? ' topseg-item--on' : '') + '" data-role="' + key + '" role="button">' + ROLES[key].name + '<span class="seg-badge">' + (wk.total - wk.done) + '</span></div>';
+  });
+  document.getElementById('roleSw').innerHTML = html;
+}
+
+function renderHero(targetId){
+  var h = ROLES[ROLE].hero[TPERIOD];
+  var pct = Math.round(h.done / h.total * 100);
+  var perHtml = PERIODS.map(function(p){ return '<div class="tk-per' + (p === TPERIOD ? ' tk-per--on' : '') + '" data-period="' + p + '" role="button">' + p + '</div>'; }).join('');
+  var html = '<div class="card card--hero tk-hero wx-view"><div class="tk-periods">' + perHtml + '</div><div class="f-between wx-view"><div class="f tk-count wx-view"><span class="title-grad tk-num mono wx-text">' + h.done + '</span><span class="tk-total mono wx-text">/ ' + h.total + '</span><span class="t-meta wx-text">已完成</span></div><span class="tk-award wx-text">' + esc(h.award) + '</span></div><div class="prog-track mt-14 wx-view"><div class="prog-fill wx-view" style="width:' + pct + '%;"></div></div></div>';
+  var el = document.getElementById(targetId);
+  if (targetId === 'tkHeroZone') el.innerHTML = html;
+  else el.insertAdjacentHTML('beforeend', html);
+  return html;
+}
+
+var ROLE_TABS = {
+  agent: [{ key: 'people', label: '社群' }, { key: 'team', label: '团长' }, { key: 'process', label: '履约' }, { key: 'money', label: '经营' }, { key: 'marketing', label: '推广' }],
+  leader: [{ key: 'people', label: '社群' }, { key: 'marketing', label: '推广' }, { key: 'process', label: '订单' }, { key: 'money', label: '佣金' }]
+};
+var SUBTAB = 'people';
+
+var DASHBOARD = {
+  agent: {
+    money: { title: '预计经营利润', total: '1,246', labels: ['销售回款', '进货成本', '待结算团长佣金'], values: ['4,860', '2,980', '634'], status: [['8,620', '库存价值'], ['1,240', '库存占用'], ['2', '低库存 SKU']], categories: [['王敏团长', '12 笔', '¥486'], ['李芳团长', '9 笔', '¥342'], ['周舟团长', '6 笔', '¥218']], donut: { total: '¥1,046', items: [['社群成交', '#7C3AED', 486], ['活动成交', '#A98BF5', 342], ['复购订单', '#F7B65C', 218]] } },
+    people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
+    team: { hero: ['8 位', '286 人'], funnel: [['待初审', '2'], ['复审中', '1'], ['已通过', '8']], donut: { total: '286', items: [['活跃成员', '#7C3AED', 184], ['新增会员', '#F7B65C', 46], ['待跟进', '#E88C4A', 56]] }, rows: [['王敏', '杭州妈妈成长群', '86'], ['李芳', '职场成长社群', '64'], ['周舟', '亲子阅读群', '52']] },
+    process: { todo: [['2', '团长初审'], ['3', '待发货'], ['2', '库存预警']], list: [['王敏提交团长申请', '资料已齐全，等待代理初审', '待初审', 'amber'], ['订单 #2026092108', '王敏成交 · 库存已占用', '待发货', 'purple'], ['轻享装 SKU', '可用库存 6 件，建议补货', '低库存', 'red'], ['订单 #2026092076', '已交物流揽收', '运输中', 'green']], orders: [['待发货订单', '3 笔 · 已占库存'], ['物流与售后', '2 项待跟进']] },
+    marketing: { tag: '本周推广方向 · 由代理下发', title: '社群秋季复购活动', desc: '向名下团长下发内容、活动和培训任务，追踪素材领取、完成率与订单转化。', chips: ['8 位团长已领取', '完成率 64%', '素材包 6 件'], tools: [{ ico: 'invite', t: '招募团长', d: '生成招募海报与申请链接', nav: 'invite-poster' }, { ico: 'training', t: '团长赋能', d: '内容、活动与培训任务', nav: 'training' }] }
+  },
+  leader: {
+    money: { title: '本周预计佣金', total: '1,890', labels: ['已结算佣金', '预计佣金', '待结算佣金'], values: ['1,120', '1,120', '260'], status: [['1,120', '已结算'], ['1,890', '预计佣金'], ['260', '待结算']], categories: [['秋季复购活动', '12 笔', '¥860'], ['社群推荐成交', '9 笔', '¥640'], ['会员续购', '6 笔', '¥390']], donut: { total: '¥1,890', items: [['活动成交', '#7C3AED', 860], ['社群推荐', '#A98BF5', 640], ['会员续购', '#F7B65C', 390]] } },
+    people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
+    process: { todo: [['1', '审核中'], ['3', '代理待发货'], ['1', '售后跟进']], list: [['团长入驻申请', '代理初审已通过，等待平台复审', '复审中', 'purple'], ['订单 #2026092108', '已路由至上级代理库存', '待发货', 'amber'], ['订单 #2026092076', '代理已发货，物流运输中', '运输中', 'green'], ['订单 #2026092061', '会员申请退款，等待处理', '售后中', 'red']], orders: [['我推广的订单', '18 笔 · 本周'], ['发货与售后', '4 项待跟进']] },
+    marketing: { tag: '本周推广任务 · 来自上级代理', title: '社群秋季复购活动', desc: '领取推广素材、完成内容发布和成员跟进；成交订单将自动路由至上级代理库存发货。', chips: ['素材包 6 件', '分享链接已生成', '完成 8 / 14 项'], tools: [{ ico: 'matrix', t: '推广素材与链接', d: '文案、海报、分享链接', nav: 'matrix' }, { ico: 'training', t: '成长培训', d: '标准话术与社群服务课程', nav: 'training' }] }
+  }
+};
+
+function donutSvg(items){
+  var C = 339.29, off = 0, segs = '', total = 0;
+  items.forEach(function(it){ total += it[2]; });
+  items.forEach(function(it){ var len = total ? C * it[2] / total : 0; segs += '<circle cx="63" cy="63" r="54" fill="none" stroke="' + it[1] + '" stroke-width="18" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '"/>'; off += len; });
+  return '<svg viewBox="0 0 126 126" width="126" height="126">' + segs + '</svg>';
+}
+
+function renderWorkbench(){
+  var el = document.getElementById('tkWork');
+  if (ROLE === 'member') { el.innerHTML = ''; return; }
+  var tabs = ROLE_TABS[ROLE];
+  var actions = ROLE === 'agent'
+    ? '<div class="actbar-btn actbar-btn--ghost" data-gosub="people" role="button">经营社群</div><div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募团长</div>'
+    : '<div class="actbar-btn actbar-btn--ghost mp-nav" data-nav="training" role="button">成长培训</div><div class="actbar-btn actbar-btn--pri" data-gosub="marketing" role="button">去推广</div>';
+  el.innerHTML = '<div class="subtab" id="subTab">' + tabs.map(function(t){ return '<div class="subtab-pill' + (t.key === SUBTAB ? ' subtab-pill--on' : '') + '" data-sub="' + t.key + '" role="button">' + t.label + '</div>'; }).join('') + '</div><div class="subbody" id="subBody"></div><div class="actbar" id="actBar">' + actions + '</div>';
+  renderSubBody();
+}
+
+function renderSubBody(){
+  var el = document.getElementById('subBody');
+  if (!el) return;
+  var D = DASHBOARD[ROLE];
+  var h = '';
+  if (SUBTAB === 'people' || SUBTAB === 'team') {
+    var teamMode = SUBTAB === 'team';
+    var P = teamMode ? D.team : D.people;
+    h += '<div class="inf-hero"><div class="inf-hero-card"><div class="inf-hero-cell"><span class="inf-hero-v">' + P.hero[0] + '</span><span class="inf-hero-l">' + (teamMode ? '名下团长' : '我的社群') + '</span></div><div class="inf-hero-cell"><span class="inf-hero-v">' + P.hero[1] + '</span><span class="inf-hero-l">覆盖成员</span></div></div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长状态（人）' : '社群成员概览') + '</span><span class="t-tiny wx-text">本周</span></div><div class="funnel-grid">' + P.funnel.map(function(f){ return '<div class="funnel-cell" data-funnel="' + esc(f[0]) + '" role="button"><span class="funnel-go">›</span><span class="funnel-v">' + esc(f[1]) + '</span><span class="funnel-l">' + esc(f[0]) + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长状态（人）' : '成员状态（人）') + '</span><span class="t-tiny wx-text">点击查看明细</span></div><div class="donut-wrap"><div class="donut">' + donutSvg(P.donut.items) + '<div class="donut-c"><span class="donut-cv">' + P.donut.total + '</span><span class="donut-cl">' + (teamMode ? '团长总数' : '覆盖成员') + '</span></div></div><div class="donut-legend">' + P.donut.items.map(function(it){ return '<div class="donut-li"><span class="donut-dot" style="background:' + it[1] + '"></span>' + esc(it[0]) + '<span class="dv">' + it[2] + '</span></div>'; }).join('') + '</div></div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长档案与活跃度' : '我的社群') + '</span><span class="t-tiny wx-text">下钻详情</span></div>' + P.rows.map(function(r){ return '<div class="team-row' + (teamMode ? ' mp-nav' : '') + '"' + (teamMode ? ' data-nav="agent-info"' : '') + ' role="button"><span class="team-row-t">' + esc(r[0]) + '<small style="display:block;font-size:10px;color:#A9906F;margin-top:2px;">' + esc(r[1]) + '</small></span><span class="team-row-v">' + esc(r[2]) + '</span><span class="team-row-go">›</span></div>'; }).join('') + '</div>';
+    if (ROLE === 'agent' && teamMode) h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">团长申请</span><span class="t-tiny wx-text">待处理 3 项</span></div><div class="team-row" data-gosub="process" role="button"><span class="team-row-t">待初审团长申请</span><span class="team-row-v">2</span><span class="team-row-go">›</span></div><div class="team-row" data-gosub="process" role="button"><span class="team-row-t">平台复审中</span><span class="team-row-v">1</span><span class="team-row-go">›</span></div></div>';
+  } else if (SUBTAB === 'money') {
+    var M = D.money;
+    var repTabs = PERIODS.map(function(p){ return '<div class="rep-tab' + (p === PERIOD ? ' rep-tab--on' : '') + '" data-period="' + p + '" role="button">' + p + '</div>'; }).join('');
+    h += '<div class="rep-head"><span class="rep-l">' + M.title + '（元）</span><div class="rep-num">¥' + M.total + '</div><div class="rep-sub"><span class="rep-wd">' + (ROLE === 'agent' ? '销售回款与库存经营' : '预计佣金 <b>¥' + M.status[1][0] + '</b>') + '</span>' + '<div class="rep-btn" data-gosub="process" role="button">' + (ROLE === 'agent' ? '查看订单' : '查看结算') + '</div>' + '</div><div class="rep-tabs">' + repTabs + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '经营构成（元）' : '佣金构成（元）') + '</span><span class="t-tiny wx-text">' + PERIOD + '</span></div><div class="rep-split">' + M.values.map(function(v, i){ return '<div class="rep-split-cell"><span class="rep-split-v">¥' + v + '</span><span class="rep-split-l">' + M.labels[i] + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '经营状态' : '佣金状态') + '</span><span class="t-tiny wx-text">本周</span></div><div class="status-grid">' + M.status.map(function(s, i){ return '<div class="status-cell"><span class="status-v' + (i === 0 ? ' status-v--ok' : '') + '">' + (ROLE === 'agent' && i < 2 ? '¥' : '¥') + s[0] + '</span><span class="status-l">' + s[1] + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '按团长成交贡献' : '订单佣金明细') + '</span><span class="t-tiny wx-text">本周</span></div><div class="rep-table-h"><span>类别</span><span>订单量</span><span>' + (ROLE === 'agent' ? '预计利润' : '预计佣金') + '</span><span></span></div>' + M.categories.map(function(c){ return '<div class="rep-table-r" data-funnel="' + esc(c[0]) + '" role="button"><span>' + esc(c[0]) + '</span><span class="m">' + esc(c[1]) + '</span><span class="m">' + esc(c[2]) + '</span><span class="r-go">›</span></div>'; }).join('') + '</div>';
+  } else if (SUBTAB === 'process') {
+    var R = D.process;
+    h += '<div class="audit-todo" style="padding:0 10.32px;">' + R.todo.map(function(t){ return '<div class="audit-todo-cell" data-funnel="' + esc(t[1]) + '" role="button"><span class="audit-todo-v">' + t[0] + '</span><span class="audit-todo-l">' + esc(t[1]) + '</span></div>'; }).join('') + '</div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '审核与履约事项' : '我的订单与服务事项') + '</span><span class="t-tiny wx-text">点击处理</span></div>' + R.list.map(function(r){ return '<div class="audit-row" data-funnel="' + esc(r[0]) + '" role="button"><span class="audit-dot audit-dot--' + r[3] + '"></span><div class="f-1"><div class="audit-t">' + esc(r[0]) + '</div><div class="audit-d">' + esc(r[1]) + '</div></div><span class="audit-st audit-st--' + r[3] + '">' + esc(r[2]) + '</span></div>'; }).join('') + '</div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '库存与订单履约' : '我推广的订单') + '</span><span class="t-tiny wx-text mp-nav" data-nav="orders" style="cursor:pointer;">全部 ›</span></div>' + R.orders.map(function(o){ return '<div class="team-row mp-nav" data-nav="orders" role="button"><span class="team-row-t">' + esc(o[0]) + '</span><span class="team-row-v">' + esc(o[1]) + '</span><span class="team-row-go">›</span></div>'; }).join('') + '</div>';
+  } else if (SUBTAB === 'marketing') {
+    var K = D.marketing;
+    h += '<div class="dir-card"><div class="dir-head"><span class="dir-tag">' + K.tag + '</span></div><div class="dir-t">' + K.title + '</div><div class="dir-d">' + K.desc + '</div><div class="dir-chips">' + K.chips.map(function(c){ return '<span class="dir-chip">' + esc(c) + '</span>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '给团长下发任务' : '推广执行') + '</span><span class="t-tiny wx-text">点击平台 · AI 军师帮你写</span></div><div class="dist-grid">' + DIST.map(function(p){ return '<div class="dist-tile mp-nav" data-nav="ai"><div class="dist-ico">' + PLATS[p.n] + '</div><span class="dist-n">' + esc(p.n) + '</span><span class="dist-c">' + esc(p.c) + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;">' + K.tools.map(function(e){ return '<div class="entry-row mp-nav" data-nav="' + e.nav + '"><div class="entry-ico">' + ENTRY_ICOS[e.ico] + '</div><div class="f-1"><div class="entry-t">' + esc(e.t) + '</div><div class="entry-d">' + esc(e.d) + '</div></div><span class="entry-go">›</span></div>'; }).join('') + '</div>';
+    el.innerHTML = h;
+    renderHero('subBody');
+    renderSections('subBody');
+    return;
+  }
+  el.innerHTML = h;
+}
+
+function renderSections(targetId){
+  var html = '';
+  ROLES[ROLE].sections.forEach(function(sec){
+    html += '<div class="card card-pad gap wx-view">' +
+      '<div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + esc(sec.title) + '</span>' +
+      '<span class="t-tiny wx-text">' + esc(sec.sub) + '</span></div>';
+    sec.tasks.forEach(function(task){ html += rowHtml(task, sec.type); });
+    html += '</div>';
+  });
+  var el = document.getElementById(targetId);
+  if (targetId === 'tkSections') el.innerHTML = html;
+  else el.insertAdjacentHTML('beforeend', html);
+}
+
+function renderAll(){
+  renderPills();
+  if (ROLE === 'member') {
+    document.getElementById('tkWork').innerHTML = '';
+    renderHero('tkHeroZone');
+    renderSections('tkSections');
+  } else {
+    document.getElementById('tkHeroZone').innerHTML = '';
+    document.getElementById('tkSections').innerHTML = '';
+    renderWorkbench();
+  }
+}
+
+// 身份切换（校验解锁）
+function switchRole(r){
+  if (!ROLES[r]) return;
+  if (!UNLOCKED[r]) { openUnlock(r); return; }
+  if (ROLE === r) return;
+  ROLE = r;
+  SUBTAB = 'people';
+  renderAll();
+}
+
+// 解锁弹层
+var PENDING_ROLE = null;
+function openUnlock(r){
+  PENDING_ROLE = r;
+  var rule = UNLOCK_RULES[r];
+  if (!rule) return;
+  document.getElementById('unlockH').textContent = rule.title;
+  document.getElementById('unlockD').textContent = rule.desc;
+  var list = '';
+  rule.conds.forEach(function(c){
+    list += '<div class="unlock-li"><svg viewBox="0 0 24 24" style="background-image:' + ICO_LOCK + ';background-size:100% 100%;"></svg>' + esc(c) + '</div>';
+  });
+  document.getElementById('unlockList').innerHTML = list;
+  document.getElementById('unlockMask').classList.add('is-open');
+  // 视口小于机身时，让弹层对齐可视区中心
+  requestAnimationFrame(function(){
+    var sb = document.querySelector('.unlock-sheet').getBoundingClientRect();
+    var delta = (sb.top + sb.height / 2) - (window.innerHeight / 2);
+    if (Math.abs(delta) > 4) window.scrollBy(0, delta);
+  });
+}
+document.getElementById('unlockClose').addEventListener('click', function(){
+  document.getElementById('unlockMask').classList.remove('is-open');
+});
+document.getElementById('unlockGo').addEventListener('click', function(){
+  if (PENDING_ROLE) { UNLOCKED[PENDING_ROLE] = true; switchRole(PENDING_ROLE); PENDING_ROLE = null; }
+  document.getElementById('unlockMask').classList.remove('is-open');
+});
+
+// AI 军师悬浮球 → ai.html
+document.getElementById('aiFab').addEventListener('click', function(){
+  location.href = 'ai.html' + location.search;
+});
+
+// 事件委托：身份分段器 + 子页签 + 去分发 + 周期分段（全局）
+document.getElementById('roleSw').addEventListener('click', function(e){
+  var p = e.target.closest ? e.target.closest('.topseg-item') : null;
+  if (p) switchRole(p.getAttribute('data-role'));
+});
+document.getElementById('tkWork').addEventListener('click', function(e){
+  var pill = e.target.closest ? e.target.closest('.subtab-pill') : null;
+  if (pill) {
+    SUBTAB = pill.getAttribute('data-sub');
+    document.querySelectorAll('.subtab-pill').forEach(function(p){
+      p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
+    });
+    renderSubBody();
+    return;
+  }
+  // 页内跳子页签（如团队页代理审核入口 → 审核子页）
+  var gosub = e.target.closest ? e.target.closest('[data-gosub]') : null;
+  if (gosub) {
+    SUBTAB = gosub.getAttribute('data-gosub');
+    document.querySelectorAll('.subtab-pill').forEach(function(p){
+      p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
+    });
+    renderSubBody();
+    var f = document.querySelector('.mp-frame');
+    if (f) f.scrollTo({ top: 0 });
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 漏斗格下钻（原型示意）
+  var fcell = e.target.closest ? e.target.closest('[data-funnel]') : null;
+  if (fcell) {
+    var t = document.createElement('div');
+    t.textContent = '「' + fcell.getAttribute('data-funnel') + '」明细：正式版可查看来源渠道与名单';
+    t.style.cssText = 'position:fixed;top:40%;left:50%;transform:translateX(-50%);background:rgba(51,33,15,.82);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;z-index:99999;white-space:nowrap;';
+    document.body.appendChild(t);
+    setTimeout(function(){ t.remove(); }, 1600);
+    return;
+  }
+  var act = e.target.closest ? e.target.closest('[data-act="dist"]') : null;
+  if (act) {
+    SUBTAB = 'marketing';
+    document.querySelectorAll('.subtab-pill').forEach(function(p){
+      p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
+    });
+    renderSubBody();
+    // 平滑回顶，兜底瞬时滚顶（兼容 smooth 不生效的环境）；外层 window 同步回顶
+    try { document.querySelector('.mp-frame').scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) {}
+    window.scrollTo(0, 0);
+    setTimeout(function(){
+      var f = document.querySelector('.mp-frame');
+      if (f && f.scrollTop > 4) f.scrollTop = 0;
+    }, 500);
+  }
+});
+// 周期切换（两处独立）：.rep-tab=收益报表周期 PERIOD；.tk-per=任务进度周期 TPERIOD
+document.addEventListener('click', function(e){
+  var isRep = e.target.closest ? e.target.closest('.rep-tab') : null;
+  if (isRep) {
+    PERIOD = isRep.getAttribute('data-period');
+    renderSubBody();
+    return;
+  }
+  var c = e.target.closest ? e.target.closest('.tk-per') : null;
+  if (!c) return;
+  TPERIOD = c.getAttribute('data-period');
+  if (ROLE === 'member') renderHero('tkHeroZone');
+  else renderSubBody();
+});
+
+renderAll();
 </script>
 </body></html>

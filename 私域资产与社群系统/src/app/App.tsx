@@ -13,6 +13,7 @@ import Orders from "./components/Orders";
 import Tickets from "./components/Tickets";
 import ApprovalCenter from "./components/ApprovalCenter";
 import Permissions from "./components/Permissions";
+import PlatformModeConfig from "./components/PlatformModeConfig";
 import CityBranch from "./components/CityBranch";
 import ReportCenter from "./components/ReportCenter";
 import MemberBenefits from "./components/MemberBenefits";
@@ -44,6 +45,7 @@ const moduleMap: Record<string, React.ComponentType> = {
   tickets:    Tickets,
   approval:   ApprovalCenter,
   permissions:Permissions,
+  platformMode: PlatformModeConfig,
   cities:     CityBranch,
   commission: Commission,
   reports:    ReportCenter,
@@ -51,6 +53,15 @@ const moduleMap: Record<string, React.ComponentType> = {
 };
 
 type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
+type ProjectContextValue = { platform: string; project: string; setPlatform: (value: string) => void; setProject: (value: string) => void; projectsByPlatform: Record<string, string[]> };
+export const ProjectContext = createContext<ProjectContextValue>({ platform: "健康运营平台", project: "PRO会员", setPlatform: () => {}, setProject: () => {}, projectsByPlatform: {} });
+export const useProjectContext = () => useContext(ProjectContext);
+const projectsByPlatform: Record<string, string[]> = {
+  "健康运营平台": ["PRO会员", "体验官"],
+  "商业城市平台": ["一级代理", "二级代理", "城市运营中心"],
+  "健康课程平台": ["7日训练营", "进阶班认证", "付费会员俱乐部"],
+  "教育学习平台": ["健康学院", "亲子教育课"],
+};
 
 export const ToolsContext = createContext<{
   tools: CommunicationTool[];
@@ -109,6 +120,8 @@ export default function App() {
   const [accounts, setAccounts] = useState<SystemAccount[]>(mockAccounts);
   const [invites, setInvites] = useState<InviteRecord[]>(mockInvites);
   const [approvals, setApprovals] = useState<Approval[]>(mockApprovals);
+  const [platform, setPlatform] = useState("健康运营平台");
+  const [project, setProject] = useState("PRO会员");
 
   const ActiveComponent = moduleMap[activeModule] || Overview;
   const selectView = (nextView: ViewMode) => {
@@ -172,7 +185,9 @@ export default function App() {
 
   return (
     <ThemeProvider>
+      <ProjectContext.Provider value={{ platform, project, setPlatform: value => { setPlatform(value); setProject(projectsByPlatform[value]?.[0] || ""); }, setProject, projectsByPlatform }}>
       <AppShell toolsValue={toolsValue} accountsValue={accountsValue} invitesValue={invitesValue} approvalsValue={approvalsValue} view={view} selectView={selectView} activeModule={activeModule} selectModule={selectModule} ActiveComponent={ActiveComponent} />
+      </ProjectContext.Provider>
     </ThemeProvider>
   );
 }

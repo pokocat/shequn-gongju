@@ -1,12 +1,13 @@
 import { ReactNode, useState, useRef, useEffect } from "react";
 import {
-  LayoutDashboard, Users2,
+  LayoutDashboard,
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
   BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
   Globe, Monitor, Smartphone, ChevronDown, Check
 } from "lucide-react";
 import { S, useThemeSingleton, ThemeControls } from "../theme";
+import { useProjectContext } from "../App";
 
 type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
 
@@ -18,13 +19,13 @@ const navGroups = [
   ]},
   { label: "配置中心", items: [
     { id: "wechat",     label: "账号资产中心",    icon: CreditCard,      badge: "2"  },
-    { id: "community",  label: "微信群管理",      icon: Users2,          badge: "8"  },
     { id: "cs",         label: "员工与服务资源",  icon: Headphones,      badge: null },
     { id: "channel",    label: "渠道流量绑定",    icon: Share2,          badge: null },
     { id: "cities",     label: "城市分站",        icon: MapPin,          badge: null },
+    { id: "platformMode", label: "平台模式配置",    icon: Settings,       badge: null },
   ]},
   { label: "日常运营", items: [
-    { id: "users",      label: "会员运营工作台", icon: User,            badge: null },
+    { id: "users",      label: "运营工作台",     icon: User,            badge: null },
     { id: "members",    label: "会员权益",       icon: Star,             badge: null },
   ]},
   { label: "服务与交易", items: [
@@ -62,7 +63,8 @@ const VIEW_MODES: VMItem[] = [
 function ViewModePicker({
   view, setView,
 }: { view: ViewMode; setView: (v: ViewMode) => void }) {
-  useThemeSingleton();
+ useThemeSingleton();
+  const { platform, project, setPlatform, setProject, projectsByPlatform } = useProjectContext();
   const current = VIEW_MODES.find(m => m.id === view) ?? VIEW_MODES[1];
 
   const [open, setOpen] = useState(false);
@@ -225,7 +227,8 @@ interface PCLayoutProps {
 export default function PCLayout({
  view, selectView, activeModule, onModuleChange, children }: PCLayoutProps) {
   useThemeSingleton();
-const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const { platform, project, setPlatform, setProject, projectsByPlatform } = useProjectContext();
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const activeItem = navItems.find(i => i.id === activeModule);
 
   return (
@@ -318,9 +321,19 @@ const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
           {/* 视图切换：浮动下拉选择器 */}
           <ViewModePicker view={view} setView={selectView} />
 
+          <div className="flex items-center gap-1.5 flex-shrink-0" aria-label="平台项目切换">
+            <select value={platform} onChange={event => setPlatform(event.target.value)} aria-label="切换平台" className="max-w-[132px] px-2 py-1.5 text-[10px] font-bold outline-none" style={{ background: S.bg, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}>
+              {Object.keys(projectsByPlatform).map(item => <option key={item}>{item}</option>)}
+            </select>
+            <span className="text-[10px]" style={{ color: S.mutedLight }}>/</span>
+            <select value={project} onChange={event => setProject(event.target.value)} aria-label="切换项目" className="max-w-[112px] px-2 py-1.5 text-[10px] font-bold outline-none" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, color: S.textSec, borderRadius: S.radiusSm }}>
+              {(projectsByPlatform[platform] || []).map(item => <option key={item}>{item}</option>)}
+            </select>
+          </div>
+
           {/* Breadcrumb */}
-          <div className="flex items-center gap-1.5 text-xs flex-shrink-0" style={{ fontFamily: "monospace" }}>
-            {["SUPER", "ECO", "SAAS", activeItem?.label?.toUpperCase()].map((seg, i, arr) => (
+          <div className="hidden xl:flex items-center gap-1.5 text-xs flex-shrink-0" style={{ fontFamily: "monospace" }}>
+            {[platform, project, activeItem?.label].map((seg, i, arr) => (
               <span key={i} className="flex items-center gap-1.5">
                 <span className="px-2 py-0.5 font-bold text-xs" style={{
                   background: i === arr.length - 1 ? S.accent : "rgba(15,23,42,0.06)",

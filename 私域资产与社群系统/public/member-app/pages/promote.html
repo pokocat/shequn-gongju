@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>推广工作台</title>
+<link rel="stylesheet" href="../css/app.css?v=20260917">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>
+.pm-layer{ padding-bottom: 132px; }
+/* 身份切换 */
+.view-sw{ display:flex; gap:5.16px; padding:10.32px 10.32px 0; }
+.view-pill{ flex:1; text-align:center; padding:6.88px 0; border-radius:9.173px; font-size:var(--fs-meta); font-weight:700; color:var(--ink-600); background:var(--sunk-2); border:0.573px solid var(--line-soft); cursor:pointer; transition:all .18s; }
+.view-pill--on{ background:#FFF; color:var(--signal-700); border-color:var(--line-brand); box-shadow:0 2px 8px rgba(124,58,237,.10); }
+.view-pill:active{ transform:scale(.97); }
+/* 数据三宫格 */
+.stat3{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; padding:0 10.32px; margin-top:10.32px; }
+.stat3-cell{ text-align:center; padding:10.32px 4px; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line-soft); }
+.stat3-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); }
+.stat3-l{ display:block; margin-top:2.293px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 本周方向卡 */
+.dir-card{ margin:10.32px 10.32px 0; padding:13.76px; border-radius:var(--r-box); background:var(--grad-hero); border:0.573px solid var(--line-brand); box-shadow:0 3px 12px rgba(124,58,237,.10); }
+.dir-head{ display:flex; justify-content:space-between; align-items:center; }
+.dir-tag{ font-size:var(--fs-micro); font-weight:700; color:var(--signal-700); background:rgba(124,58,237,.1); padding:2.293px 6.88px; border-radius:5.733px; }
+.dir-edit{ font-size:var(--fs-micro); color:var(--signal-700); font-weight:600; }
+.dir-t{ font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); margin-top:6.88px; }
+.dir-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:2.867px; line-height:1.5; }
+.dir-chips{ display:flex; gap:5.16px; margin-top:8.027px; flex-wrap:wrap; }
+.dir-chip{ font-size:var(--fs-micro); color:var(--ink-700); background:rgba(255,255,255,.55); padding:2.867px 8.027px; border-radius:5.733px; border:0.573px solid var(--line-soft); }
+/* 平台分发宫格 */
+.dist-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8.027px; }
+.dist-tile{ text-align:center; padding:11.467px 4px; border-radius:var(--r-box); background:var(--sunk-2); border:0.573px solid var(--line-soft); position:relative; cursor:pointer; transition:transform .15s; }
+.dist-tile:active{ transform:scale(.95); }
+.dist-ico{ width:36.8px; height:36.8px; margin:0 auto; border-radius:10.32px; display:flex; align-items:center; justify-content:center; color:var(--signal-700); background:var(--signal-50); border:0.573px solid var(--line-brand); }
+.dist-ico svg{ width:19px; height:19px; }
+.dist-n{ display:block; margin-top:5.16px; font-size:var(--fs-micro); font-weight:700; color:var(--ink-800); }
+.dist-c{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--pulse-600); font-weight:600; }
+.dist-badge{ position:absolute; top:6.88px; right:6.88px; min-width:16.053px; height:16.053px; padding:0 4.013px; border-radius:8.027px; background:var(--signal-600); color:#FFF; font-size:8px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+/* 入口行 */
+.entry-row{ display:flex; align-items:center; gap:10.32px; padding:10.32px 0; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.entry-row:last-child{ border-bottom:none; }
+.entry-ico{ width:34.4px; height:34.4px; border-radius:9.173px; display:flex; align-items:center; justify-content:center; color:var(--signal-700); background:var(--signal-50); border:0.573px solid var(--line-brand); flex-shrink:0; }
+.entry-ico svg{ width:18px; height:18px; }
+.entry-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.entry-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.entry-go{ color:var(--ink-400); font-size:var(--fs-meta); flex-shrink:0; }
+/* 团队排行 */
+.rank-row{ display:flex; align-items:center; gap:8.027px; padding:8.027px 0; border-bottom:0.573px solid var(--line-soft); }
+.rank-row:last-child{ border-bottom:none; }
+.rank-n{ width:20.64px; height:20.64px; border-radius:6.88px; display:flex; align-items:center; justify-content:center; font-size:var(--fs-micro); font-weight:800; color:var(--signal-700); background:var(--sunk-3); flex-shrink:0; }
+.rank-n--top{ background:linear-gradient(135deg,#F7B65C,#E88C4A); color:#FFF; }
+.rank-info{ flex:1; min-width:0; }
+.rank-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.rank-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.rank-v{ font-size:var(--fs-meta); font-weight:800; color:var(--pulse-600); }
+/* 底部双按钮 */
+.pm-actions{ position:sticky; bottom:0; z-index:20; display:flex; gap:6.88px; padding:10.32px; background:linear-gradient(180deg,rgba(255,247,236,0),rgba(255,247,236,.96) 40%); }
+.pm-btn{ flex:1; text-align:center; padding:11.467px 0; border-radius:11.467px; font-size:var(--fs-sec); font-weight:800; }
+.pm-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; box-shadow:0 4px 14px rgba(109,40,217,.3); }
+.pm-btn--ghost{ background:#FFF; color:var(--signal-700); border:0.573px solid var(--line-signal); }
+.pm-btn:active{ transform:scale(.98); }
+/* AI 军师悬浮球 */
+.ai-fab{ position:fixed; right:14.907px; bottom:calc(112px); width:47.013px; height:47.013px; border-radius:50%; z-index:95; background:linear-gradient(135deg,#8B5CF6,#5B21B6); box-shadow:0 6px 18px rgba(91,33,182,.4), inset 0 1px 0 rgba(255,255,255,.25); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#FFF; cursor:pointer; }
+.ai-fab:active{ transform:scale(.92); }
+.ai-fab svg{ width:19px; height:19px; }
+.ai-fab-t{ font-size:6.4px; font-weight:700; margin-top:1px; letter-spacing:.5px; }
+</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>推广工作台</h1>
+    <code>/pages/promote/index</code>
+  </div>
+  <p class="mp-note">代理/团长双态工作台：团长招募 · 推广素材 · 社群运营 · 成交协同 · 库存履约。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer pm-layer wx-view">
+        <div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">推广工作台</span><div class="subbar-slot wx-view"></div></div></div></div>
+        <div class="view-sw" id="viewSw"><div class="view-pill view-pill--on" data-view="agent">代理视角</div><div class="view-pill" data-view="leader">团长视角</div></div>
+        <div class="stat3" id="stat3"></div>
+        <div id="pmBody"></div>
+        <div class="pm-actions" id="pmActions"></div>
+      </div>
+      <div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转
+(function () {
+  var SLUG = "promote";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") { if (history.length > 1) history.back(); else location.href = "tasks.html" + location.search; return; }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+<script>
+// ===== 推广工作台（代理/团长双态） =====
+var SVGW = function(d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.8 1.8) scale(0.85)">' + d + '</g></svg>'; };
+// 平台图标（线条风格）
+var PLATS = {
+  '朋友圈': SVGW('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'),
+  '视频号': SVGW('<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>'),
+  '公众号': SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
+  '知乎':   SVGW('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M9.5 8.5h5"/><path d="M12 8.5V14"/>'),
+  '小红书': SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h3"/>'),
+  '微信贴图': SVGW('<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/>')
+};
+// 分发数据（代理态）：平台 -> 本月已分发
+var DIST = [
+  { n:'朋友圈', c:'12 条' }, { n:'视频号', c:'3 条' }, { n:'公众号', c:'2 篇' },
+  { n:'知乎', c:'1 篇' }, { n:'小红书', c:'8 篇' }, { n:'微信贴图', c:'2 组' }
+];
+var VIEW = 'agent';
+
+function esc(s){ return String(s); }
+
+function renderStat3(){
+  var el = document.getElementById('stat3');
+  if (VIEW === 'agent') {
+    el.innerHTML =
+      '<div class="stat3-cell"><span class="stat3-v">286</span><span class="stat3-l">社群成员</span></div>' +
+      '<div class="stat3-cell"><span class="stat3-v">18</span><span class="stat3-l">本周成交</span></div>' +
+      '<div class="stat3-cell"><span class="stat3-v">12</span><span class="stat3-l">名下团长</span></div>';
+  } else {
+    el.innerHTML =
+      '<div class="stat3-cell"><span class="stat3-v">286</span><span class="stat3-l">社群成员</span></div>' +
+      '<div class="stat3-cell"><span class="stat3-v">18</span><span class="stat3-l">本周成交</span></div>' +
+      '<div class="stat3-cell"><span class="stat3-v">¥1,890</span><span class="stat3-l">预计佣金</span></div>';
+  }
+}
+
+function distGridHtml(){
+  var h = '<div class="card card-pad gap wx-view" style="margin-top:10.32px;">' +
+    '<div class="f-between mb-8 wx-view"><span class="col-h wx-text">内容分发</span>' +
+    '<span class="t-tiny wx-text">点击平台 · AI 军师帮你写</span></div>' +
+    '<div class="dist-grid">';
+  DIST.forEach(function(p){
+    h += '<div class="dist-tile" data-ai="' + esc(p.n) + '">' +
+      '<div class="dist-ico">' + PLATS[p.n] + '</div>' +
+      '<span class="dist-n">' + esc(p.n) + '</span>' +
+      '<span class="dist-c">' + esc(p.c) + '</span>' +
+      '</div>';
+  });
+  h += '</div></div>';
+  return h;
+}
+
+function renderBody(){
+  var h = '';
+  if (VIEW === 'agent') {
+    // 本周推广方向（操盘手设定）
+    h += '<div class="dir-card">' +
+      '<div class="dir-head"><span class="dir-tag">我的社群运营 · 团长赋能</span><span class="dir-edit">查看素材包 ›</span></div>' +
+      '<div class="dir-t">9 月社群推广活动</div>' +
+      '<div class="dir-d">先经营自己的社群、发布内容、跟进成员并完成成交服务；同时可向名下团长下发素材与标准话术，成交订单自动占用代理库存并进入发货流程。</div>' +
+      '<div class="dir-chips"><span class="dir-chip">社群成员 286 人</span><span class="dir-chip">本周成交 18 单</span><span class="dir-chip">素材包 6 件</span><span class="dir-chip">待初审 2 人</span></div>' +
+      '</div>';
+    // 分发宫格
+    h += distGridHtml();
+    // 矩阵账号 + 培训入口
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;">' +
+      '<div class="entry-row mp-nav" data-nav="matrix">' +
+      '<div class="entry-ico">' + SVGW('<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>') + '</div>' +
+      '<div class="f-1"><div class="entry-t">我的矩阵账号</div><div class="entry-d">6 个平台账号 · 总粉丝 8,432</div></div>' +
+      '<span class="entry-go">›</span></div>' +
+      '<div class="entry-row mp-nav" data-nav="training">' +
+      '<div class="entry-ico">' + SVGW('<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>') + '</div>' +
+      '<div class="f-1"><div class="entry-t">团长成长培训</div><div class="entry-d">社群运营 · 推广素材 · 成交服务</div></div>' +
+      '<span class="entry-go">›</span></div>' +
+      '</div>';
+  } else {
+    // 设定推广方向（团长即操盘手）
+    h += '<div class="dir-card">' +
+      '<div class="dir-head"><span class="dir-tag">上级代理下发的本周计划</span><span class="dir-edit">查看素材包 ›</span></div>' +
+      '<div class="dir-t">9 月社群推广活动</div>' +
+      '<div class="dir-d">使用素材开展社群推广，成交订单会自动路由至上级代理库存，由代理完成发货与售后。</div>' +
+      '<div class="dir-chips"><span class="dir-chip">已领取素材 6 件</span><span class="dir-chip">已发布 4 条</span><span class="dir-chip">本周成交 18 单</span></div>' +
+      '</div>';
+    // 团长推广进度
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;">' +
+      '<div class="f-between mb-8 wx-view"><span class="col-h wx-text">我的推广进度</span><span class="t-tiny wx-text">本周任务</span></div>' +
+      '<div class="rank-row"><div class="rank-n rank-n--top">1</div><div class="rank-info"><div class="rank-t">素材发布</div><div class="rank-d">小红书 2 篇 · 朋友圈 3 条</div></div><span class="rank-v">已完成</span></div>' +
+      '<div class="rank-row"><div class="rank-n rank-n--top">2</div><div class="rank-info"><div class="rank-t">社群跟进</div><div class="rank-d">待回复成员 6 人</div></div><span class="rank-v">进行中</span></div>' +
+      '<div class="rank-row"><div class="rank-n rank-n--top">3</div><div class="rank-info"><div class="rank-t">成交服务</div><div class="rank-d">18 笔订单已路由上级代理</div></div><span class="rank-v">待跟进</span></div>' +
+      '<div class="rank-row"><div class="rank-n">4</div><div class="rank-info"><div class="rank-t">向代理汇报</div><div class="rank-d">本周社群数据待提交</div></div><span class="rank-v">去汇报</span></div>' +
+      '</div>';
+    // 分发宫格（团长也可分发）
+    h += distGridHtml();
+  }
+  document.getElementById('pmBody').innerHTML = h;
+}
+
+function renderActions(){
+  var el = document.getElementById('pmActions');
+  if (VIEW === 'agent') {
+    el.innerHTML = '<div class="pm-btn pm-btn--pri mp-nav" data-nav="invite-poster">招募团长</div>' +
+      '<div class="pm-btn pm-btn--ghost">下发推广任务</div>';
+  } else {
+    el.innerHTML = '<div class="pm-btn pm-btn--pri">领取推广素材</div>' +
+      '<div class="pm-btn pm-btn--ghost">向代理汇报</div>';
+  }
+}
+
+function renderAll(){ renderStat3(); renderBody(); renderActions(); }
+
+document.getElementById('viewSw').addEventListener('click', function(e){
+  var p = e.target.closest ? e.target.closest('.view-pill') : null;
+  if (!p) return;
+  var v = p.getAttribute('data-view');
+  if (v === VIEW) return;
+  VIEW = v;
+  document.querySelectorAll('.view-pill').forEach(function(el){
+    el.classList.toggle('view-pill--on', el.getAttribute('data-view') === v);
+  });
+  renderAll();
+});
+
+// 分发宫格 → AI 军师（带平台场景）
+document.getElementById('pmBody').addEventListener('click', function(e){
+  var t = e.target.closest ? e.target.closest('.dist-tile') : null;
+  if (t) location.href = 'ai.html' + location.search;
+});
+
+document.getElementById('aiFab').addEventListener('click', function(){
+  location.href = 'ai.html' + location.search;
+});
+
+renderAll();
+</script>
+</body></html>
