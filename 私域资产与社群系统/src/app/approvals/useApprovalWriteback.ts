@@ -30,7 +30,11 @@ const rankToStatus: Record<number, BindingStatus> = {
 };
 
 function nowStr(): string {
-  return new Date().toISOString().slice(0, 16).replace("T", " ");
+  // 本地时区的 `YYYY-MM-DD HH:mm`。别用 toISOString().slice() —— 那切的是 UTC，
+  // +08 用户在凌晨 0–8 点建的记录会写成前一天，按 createdAt 排序/展示都错一天。
+  const d = new Date();
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 /** 邀请注册终审通过：创建系统账号 + 更新邀请状态 */

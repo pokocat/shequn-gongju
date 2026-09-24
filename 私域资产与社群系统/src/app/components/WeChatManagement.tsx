@@ -732,9 +732,15 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
         ...opt, ...gtForm, name
       } as GroupTypeOption : opt));
     } else {
-      // 新建模式：生成 code，追加到当前模板下的自定义区
-      const customIndex = groupTypeOptions.filter(o => o.code.startsWith("CUSTOM")).length + 1;
-      const newCode = `CUSTOM${String(customIndex).padStart(2, "0")}`;
+      // 新建模式：生成 code，追加到当前模板下的自定义区。
+      // 取现有 CUSTOM 序号的最大值 +1，不要用数量 +1 —— 删掉中间一个自定义规则后，
+      // 数量会回退，下一个新建就会撞上已存在的 code；而删除/编辑/渲染 key 全按 code 走，
+      // 撞码会让两条规则被同删同改、React key 也重复。
+      const maxCustom = groupTypeOptions.reduce((max, o) => {
+        const m = /^CUSTOM(\d+)$/.exec(o.code);
+        return m ? Math.max(max, parseInt(m[1], 10)) : max;
+      }, 0);
+      const newCode = `CUSTOM${String(maxCustom + 1).padStart(2, "0")}`;
       const newOption: GroupTypeOption = { id: `custom-${Date.now()}`, code: newCode, ...gtForm, name };
       setGroupTypeOptions(current => [...current, newOption]);
       set("groupType", name); // 新建后自动选中
