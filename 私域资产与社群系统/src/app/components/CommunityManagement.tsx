@@ -256,7 +256,10 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
     (g.name.includes(search) || g.city.includes(search) || g.wechat.includes(search) || g.groupNo.includes(search))
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // 归档/删群会让总条数下降，若当前停在末页且末页被清空，page 会大于 totalPages ——
+  // 直接用 page 切片会得到空列表（其实前面几页还有数据）。切片与计数一律用夹取后的页码。
+  const safePage = Math.min(page, totalPages);
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
   const selectedGroupBase = groups.find(g => g.no === selectedGroupNo) || filtered[0] || groups[0] || mockGroups[0];
   const selectedGroup = { ...selectedGroupBase, ownerStatus: ownerStatusOverrides[selectedGroupBase.no] || selectedGroupBase.ownerStatus };
   const groupIndex = Math.max(0, Number(selectedGroup.no) - 1);
@@ -280,6 +283,13 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
     const accountUsage: Record<string, number> = {};
     groups.forEach(item => { if (item.wechat && item.wechat !== "待分配") accountUsage[item.wechat] = (accountUsage[item.wechat] || 0) + 1; });
     const sequenceByCity: Record<string, number> = {};
+    // 编号基线取「全量（含已归档）最大编号」，不能用 groups.length：groups 过滤掉了已归档，
+    // 归档一个群后长度会缩水，下次建群的号就会和现有群撞号（React key 冲突 +
+    // groupEdits / ownerStatusOverrides / updateGeneratedGroup 按 no 串号，改一个群会连带改另一个）。
+    const maxExistingNo = [...generatedGroups, ...mockGroups]
+      .map(item => Number(item.no))
+      .filter(value => Number.isFinite(value))
+      .reduce((max, value) => Math.max(max, value), 0);
     const generated = Array.from({ length: quantity }, (_, index) => {
       const assignedCity = form.allocationMode === "统一分配" ? "全国" : selectedCities[index % selectedCities.length];
       const displayCity = form.allocationMode === "统一分配" ? selectedCities.join("/") : assignedCity;
@@ -288,7 +298,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
       const account = pickWechatAccount(form.project, assignedCity, accountUsage);
       if (account) accountUsage[account.id] = (accountUsage[account.id] || 0) + 1;
       const customName = form.name && form.name !== buildGroupName(form.project, rule.name, rule.cities[0], 1) ? `${form.name}${quantity > 1 ? `${index + 1}群` : ""}` : buildGroupName(form.project, rule.name, displayCity, sequence);
-      return { no: String(groups.length + index + 1).padStart(5, "0"), name: customName, city: displayCity, wechat: account?.wechat || "待分配", groupNo: buildGroupCode(rule.code, assignedCity, sequence), type: `${rule.name}群`, ownerStatus: "正常", pushCount: 0, scanCount: 0, memberCount: 0, max: Number(form.allocationMax) || rule.capacity, service: account?.service || "待分配", project: form.project };
+      return { no: String(maxExistingNo + index + 1).padStart(5, "0"), name: customName, city: displayCity, wechat: account?.wechat || "待分配", groupNo: buildGroupCode(rule.code, assignedCity, sequence), type: `${rule.name}群`, ownerStatus: "正常", pushCount: 0, scanCount: 0, memberCount: 0, max: Number(form.allocationMax) || rule.capacity, service: account?.service || "待分配", project: form.project };
     });
     addGeneratedGroups(generated);
     setActionNotice(`已生成 ${quantity} 个${rule.name}群，微信号与客服按建号时间自动归属`);
@@ -429,7 +439,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
           </div>
 
           <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
-            <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>第 {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} 条，共 {filtered.length} 条</div>
+            <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>第 {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} 条，共 {filtered.length} 条</div>
             <div className="flex items-center gap-1">
               <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === 1 ? S.bg : S.accent, color: page === 1 ? S.text : S.onAccent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><ChevronLeft size={13} /></button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
