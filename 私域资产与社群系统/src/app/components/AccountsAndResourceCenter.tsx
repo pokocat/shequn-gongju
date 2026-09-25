@@ -1143,7 +1143,7 @@ const { tools, setTools } = useTools();
               onConfirmAction={(toolId, a, label) => setConfirmAction({ toolId, action: a, label })}
               onMutate={(patch, act, summary) => mutateTool(selectedTool.id, patch, act, summary)}
               onSwitchProject={() => openProjectBinding(selectedTool.id)}
-              onSwitchOwner={() => setHandoverDraft({ toolId: selectedTool.id, targetUid: accounts.find(a => a.uid !== selectedTool.boundAccountId)?.uid || accounts[0].uid })}
+              onSwitchOwner={() => setHandoverDraft({ toolId: selectedTool.id, targetUid: accounts.find(a => a.uid !== selectedTool.boundAccountId)?.uid || accounts[0]?.uid || "" })}
               onMediaMatrix={() => showToast("🔗 已打开矩阵配置面板")}
               onMediaBiz={() => showToast("💼 已创建商单申请")}
               onToast={showToast}
@@ -1314,7 +1314,7 @@ const { tools, setTools } = useTools();
             onConfirmAction={(toolId, a, label) => setConfirmAction({ toolId, action: a, label })}
             onMutate={(patch, act, summary) => mutateTool(selectedTool.id, patch, act, summary)}
             onSwitchProject={() => openProjectBinding(selectedTool.id)}
-            onSwitchOwner={() => setHandoverDraft({ toolId: selectedTool.id, targetUid: accounts.find(a => a.uid !== selectedTool.boundAccountId)?.uid || accounts[0].uid })}
+            onSwitchOwner={() => setHandoverDraft({ toolId: selectedTool.id, targetUid: accounts.find(a => a.uid !== selectedTool.boundAccountId)?.uid || accounts[0]?.uid || "" })}
             onMediaMatrix={() => showToast("🔗 已打开矩阵配置面板：选择目标矩阵 + 关系（主号/子号）")}
             onMediaBiz={() => showToast("💼 已创建商单申请：进入审批中心『业务合作类』走审批")}
             onToast={showToast}
