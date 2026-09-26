@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { X, ThumbsUp, ThumbsDown, UserCheck, AlertTriangle } from "lucide-react";
 import type { InviteRecord, InviteSubmission } from "../data/inviteRecords";
 import { inviteStatusMeta } from "../data/inviteRecords";
+import { localStampMinute } from "../data/datetime";
 import type { IdentityRole, BindingStatus } from "../data/accountTypes";
 import {
   roleKeyMeta,
@@ -149,7 +150,7 @@ const _cls = useStyles();
       alert("请填写驳回原因");
       return;
     }
-    const now = new Date().toISOString().slice(0, 16).replace("T", " ");
+    const now = localStampMinute();
     setInvites((prev) =>
       prev.map((it) =>
         it.id === invite.id

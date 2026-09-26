@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ChevronRight, Globe, Layers, Zap, TrendingUp, Plus, Settings, ArrowRight, Package, LayoutDashboard, CheckCircle, X, Save, ShieldCheck, MessageSquare, Eye, EyeOff, Clock, Building2, UsersRound, Workflow, SlidersHorizontal, AlertTriangle, Radio, Phone, UserPlus, Filter, Share2, ThumbsUp, ThumbsDown, Search, Download, ChevronDown, ChevronUp, Square, CheckSquare, History, MapPin, ArrowLeftRight, XCircle, Check, RotateCcw, Info, FileSpreadsheet } from "lucide-react";
 import { defaultGroupTypeRules, type GroupTypeRule } from "../data/projectGroupRules";
 import { registerProjectRules, saveProjectRules, useCommunityData } from "../data/communityDataStore";
+import { localStampMinute } from "../data/datetime";
 import { useTools, useAccounts, useInvites, useApprovals } from "../App";
 import type { CommunicationTool } from "../data/communicationTools";
 import type { IdentityRole, SystemAccount, ScopeTypeLabelMap, BindingStatus, AccountOperation } from "../data/accountTypes";
@@ -1634,7 +1635,7 @@ function AccountDrawer({ initial, onClose, onSave, projectList }: { initial?: Sy
   const { tools, setTools } = useTools();
   const emptyAcc = (): SystemAccount => ({
     uid: `U${100000 + Math.floor(Math.random() * 900000)}`,
-    name: "", email: "", phone: "", status: "pending", bindingStatus: "idle", createdAt: new Date().toISOString().slice(0, 16).replace("T", " "),
+    name: "", email: "", phone: "", status: "pending", bindingStatus: "idle", createdAt: localStampMinute(),
     identities: [], assignedToolIds: [], projectIds: [],
   });
   const cloneAcc = (src: SystemAccount): SystemAccount => ({

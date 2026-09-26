@@ -7,6 +7,7 @@ import {
 } from "../data/accountTypes";
 import { useInvites } from "../App";
 import { InviteRecord, genInviteCode, daysLater } from "../data/inviteRecords";
+import { localStampMinute } from "../data/datetime";
 import { S, useThemeSingleton } from "../theme";
 // 基于已有的 roleKeyMeta 合成 identityMeta 列表（保持与 AccountDrawer 一致）
 const identityMeta = (Object.keys(roleKeyMeta) as IdentityRole["roleKey"][]).map((rk) => {
@@ -141,7 +142,7 @@ const _cls = useStyles();
       inviteLink: genLink,
       status: "pending",
       expireAt: daysLater(expireDays),
-      createdAt: new Date().toISOString().slice(0, 16).replace("T", " "),
+      createdAt: localStampMinute(),
     };
 
     setInvites((prev) => [newInvite, ...prev]);

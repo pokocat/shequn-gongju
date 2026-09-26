@@ -66,10 +66,16 @@ function NewGroupModal({ onClose, group, onSave, rulesByProject }: { onClose: ()
   const inpStyle = { background: "#f1f5f9", border: `1px solid rgba(15,23,42,0.12)`, color: S.text, borderRadius: S.radiusSm, fontFamily: "monospace" };
   const toggleCity = (city: string) => set("cities", form.cities.includes(city) ? form.cities.filter(item => item !== city) : [...form.cities, city]);
   const previewCount = Math.max(1, Math.min(5, Number(form.quantity) || 1));
-  const previewCities = form.allocationMode === "统一分配" ? [form.cities.join("/") || "待选地区"] : Array.from({ length: previewCount }, (_, index) => form.cities[index % Math.max(form.cities.length, 1)] || "待选地区");
+  // 预览必须与 createGroups 的分配口径一致：轮巡按城市取模、序号按城市各自递增（非全局 index+1），
+  // 统一分配落「全国」并展示合并城市名。否则运营看到的编号/群名与实际生成的对不上。
+  const previewSelectedCities = form.cities.length ? form.cities : rule.cities.slice(0, 1);
+  const previewSeqByCity: Record<string, number> = {};
   const preview = Array.from({ length: previewCount }, (_, index) => {
-    const city = previewCities[index]; const sequence = index + 1; const codeCity = form.allocationMode === "统一分配" ? "全国" : city;
-    return { city, code: buildGroupCode(rule.code, codeCity, sequence), name: editing ? form.name : (form.name && previewCount === 1 ? form.name : buildGroupName(form.project, rule.name, city, sequence)) };
+    const assignedCity = form.allocationMode === "统一分配" ? "全国" : (previewSelectedCities[index % Math.max(previewSelectedCities.length, 1)] || "待选地区");
+    const displayCity = form.allocationMode === "统一分配" ? (previewSelectedCities.join("/") || "待选地区") : assignedCity;
+    previewSeqByCity[assignedCity] = (previewSeqByCity[assignedCity] || 0) + 1;
+    const sequence = previewSeqByCity[assignedCity];
+    return { city: displayCity, code: buildGroupCode(rule.code, assignedCity, sequence), name: editing ? form.name : (form.name && previewCount === 1 ? form.name : buildGroupName(form.project, rule.name, displayCity, sequence)) };
   });
   return <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: "rgba(0,0,0,0.5)" }}><div className="w-[680px] max-w-[calc(100vw-28px)] overflow-hidden" style={{ background: "#ffffff", border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radiusLg, boxShadow: "0 20px 60px rgba(0,0,0,0.10)" }}><div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: `1px solid rgba(0,0,0,0.08)`, background: "#f1f5f9" }}><div><div className="font-semibold uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// {editing ? "编辑微信群基础信息" : "新建微信群"}</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>系统编号只读，地区、微信号和客服按规则自动归属</div></div><button onClick={onClose} aria-label="关闭"><X size={16} style={{ color: S.muted }} /></button></div><div className="p-6 grid grid-cols-2 gap-4 overflow-y-auto" style={{ maxHeight: "68vh" }}>
     <label className="block text-xs font-bold">项目<select className="w-full mt-1 px-3 py-2 text-xs outline-none" style={inpStyle} value={form.project} onChange={e => { const project = e.target.value; const next = rulesByProject[project]?.find(item => item.enabled); setForm(current => ({ ...current, project, type: next?.name || "", typeCode: next?.code || "", cities: next?.cities.slice(0, 2) || [], city: next?.cities[0] || "", name: next ? buildGroupName(project, next.name, next.cities[0], 1) : "", allocationMode: next?.allocationMode || "轮巡分配", allocationMax: String(next?.capacity || 500) })); }} disabled={editing}>{projectOptions.map(project => <option key={project}>{project}</option>)}</select></label>
