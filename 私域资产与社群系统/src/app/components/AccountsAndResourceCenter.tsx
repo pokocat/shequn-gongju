@@ -9,6 +9,7 @@ import type { ResourceTool as Tool, CommunicationToolType, ToolHealthStatus, Too
 import { typeMeta, statusMeta, riskMeta, needsNurturing, initialProjects, PLATFORM_POOL_ID, projectStatusBadge, aggregateProject } from "../data/communicationTools";
 import { useTools, useAccounts, useApprovals } from "../App";
 import type { SystemAccount } from "../data/accountTypes";
+import { localStampMinute, localDate } from "../data/datetime";
 import { createApproval } from "../data/approvalTypes";
 import { getAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
@@ -529,7 +530,7 @@ const { tools, setTools } = useTools();
     setTools(prev => prev.map(t => t.id === id ? {
       ...t, ...patch,
       operationLogs: [
-        { id: "l" + Date.now(), time: new Date().toISOString().replace("T", " ").slice(0, 16), actor, action: logAction, summary: logSummary },
+        { id: "l" + Date.now(), time: localStampMinute(), actor, action: logAction, summary: logSummary },
         ...(t.operationLogs || []),
       ],
     } : t));
@@ -801,8 +802,8 @@ const { tools, setTools } = useTools();
                   mediaPlatform: newToolDrawer.draft.mediaPlatform,
                   status: "not_enabled", riskLevel: "normal", boundAccountId: null, boundProjectIds: [],
                   dailyAddLimit: 0, todayAdded: 0, friendCount: 0, groupCount: 0, lastActiveDate: "—",
-                  onboardDate: new Date().toISOString().slice(0, 10),
-                  operationLogs: [{ id: "l0", time: new Date().toISOString().replace("T", " ").slice(0, 16), actor: "当前用户", action: "注册入库", summary: "通过注册入库按钮创建" }],
+                  onboardDate: localDate(),
+                  operationLogs: [{ id: "l0", time: localStampMinute(), actor: "当前用户", action: "注册入库", summary: "通过注册入库按钮创建" }],
                 };
                 setTools(prev => [newTool, ...prev]);
                 setNewToolDrawer(null);

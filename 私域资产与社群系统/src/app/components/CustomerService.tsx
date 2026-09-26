@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 import { mockAccounts, roleKeyMeta } from "../data/accountTypes";
+import { localDate } from "../data/datetime";
 import Permissions from "./Permissions";
 const PAGE_SIZE = 8;
 const unifiedRoleOptions = [
@@ -2389,7 +2390,7 @@ export default function CustomerService() {
       qqEmail: "—",
       qqGroup: "—",
       wechatId: "—",
-      recruitTime: new Date().toISOString().slice(0, 10),
+      recruitTime: localDate(),
       qrLink: "—",
       wechats: [],
       source: "employee" as const,
