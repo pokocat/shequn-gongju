@@ -125,7 +125,10 @@ const [orders, setOrders] = useState<Order[]>(initialOrders);
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `orders_${new Date().toISOString().slice(0, 10)}.csv`;
+    // 本地时区日期：toISOString() 取的是 UTC，凌晨（+08）导出会命名成前一天
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    a.download = `orders_${today}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     showToast(`已导出 ${filtered.length} 条订单`);

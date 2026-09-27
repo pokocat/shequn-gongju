@@ -618,7 +618,10 @@ const { tools, setTools } = useTools();
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url; a.download = `resource_tools_${new Date().toISOString().slice(0, 10)}.csv`;
+    // 本地时区日期：toISOString() 取的是 UTC，凌晨（+08）导出会命名成前一天
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    a.href = url; a.download = `resource_tools_${today}.csv`;
     a.click(); URL.revokeObjectURL(url);
     showToast(`✅ 已导出 ${filteredTools.length} 条资源`);
   }
