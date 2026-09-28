@@ -97,7 +97,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .subbody{ min-height:200px; }
 /* 底部动作栏（常驻 tabbar 上方） */
 .actbar{
-  position:sticky; bottom:87px; z-index:60; display:flex; gap:6.88px;
+  position:sticky; bottom:calc(51.6px + var(--sab)); z-index:60; display:flex; gap:6.88px;
   padding:10.32px 10.32px 8.027px;
   background:linear-gradient(180deg,rgba(255,247,236,0),rgba(255,247,236,.97) 45%);
 }
@@ -205,6 +205,78 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .inf-hero-cell + .inf-hero-cell{ border-left:0.573px solid var(--line-soft); }
 .inf-hero-v{ display:block; font-size:var(--fs-h2); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); line-height:1.25; }
 .inf-hero-l{ display:block; margin-top:2.293px; font-size:var(--fs-micro); color:var(--ink-600); }
+.influence-scope-tabs{ margin:0 10.32px; padding:10.32px 0 8.027px; overflow-x:auto; scrollbar-width:none; }
+.influence-scope-tabs::-webkit-scrollbar{ display:none; }
+.influence-scope-tabs .subtab-pill{ flex:0 0 auto; min-width:72px; padding-left:8px; padding-right:8px; }
+.influence-metrics{ display:grid; grid-template-columns:repeat(2,1fr); gap:8.027px; margin-top:13.76px; }
+.influence-metrics--standalone{ margin:10.32px 10.32px 0; }
+.influence-metric{ position:relative; overflow:hidden; padding:11.467px; border-radius:11.467px; background:rgba(255,252,246,.96); color:var(--ink-900); border:0.573px solid var(--line-soft); }
+.influence-metric::after{ content:''; position:absolute; width:38px; height:38px; right:-13px; top:-13px; border-radius:50%; background:rgba(124,58,237,.08); }
+.influence-metric-v{ display:block; font-family:var(--font-mono); font-size:var(--fs-h2); font-weight:800; line-height:1.2; }
+.influence-metric-l{ display:block; margin-top:2.293px; font-size:var(--fs-tiny); color:var(--ink-600); }
+.team-functions{ margin:10.32px 10.32px 0; padding:11.467px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.influence-card-note{ font-size:var(--fs-tiny); color:var(--ink-500); text-align:right; }
+.team-growth-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8.027px; }
+.team-growth-item{ display:flex; align-items:center; gap:6.88px; min-height:48px; padding:9.173px; border-radius:10.32px; background:linear-gradient(145deg,#FFF 0%,var(--sunk) 100%); border:0.573px solid var(--line-soft); cursor:pointer; }
+.team-growth-item:active{ background:var(--signal-50); }
+.team-growth-icon{ width:28.667px; height:28.667px; flex:0 0 28.667px; display:flex; align-items:center; justify-content:center; border-radius:9.173px; background:rgba(124,58,237,.1); color:var(--signal-700); font-size:var(--fs-sec); font-weight:800; }
+.team-growth-copy{ min-width:0; flex:1; }
+.team-growth-title{ display:block; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
+.team-growth-desc{ display:block; margin-top:1.147px; font-size:var(--fs-tiny); color:var(--ink-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.team-growth-count{ flex:0 0 auto; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:800; color:var(--signal-700); }
+.team-growth-arrow{ flex:0 0 auto; color:var(--ink-400); font-size:var(--fs-h4); }
+.influence-detail-tabs{ display:flex; gap:4.587px; margin:0 0 8.027px; padding:3.44px; border-radius:9.173px; background:var(--sunk-2); }
+.influence-detail-tab{ flex:1; padding:6.88px 4px; border-radius:7.45px; font-size:var(--fs-meta); font-weight:600; color:var(--ink-600); text-align:center; cursor:pointer; }
+.influence-detail-tab.is-active{ background:#FFF; color:var(--signal-700); font-weight:800; box-shadow:0 1px 5px rgba(124,58,237,.10); }
+.influence-tab-note{ margin:-1.147px 0 8.027px; font-size:var(--fs-tiny); color:var(--ink-500); line-height:1.45; }
+.influence-card{ margin:10.32px 10.32px 0; }
+.influence-card-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:8.027px; margin-bottom:8.027px; }
+.influence-card-title{ font-size:var(--fs-sec); font-weight:800; color:var(--ink-900); }
+.influence-matrix{ width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0; overflow:hidden; border:0.573px solid var(--line-soft); border-radius:10.32px; }
+.influence-matrix th{ padding:7.45px 2px; background:rgba(124,58,237,.08); border-bottom:0.573px solid var(--line-soft); font-size:var(--fs-tiny); font-weight:800; color:var(--signal-800); text-align:center; }
+.influence-matrix th:first-child{ width:72px; padding-left:6.88px; text-align:left; }
+.influence-matrix td{ padding:8.6px 2px; border-bottom:0.573px solid var(--line-soft); background:#FFF; font-family:var(--font-mono); font-size:var(--fs-tiny); font-weight:800; color:var(--ink-900); text-align:center; cursor:default; }
+.influence-matrix td[data-team-detail]{ cursor:pointer; }
+.influence-matrix td:first-child{ padding-left:6.88px; font-family:inherit; font-weight:700; color:var(--ink-600); text-align:left; }
+.influence-matrix tr:last-child td{ border-bottom:none; }
+.influence-matrix td:not(:first-child):active{ background:var(--signal-50); }
+.influence-dot{ display:inline-block; width:6.88px; height:6.88px; margin-right:3.44px; border-radius:50%; vertical-align:1px; }
+.influence-add{ display:block; margin-top:1.147px; color:#D93025; font-size:var(--fs-tiny); font-weight:800; }
+.influence-potential{ display:block; margin-top:1.147px; color:#9CA3AF; font-size:9px; line-height:1.2; }
+.influence-team-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
+.influence-team-cell{ position:relative; padding:10.32px 5.16px; border-radius:9.173px; background:var(--sunk); border:0.573px solid var(--line-soft); cursor:pointer; }
+.influence-team-v{ display:block; font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:800; color:var(--signal-800); }
+.influence-team-l{ display:block; margin-top:2.293px; font-size:var(--fs-tiny); font-weight:700; color:var(--ink-700); }
+.influence-team-s{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-500); }
+.influence-team-go{ position:absolute; top:8.027px; right:6.88px; color:var(--ink-400); }
+.influence-boundary{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; margin:10.32px 10.32px 0; padding:8.6px 10.32px; border-radius:9.173px; background:rgba(124,58,237,.06); border:0.573px solid rgba(124,58,237,.14); font-size:var(--fs-tiny); color:var(--ink-600); }
+.influence-boundary b{ color:var(--signal-800); }
+.team-detail-mask{ position:absolute; inset:0; z-index:110; display:flex; align-items:flex-end; background:rgba(51,33,15,.35); opacity:0; pointer-events:none; transition:opacity .2s; }
+.team-detail-mask.is-open{ opacity:1; pointer-events:auto; }
+.team-detail-sheet{ width:100%; max-height:82%; overflow-y:auto; padding:13.76px 10.32px calc(18.347px + var(--sab)); border-radius:18.347px 18.347px 0 0; background:#FFF7EC; box-shadow:0 -12px 36px rgba(51,33,15,.18); transform:translateY(24px); transition:transform .2s; }
+.team-detail-mask.is-open .team-detail-sheet{ transform:translateY(0); }
+.team-detail-head{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; }
+.team-detail-back,.team-detail-close{ width:28.667px; height:28.667px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--sunk-2); color:var(--ink-700); font-size:16px; cursor:pointer; }
+.team-detail-title{ flex:1; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); text-align:center; }
+.team-detail-path{ margin-top:8.027px; padding:6.88px 8.027px; border-radius:8.027px; background:rgba(124,58,237,.07); font-size:var(--fs-micro); color:var(--signal-800); line-height:1.45; }
+.team-detail-summary{ display:grid; grid-template-columns:96px 1fr; gap:10.32px; align-items:center; margin-top:10.32px; padding:10.32px; border-radius:12.04px; background:#FFF; border:0.573px solid var(--line-soft); }
+.team-detail-summary .donut svg{ width:88px; height:88px; }
+.team-detail-summary .donut{ width:88px; height:88px; }
+.team-detail-summary .donut-cv{ font-size:var(--fs-h4); }
+.team-detail-stats{ display:grid; gap:6.88px; }
+.team-detail-stat{ display:flex; align-items:center; justify-content:space-between; gap:6.88px; font-size:var(--fs-micro); color:var(--ink-600); }
+.team-detail-stat b{ font-family:var(--font-mono); color:var(--ink-900); }
+.team-member-list{ margin-top:10.32px; overflow:hidden; border-radius:12.04px; background:#FFF; border:0.573px solid var(--line-soft); }
+.team-member-row{ display:flex; align-items:center; gap:8.027px; padding:10.32px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.team-member-row:last-child{ border-bottom:none; }
+.team-member-avatar{ width:34.4px; height:34.4px; flex:0 0 34.4px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:linear-gradient(145deg,#7C3AED,#A98BF5); color:#FFF; font-size:var(--fs-meta); font-weight:800; }
+.team-member-copy{ min-width:0; flex:1; }
+.team-member-name{ display:block; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
+.team-member-meta{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-500); }
+.team-member-value{ flex:0 0 auto; text-align:right; }
+.team-member-value b{ display:block; font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--signal-800); }
+.team-member-value span{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-500); }
+.team-member-go{ color:var(--ink-400); }
 
 /* ===== 审核子页（管流程事：证据/审批/订单） ===== */
 .audit-todo{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
@@ -336,7 +408,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   <span class="mp-sep"></span>
   <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
 </div>
-      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer tk-layer wx-view"><div class="topseg tk-topseg" id="roleSw"></div><div id="tkHeroZone"></div><div id="tkWork"></div><div id="tkSections"></div><div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div></div></div>
+      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer tk-layer wx-view"><div class="topseg tk-topseg" id="roleSw"></div><div id="tkHeroZone"></div><div id="tkWork"></div><div id="tkSections"></div><div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div></div><div class="team-detail-mask" id="teamDetailMask"><div class="team-detail-sheet" id="teamDetailSheet"></div></div></div>
       <div class="tabbar wx-view"><div class="tab wx-view mp-nav" data-nav="notifications"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M22%2017a2%202%200%200%201-2%202H6.828a2%202%200%200%200-1.414.586l-2.202%202.202A.71.71%200%200%201%202%2021.286V5a2%202%200%200%201%202-2h16a2%202%200%200%201%202%202z%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div><span class="tab-badge wx-text">3</span></div><span class="tab-label wx-text">消息</span></div><div class="tab wx-view mp-nav" data-nav="group"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">微信群</span></div><div class="tab tab--on tab--center wx-view mp-nav" data-nav="tasks"><div class="tab-knob-box wx-view"><div class="tab-knob wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222.235%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div></div><span class="tab-label wx-text">主理台</span></div><div class="tab wx-view mp-nav" data-nav="index"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3Cpath%20d%3D%22M3%2015h18%22%20%2F%3E%3Cpath%20d%3D%22M9%203v18%22%20%2F%3E%3Cpath%20d%3D%22M15%203v18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">发现</span></div><div class="tab wx-view mp-nav" data-nav="mine"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236D28D9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M19%2021v-2a4%204%200%200%200-4-4H9a4%204%200%200%200-4%204v2%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">我的</span></div></div>
 
       <div class="unlock-mask" id="unlockMask"><div class="unlock-sheet"><div class="unlock-h" id="unlockH"></div><div class="unlock-d" id="unlockD"></div><div class="unlock-list" id="unlockList"></div><div class="unlock-btns"><div class="unlock-btn unlock-btn--ghost" id="unlockClose">知道了</div><div class="unlock-btn unlock-btn--pri" id="unlockGo">演示解锁</div></div></div></div>
@@ -479,14 +551,16 @@ function renderHero(targetId){
 }
 
 var ROLE_TABS = {
-  agent: [{ key: 'people', label: '社群' }, { key: 'network', label: '发展网络' }, { key: 'recommend', label: '推荐网络' }, { key: 'team', label: '团长' }, { key: 'process', label: '履约' }, { key: 'money', label: '经营' }, { key: 'marketing', label: '推广' }],
-  leader: [{ key: 'people', label: '社群' }, { key: 'recommend', label: '我的推荐' }, { key: 'marketing', label: '推广' }, { key: 'process', label: '订单' }, { key: 'money', label: '佣金' }]
+  agent: [{ key: 'influence', label: '团队' }, { key: 'process', label: '履约' }, { key: 'money', label: '经营' }, { key: 'marketing', label: '推广' }],
+  leader: [{ key: 'influence', label: '团队' }, { key: 'marketing', label: '推广' }, { key: 'process', label: '订单' }, { key: 'money', label: '佣金' }]
 };
-var SUBTAB = 'people';
+var SUBTAB = 'influence';
+var INFLUENCE_TAB = 'team';
+var NETWORK_SCOPE = 'all';
 
 var DASHBOARD = {
   agent: {
-    money: { title: '预计经营利润', total: '1,246', labels: ['销售回款', '进货成本', '待结算团长佣金'], values: ['4,860', '2,980', '634'], status: [['8,620', '库存价值'], ['1,240', '库存占用'], ['2', '低库存 SKU']], categories: [['王敏团长', '12 笔', '¥486'], ['李芳团长', '9 笔', '¥342'], ['周舟团长', '6 笔', '¥218']], donut: { total: '¥1,046', items: [['社群成交', '#7C3AED', 486], ['活动成交', '#A98BF5', 342], ['复购订单', '#F7B65C', 218]] } },
+    money: { title: '预计经营利润', total: '1,246', labels: ['销售回款', '进货成本', '待结算团长佣金'], values: ['4,860', '2,980', '634'], status: [['8,620', '库存价值'], ['1,240', '库存占用'], ['2', '低库存 SKU']], categories: [['引流收入', '186 笔', '¥186'], ['会员招募', '9 笔', '¥486'], ['会员升级', '6 笔', '¥324'], ['社群消费', '12 笔', '¥250']], donut: { total: '¥1,246', items: [['引流收入', '#34A37A', 186], ['会员招募', '#7C3AED', 486], ['会员升级', '#A98BF5', 324], ['社群消费', '#F7B65C', 250]] } },
     people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
     team: { hero: ['8 位', '286 人'], funnel: [['待初审', '2'], ['复审中', '1'], ['已通过', '8']], donut: { total: '286', items: [['活跃成员', '#7C3AED', 184], ['新增会员', '#F7B65C', 46], ['待跟进', '#E88C4A', 56]] }, rows: [['王敏', '杭州妈妈成长群', '86'], ['李芳', '职场成长社群', '64'], ['周舟', '亲子阅读群', '52']] },
     network: { hero: ['2 个', '5 位'], funnel: [['发展代理', '2'], ['发展团长', '5'], ['聚合社群', '6']], donut: { total: '6', items: [['代理社群', '#7C3AED', 3], ['团长社群', '#A98BF5', 2], ['推荐社群', '#F7B65C', 1]] }, rows: [['华东发展代理', '发展关系 · 2 位团长', '3 个群'], ['王敏团长', '下属代理发展的团长', '86 人'], ['李芳团长', '下属代理发展的团长', '64 人']] },
@@ -495,7 +569,7 @@ var DASHBOARD = {
     marketing: { tag: '本周推广方向 · 由代理下发', title: '社群秋季复购活动', desc: '向名下团长下发内容、活动和培训任务，追踪素材领取、完成率与订单转化。', chips: ['8 位团长已领取', '完成率 64%', '素材包 6 件'], tools: [{ ico: 'invite', t: '招募团长', d: '生成招募海报与申请链接', nav: 'invite-poster' }, { ico: 'training', t: '团长赋能', d: '内容、活动与培训任务', nav: 'training' }] }
   },
   leader: {
-    money: { title: '本周预计佣金', total: '1,890', labels: ['已结算佣金', '预计佣金', '待结算佣金'], values: ['1,120', '1,120', '260'], status: [['1,120', '已结算'], ['1,890', '预计佣金'], ['260', '待结算']], categories: [['秋季复购活动', '12 笔', '¥860'], ['社群推荐成交', '9 笔', '¥640'], ['会员续购', '6 笔', '¥390']], donut: { total: '¥1,890', items: [['活动成交', '#7C3AED', 860], ['社群推荐', '#A98BF5', 640], ['会员续购', '#F7B65C', 390]] } },
+    money: { title: '本周预计佣金', total: '1,890', labels: ['已结算佣金', '预计佣金', '待结算佣金'], values: ['1,120', '1,120', '260'], status: [['1,120', '已结算'], ['1,890', '预计佣金'], ['260', '待结算']], categories: [['会员招募佣金', '12 笔', '¥860'], ['会员升级佣金', '9 笔', '¥640'], ['社群消费佣金', '6 笔', '¥390']], donut: { total: '¥1,890', items: [['招募佣金', '#7C3AED', 860], ['升级佣金', '#A98BF5', 640], ['消费佣金', '#F7B65C', 390]] } },
     people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
     recommend: { hero: ['8 人', '3 位'], funnel: [['我推荐的人', '8'], ['已发展团长', '3'], ['可查看社群', '3']], donut: { total: '3', items: [['推荐成员', '#7C3AED', 8], ['发展团长', '#A98BF5', 3], ['聚合社群', '#F7B65C', 3]] }, rows: [['林晓', '推荐关系 · 发展 2 位团长', '2 位'], ['周宁', '推荐关系 · 发展 1 位团长', '1 位'], ['孙悦', '推荐关系 · 已加入社群', '1 个群']] },
     process: { todo: [['1', '审核中'], ['3', '代理待发货'], ['1', '售后跟进']], list: [['团长入驻申请', '代理初审已通过，等待平台复审', '复审中', 'purple'], ['订单 #2026092108', '已路由至上级代理库存', '待发货', 'amber'], ['订单 #2026092076', '代理已发货，物流运输中', '运输中', 'green'], ['订单 #2026092061', '会员申请退款，等待处理', '售后中', 'red']], orders: [['我推广的订单', '18 笔 · 本周'], ['发货与售后', '4 项待跟进']] },
@@ -515,10 +589,101 @@ function renderWorkbench(){
   if (ROLE === 'member') { el.innerHTML = ''; return; }
   var tabs = ROLE_TABS[ROLE];
   var actions = ROLE === 'agent'
-    ? '<div class="actbar-btn actbar-btn--ghost" data-gosub="people" role="button">经营社群</div><div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募团长</div>'
+    ? '<div class="actbar-btn actbar-btn--ghost" data-gosub="influence" role="button">经营社群</div><div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募团长</div>'
     : '<div class="actbar-btn actbar-btn--ghost mp-nav" data-nav="training" role="button">成长培训</div><div class="actbar-btn actbar-btn--pri" data-gosub="marketing" role="button">去推广</div>';
   el.innerHTML = '<div class="subtab" id="subTab">' + tabs.map(function(t){ return '<div class="subtab-pill' + (t.key === SUBTAB ? ' subtab-pill--on' : '') + '" data-sub="' + t.key + '" role="button">' + t.label + '</div>'; }).join('') + '</div><div class="subbody" id="subBody"></div><div class="actbar" id="actBar">' + actions + '</div>';
   renderSubBody();
+}
+
+function renderInfluenceBody(D){
+  var isAgent = ROLE === 'agent';
+  NETWORK_SCOPE = 'all';
+  var shared = {
+    agent: {
+      influence: '326', income: '¥1,246', incomeNote: '预计经营利润',
+      tabs: {
+        team: { label: '团队发展', note: '聚焦代理发展与直属团长，意向代理为待跟进线索', headers: ['市级代理', '区县代理', '直属团长', '意向代理'], colors: ['#34A37A', '#5B8DEF', '#F7B65C', '#E88C4A'], rows: [['我直接发展', [[2, 0], [8, 1], [18, 2], [5, 3]]], ['旗下发展', [[2, 0], [5, 1], [32, 5], [8, 2]]], ['推荐关系', [[1, 0], [4, 1], [12, 4], [3, 1]]]] },
+        community: { label: '社群会员', note: '聚焦会员漏斗：引流学员含潜在游客标注，红色数字为本周新增', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['我直接运营', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['团队带动', [[8, 0], [96, 12, 86], [86, 8], [62, 6], [42, 4]]], ['推荐关系', [[4, 0], [32, 4, 28], [28, 3], [20, 2], [16, 2]]]] }
+      },
+      teams: [['8', '直属团长', '可经营'], ['2', '发展代理', '只读聚合'], ['12', '推荐关系', '只读聚合']]
+    },
+    leader: {
+      influence: '182', income: '¥1,890', incomeNote: '本周预计佣金',
+      tabs: {
+        community: { label: '社群会员', note: '查看本人社群与授权推荐关系带来的会员增长，引流学员含潜在游客', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['我直接运营', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['我推荐的人', [[2, 0], [14, 2, 12], [12, 1], [8, 1], [4, 0]]], ['推荐关系发展', [[1, 0], [6, 1, 5], [5, 0], [4, 0], [3, 0]]]] },
+        referral: { label: '推荐关系', note: '仅展示授权范围内的聚合结果，不代表团队经营权限', headers: ['推荐团长', '其社群数', '社群成员', '本周新增'], colors: ['#F7B65C', '#34A37A', '#7C3AED', '#D93025'], rows: [['我推荐的人', [[3, 1], [5, 0], [38, 0], [6, 6]]], ['推荐关系发展', [[2, 0], [3, 0], [18, 0], [3, 3]]], ['会员推荐', [[0, 0], [1, 0], [12, 0], [2, 2]]]] }
+      },
+      teams: [['3', '直属社群', '可运营'], ['3', '推荐团长', '只读聚合'], ['8', '推荐会员', '只读聚合']]
+    }
+  };
+  var current = shared[ROLE];
+  var growth = isAgent
+    ? [['学', '培训学习', '团长赋能课程', '6', 'training'], ['证', '认证进度', '待完成认证', '2', '团队认证']]
+    : [['学', '培训学习', '成长课程', '6', 'training'], ['证', '认证进度', '待完成认证', '1', '团队认证']];
+  var growthItemsHtml = growth.map(function(item){ var action = item[4] === 'training' ? ' data-nav="training"' : ' data-team-detail="' + item[4] + '"'; return '<div class="team-growth-item"' + action + ' role="button"><span class="team-growth-icon">' + item[0] + '</span><span class="team-growth-copy"><span class="team-growth-title">' + esc(item[1]) + '</span><span class="team-growth-desc">' + esc(item[2]) + '</span></span><span class="team-growth-count">' + item[3] + '</span><span class="team-growth-arrow">›</span></div>'; }).join('');
+  var growthHtml = '<div class="team-functions"><div class="team-growth-grid">' + growthItemsHtml + '</div></div>';
+  var metricsHtml = '<div class="influence-metrics influence-metrics--standalone"><div class="influence-metric"><span class="influence-metric-v">' + esc(current.influence) + '</span><span class="influence-metric-l">影响力人数</span></div><div class="influence-metric"><span class="influence-metric-v">' + esc(current.income) + '</span><span class="influence-metric-l">' + esc(current.incomeNote) + '</span></div></div>';
+  var incomeHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">预计收入分析</span><span class="influence-card-note">' + (isAgent ? '经营收益口径' : '佣金收益口径') + '</span></div><div class="donut-wrap"><div class="donut">' + donutSvg(D.money.donut.items) + '<div class="donut-c"><span class="donut-cv">' + esc(current.income) + '</span><span class="donut-cl">预计收入</span></div></div><div class="donut-legend">' + D.money.donut.items.map(function(it){ return '<div class="donut-li"><span class="donut-dot" style="background:' + it[1] + '"></span>' + esc(it[0]) + '<span class="dv">¥' + it[2] + '</span></div>'; }).join('') + '</div></div></div>';
+  var tabKeys = Object.keys(current.tabs);
+  var tabKey = current.tabs[INFLUENCE_TAB] ? INFLUENCE_TAB : tabKeys[0];
+  INFLUENCE_TAB = tabKey;
+  var tabData = current.tabs[tabKey];
+  var tabHtml = '<div class="influence-detail-tabs" role="tablist">' + tabKeys.map(function(key){ return '<div class="influence-detail-tab' + (key === tabKey ? ' is-active' : '') + '" data-influence-tab="' + key + '" role="tab">' + current.tabs[key].label + '</div>'; }).join('') + '</div>';
+  var rowsHtml = tabData.rows.map(function(row){ return '<tr><td>' + esc(row[0]) + '</td>' + row[1].map(function(cell, index){ var target = row[0] + ' · ' + tabData.headers[index]; return '<td data-team-detail="' + esc(target) + '">' + cell[0] + (cell[1] ? '<span class="influence-add">+' + cell[1] + ' 新增</span>' : '') + (cell[2] ? '<span class="influence-potential">潜在 ' + cell[2] + '</span>' : '') + '</td>'; }).join('') + '</tr>'; }).join('');
+  var headersHtml = tabData.headers.map(function(header, index){ return '<th><span class="influence-dot" style="background:' + tabData.colors[index] + '"></span>' + esc(header) + '</th>'; }).join('');
+  var matrixHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">影响力详情</span><span class="influence-card-note">' + esc(tabData.label) + '</span></div>' + tabHtml + '<div class="influence-tab-note" data-influence-note>' + esc(tabData.note) + '</div><table class="influence-matrix"><thead><tr><th>关系层级</th>' + headersHtml + '</tr></thead><tbody data-influence-rows>' + rowsHtml + '</tbody></table><div class="inf-note"><span class="inf-plus">+</span><span>红色数字为本周新增，点击表格数字查看授权范围内的来源明细</span></div></div>';
+  var teamTitle = isAgent ? '旗下运营网络' : '我的社群与推荐';
+  var teamHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">' + teamTitle + '</span><span class="influence-card-note">点击查看成员与下一级关系</span></div><div class="influence-team-grid">' + current.teams.map(function(item){ return '<div class="influence-team-cell" data-team-detail="' + esc(item[1]) + '" role="button"><span class="influence-team-go">›</span><span class="influence-team-v">' + item[0] + '</span><span class="influence-team-l">' + esc(item[1]) + '</span><span class="influence-team-s">' + esc(item[2]) + '</span></div>'; }).join('') + '</div></div>';
+  var boundaryHtml = '<div class="influence-boundary"><span><b>' + (isAgent ? '代理权限' : '团长权限') + '</b> · ' + (isAgent ? '直属团队可经营，发展与推荐关系仅查看授权聚合' : '直属社群可运营，推荐关系仅查看授权聚合') + '</span></div>';
+  return growthHtml + metricsHtml + incomeHtml + matrixHtml + teamHtml + boundaryHtml;
+}
+
+var TEAM_DETAIL_STACK = [];
+var TEAM_DETAIL_ROWS = {
+  agent: [['王敏', '直属团长 · 杭州妈妈成长群', '86', '累计成员'], ['李芳', '直属团长 · 职场成长社群', '64', '累计成员'], ['周舟', '直属团长 · 亲子阅读群', '52', '累计成员']],
+  leader: [['林晓', '推荐团长 · 已发展 2 个社群', '38', '累计成员'], ['周宁', '推荐团长 · 已发展 1 个社群', '26', '累计成员'], ['孙悦', '推荐会员 · 已加入社群', '12', '累计推荐']]
+};
+
+function renderTeamDetail(){
+  var mask = document.getElementById('teamDetailMask');
+  var sheet = document.getElementById('teamDetailSheet');
+  if (!mask || !sheet || !TEAM_DETAIL_STACK.length) return;
+  var current = TEAM_DETAIL_STACK[TEAM_DETAIL_STACK.length - 1];
+  var rows = TEAM_DETAIL_ROWS[ROLE].map(function(row, index){
+    var name = current.depth ? row[0] + '团队' : row[0];
+    var meta = current.depth ? '下一级关系 · ' + (index + 1) + ' 个社群' : row[1];
+    var value = current.depth ? Math.max(3, Number(row[2]) - 18) : row[2];
+    return '<div class="team-member-row" data-team-member="' + esc(name) + '"><span class="team-member-avatar">' + esc(name.slice(0, 1)) + '</span><span class="team-member-copy"><span class="team-member-name">' + esc(name) + '</span><span class="team-member-meta">' + esc(meta) + '</span></span><span class="team-member-value"><b>' + value + '</b><span>' + esc(row[3]) + '</span></span><span class="team-member-go">›</span></div>';
+  }).join('');
+  var title = current.depth ? '查看下一级关系' : current.title;
+  var path = TEAM_DETAIL_STACK.map(function(item){ return item.title; }).join('  ›  ');
+  var total = current.depth ? '68' : (ROLE === 'agent' ? '326' : '182');
+  var items = ROLE === 'agent' ? [['社群成员', '#7C3AED', 286], ['团长', '#F7B65C', 8], ['代理', '#34A37A', 2]] : [['社群成员', '#7C3AED', 168], ['团长', '#F7B65C', 5], ['推荐', '#34A37A', 9]];
+  sheet.innerHTML = '<div class="team-detail-head"><span class="team-detail-back" data-team-back role="button">' + (TEAM_DETAIL_STACK.length > 1 ? '‹' : '—') + '</span><span class="team-detail-title">' + esc(title) + '</span><span class="team-detail-close" data-team-close role="button">×</span></div><div class="team-detail-path">' + esc(path) + '</div><div class="team-detail-summary"><div class="donut">' + donutSvg(items) + '<div class="donut-c"><span class="donut-cv">' + total + '</span><span class="donut-cl">团队人数</span></div></div><div class="team-detail-stats">' + items.map(function(item){ return '<div class="team-detail-stat"><span><span class="influence-dot" style="background:' + item[1] + '"></span>' + esc(item[0]) + '</span><b>' + item[2] + '</b></div>'; }).join('') + '</div></div><div class="influence-card-head" style="margin-top:10.32px;"><span class="influence-card-title">成员名单</span><span class="influence-card-note">点击查看下一级关系</span></div><div class="team-member-list">' + rows + '</div>';
+  var screen = document.querySelector('.screen');
+  var rect = screen ? screen.getBoundingClientRect() : null;
+  if (mask.parentNode !== document.body) document.body.appendChild(mask);
+  if (rect) {
+    var left = Math.max(0, rect.left);
+    mask.style.position = 'fixed';
+    mask.style.inset = 'auto';
+    mask.style.left = left + 'px';
+    mask.style.top = Math.max(0, rect.top) + 'px';
+    mask.style.width = Math.min(rect.width, window.innerWidth - left) + 'px';
+    mask.style.height = (window.innerHeight - Math.max(0, rect.top)) + 'px';
+  }
+  mask.classList.add('is-open');
+}
+
+function openTeamDetail(title){
+  TEAM_DETAIL_STACK = [{ title: title, depth: 0 }];
+  renderTeamDetail();
+}
+
+function closeTeamDetail(){
+  TEAM_DETAIL_STACK = [];
+  var mask = document.getElementById('teamDetailMask');
+  if (mask) mask.classList.remove('is-open');
 }
 
 function renderSubBody(){
@@ -526,6 +691,10 @@ function renderSubBody(){
   if (!el) return;
   var D = DASHBOARD[ROLE];
   var h = '';
+  if (SUBTAB === 'influence') {
+    el.innerHTML = renderInfluenceBody(D);
+    return;
+  }
   if (SUBTAB === 'network' || SUBTAB === 'recommend') {
     var N = D[SUBTAB];
     var networkTitle = SUBTAB === 'network' ? '发展网络' : (ROLE === 'agent' ? '推荐网络' : '我的推荐');
@@ -598,8 +767,11 @@ function switchRole(r){
   if (!ROLES[r]) return;
   if (!UNLOCKED[r]) { openUnlock(r); return; }
   if (ROLE === r) return;
+  closeTeamDetail();
   ROLE = r;
-  SUBTAB = 'people';
+  SUBTAB = 'influence';
+  INFLUENCE_TAB = r === 'agent' ? 'team' : 'community';
+  NETWORK_SCOPE = 'all';
   renderAll();
 }
 
@@ -643,10 +815,21 @@ document.getElementById('roleSw').addEventListener('click', function(e){
   if (p) switchRole(p.getAttribute('data-role'));
 });
 document.getElementById('tkWork').addEventListener('click', function(e){
-  var pill = e.target.closest ? e.target.closest('.subtab-pill') : null;
+  var influenceTab = e.target.closest ? e.target.closest('[data-influence-tab]') : null;
+  if (influenceTab) {
+    INFLUENCE_TAB = influenceTab.getAttribute('data-influence-tab');
+    renderSubBody();
+    return;
+  }
+  var teamDetail = e.target.closest ? e.target.closest('[data-team-detail]') : null;
+  if (teamDetail) {
+    openTeamDetail(teamDetail.getAttribute('data-team-detail'));
+    return;
+  }
+  var pill = e.target.closest ? e.target.closest('#subTab .subtab-pill[data-sub]') : null;
   if (pill) {
     SUBTAB = pill.getAttribute('data-sub');
-    document.querySelectorAll('.subtab-pill').forEach(function(p){
+    document.querySelectorAll('#subTab .subtab-pill[data-sub]').forEach(function(p){
       p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
     });
     renderSubBody();
@@ -656,7 +839,7 @@ document.getElementById('tkWork').addEventListener('click', function(e){
   var gosub = e.target.closest ? e.target.closest('[data-gosub]') : null;
   if (gosub) {
     SUBTAB = gosub.getAttribute('data-gosub');
-    document.querySelectorAll('.subtab-pill').forEach(function(p){
+    document.querySelectorAll('#subTab .subtab-pill[data-sub]').forEach(function(p){
       p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
     });
     renderSubBody();
@@ -678,7 +861,7 @@ document.getElementById('tkWork').addEventListener('click', function(e){
   var act = e.target.closest ? e.target.closest('[data-act="dist"]') : null;
   if (act) {
     SUBTAB = 'marketing';
-    document.querySelectorAll('.subtab-pill').forEach(function(p){
+    document.querySelectorAll('#subTab .subtab-pill[data-sub]').forEach(function(p){
       p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
     });
     renderSubBody();
@@ -691,6 +874,33 @@ document.getElementById('tkWork').addEventListener('click', function(e){
     }, 500);
   }
 });
+
+document.getElementById('teamDetailMask').addEventListener('click', function(e){
+  var close = e.target.closest ? e.target.closest('[data-team-close]') : null;
+  if (close || e.target === this) {
+    closeTeamDetail();
+    return;
+  }
+  var back = e.target.closest ? e.target.closest('[data-team-back]') : null;
+  if (back) {
+    if (TEAM_DETAIL_STACK.length > 1) {
+      TEAM_DETAIL_STACK.pop();
+      renderTeamDetail();
+    } else {
+      closeTeamDetail();
+    }
+    return;
+  }
+  var member = e.target.closest ? e.target.closest('[data-team-member]') : null;
+  if (member) {
+    TEAM_DETAIL_STACK.push({
+      title: member.getAttribute('data-team-member'),
+      depth: TEAM_DETAIL_STACK.length
+    });
+    renderTeamDetail();
+  }
+});
+
 // 周期切换（两处独立）：.rep-tab=收益报表周期 PERIOD；.tk-per=任务进度周期 TPERIOD
 document.addEventListener('click', function(e){
   var isRep = e.target.closest ? e.target.closest('.rep-tab') : null;

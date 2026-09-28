@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
-import { Building2, BriefcaseBusiness, Check, ChevronDown, Code2, MessageCircle, Share2, Sparkles } from "lucide-react";
+import { Building2, BriefcaseBusiness, Check, ChevronDown, Code2, GitBranch, MessageCircle, Share2, Sparkles, UsersRound } from "lucide-react";
 import WeChatManagement from "./WeChatManagement";
 import AccountsAndResourceCenter from "./AccountsAndResourceCenter";
 import type { CommunicationToolType } from "../data/communicationTools";
 import { S, useThemeSingleton } from "../theme";
 
-type UnifiedCategory = "all" | "communication" | "content" | "workspace" | "developer" | "business";
+type UnifiedCategory = "all" | "communication" | "private" | "content" | "workspace" | "developer" | "business";
 type UnifiedViewDimension = "type" | "project" | "person";
 type Subtype = { key: string; label: string; type: CommunicationToolType | "all"; platform?: string; types?: CommunicationToolType[]; hint?: string };
 
@@ -13,6 +13,7 @@ type Subtype = { key: string; label: string; type: CommunicationToolType | "all"
 const CATEGORY_TABS: { key: UnifiedCategory; label: string; hint: string; icon: typeof MessageCircle }[] = [
   { key: "all", label: "全部", hint: "查看全部账号资产", icon: Building2 },
   { key: "communication", label: "通讯与身份", hint: "微信、手机号、邮箱等登录身份", icon: MessageCircle },
+  { key: "private", label: "私域资源", hint: "承接微信、微信群、入群规则与记录", icon: UsersRound },
   { key: "content", label: "内容与微信生态", hint: "公众号、小程序、视频号与内容平台", icon: Share2 },
   { key: "workspace", label: "协作与 AI", hint: "Figma、ChatGPT、Claude、WorkBuddy、Trae", icon: Sparkles },
   { key: "developer", label: "开发与基础设施", hint: "GitHub、代码仓库、云服务与域名", icon: Code2 },
@@ -27,6 +28,7 @@ const CATEGORY_SUBTYPES: Record<UnifiedCategory, Subtype[]> = {
     { key: "phone", label: "手机号", type: "phone", hint: "号码与实名" },
     { key: "email", label: "邮箱", type: "email", hint: "邮箱与密保" },
   ],
+  private: [{ key: "private-overview", label: "私域资源配置", type: "all", hint: "承接微信、群资源、入群规则与记录" }],
   content: [
     { key: "all-content", label: "全部渠道", type: "media" },
     { key: "official-account", label: "公众号", type: "media", platform: "公众号" },
@@ -121,6 +123,25 @@ const initialCategorySubtypes = CATEGORY_SUBTYPES[initialCategory];
     </div>
   );
 
+  const openModule = (module: "groupConfig") => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", "pc");
+    url.searchParams.set("module", module);
+    window.history.pushState({}, "", url);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+  };
+
+  const privateResourceView = <div className="flex-1 overflow-auto p-6" style={{ background: S.bg }}>
+    <div className="flex items-start justify-between gap-4"><div><div className="text-sm font-bold" style={{ color: S.text }}>私域资源配置</div><div className="text-[11px] mt-1" style={{ color: S.muted }}>账号总账维护“有什么资源”；这里配置“哪些微信和群用于承接、服务与入群”。</div></div><span className="px-2 py-1 text-[10px] font-semibold" style={{ background: S.accentLight, color: S.primaryDark, borderRadius: 999 }}>配置层</span></div>
+    <div className="grid grid-cols-2 gap-4 mt-5">{[
+      { icon: MessageCircle, title: "承接微信与企微", desc: "设置可用于加好友、群发、发朋友圈和服务承接的微信号；绑定项目、地区、客服与状态。", action: "查看微信资源" },
+      { icon: UsersRound, title: "微信群与群模板", desc: "维护群二维码、群类型、容量、备用群、服务老师和群管理员。", action: "配置微信群" },
+      { icon: GitBranch, title: "入群分配规则", desc: "按地区、会员层级、推荐关系、归属客服和群容量自动推荐目标群。", action: "配置分配规则" },
+      { icon: Check, title: "入群记录与异常", desc: "查看待入群、已入群、换群、失败原因和分配日志，支持人工修正。", action: "查看入群记录" },
+    ].map(item => { const Icon = item.icon; return <button type="button" key={item.title} onClick={() => openModule("groupConfig")} className="p-5 text-left transition-all hover:-translate-y-0.5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: S.shadow }}><div className="w-9 h-9 flex items-center justify-center" style={{ background: S.accentLight, color: S.accent, borderRadius: 9 }}><Icon size={18} /></div><div className="text-sm font-bold mt-4" style={{ color: S.text }}>{item.title}</div><div className="text-[11px] leading-relaxed mt-2" style={{ color: S.muted }}>{item.desc}</div><div className="text-xs font-semibold mt-4" style={{ color: S.primary }}>{item.action} ›</div></button>; })}</div>
+    <div className="mt-4 p-4" style={{ background: "#fff7ed", border: "1px solid #fed7aa", borderRadius: S.radius }}><div className="text-xs font-bold" style={{ color: "#9a3412" }}>日常运营不在这里执行</div><div className="text-[11px] mt-1" style={{ color: "#9a3412" }}>微信群发、朋友圈、群内内容、活动触达和回访，请进入“运营工作台”。这里仅维护其可调用的账号、群与规则。</div></div>
+  </div>;
+
   return (
     <div className="h-full min-h-0 flex flex-col" style={{ background: S.bg }}>
       <div className="flex items-center justify-between gap-4 px-6 py-2.5 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
@@ -168,7 +189,7 @@ const initialCategorySubtypes = CATEGORY_SUBTYPES[initialCategory];
       </div>}
 
       <div className="flex-1 min-h-0 overflow-hidden">
-        {onlyWechatSelected ? (
+        {activeCategory === "private" ? privateResourceView : onlyWechatSelected ? (
           <WeChatManagement controlledViewDimension={viewDimension} controlledMainTab={wechatMode} onMainTabChange={setWechatMode} hideAccountTypeTabs hideDimensionTabs hidePageTitle toolbarActionPlacement="toolbar" headerActionTargetId="unified-wechat-register" />
         ) : (
           <AccountsAndResourceCenter key={selectedSubtypeKeys.join("-")} initialTopTab={selectedToolTypes.length === 1 ? selectedToolTypes[0] : "all"} embedded controlledViewDimension={viewDimension} hideDimensionControls platformFilter={selectedPlatforms.length === 1 ? selectedPlatforms[0] : null} platformFilters={selectedPlatforms.length > 1 ? selectedPlatforms : undefined} registrationPlatform={selectedPlatforms.length === 1 ? selectedPlatforms[0] : null} toolTypes={selectedToolTypes.length ? selectedToolTypes : undefined} headerActionTargetId="unified-account-header-actions" secondaryActionTargetId="unified-secondary-actions" />

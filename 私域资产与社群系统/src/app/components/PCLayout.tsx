@@ -4,7 +4,7 @@ import {
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
   BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
-  Globe, Monitor, Smartphone, ChevronDown, Check, Store
+  Globe, Monitor, Smartphone, ChevronDown, Check, Store, BriefcaseBusiness
 } from "lucide-react";
 import { S, useThemeSingleton, ThemeControls } from "../theme";
 import { useProjectContext } from "../App";
@@ -14,26 +14,29 @@ type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
 // ─── 软圆角赛博朋克 · 柔和边框 ────────────────────────────────
 const navGroups = [
   { label: "工作台", items: [
-    { id: "overview",   label: "跨项目工作台",   icon: LayoutDashboard, badge: null },
-    { id: "ecosystem",  label: "项目与生态",     icon: Layers,          badge: null },
-    { id: "miniPrograms", label: "小程序中心",     icon: Store,           badge: "4" },
+    { id: "users",      label: "统一运营工作台", icon: User,            badge: null },
+    { id: "overview",   label: "跨项目总览",     icon: LayoutDashboard, badge: null },
   ]},
-  { label: "配置中心", items: [
-    { id: "wechat",     label: "账号资产中心",    icon: CreditCard,      badge: "2"  },
-    { id: "cs",         label: "员工与服务资源",  icon: Headphones,      badge: null },
-    { id: "channel",    label: "渠道流量绑定",    icon: Share2,          badge: null },
-    { id: "cities",     label: "城市分站",        icon: MapPin,          badge: null },
-    { id: "platformMode", label: "平台模式配置",    icon: Settings,       badge: null },
+  { label: "客户与服务", items: [
+    { id: "cs",         label: "服务资源与员工", icon: Headphones,      badge: null },
+    { id: "tickets",    label: "工单中心",       icon: FileText,        badge: "12" },
   ]},
-  { label: "日常运营", items: [
-    { id: "users",      label: "运营工作台",     icon: User,            badge: null },
-    { id: "members",    label: "会员权益",       icon: Star,             badge: null },
+  { label: "SCRM 业务模型", items: [
+    { id: "ecosystem",  label: "行业生态与角色关系", icon: Layers,       badge: null },
   ]},
-  { label: "服务与交易", items: [
-    { id: "orders",     label: "支付订单",       icon: CreditCard,       badge: "3"  },
-    { id: "tickets",    label: "工单中心",       icon: FileText,         badge: "12" },
-    { id: "approval",   label: "审批中心",       icon: ClipboardCheck,   badge: "18" },
-    { id: "commission", label: "分销佣金",       icon: DollarSign,       badge: null },
+  { label: "业务项目", items: [
+    { id: "orders",     label: "订单与履约",     icon: CreditCard,      badge: "3"  },
+    { id: "channel",    label: "渠道与分销",     icon: Share2,          badge: null },
+    { id: "cities",     label: "城市分站",       icon: MapPin,          badge: null },
+  ]},
+  { label: "资产与连接", items: [
+    { id: "wechat",      label: "账号资产中心",   icon: CreditCard,      badge: "2" },
+    { id: "capabilities", label: "业务能力中心",  icon: BriefcaseBusiness, badge: null },
+  ]},
+  { label: "结算与治理", items: [
+    { id: "commission", label: "佣金与结算",     icon: DollarSign,      badge: null },
+    { id: "approval",   label: "审批与风控",     icon: ClipboardCheck,  badge: "18" },
+    { id: "platformMode", label: "角色与权限配置", icon: Settings,       badge: null },
   ]},
   { label: "数据分析", items: [
     { id: "reports",    label: "数据报表中心",   icon: BarChart2,        badge: null },
@@ -360,10 +363,10 @@ export default function PCLayout({
           <div className="ml-auto flex items-center gap-3">
             {/* ── 右上角主题 + 暗黑模式 ────────────────────────────────── */}
             <ThemeControls />
-            <div className="relative cursor-pointer">
-              <Bell size={15} style={{ color: S.muted }} />
-              <div className="absolute -top-1 -right-1 w-3.5 h-3.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: S.onPrimary, fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>3</div>
-            </div>
+            <button type="button" title="查看待审批" aria-label="查看待审批 18 项" onClick={() => onModuleChange("approval")} className="relative w-7 h-7 flex items-center justify-center" style={{ color: S.muted }}>
+              <Bell size={15} />
+              <div className="absolute top-0 right-0 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: S.onPrimary, fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>18</div>
+            </button>
             <Settings size={15} style={{ color: S.muted, cursor: "pointer" }} />
             <div className="px-3 py-1 font-bold" style={{ background: "#1e293b", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace", letterSpacing: "0.04em" }}>
               2026-07-05

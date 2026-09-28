@@ -8,6 +8,8 @@ import CustomerService from "./components/CustomerService";
 import InfluenceRanking from "./components/InfluenceRanking";
 import MemberOperationsWorkbench from "./components/MemberOperationsWorkbench";
 import EcosystemManagement from "./components/EcosystemManagement";
+import BusinessProjectCenter from "./components/BusinessProjectCenter";
+import BusinessCapabilityCenter from "./components/BusinessCapabilityCenter";
 import ChannelFlow from "./components/ChannelFlow";
 import Orders from "./components/Orders";
 import Tickets from "./components/Tickets";
@@ -34,7 +36,8 @@ const moduleMap: Record<string, React.ComponentType> = {
   accounts:   UnifiedAccountManagement,
   commtools:  UnifiedAccountManagement,
   // 微信账号管理：统一资产入口，个人/企业微信选中后加载旧版微信管理设计
-  wechat:     () => <UnifiedAccountManagement initialCategory="communication" initialSubtype="wechat" />,
+  wechat:     UnifiedAccountManagement,
+  groupConfig: CommunityManagement,
   community:  CommunityManagement,
   cs:         CustomerService,
   influence:  InfluenceRanking,
@@ -51,7 +54,10 @@ const moduleMap: Record<string, React.ComponentType> = {
   commission: Commission,
   reports:    ReportCenter,
   miniPrograms: MiniProgramCenter,
+  appMarket: () => <MiniProgramCenter startInMarket />,
   ecosystem:  EcosystemManagement,
+  businessProjects: BusinessProjectCenter,
+  capabilities: BusinessCapabilityCenter,
 };
 
 type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";

@@ -25,7 +25,7 @@ body.mp-body {
 .mp-frame {
   position: relative;
   width: 430px; height: 932px;
-  overflow: auto; overflow-x: hidden;
+  overflow: hidden; overflow-x: hidden;
   transform: translateZ(0);
   border-radius: 44px;
   box-shadow: 0 0 0 10px #241a10, 0 0 0 11px #4a3620, 0 30px 70px rgba(0,0,0,.55);
@@ -40,9 +40,15 @@ html.mp-embed .mp-frame { border-radius: 0; box-shadow: none; }
 
 .mp-page {
   position: relative; min-height: 100%;
+  height: 100%;
+  overflow-y: auto;
   --sab: 34px; --sat: 54px;
   --screen-h: 932px; --screen-w: 430px;
   box-sizing: border-box;
+}
+body.mp-full .mp-page {
+  height: auto;
+  overflow: visible;
 }
 
 /* 状态栏与胶囊：微信原生渲染的部分，页面自己让位（utils/layout）。
@@ -1326,11 +1332,13 @@ a { color: inherit; text-decoration: none; }
 
 /* ===== custom-tab-bar ===== */
 .tabbar{
-  position: sticky;
+  position: fixed;
+  left: 0;
+  right: 0;
   bottom: 0;
   z-index: 90;
   display: flex; align-items: flex-start;
-  
+  width: 100%;
   box-sizing: border-box;
   
   height: calc(51.6px + var(--sab));

@@ -1,28 +1,35 @@
+import { useState } from "react";
+import { CalendarDays, CheckCircle2, ClipboardList, MessageCircleMore, Send, Sparkles, UsersRound } from "lucide-react";
 import InfluenceRanking from "./InfluenceRanking";
 import { S, useThemeSingleton } from "../theme";
 import { useProjectContext } from "../App";
 
+type Tab = "today" | "content" | "community" | "users" | "campaigns" | "results";
+const tabs: Array<{ id: Tab; label: string; icon: typeof ClipboardList }> = [
+  { id: "today", label: "今日执行", icon: ClipboardList }, { id: "content", label: "内容与触达", icon: Send }, { id: "community", label: "社群运营", icon: MessageCircleMore }, { id: "users", label: "用户运营", icon: UsersRound }, { id: "campaigns", label: "运营活动", icon: CalendarDays }, { id: "results", label: "效果复盘", icon: Sparkles },
+];
+const panel = { background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius };
+const primary = { background: "#1e293b", color: S.accent, borderRadius: S.radiusSm };
+
+function Metric({ label, value, note }: { label: string; value: string; note: string }) { return <section className="p-4" style={panel}><div className="text-[11px]" style={{ color: S.muted }}>{label}</div><div className="text-2xl font-bold mt-2" style={{ color: S.text }}>{value}</div><div className="text-[10px] mt-2" style={{ color: S.muted }}>{note}</div></section>; }
+function Task({ title, desc, status, action }: { title: string; desc: string; status: string; action: () => void }) { return <button type="button" onClick={action} className="w-full flex gap-3 text-left p-3" style={{ borderBottom: `1px solid ${S.border}` }}><CheckCircle2 size={15} style={{ color: S.accent, flexShrink: 0 }} /><span className="flex-1"><span className="block text-xs font-bold" style={{ color: S.text }}>{title}</span><span className="block text-[10px] mt-1" style={{ color: S.muted }}>{desc}</span></span><span className="text-[10px] font-semibold" style={{ color: status === "异常" ? "#b91c1c" : S.primary }}>{status}</span></button>; }
+
 export default function MemberOperationsWorkbench() {
   useThemeSingleton();
   const { platform, project } = useProjectContext();
-  return (
-    <div className="h-full min-h-0 flex flex-col" style={{ background: S.bg, fontFamily: "monospace" }}>
-      <header className="px-5 py-3 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
-        <div className="flex items-center justify-between gap-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="m-0 text-base font-bold" style={{ color: S.text }}>运营工作台</h1>
-              <span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: "rgba(204,255,0,0.22)", color: "#4f6500", borderRadius: "999px" }}>日常运营</span>
-            </div>
-            <p className="m-0 mt-1 text-[11px]" style={{ color: S.muted }}>统一管理会员、社群、项目和代理运营</p>
-          </div>
-          <span className="hidden lg:block text-[10px] whitespace-nowrap" style={{ color: S.muted }}>当前平台 · {platform}　当前项目 · {project}</span>
-        </div>
-      </header>
-
-      <div className="flex-1 min-h-0 overflow-hidden">
-        <InfluenceRanking />
-      </div>
-    </div>
-  );
+  const [activeTab, setActiveTab] = useState<Tab>("today");
+  const [notice, setNotice] = useState("");
+  const notify = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(""), 2200); };
+  return <div className="h-full min-h-0 flex flex-col" style={{ background: S.bg, fontFamily: "monospace" }}>
+    <header className="px-5 py-3 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}><div className="flex justify-between gap-4"><div><div className="flex items-center gap-2"><h1 className="m-0 text-base font-bold" style={{ color: S.text }}>运营工作台</h1><span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: S.primaryDark, borderRadius: 999 }}>高频执行</span></div><p className="m-0 mt-1 text-[11px]" style={{ color: S.muted }}>群发、朋友圈、群内容、活动、用户触达与运营复盘</p></div><span className="text-[10px]" style={{ color: S.muted }}>当前项目 · {platform} / {project}</span></div></header>
+    <nav className="px-5 py-2 flex gap-1 flex-shrink-0 overflow-x-auto" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>{tabs.map(tab => { const Icon = tab.icon; const selected = activeTab === tab.id; return <button type="button" key={tab.id} onClick={() => setActiveTab(tab.id)} className="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold whitespace-nowrap" style={{ background: selected ? S.ink : "transparent", color: selected ? S.accent : S.muted, borderRadius: 7 }}><Icon size={14} />{tab.label}</button>; })}</nav>
+    <main className="flex-1 min-h-0 overflow-auto p-5">
+      {activeTab === "today" && <div className="grid grid-cols-[1.25fr_1fr] gap-4"><section className="p-4" style={panel}><div className="flex justify-between items-center mb-3"><div><div className="text-sm font-bold" style={{ color: S.text }}>今日运营队列</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>待入群、待回访、内容发布和资源异常</div></div><button type="button" onClick={() => notify("已打开新建运营任务")} className="px-3 py-1.5 text-xs font-bold" style={primary}>新建任务</button></div><Task title="12 位用户待入群" desc="北京 PRO会员群 / 体验官群等待分配" status="待处理" action={() => notify("已定位到待入群执行列表")} /><Task title="社群秋季复购内容待发布" desc="3 个群 · 2 条朋友圈 · 今日 20:00" status="今日" action={() => setActiveTab("content")} /><Task title="深圳代理群接近满员" desc="287 / 300 人，需启用备用群" status="异常" action={() => notify("资源异常需在账号资产中心修复")} /><Task title="18 位会员待回访" desc="续费风险用户 / 服务老师已分配" status="待跟进" action={() => setActiveTab("users")} /></section><section className="grid grid-cols-2 gap-3 content-start">{[["待触达", "36", "今日"], ["群发计划", "4", "待发布"], ["活跃社群", "28", "正在运营"], ["异常预警", "3", "需处理"]].map(([a,b,c]) => <Metric key={a} label={a} value={b} note={c} />)}</section></div>}
+      {activeTab === "content" && <div className="grid grid-cols-[1.25fr_1fr] gap-4"><section className="p-4" style={panel}><div className="flex justify-between"><div><div className="text-sm font-bold" style={{ color: S.text }}>内容与触达计划</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>读取账号资产中心的可用微信、群与执行人</div></div><button type="button" onClick={() => notify("已创建新的群发计划")} className="px-3 py-1.5 text-xs font-bold" style={primary}>新建触达</button></div>{[["微信群发", "秋季复购活动", "北京 PRO会员群等 3 个群", "20:00"], ["朋友圈", "服务老师话术", "5 个执行账号", "18:30"], ["社群公告", "周末直播提醒", "AI 学习社 6 个群", "明日"]].map(([type,title,target,time]) => <button type="button" key={type} onClick={() => notify(`已打开${type}编辑器`)} className="w-full flex gap-3 text-left p-3 mt-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Send size={16} style={{ color: S.accent }} /><span className="flex-1"><span className="block text-xs font-bold" style={{ color: S.text }}>{type} · {title}</span><span className="block text-[10px] mt-1" style={{ color: S.muted }}>{target}</span></span><span className="text-[10px]" style={{ color: S.primary }}>{time}</span></button>)}</section><section className="p-4" style={panel}><div className="text-sm font-bold" style={{ color: S.text }}>内容素材库</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>按项目、群类型和渠道复用</div>{["活动海报 · 12", "朋友圈文案 · 36", "群内话术 · 28", "直播预告 · 6"].map(name => <button type="button" key={name} onClick={() => notify(`已筛选${name}`)} className="w-full flex justify-between py-3 text-left text-xs" style={{ color: S.textSec, borderBottom: `1px solid ${S.border}` }}>{name}<span>›</span></button>)}</section></div>}
+      {activeTab === "community" && <div className="grid grid-cols-3 gap-4">{[["我的负责群", "12", "今日需运营 5 个群"], ["群健康预警", "3", "满员、低活跃、待更新群码"], ["群内容排期", "8", "未来 7 天待发布内容"]].map(([a,b,c]) => <Metric key={a} label={a} value={b} note={c} />)}</div>}
+      {activeTab === "users" && <InfluenceRanking />}
+      {activeTab === "campaigns" && <div className="grid grid-cols-2 gap-4"><section className="p-4" style={panel}><div className="text-sm font-bold" style={{ color: S.text }}>运营活动排期</div>{["9.28 社群秋季复购", "9.30 团长成长直播", "10.01 国庆用户关怀"].map(item => <button type="button" key={item} onClick={() => notify(`已打开${item}`)} className="w-full text-left p-3 mt-3" style={{ background: S.bg, borderRadius: S.radiusSm }}><div className="text-xs font-bold" style={{ color: S.text }}>{item}</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>进行中或已排期</div></button>)}</section><section className="p-4" style={panel}><div className="text-sm font-bold" style={{ color: S.text }}>活动自动化</div><p className="text-[10px] mt-2" style={{ color: S.muted }}>报名、入群、提醒和回访按规则自动触发</p><button type="button" onClick={() => notify("已打开活动自动化配置")} className="mt-4 px-3 py-2 text-xs font-bold" style={primary}>配置自动化</button></section></div>}
+      {activeTab === "results" && <div className="grid grid-cols-4 gap-3">{[["群发阅读率", "68%", "+8.2%"], ["朋友圈回填", "18 / 22", "今日计划"], ["入群转化", "74%", "本周"], ["社群活跃", "82", "健康分"]].map(([a,b,c]) => <Metric key={a} label={a} value={b} note={c} />)}</div>}
+    </main>{notice && <div className="fixed bottom-6 right-6 z-50 px-4 py-3 text-sm" style={{ background: S.ink, color: "#fff", borderRadius: S.radiusSm }}>{notice}</div>}
+  </div>;
 }

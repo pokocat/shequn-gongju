@@ -123,13 +123,27 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#f7f3ea;c
 .tree-node .tn-tip .tt-title{font-weight:800;color:#a3762a;margin-bottom:4px;font-size:11px}
 .tree-node .tn-tip .tt-loc{color:#8a6d2f;font-weight:700;margin-bottom:3px}
 .tree-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
-.tree-svg line{stroke:#d4c4a0;stroke-width:1.5;fill:none}
-.tree-svg line.lvl-1{stroke:#c9a05c;stroke-width:2}
-.tree-svg line.lvl-2{stroke:#7a9b5a}
-.tree-svg line.lvl-3{stroke:#4a7a9b}
-.tree-svg line.lvl-4{stroke:#9b7a5a}
-.tree-svg line.lvl-5{stroke:#8d8577}
-.tree-svg line.lvl-6{stroke:#b85a9b}
+.tree-svg path,.tree-svg line{stroke:#d4c4a0;stroke-width:1.5;fill:none;transition:stroke .15s}
+.tree-svg path.lvl-1,.tree-svg line.lvl-1{stroke:#c9a05c;stroke-width:2}
+.tree-svg path.lvl-2,.tree-svg line.lvl-2{stroke:#7a9b5a}
+.tree-svg path.lvl-3,.tree-svg line.lvl-3{stroke:#4a7a9b}
+.tree-svg path.lvl-4,.tree-svg line.lvl-4{stroke:#9b7a5a}
+.tree-svg path.lvl-5,.tree-svg line.lvl-5{stroke:#8d8577}
+.tree-svg path.lvl-6,.tree-svg line.lvl-6{stroke:#b85a9b}
+.tree-node.tree-strategy{border-color:#c9a05c;background:linear-gradient(135deg,#fdf6ec,#fff);box-shadow:0 3px 10px rgba(201,160,92,.18)}
+.tree-node.tree-group{border-left:3px solid #7a9b5a;background:#fbfcf8}
+.tree-node.tree-platform{border-left:3px solid #4a7a9b;background:#f8fbfc;min-height:56px;padding:8px 12px}
+.tree-node.tree-platform .tn-count{margin-top:5px}
+.tree-node.tree-group .tn-name,.tree-node.tree-platform .tn-name{font-size:13px}
+.tree-node .tn-node-meta{display:inline-block;margin-top:6px;padding:2px 7px;border-radius:5px;background:#f0ece4;color:#8a8073;font-size:9px;font-weight:800}
+.tree-node.tree-platform .tn-node-meta{background:#e8f0f5;color:#4a7a9b}
+.tree-node.tree-account{border-left:3px solid #9b7a5a}
+.tree-node .tn-count{display:inline-flex;font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;margin-top:5px;background:#f0ece4;color:#6b6154}
+.tree-node .tn-expand{position:absolute;right:8px;bottom:7px;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fbf6ea;color:#a3762a;font-size:12px;font-weight:800;border:1px solid #eadfce}
+.tree-node.open .tn-expand{background:#a3762a;color:#fff;transform:rotate(45deg)}
+.tree-guide{display:flex;align-items:center;gap:8px;margin:0 0 18px;padding:10px 12px;border:1px solid #eadfce;border-radius:10px;background:#fffcf6;color:#6b6154;font-size:11px;font-weight:700}
+.tree-guide b{color:#a3762a}
+.tree-guide .tg-arrow{color:#c9a05c}
 .tree-legend{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
 .tree-legend .tl{font-size:11px;font-weight:700;color:#8d8577;margin-right:4px}
 .tree-legend span.tg{font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;color:#fff}
@@ -626,6 +640,7 @@ var QUOTA={
 };
 // 固定比例状态
 var treeScale=1;
+var treeExpanded={};
 // 授权填充目标
 var authTarget=null;
 // 平台列表
@@ -730,72 +745,65 @@ function filterTreeCamp(short){
  renderTree();
 }
 
-// 从所有账号构建索引：platform/name -> account
-function buildAcctIndex(){
- var idx={};
- CAMPS.forEach(function(c){c.groups.forEach(function(g){g.items.forEach(function(a){
-  idx[a.platform+'|'+a.name]=a;
-  // also index by platform alone and name alone for parent matching
-  if(!idx['p:'+a.platform])idx['p:'+a.platform]=a;
-  if(!idx['n:'+a.name])idx['n:'+a.name]=a;
- })})});
- return idx;
+function treeKey(type,camp,group,platform){
+ return [type,camp,group||'',platform||''].join('|');
 }
-
-// 为某个阵营构建森林（多棵树）：L1为根，子节点按parent匹配，补全空缺位
-function buildForest(camp){
- var allItems=[];
- camp.groups.forEach(function(g){
-  var quota=QUOTA[g.group]||g.items.length;
-  var filledCount=0;
-  g.items.forEach(function(a){
-   a._group=g.group;a._camp=camp.short;
-   a._filled=isFilled(a);
-   if(a._filled)filledCount++;
-   allItems.push({acct:a,children:[]});
-  });
-  // 加入通过授权登录填充的账号
-  var authFilled=getFilledByGroup(g.group);
-  authFilled.forEach(function(a){
-   a._group=g.group;a._camp=camp.short;a._filled=true;
-   allItems.push({acct:a,children:[]});
-   filledCount++;
-  });
-  // 补全空缺位占位节点
-  var emptyCount=Math.max(0,quota-filledCount);
-  for(var i=0;i<emptyCount;i++){
-   var emptyAcct={name:'空缺位'+(i+1),platform:'未授权',pos:'待填充',level:'L2 内容分发',parent:null,owner:'—',content:'授权登录后填充',status:'空缺',fans:'—',desc:'点击「授权登录」填充该账号',_group:g.group,_camp:camp.short,_filled:false,_empty:true};
-   allItems.push({acct:emptyAcct,children:[]});
-  }
- });
- var map={};
- allItems.forEach(function(n){
-  var k=n.acct.platform+'|'+n.acct.name+'|'+(n.acct._group||'');
-  map[k]=n;
- });
- var roots=[];
- allItems.forEach(function(n){
-  var p=n.acct.parent;
-  if(!p){roots.push(n);return}
-  var parent=map[p+'|'+n.acct.name+'|'+(n.acct._group||'')]||null;
-  if(!parent){
-   for(var k in map){if(map[k].acct.platform===p){parent=map[k];break}}
-  }
-  if(!parent){
-   for(var k2 in map){if(map[k2].acct.name===p){parent=map[k2];break}}
-  }
-  if(parent&&parent!==n){parent.children.push(n)}else{roots.push(n)}
- });
- return roots;
+function toggleTreeNode(key){
+ treeExpanded[key]=!treeExpanded[key];
+ renderTree();
 }
-
-// 计算子树叶子数
+function collectGroupAccounts(camp,group){
+ var accounts=group.items.map(function(a){
+  a._group=group.group;a._camp=camp.short;a._filled=isFilled(a);return a;
+ });
+ getFilledByGroup(group.group).forEach(function(a){
+  a._group=group.group;a._camp=camp.short;a._filled=true;accounts.push(a);
+ });
+ return accounts;
+}
+function buildStrategicTree(camp){
+ var campFilled=0,campQuota=0;
+ var root={kind:'strategy',key:treeKey('c',camp.short),title:camp.name,subtitle:camp.desc,count:0,quota:0,color:camp.color,children:[]};
+ camp.groups.forEach(function(group){
+  var stats=groupFillStats(group.group,group.items);
+  var accounts=collectGroupAccounts(camp,group);
+  var groupKey=treeKey('g',camp.short,group.group);
+  var groupNode={kind:'group',key:groupKey,title:group.group,subtitle:'',count:stats.filled,quota:stats.quota,color:'#7a9b5a',group:group,children:[]};
+  campFilled+=stats.filled;campQuota+=stats.quota;
+  if(treeExpanded[groupKey]){
+   var platformMap={};
+   accounts.forEach(function(a){
+    if(!platformMap[a.platform])platformMap[a.platform]=[];
+    platformMap[a.platform].push(a);
+   });
+   var occupied=accounts.length;
+   var missing=Math.max(0,stats.quota-occupied);
+   if(missing){
+    platformMap['待授权']=[];
+    for(var i=0;i<missing;i++)platformMap['待授权'].push({name:'空缺位'+(i+1),platform:'待授权',pos:'待授权登录',level:'L2 内容分发',status:'空缺',fans:'—',desc:'授权登录后填充该账号',_group:group.group,_camp:camp.short,_empty:true});
+   }
+   Object.keys(platformMap).forEach(function(platform){
+    var platformKey=treeKey('p',camp.short,group.group,platform);
+    var platformAccounts=platformMap[platform];
+    var activeCount=platformAccounts.filter(function(a){return !a._empty&&isFilled(a)}).length;
+    var platformNode={kind:'platform',key:platformKey,title:platform+' · '+platformAccounts.length,subtitle:'',count:activeCount,quota:platformAccounts.length,color:'#4a7a9b',group:group,children:[]};
+    if(treeExpanded[platformKey]){
+     platformNode.children=platformAccounts.map(function(a,index){
+      return {kind:'account',key:treeKey('a',camp.short,group.group,platform)+'|'+index,title:a._empty?'空缺位':a.name,subtitle:a._empty?'点击授权登录':a.pos,count:a._empty?0:1,quota:1,color:LEVELCOLOR[a.level]||'#9b7a5a',acct:a,group:group,children:[]};
+     });
+    }
+    groupNode.children.push(platformNode);
+   });
+  }
+  root.children.push(groupNode);
+ });
+ root.count=campFilled;root.quota=campQuota;
+ return root;
+}
 function leafCount(node){
  if(node.children.length===0)return 1;
- return node.children.reduce(function(s,c){return s+leafCount(c)},0);
+ return node.children.reduce(function(sum,child){return sum+leafCount(child)},0);
 }
-
-// 布局：自上而下，父节点居中于子节点上方
 function layoutTree(roots){
  var unitW=TREE_NODE_W+TREE_GAP;
  function assign(node,leftX,depth){
@@ -804,128 +812,84 @@ function layoutTree(roots){
   node.x=leftX+node.width/2;
   node.y=TREE_TOP+depth*TREE_LEVEL_H;
   node.depth=depth;
-  var cur=leftX;
-  node.children.forEach(function(ch){
-   assign(ch,cur,depth+1);
-   cur+=leafCount(ch)*unitW;
+  var nextX=leftX;
+  node.children.forEach(function(child){
+   assign(child,nextX,depth+1);
+   nextX+=leafCount(child)*unitW;
   });
  }
- var curX=0;
- roots.forEach(function(r){
-  assign(r,curX,0);
-  curX+=leafCount(r)*unitW;
- });
+ var currentX=0;
+ roots.forEach(function(root){assign(root,currentX,0);currentX+=leafCount(root)*unitW});
 }
-
-// 获取树的边界
 function getBounds(roots){
  var minX=Infinity,maxX=-Infinity,maxY=-Infinity;
- function walk(n){
-  minX=Math.min(minX,n.x);maxX=Math.max(maxX,n.x);maxY=Math.max(maxY,n.y);
-  n.children.forEach(walk);
+ function walk(node){
+  minX=Math.min(minX,node.x);maxX=Math.max(maxX,node.x);maxY=Math.max(maxY,node.y);
+  node.children.forEach(walk);
  }
  roots.forEach(walk);
- return {minX:minX,maxX:maxX,maxY:maxY,width:maxX-minX+TREE_NODE_W,height:maxY+TREE_NODE_H+TREE_TOP};
+ return {width:Math.max(TREE_NODE_W,maxX-minX+TREE_NODE_W),height:maxY+TREE_NODE_H+TREE_TOP};
 }
-
+function createTreeNode(node,camp,stage){
+ var div=document.createElement('div');
+ div.className='tree-node tree-'+node.kind+(treeExpanded[node.key]?' open':'')+(node.acct&&node.acct._empty?' empty':'');
+ div.style.left=(node.x-TREE_NODE_W/2)+'px';div.style.top=node.y+'px';
+ var name=document.createElement('div');name.className='tn-name';name.textContent=node.title;div.appendChild(name);
+ if(node.kind==='strategy'){
+  var strategy=document.createElement('div');strategy.className='tn-pos';strategy.textContent='整体账号类型布局';div.appendChild(strategy);
+ }else if(node.kind==='group'){
+  var groupMeta=document.createElement('div');groupMeta.className='tn-pos tn-node-meta';groupMeta.textContent='账号类型';div.appendChild(groupMeta);
+ }else if(node.kind==='platform'){
+  // 数量已合并到标题，不再渲染副标题
+ }else if(node.acct&&node.acct._empty){
+  var emptyPos=document.createElement('div');emptyPos.className='tn-pos';emptyPos.textContent=node.acct._group;
+  var fill=document.createElement('div');fill.className='tn-fill';fill.textContent='授权登录填充';
+  fill.onclick=function(event){event.stopPropagation();openAuth(null,node.acct._group,camp.short)};
+  div.appendChild(emptyPos);div.appendChild(fill);
+ }else if(node.acct){
+  var pc=PCOLOR[node.acct.platform]||'p-gzh';
+  var platform=document.createElement('span');platform.className='tn-plat '+pc;platform.textContent=node.acct.platform;div.appendChild(platform);
+  var level=document.createElement('span');level.className='tn-lvl';level.style.background=LEVELCOLOR[node.acct.level]||'#8d8577';level.textContent=node.acct.level||'';div.appendChild(level);
+  var position=document.createElement('div');position.className='tn-pos';position.textContent=node.acct.pos||'';div.appendChild(position);
+  var description=document.createElement('div');description.className='tn-desc';description.textContent=node.acct.desc||'';div.appendChild(description);
+ }
+ if(node.kind!=='account'){
+  var count=document.createElement('span');count.className='tn-count';count.textContent='已填 '+node.count+' / '+node.quota;div.appendChild(count);
+  var expand=document.createElement('span');expand.className='tn-expand';expand.textContent='+';div.appendChild(expand);
+  div.onclick=function(){toggleTreeNode(node.key)};
+ }else if(node.acct&&!node.acct._empty){
+  div.onclick=function(){showDetail(node.acct,camp)};
+ }
+ stage.appendChild(div);
+ node.children.forEach(function(child){createTreeNode(child,camp,stage)});
+}
 function renderTree(){
  var wrap=document.getElementById('treeWrap');
  if(!wrap)return;
  wrap.innerHTML='';
- // 图例
- var legend=document.createElement('div');legend.className='tree-legend';
- legend.innerHTML='<span class="tl">账号层级：</span>';
- ['L1 核心主号','L2 内容分发','L3 交易承接','L4 私域运营','L5 辅助号','L6 代理共建'].forEach(function(l){
-  var s=document.createElement('span');s.className='tg';s.style.background=LEVELCOLOR[l];s.textContent=l;
-  legend.appendChild(s);
- });
- wrap.appendChild(legend);
+ var guide=document.createElement('div');guide.className='tree-guide';
+ guide.innerHTML='<b>战略阵营</b><span class="tg-arrow">→</span><b>账号类型</b><span class="tg-arrow">→</span><b>平台配置</b><span class="tg-arrow">→</span><b>账号详情</b>';
+ wrap.appendChild(guide);
  CAMPS.forEach(function(camp){
   if(curTreeCamp!=='all'&&curTreeCamp!==camp.short)return;
   var block=document.createElement('div');block.className='tree-camp-block';
-  var roots=buildForest(camp);
-  if(roots.length===0)return;
-  layoutTree(roots);
-  var bounds=getBounds(roots);
-  // 阵营配额统计
-  var campFilled=0,campQuota=0;
-  camp.groups.forEach(function(g){var s=groupFillStats(g.group,g.items);campFilled+=s.filled;campQuota+=s.quota});
-  var qClass=campFilled>=campQuota?'full':(campFilled===0?'empty':'partial');
-  // 阵营标题
+  var root=buildStrategicTree(camp);var roots=[root];layoutTree(roots);var bounds=getBounds(roots);
   var title=document.createElement('div');title.className='tree-camp-title';title.style.background=camp.color;
-  title.innerHTML='◆ '+camp.name+' <span class="tct-sub">'+camp.groups.length+'分组</span>'
-   +'<span class="quota-badge '+qClass+'">已填 '+campFilled+' / '+campQuota+'</span>';
-  block.appendChild(title);
-  // 舞台
-  var stage=document.createElement('div');stage.className='tree-stage';
-  stage.style.width=bounds.width+'px';
-  stage.style.height=bounds.height+'px';
-  // SVG 连线
-  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('class','tree-svg');
-  svg.setAttribute('width',bounds.width);
-  svg.setAttribute('height',bounds.height);
-  svg.setAttribute('viewBox','0 0 '+bounds.width+' '+bounds.height);
+  var titleText=document.createTextNode('◆ '+camp.name+' ');title.appendChild(titleText);
+  var sub=document.createElement('span');sub.className='tct-sub';sub.textContent=camp.groups.length+'种账号类型';title.appendChild(sub);
+  var quota=document.createElement('span');quota.className='quota-badge '+(root.count>=root.quota?'full':root.count===0?'empty':'partial');quota.textContent='已填 '+root.count+' / '+root.quota;title.appendChild(quota);block.appendChild(title);
+  var stage=document.createElement('div');stage.className='tree-stage';stage.style.width=bounds.width+'px';stage.style.height=bounds.height+'px';
+  var svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','tree-svg');svg.setAttribute('width',bounds.width);svg.setAttribute('height',bounds.height);svg.setAttribute('viewBox','0 0 '+bounds.width+' '+bounds.height);
   function drawLines(node){
-   node.children.forEach(function(ch){
-    var x1=node.x,y1=node.y+TREE_NODE_H;
-    var x2=ch.x,y2=ch.y;
-    var midY=(y1+y2)/2;
+   node.children.forEach(function(child){
+    var x1=node.x,y1=node.y+TREE_NODE_H,x2=child.x,y2=child.y,midY=(y1+y2)/2;
     var path=document.createElementNS('http://www.w3.org/2000/svg','path');
-    var lvlNum=ch.acct.level?ch.acct.level.charAt(1):'2';
-    path.setAttribute('class','lvl-'+lvlNum);
-    path.setAttribute('d','M '+x1+' '+y1+' L '+x1+' '+midY+' L '+x2+' '+midY+' L '+x2+' '+y2);
-    path.setAttribute('fill','none');
-    svg.appendChild(path);
-    drawLines(ch);
+    path.setAttribute('class','lvl-'+Math.min(6,child.depth+1));path.setAttribute('d','M '+x1+' '+y1+' L '+x1+' '+midY+' L '+x2+' '+midY+' L '+x2+' '+y2);svg.appendChild(path);drawLines(child);
    });
   }
-  roots.forEach(drawLines);
-  stage.appendChild(svg);
-  // 节点
-  function drawNodes(node){
-   var div=document.createElement('div');
-   var lvlNum=node.acct.level?node.acct.level.charAt(1):'2';
-   div.className='tree-node lvl-'+lvlNum+(node.acct._empty?' empty':'');
-   div.style.left=(node.x-TREE_NODE_W/2)+'px';
-   div.style.top=node.y+'px';
-   var pc=PCOLOR[node.acct.platform]||'p-gzh';
-   var lvlColor=LEVELCOLOR[node.acct.level]||'#8d8577';
-   var desc=node.acct.desc||'';
-   var shortDesc=desc.length>36?desc.substring(0,36)+'…':desc;
-   if(node.acct._empty){
-    // 空缺位：显示授权登录按钮
-    div.innerHTML='<div class="tn-name">空缺位</div>'
-     +'<span class="tn-plat" style="background:#f0ece4;color:#8d8577">未授权</span>'
-     +'<span class="tn-lvl" style="background:#c9c0b0">L2</span>'
-     +'<div class="tn-pos" style="color:#a39b8e">'+node.acct._group+'</div>'
-     +'<div class="tn-fill" onclick="openAuth(null,\''+node.acct._group+'\',\''+camp.short+'\')">授权登录填充</div>';
-   }else{
-    div.innerHTML='<div class="tn-name">'+node.acct.name+'</div>'
-     +'<span class="tn-plat '+pc+'">'+node.acct.platform+'</span>'
-     +'<span class="tn-lvl" style="background:'+lvlColor+'">'+(node.acct.level||'')+'</span>'
-     +'<div class="tn-pos">'+node.acct.pos+'</div>'
-     +'<div class="tn-desc">'+shortDesc+'</div>'
-     +'<div class="tn-tip"><div class="tt-title">'+node.acct.name+' · '+node.acct.platform+'</div>'
-     +'<div class="tt-loc">【定位】'+node.acct.pos+'</div>'
-     +'<div style="color:#6b6154">'+desc+'</div>'
-     +(node.acct.owner?'<div style="margin-top:5px;color:#a3762a;font-weight:700">负责人：'+node.acct.owner+'</div>':'')
-     +(node.acct.fans&&node.acct.fans!=='—'?'<div style="color:#8a6d2f">粉丝：'+node.acct.fans+'</div>':'')
-     +'</div>';
-    div.onclick=function(){showDetail(node.acct,camp)};
-   }
-   stage.appendChild(div);
-   node.children.forEach(drawNodes);
-  }
-  roots.forEach(drawNodes);
-  block.appendChild(stage);
-  wrap.appendChild(block);
+  drawLines(root);stage.appendChild(svg);createTreeNode(root,camp,stage);block.appendChild(stage);wrap.appendChild(block);
  });
- // 矩阵规划建议
- renderPlanSuggestions(wrap);
- // 初始化拖拽缩放
- initPanZoom();
- applyTreeTransform();
+ renderPlanSuggestions(wrap);applyTreeTransform();
 }
 
 // 矩阵规划建议：基于数据分析给出策略建议

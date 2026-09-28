@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from "react";
-import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch, Users, Store, ShieldCheck } from "lucide-react";
+import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch, Users, Store, ShieldCheck, Check, History } from "lucide-react";
 import { getAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
 import { SCOPE_CONFIGS, dataScopeOptions, type DataScope, type ScopeOperationId, type ScopeRow, type ScopeTreeNode } from "./workbenchScopes";
@@ -8,13 +8,16 @@ import { calculateMemberNetworkScope, getMemberNetworkViews, memberNetworkExampl
 import { useProjectContext } from "../App";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const taskCategories = [
-  { label: "待处理的任务", count: 12, active: true },
-  { label: "我发布的任务", count: 5 },
-  { label: "朋友圈的任务", count: 28 },
-  { label: "附近的任务", count: 7 },
+  { label: "全部待办", count: 12, active: true },
+  { label: "客户关系", count: 3 },
+  { label: "订单履约", count: 2 },
+  { label: "服务工单", count: 2 },
+  { label: "社群运营", count: 2 },
+  { label: "结算审批", count: 1 },
+  { label: "风险预警", count: 2 },
 ];
 
-const profileTabs = ["概览", "订单", "历史操作", "回访"];
+const profileTabs = ["概览", "订单", "权益", "历史操作", "回访"];
 const orderStatusTabs = ["所有订单", "待付款", "待发货", "待收货", "已完成", "退款/换货"];
 const operationTabs = [
   { id: "issue", label: "问题登记", icon: MessageSquare, button: "登记并指派" },
@@ -69,28 +72,23 @@ const initialMemberTags: Record<number, MemberTag[]> = {
   ],
 };
 
-const taskSideList = [
-  { title: "会员产品下午3点代发",  time: "2026-07-05 14:30", status: "进行中", unread: 3 },
-  { title: "晒单截图任务-7月第二周",  time: "2026-07-04 10:00", status: "待处理", unread: 1 },
-  { title: "朋友圈转发活动邀请",      time: "2026-07-03 09:00", status: "进行中", unread: 0 },
-  { title: "评论互动任务-体验官群",   time: "2026-07-02 16:00", status: "已完成", unread: 0 },
-  { title: "拉新任务-北京PRO群",      time: "2026-07-01 11:00", status: "进行中", unread: 2 },
+type TaskEntry = { title: string; time: string; status: string; unread: number; source: string; action: string };
+const taskSideList: TaskEntry[] = [
+  { title: "盛光年 · 个微好友申请待确认", time: "2026-07-05 14:30", status: "待处理", unread: 1, source: "企微 SCRM", action: "确认关系" },
+  { title: "ORD-202607-01842 · 待收货回访", time: "2026-07-05 13:00", status: "待处理", unread: 0, source: "商城订单", action: "发起回访" },
+  { title: "售后工单 · 退款咨询待指派", time: "2026-07-05 11:20", status: "待处理", unread: 2, source: "客户服务", action: "指派处理" },
+  { title: "北京 PRO 会员群 · 群公告待发布", time: "2026-07-05 10:00", status: "进行中", unread: 0, source: "社群运营", action: "发布公告" },
+  { title: "团长佣金结算单 · 待负责人审批", time: "2026-07-05 09:30", status: "待处理", unread: 1, source: "佣金结算", action: "查看审批" },
 ];
 
-const taskLists = {
-  "待处理的任务": taskSideList,
-  "我发布的任务": [
-    { title: "PRO会员续费提醒", time: "2026-07-05 15:00", status: "进行中", unread: 2 },
-    { title: "晒单截图任务-7月第二周", time: "2026-07-04 10:00", status: "待处理", unread: 1 },
-  ],
-  "朋友圈的任务": [
-    { title: "朋友圈转发活动邀请", time: "2026-07-03 09:00", status: "进行中", unread: 0 },
-    { title: "评论互动任务-体验官群", time: "2026-07-02 16:00", status: "已完成", unread: 0 },
-  ],
-  "附近的任务": [
-    { title: "拉新任务-北京PRO群", time: "2026-07-01 11:00", status: "进行中", unread: 2 },
-    { title: "北京朝阳线下活动", time: "2026-07-06 09:30", status: "待处理", unread: 1 },
-  ],
+const taskLists: Record<string, TaskEntry[]> = {
+  "全部待办": taskSideList,
+  "客户关系": [taskSideList[0], { title: "皮卡丘 · 企业微信待添加", time: "2026-07-05 12:10", status: "待处理", unread: 0, source: "企微 SCRM", action: "发起添加" }],
+  "订单履约": [taskSideList[1], { title: "ORD-202607-01818 · 退款申请待处理", time: "2026-07-05 10:40", status: "待处理", unread: 1, source: "商城订单", action: "处理退款" }],
+  "服务工单": [taskSideList[2], { title: "服务工单 · 课程咨询即将超时", time: "2026-07-05 09:50", status: "进行中", unread: 1, source: "客户服务", action: "催办" }],
+  "社群运营": [taskSideList[3], { title: "朝阳体验官群 · 新成员待分配", time: "2026-07-05 09:20", status: "待处理", unread: 0, source: "社群运营", action: "分配服务官" }],
+  "结算审批": [taskSideList[4]],
+  "风险预警": [{ title: "梓几 · 个微添加失败需复核", time: "2026-07-05 08:50", status: "待处理", unread: 1, source: "企微 SCRM", action: "查看风险" }, { title: "西城冷启动群 · 活跃度低于阈值", time: "2026-07-05 08:30", status: "待处理", unread: 0, source: "社群运营", action: "创建激活任务" }],
 };
 
 const memberOrders = [
@@ -281,6 +279,7 @@ export default function InfluenceRanking() {
   const [selectedRow, setSelectedRow] = useState<ScopeRow | null>(null);
   const [activeTaskCategory, setActiveTaskCategory] = useState(taskCategories[0].label);
   const [selectedTaskIndex, setSelectedTaskIndex] = useState(0);
+  const [activeTaskContext, setActiveTaskContext] = useState("全部待办");
   const [profileNotice, setProfileNotice] = useState("");
   const [memberTags, setMemberTags] = useState<Record<number, MemberTag[]>>(initialMemberTags);
   const [isEditingTags, setIsEditingTags] = useState(false);
@@ -298,6 +297,7 @@ export default function InfluenceRanking() {
   const [relationshipMember, setRelationshipMember] = useState<number | null>(null);
   const [relationshipDraft, setRelationshipDraft] = useState<RelationshipRecord | null>(null);
   const [relationshipOverrides, setRelationshipOverrides] = useState<Record<number, RelationshipRecord>>({});
+  const [pendingRelationshipChanges, setPendingRelationshipChanges] = useState<Record<string, string>>({});
   const [activeOrderStatus, setActiveOrderStatus] = useState(orderStatusTabs[0]);
   const [selectedOrderNo, setSelectedOrderNo] = useState<string | null>(null);
   const [orderSearchInput, setOrderSearchInput] = useState("");
@@ -366,11 +366,65 @@ export default function InfluenceRanking() {
   const selectedTags = memberTags[selectedUser.rank] ?? defaultMemberTags;
   const relationshipForUser = (rank: number) => relationshipOverrides[rank] ?? relationshipForRank(rank);
   const updateRelationshipStatus = (rank: number, key: "personal" | "enterprise" | "group", value: string) => {
-    setRelationshipOverrides(current => ({ ...current, [rank]: { ...relationshipForUser(rank), [key]: value } }));
-    showProfileNotice("关系状态已更新");
+    setPendingRelationshipChanges(current => ({ ...current, [`${rank}:${key}`]: value }));
   };
+  const confirmRelationshipStatus = (rank: number, key: "personal" | "enterprise" | "group") => {
+    const pendingKey = `${rank}:${key}`;
+    const value = pendingRelationshipChanges[pendingKey];
+    if (!value) return;
+    setRelationshipOverrides(current => ({ ...current, [rank]: { ...relationshipForUser(rank), [key]: value } }));
+    setPendingRelationshipChanges(current => {
+      const next = { ...current };
+      delete next[pendingKey];
+      return next;
+    });
+    showProfileNotice("关系状态已确认");
+  };
+  const statusValue = (rank: number, key: "personal" | "enterprise" | "group") => pendingRelationshipChanges[`${rank}:${key}`] ?? relationshipForUser(rank)[key];
+  const statusLog = (name: string, label: string, value: string) => showProfileNotice(`${name} · ${label}操作日志：最近状态为${value}`);
   const activeListsRecord = activeLists as Record<string, typeof taskSideList>;
   const visibleTaskList = activeListsRecord[activeTaskCategory] ?? (taskSource === "scope" ? activeListsRecord[scopeCfg!.taskCategories[0].label] : taskSideList);
+  const openTask = (task: TaskEntry, index: number) => {
+    setSelectedTaskIndex(index);
+    setActiveTaskContext(task.title);
+    setIsOperationCollapsed(false);
+    if (task.title.includes("个微") || task.title.includes("企业微信") || task.title.includes("添加失败")) {
+      const user = task.title.includes("皮卡丘") ? rankingData[1] : task.title.includes("梓几") ? rankingData[3] : rankingData[0];
+      setDataScope("members");
+      setSelectedUser(user);
+      setRelationshipMember(user.rank);
+      setRelationshipDraft({ ...relationshipForUser(user.rank) });
+      return;
+    }
+    if (task.title.includes("ORD-")) {
+      setDataScope("members");
+      setSelectedUser(rankingData[0]);
+      setActiveProfileTab("订单");
+      setSelectedOrderNo(memberOrders[0].no);
+      showProfileNotice("已定位订单履约记录，可直接确认收货、售后或发起回访");
+      return;
+    }
+    if (task.title.includes("工单")) {
+      setDataScope("members");
+      setSelectedUser(rankingData[0]);
+      setActiveOperation("issue");
+      showProfileNotice("已打开工单处理表单，可直接指派处理人");
+      return;
+    }
+    if (task.title.includes("群")) {
+      setDataScope("community");
+      setSelectedRow(SCOPE_CONFIGS.community.rows[0]);
+      setActiveOperation("issue");
+      showProfileNotice("已定位社群对象，可发布公告或创建群运营任务");
+      return;
+    }
+    if (task.title.includes("佣金")) {
+      setDataScope("agent");
+      setSelectedRow(SCOPE_CONFIGS.agent.rows[0]);
+      setActiveOperation("push");
+      showProfileNotice("已定位结算对象，可查看审批与结算处理记录");
+    }
+  };
   // 操作台 / 档案的当前对象名：会员视角用选中会员，其余视角用选中行
   const targetName = isMemberScope ? selectedUser.name : (selectedRow?.name ?? "");
   const filteredScopeRows = !scopeCfg ? [] : (activeTagFilter === "全部" ? scopeCfg.rows : scopeCfg.rows.filter(r => r.filter === activeTagFilter))
@@ -442,7 +496,7 @@ export default function InfluenceRanking() {
       {/* ── 左侧任务列表 ───────────────────────────────────────── */}
       <div className="flex-shrink-0 flex flex-col transition-all duration-200" style={{ width: isTaskPanelCollapsed ? 40 : 224, background: S.surface, borderRight: `1px solid ${S.border}` }}>
         <div className={isTaskPanelCollapsed ? "px-1 py-3 flex items-center justify-center flex-shrink-0" : "px-4 py-3 flex items-center justify-between flex-shrink-0"} style={{ borderBottom: `1px solid ${S.border}` }}>
-          {!isTaskPanelCollapsed && <div className="text-sm font-bold" style={{ color: S.text }}>任务中心</div>}
+          {!isTaskPanelCollapsed && <div><div className="text-sm font-bold" style={{ color: S.text }}>统一待办</div><div className="text-[10px] mt-0.5" style={{ color: S.muted }}>跨系统汇集，按对象直接处理</div></div>}
           <button type="button" title={isTaskPanelCollapsed ? "展开任务中心" : "收起任务中心"} aria-label={isTaskPanelCollapsed ? "展开任务中心" : "收起任务中心"} onClick={() => setIsTaskPanelCollapsed(value => !value)} className="w-6 h-6 flex items-center justify-center" style={{ color: S.muted }}>
             {isTaskPanelCollapsed ? <PanelLeftOpen size={14} /> : <PanelLeftClose size={14} />}
           </button>
@@ -452,7 +506,7 @@ export default function InfluenceRanking() {
         {/* 任务来源：基础任务永远保留；非会员视角可切换查看对应视角的任务 */}
         {showScopeTaskTab && (
           <div className="flex items-center gap-0.5 px-3 pt-2.5 flex-shrink-0" role="tablist" aria-label="任务来源切换">
-            <button type="button" role="tab" aria-selected={taskSource === "basic"} onClick={() => { setTaskSource("basic"); setActiveTaskCategory(taskCategories[0].label); setSelectedTaskIndex(0); }} className="flex-1 px-2 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: taskSource === "basic" ? "#1e293b" : "#f1f5f9", color: taskSource === "basic" ? S.accent : S.muted, border: `1px solid ${taskSource === "basic" ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>基础任务</button>
+            <button type="button" role="tab" aria-selected={taskSource === "basic"} onClick={() => { setTaskSource("basic"); setActiveTaskCategory(taskCategories[0].label); setSelectedTaskIndex(0); }} className="flex-1 px-2 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: taskSource === "basic" ? "#1e293b" : "#f1f5f9", color: taskSource === "basic" ? S.accent : S.muted, border: `1px solid ${taskSource === "basic" ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>统一待办</button>
             <button type="button" role="tab" aria-selected={taskSource === "scope"} onClick={() => { setTaskSource("scope"); setActiveTaskCategory(scopeCfg!.taskCategories[0].label); setSelectedTaskIndex(0); }} className="flex-1 px-2 py-1.5 text-[11px] font-bold whitespace-nowrap" style={{ background: taskSource === "scope" ? "#1e293b" : "#f1f5f9", color: taskSource === "scope" ? S.accent : S.muted, border: `1px solid ${taskSource === "scope" ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>{scopeCfg!.noun}任务</button>
           </div>
         )}
@@ -464,7 +518,7 @@ export default function InfluenceRanking() {
               background: activeTaskCategory === c.label ? S.accentLight : "transparent",
               borderRadius: S.radiusSm,
               border: activeTaskCategory === c.label ? `1px solid ${S.accent}` : "1px solid transparent",
-            }} onClick={() => { setActiveTaskCategory(c.label); setSelectedTaskIndex(0); if (isMemberScope && taskSource === "basic" && c.label === "待处理的任务") { setActiveProfileTab("待处理"); setSelectedOrderNo(null); } }}>
+            }} onClick={() => { setActiveTaskCategory(c.label); setSelectedTaskIndex(0); setActiveTaskContext(c.label); if (isMemberScope && taskSource === "basic" && c.label === "全部待办") { setActiveProfileTab("概览"); setSelectedOrderNo(null); } }}>
               <span className="text-xs font-mono" style={{ color: activeTaskCategory === c.label ? S.text : S.muted }}>{c.label}</span>
               <span className="px-1.5 py-0.5 text-xs font-bold" style={{
                 background: activeTaskCategory === c.label ? S.accent : "rgba(15,23,42,0.06)",
@@ -479,16 +533,17 @@ export default function InfluenceRanking() {
 
         {/* 任务列表 */}
         <div className="flex-1 overflow-auto px-3 py-2 space-y-1">
-          {visibleTaskList.slice(0, 3).map((t, i) => (
+          {visibleTaskList.slice(0, 4).map((t, i) => (
             <div key={i} className="px-2 py-2.5 cursor-pointer transition-all" style={{
               background: selectedTaskIndex === i ? S.accentLight : S.surface,
               border: selectedTaskIndex === i ? `1px solid rgba(204,255,0,0.4)` : `1px solid ${S.border}`,
               borderRadius: S.radius,
-            }} onClick={() => setSelectedTaskIndex(i)}>
+            }} onClick={() => openTask(t, i)}>
               <div className="flex items-start justify-between gap-1">
                 <span className="text-xs font-bold leading-tight font-mono" style={{ color: S.text }}>{t.title}</span>
                 {t.unread > 0 && <span className="w-4 h-4 bg-red-500 text-white flex items-center justify-center flex-shrink-0" style={{ fontSize: "9px", borderRadius: "50%" }}>{t.unread}</span>}
               </div>
+              <div className="flex items-center justify-between gap-2 mt-1"><span className="min-w-0 truncate text-[10px]" style={{ color: S.muted }}>{t.source ?? scopeCfg?.noun ?? "系统待办"}</span><span className="text-[10px] font-bold whitespace-nowrap" style={{ color: "#6db100" }}>{t.action ?? "查看处理"}</span></div>
               <div className="flex items-center justify-between mt-1.5">
                 <span className="text-xs font-mono" style={{ color: S.muted, fontSize: "10px" }}>{t.time.split(" ")[1]}</span>
                 <span className="text-xs px-1.5 py-0.5 font-bold" style={{ background: taskStatusStyle(t.status).bg, color: taskStatusStyle(t.status).color, fontSize: "10px", borderRadius: S.radiusSm }}>{t.status}</span>
@@ -503,7 +558,7 @@ export default function InfluenceRanking() {
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden">
         {/* 数据视角切换器：位于排行表格上方，切换列表展示的内容类型；窄容器下自动换行避免被右侧档案栏遮挡 */}
         <div className="flex items-center gap-1.5 px-4 pt-2 flex-shrink-0 flex-wrap" role="group" aria-label="数据视角切换">
-          <span className="text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>数据视角</span>
+          <span className="text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>处理对象</span>
           <button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setIsDataScopeCollapsed(value => !value)}>{isDataScopeCollapsed ? "展开" : "收起"}</button>
           {!isDataScopeCollapsed && <div className="flex items-center gap-0.5 p-0.5 min-w-0 flex-wrap" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
             {dataScopeOptions.map(option => {
@@ -523,67 +578,6 @@ export default function InfluenceRanking() {
             })}
           </div>}
         </div>
-
-        <div className="mx-4 mt-3 grid grid-cols-2 xl:grid-cols-4 gap-2" aria-label="我的影响力总览">
-          {[
-            ["影响人数", "12,680", "较上周 +18.6%"],
-            ["预计收入", isAgentScope ? "¥128,600" : "¥36,480", isAgentScope ? "经营利润 · 含库存收益" : "佣金 · 待结算"],
-            ["直接运营", "20", "12 个社群 · 8 位团长"],
-            ["关系网络", isAgentScope ? "28" : "15", isAgentScope ? "发展 + 推荐聚合" : "推荐链路聚合"],
-          ].map(([label, value, note]) => (
-            <div key={label} className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-              <div className="text-[11px]" style={{ color: S.muted }}>{label}</div>
-              <div className="text-xl font-bold mt-1" style={{ color: S.text }}>{value}</div>
-              <div className="text-[10px] mt-1" style={{ color: label === "影响人数" ? "#00a978" : S.muted }}>{note}</div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mx-4 mt-3 grid grid-cols-1 xl:grid-cols-[1.05fr_1.95fr] gap-3">
-          <section className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <div className="text-sm font-bold" style={{ color: S.text }}>预计收入分析</div>
-                <div className="text-[10px] mt-1" style={{ color: S.muted }}>按当前关系范围汇总，不混合不可见链路</div>
-              </div>
-              <TrendingUp size={15} style={{ color: S.accent }} />
-            </div>
-            <div className="flex items-end gap-1 h-20 mt-3 px-2" aria-label="预计收入趋势">
-              {[42, 58, 46, 72, 63, 84, 76].map((height, index) => <div key={index} className="flex-1" style={{ height: `${height}%`, background: index === 6 ? S.accent : "#dce8c0", borderRadius: "3px 3px 0 0" }} />)}
-            </div>
-            <div className="flex items-center justify-between text-[10px] mt-1" style={{ color: S.muted }}><span>近 7 日</span><span>本周 +18.6%</span></div>
-            <div className="grid grid-cols-3 gap-2 mt-3">
-              {(isAgentScope ? [["销售回款", "¥82,400"], ["库存收益", "¥31,200"], ["履约利润", "¥15,000"]] : [["预计佣金", "¥24,800"], ["待结算", "¥8,640"], ["已结算", "¥3,040"]]).map(([label, value]) => <div key={label} className="px-2 py-1.5" style={{ background: S.bg, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>{label}</div><div className="text-xs font-bold mt-1" style={{ color: S.text }}>{value}</div></div>)}
-            </div>
-          </section>
-
-          <section className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="flex items-center justify-between gap-2">
-              <div><div className="text-sm font-bold" style={{ color: S.text }}>影响力详情</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>直接运营、发展网络、推荐网络统一口径</div></div>
-              <div className="flex items-center gap-1" role="tablist" aria-label="影响力关系范围">
-                {(["direct", "development", "recommendation"] as InfluenceRelationScope[]).filter(scope => influenceRole === "agent" || scope !== "development").map(scope => <button key={scope} type="button" role="tab" aria-selected={influenceScope === scope} onClick={() => { setInfluenceScope(scope); const first = influenceEntities.find(entity => entity.scope === scope && (influenceRole === "agent" || entity.kind !== "agent")); if (first) setSelectedInfluenceId(first.id); }} className="px-2 py-1 text-[10px] font-bold" style={{ background: influenceScope === scope ? "#1e293b" : S.bg, color: influenceScope === scope ? S.accent : S.muted, border: `1px solid ${influenceScope === scope ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>{influenceScopeMeta[scope].label}</button>)}
-              </div>
-            </div>
-            <div className="grid grid-cols-3 gap-2 mt-3">
-              {visibleInfluenceEntities.map(entity => { const Meta = influenceKindMeta[entity.kind]; const Icon = Meta.icon; return <button key={entity.id} type="button" onClick={() => setInfluenceSelection(entity)} className="text-left p-2.5" style={{ background: selectedInfluenceId === entity.id ? S.accentLight : S.bg, border: `1px solid ${selectedInfluenceId === entity.id ? S.accent : S.border}`, borderRadius: S.radiusSm }}><div className="flex items-center gap-1.5"><Icon size={13} style={{ color: Meta.color }} /><span className="text-[10px] font-bold" style={{ color: Meta.color }}>{Meta.label}</span>{entity.aggregateOnly && <span className="text-[9px]" style={{ color: S.muted }}>只读</span>}</div><div className="text-base font-bold mt-2" style={{ color: S.text }}>{entity.count}</div><div className="text-[10px] truncate mt-0.5" style={{ color: S.muted }}>{entity.name}</div><div className="text-[10px] truncate mt-1" style={{ color: S.textSec }}>{entity.amount}</div></button>; })}
-            </div>
-          </section>
-        </div>
-
-        <section className="mx-4 mt-3 p-3" aria-label="社群团长代理统一关系区" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <div className="flex items-center justify-between gap-2"><div><div className="text-sm font-bold" style={{ color: S.text }}>社群 · 团长 · 代理</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>{influenceScopeMeta[influenceScope].description}</div></div><span className="text-[10px] px-2 py-1" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{networkViews.find(view => view.scope === influenceScope)?.relationLabel ?? influenceScopeMeta[influenceScope].label}</span></div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-3">
-            {visibleInfluenceEntities.map(entity => { const Meta = influenceKindMeta[entity.kind]; const Icon = Meta.icon; return <button key={`relation-${entity.id}`} type="button" onClick={() => setInfluenceSelection(entity)} className="flex items-start gap-2 p-3 text-left" style={{ background: selectedInfluenceId === entity.id ? S.accentLight : S.bg, border: `1px solid ${selectedInfluenceId === entity.id ? S.accent : S.border}`, borderRadius: S.radiusSm }}><div className="w-8 h-8 flex items-center justify-center" style={{ background: `${Meta.color}16`, color: Meta.color, borderRadius: S.radiusSm }}><Icon size={16} /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-1.5"><span className="text-xs font-bold truncate" style={{ color: S.text }}>{entity.name}</span><span className="text-[9px] px-1 py-0.5" style={{ color: Meta.color, background: `${Meta.color}16`, borderRadius: "999px" }}>{Meta.label}</span></div><div className="text-[10px] mt-1" style={{ color: S.muted }}>{entity.description}</div><div className="flex items-center gap-3 mt-2"><span className="text-xs font-bold" style={{ color: S.text }}>{entity.count}</span><span className="text-[10px]" style={{ color: S.textSec }}>{entity.amount}</span></div></div><ChevronRight size={13} style={{ color: S.muted }} /></button>; })}
-          </div>
-        </section>
-
-        <div className="mx-4 mt-3 flex items-center justify-between gap-2 px-3 py-2" style={{ background: "#1e293b", color: "#ffffff", borderRadius: S.radius }}><div className="flex items-center gap-2"><Users size={14} style={{ color: S.accent }} /><span className="text-xs font-bold">旗下运营商</span><span className="text-[10px]" style={{ color: "#cbd5e1" }}>直属 8 · 推荐 4 · 发展网络 5</span></div><button type="button" onClick={() => setOperatorNotice("已打开旗下运营商汇总") } className="text-[10px] font-bold px-2 py-1" style={{ background: S.accent, color: S.onAccent, borderRadius: S.radiusSm }}>查看汇总</button></div>
-
-        <section className="mx-4 mt-3 p-3" aria-label="运营商表单" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-          <div className="flex items-center justify-between gap-2"><div><div className="text-sm font-bold" style={{ color: S.text }}>运营商表单</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>{selectedInfluenceMeta.label} · {selectedInfluence.name} · {selectedInfluence.aggregateOnly ? "只读聚合" : "直属可管理"}</div></div><button type="button" onClick={() => setOperatorNotice(selectedInfluence.aggregateOnly ? "发展与推荐网络对象仅支持查看聚合数据" : `已保存${selectedInfluence.name}的运营商资料`)} className="px-2.5 py-1.5 text-[10px] font-bold" style={{ background: selectedInfluence.aggregateOnly ? S.bg : "#1e293b", color: selectedInfluence.aggregateOnly ? S.muted : S.accent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>{selectedInfluence.aggregateOnly ? "只读聚合" : "保存资料"}</button></div>
-          <div className="grid grid-cols-2 xl:grid-cols-4 gap-2 mt-3">{(selectedInfluence.kind === "agent" ? [["姓名", selectedInfluence.name], ["身份", "D4 分公司负责人"], ["直属团长数", "8 位"], ["履约范围", "北京 · 自有库存"]] : selectedInfluence.kind === "leader" ? [["姓名", selectedInfluence.name], ["身份", "团长"], ["所属代理", "当前代理"], ["佣金状态", "待结算 ¥8,640"]] : [["姓名", selectedInfluence.name], ["身份", "社群运营者"], ["所属社群", "北京PRO会员群"], ["资料状态", "已完善"]]).map(([label, value]) => <label key={label} className="block"><span className="block text-[10px] mb-1" style={{ color: S.muted }}>{label}</span><input readOnly={selectedInfluence.aggregateOnly} value={value} onChange={() => undefined} className="w-full px-2 py-1.5 text-xs outline-none" style={{ background: selectedInfluence.aggregateOnly ? "#f1f5f9" : S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} /></label>)}</div>
-          {operatorNotice && <div role="status" className="mt-2 px-2.5 py-2 text-[10px] font-bold" style={{ background: S.accentLight, color: S.text, borderLeft: `2px solid ${S.accent}` }}>{operatorNotice}</div>}
-        </section>
 
         <div className="mx-4 mt-3 flex items-center gap-1.5 overflow-x-auto flex-shrink-0" aria-label="数据搜索与筛选">
           <div className="flex items-center gap-1.5 px-2 py-1 min-w-[170px]" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
@@ -634,14 +628,14 @@ export default function InfluenceRanking() {
         {/* 排行榜表格：会员视角原样，其余视角按视角列定义渲染 */}
         {isMemberScope ? (
         <div className="overflow-x-auto" aria-label="会员排行横向滚动表格" style={{ scrollbarWidth: "thin" }}>
-          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 900, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
-            {[["序号",44],["头像",44],["微信名",110],["会员级别",82],["城市",90],["好友状态",110],["入群状态",68],["累计消费",82],["影响会员数",82],["影响力",68],["评分",64],["操作",72]].map(([l,w], hi) => (
+          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 1020, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+            {[["序号",44],["头像",44],["微信名",110],["会员级别",82],["城市",90],["个微好友",92],["企微好友",92],["入群状态",76],["累计消费",82],["影响会员数",82],["影响力",68],["评分",64],["操作",72]].map(([l,w], hi) => (
               <div key={`h-${hi}-${l}-${w}`} className="flex-shrink-0" style={{ width: w as number }}>{l}</div>
             ))}
           </div>
           {filteredRankingData.map((u, idx) => (
             <div key={u.rank} className="flex items-center px-3 py-2.5 cursor-pointer text-xs transition-all font-mono" style={{
-              minWidth: 900,
+              minWidth: 1020,
               background: selectedUser.rank === u.rank ? S.accentLight : idx % 2 === 0 ? "#ffffff" : "#fafaf8",
               borderBottom: `1px solid ${S.border}`,
               borderLeft: selectedUser.rank === u.rank ? `3px solid ${S.accent}` : "3px solid transparent",
@@ -655,11 +649,8 @@ export default function InfluenceRanking() {
               <div className="flex-shrink-0 font-bold" style={{ width: 110, color: S.text }}>{u.name}</div>
               <div className="flex-shrink-0" style={{ width: 82 }}><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: S.radiusSm }}>{memberLevelForRank(u.rank)}</span></div>
               <div className="flex-shrink-0" style={{ width: 90, color: S.muted }}>{u.city}</div>
-              <div className="flex-shrink-0 space-y-0.5" style={{ width: 110 }}>
-                <select aria-label={`${u.name} 个微好友状态`} value={relationshipForUser(u.rank).personal} onChange={event => updateRelationshipStatus(u.rank, "personal", event.target.value)} className="w-full px-1 py-0.5 text-[10px] outline-none font-bold" style={{ background: "transparent", color: relationshipForUser(u.rank).personal === "添加失败" ? "#c2410c" : S.textSec, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`personal-${option}`} value={option}>{`个微 ${option}`}</option>)}</select>
-                <select aria-label={`${u.name} 企微好友状态`} value={relationshipForUser(u.rank).enterprise} onChange={event => updateRelationshipStatus(u.rank, "enterprise", event.target.value)} className="w-full px-1 py-0.5 text-[10px] outline-none" style={{ background: "transparent", color: S.muted, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`enterprise-${option}`} value={option}>{`企微 ${option}`}</option>)}</select>
-              </div>
-              <div className="flex-shrink-0" style={{ width: 68 }}><select aria-label={`${u.name} 入群状态`} value={relationshipForUser(u.rank).group} onChange={event => updateRelationshipStatus(u.rank, "group", event.target.value)} className="w-full px-1 py-1 text-[10px] outline-none font-bold" style={{ background: relationshipForUser(u.rank).group === "已入群" ? "#e8fbf4" : "#fff0db", color: relationshipForUser(u.rank).group === "已入群" ? "#008565" : "#c2410c", border: 0, borderRadius: S.radiusSm }}>{groupStatusOptions.map(option => <option key={`group-${option}`}>{option}</option>)}</select></div>
+              {([ ["personal", "个微", 92], ["enterprise", "企微", 92] ] as const).map(([key, label, width]) => { const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); return <div key={key} className="flex-shrink-0 flex items-center gap-0.5" style={{ width }}><select aria-label={`${u.name} ${label}好友状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: "transparent", color: value === "添加失败" ? "#c2410c" : key === "personal" ? S.textSec : S.muted, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`${key}-${option}`} value={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} ${label}确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title={`查看${label}操作日志`} aria-label={`${u.name} ${label}操作日志`} onClick={() => statusLog(u.name, label, relationshipForUser(u.rank)[key])} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })}
+              <div className="flex-shrink-0" style={{ width: 76 }}>{(() => { const key = "group" as const; const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); return <div className="flex items-center gap-0.5"><select aria-label={`${u.name} 入群状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: value === "已入群" ? "#e8fbf4" : "#fff0db", color: value === "已入群" ? "#008565" : "#c2410c", border: 0, borderRadius: S.radiusSm }}>{groupStatusOptions.map(option => <option key={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} 入群确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title="查看入群操作日志" aria-label={`${u.name} 入群操作日志`} onClick={() => statusLog(u.name, "入群", relationshipForUser(u.rank).group)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 82, color: "#c2410c" }}>{relationshipForUser(u.rank).spend}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 82, color: S.text }}>{u.totalUsers.toLocaleString()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 68, color: S.text }}>{u.influence.toLocaleString()}</div>
@@ -725,12 +716,20 @@ export default function InfluenceRanking() {
           }}>
             <div className="flex items-center justify-between gap-2">
               <div>
-                <div className="text-sm font-bold" style={{ color: S.text }}>运营操作台</div>
-                <span className="text-xs" style={{ color: S.muted }}>{isAgentScope ? `针对 ${targetName} 配置佣金结算、培训与考核` : `针对 ${targetName} 登记问题或发起运营动作`}</span>
+                <div className="text-sm font-bold" style={{ color: S.text }}>统一业务操作台</div>
+                <span className="text-xs" style={{ color: S.muted }}>{isAgentScope ? `针对 ${targetName} 配置佣金结算、培训与考核` : `针对 ${targetName} 处理客户关系、服务与运营动作`}</span>
+                <span className="block mt-1 text-[10px] truncate" style={{ color: "#6db100" }}>当前待办 · {activeTaskContext}</span>
               </div>
               <div className="flex items-center gap-2"><span className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>当前{isMemberScope ? "会员" : scopeCfg!.noun}</span><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setIsOperationCollapsed(value => !value)}>{isOperationCollapsed ? "展开" : "收起"}</button></div>
             </div>
-            {isOperationCollapsed ? <div className="px-2 py-2 text-xs" style={{ color: S.muted }}>操作台已收起，展开后可登记问题、创建推送或发起活动。</div> : <>
+            {isOperationCollapsed ? <div className="px-2 py-2 text-xs" style={{ color: S.muted }}>操作台已收起，展开后可处理关系、创建工单、回访或发起运营动作。</div> : <>
+            {isMemberScope && <div className="flex items-center gap-1.5 overflow-x-auto pb-1" aria-label="当前客户快捷操作">
+              <span className="text-[10px] whitespace-nowrap" style={{ color: S.muted }}>快捷处理</span>
+              <button type="button" onClick={() => { setRelationshipMember(selectedUser.rank); setRelationshipDraft({ ...relationshipForUser(selectedUser.rank) }); }} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: S.textSec, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>处理关系</button>
+              <button type="button" onClick={() => { setActiveOperation("issue"); showProfileNotice(`已切换到 ${selectedUser.name} 的工单处理`); }} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>创建工单</button>
+              <button type="button" onClick={() => { setActiveOperation("push"); showProfileNotice(`已为 ${selectedUser.name} 准备回访任务`); }} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>发起回访</button>
+              <button type="button" onClick={() => { setActiveProfileTab("订单"); showProfileNotice(`已打开 ${selectedUser.name} 的订单与履约记录`); }} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>订单履约</button>
+            </div>}
             <div className="flex items-center gap-1 overflow-x-auto pb-1" role="tablist" aria-label="运营操作类型">
               {opTabs.map(tab => {
                 const Icon = tab.icon;
@@ -739,7 +738,12 @@ export default function InfluenceRanking() {
               })}
             </div>
 
-            {activeOperation === "issue" && <>
+            {activeOperation === "issue" && (dataScope === "community" ? <>
+              <div className="grid grid-cols-2 gap-2"><div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>公告范围</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前社群" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前社群</option><option>同项目社群</option><option>指定标签社群</option></select></div><div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>发布时间</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="立即发布" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>立即发布</option><option>今天 18:00</option><option>明天 09:00</option></select></div></div>
+              <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`输入 ${targetName} 的公告标题...`} />
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写群公告内容、成员动作和截止时间..." />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>保存草稿</button><button onClick={() => showProfileNotice(`已为 ${targetName} 发布群公告并写入操作记录`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><MessageSquare size={11} className="inline mr-1" />发布群公告</button></div>
+            </> : <>
               <div className="grid grid-cols-2 gap-2">
                 <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>问题分类</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="售后问题" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>售后问题</option><option>产品咨询</option><option>社群服务</option><option>投诉建议</option></select></div>
                 <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>处理部门</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员运营部" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员运营部</option><option>客服部</option><option>社群运营部</option><option>财务部</option></select></div>
@@ -748,9 +752,14 @@ export default function InfluenceRanking() {
               </div>
               <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`登记 ${targetName} 的问题描述...`} />
               <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>清空</button><button onClick={() => showProfileNotice(`已登记 ${targetName} 的问题并指派至会员运营部`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><ClipboardCheck size={11} className="inline mr-1" />{opTabs[0].button}</button></div>
-            </>}
+            </>) }
 
-            {activeOperation === "push" && <>
+            {activeOperation === "push" && (isAgentScope ? <>
+              <div className="grid grid-cols-2 gap-2"><div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>结算周期</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="2026年9月" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>2026年9月</option><option>2026年8月</option></select></div><div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>结算方式</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="按订单结算" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>按订单结算</option><option>按佣金规则结算</option></select></div></div>
+              <div className="grid grid-cols-2 gap-2"><div className="px-3 py-2" style={{ background: S.accentLight, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>待结算金额</div><div className="text-base font-bold mt-1" style={{ color: "#c2410c" }}>¥3,200</div></div><div className="px-3 py-2" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>审批状态</div><div className="text-xs font-bold mt-1" style={{ color: S.text }}>待负责人审批</div></div></div>
+              <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="补充结算说明或异常原因..." />
+              <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>保存草稿</button><button onClick={() => showProfileNotice(`已提交 ${targetName} 的结算审批，并写入操作日志`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><ClipboardCheck size={11} className="inline mr-1" />发起结算审批</button></div>
+            </> : <>
               <div className="grid grid-cols-2 gap-2">
                 <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>任务类型</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="会员触达" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员触达</option><option>服务提醒</option><option>回访任务</option></select></div>
                 <div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>目标对象</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前会员" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前会员</option><option>所在社群</option><option>指定标签会员</option></select></div>
@@ -758,7 +767,7 @@ export default function InfluenceRanking() {
               <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="输入任务标题..." />
               <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写推送内容或任务要求..." />
               <div className="flex gap-2 mt-auto"><button className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}>取消</button><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 创建推送任务`)} className="flex-1 py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}><Send size={11} className="inline mr-1" />创建推送任务</button></div>
-            </>}
+            </>) }
 
             {activeOperation === "activity" && <>
               <div className="grid grid-cols-2 gap-2">
@@ -1024,6 +1033,7 @@ export default function InfluenceRanking() {
               <span className="text-[11px] font-bold" style={{ color: status === "待安排" ? "#e77800" : "#00a978" }}>{status}</span>
             </div>
           ))}
+          {activeProfileTab === "权益" && <div className="space-y-2"><div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: S.accentLight, color: S.textSec, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>权益规则来自当前项目“客户与权益”配置；此处只查看当前客户的领取与使用情况。</div>{[["PRO 会员年卡", "有效至 2027-07-03", "已生效"], ["会员成长礼包", "电子权益 · 未使用", "待使用"], ["专属社群服务", "北京 PRO 会员群", "已生效"]].map(([name, detail, status]) => <div key={name} className="flex items-center gap-2 py-2" style={{ borderBottom: `1px solid ${S.border}` }}><div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: S.radiusSm }}>益</div><div className="min-w-0 flex-1"><div className="text-xs font-bold" style={{ color: S.text }}>{name}</div><div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>{detail}</div></div><span className="text-[10px] font-bold whitespace-nowrap" style={{ color: status === "待使用" ? "#e77800" : "#008565" }}>{status}</span></div>)}<div className="flex gap-2 pt-1"><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 提交补发权益申请`)} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>申请补发</button><button onClick={() => showProfileNotice(`已打开 ${selectedUser.name} 的权益调整记录`)} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>调整记录</button></div></div>}
         </section>
         </> : scopeCfg ? (
         /* ── 其余视角档案：与会员档案同构（头部/字段/摘要/指标/Tab 记录），仅内容不同 ── */
