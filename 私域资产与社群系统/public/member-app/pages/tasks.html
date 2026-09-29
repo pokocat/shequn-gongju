@@ -83,15 +83,15 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .substat-cell + .substat-cell{ border-left:0.573px solid var(--line-soft); }
 .substat-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
 .substat-l{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-600); }
-/* 子页签（轻量 pill，与身份 topseg 形成层级差） */
+/* 子页签（轻量导航，与身份 topseg 形成层级差） */
 .subtab{ display:flex; gap:4.587px; padding:10.32px 10.32px 8.027px; }
 .subtab-pill{
-  flex:1; text-align:center; padding:5.16px 0; border-radius:7.45px;
-  font-size:var(--fs-micro); font-weight:600; color:var(--ink-600);
+  flex:1; text-align:center; padding:6.307px 0; border-radius:7.45px;
+  font-size:14px; font-weight:600; line-height:1.2; color:var(--ink-600);
   background:var(--sunk-2); border:0.573px solid var(--line-soft);
   cursor:pointer; transition:all .15s ease;
 }
-.subtab-pill--on{ background:#FFF; color:var(--signal-700); font-weight:700; border-color:var(--line-brand); box-shadow:0 1px 5px rgba(124,58,237,.10); }
+.subtab-pill--on{ background:#FFF; color:var(--signal-700); font-size:15px; font-weight:700; border-color:var(--line-brand); box-shadow:0 1px 5px rgba(124,58,237,.10); }
 .subtab-pill:active{ transform:scale(.95); }
 /* 子页内容区 */
 .subbody{ min-height:200px; }
@@ -219,7 +219,8 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .team-growth-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8.027px; }
 .team-growth-item{ display:flex; align-items:center; gap:6.88px; min-height:48px; padding:9.173px; border-radius:10.32px; background:linear-gradient(145deg,#FFF 0%,var(--sunk) 100%); border:0.573px solid var(--line-soft); cursor:pointer; }
 .team-growth-item:active{ background:var(--signal-50); }
-.team-growth-icon{ width:28.667px; height:28.667px; flex:0 0 28.667px; display:flex; align-items:center; justify-content:center; border-radius:9.173px; background:rgba(124,58,237,.1); color:var(--signal-700); font-size:var(--fs-sec); font-weight:800; }
+.team-growth-icon{ width:28.667px; height:28.667px; flex:0 0 28.667px; display:flex; align-items:center; justify-content:center; border-radius:9.173px; background:rgba(124,58,237,.1); color:var(--signal-700); }
+.team-growth-icon svg{ width:16.053px; height:16.053px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 .team-growth-copy{ min-width:0; flex:1; }
 .team-growth-title{ display:block; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
 .team-growth-desc{ display:block; margin-top:1.147px; font-size:var(--fs-tiny); color:var(--ink-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -239,10 +240,12 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .influence-matrix td[data-team-detail]{ cursor:pointer; }
 .influence-matrix td:first-child{ padding-left:6.88px; font-family:inherit; font-weight:700; color:var(--ink-600); text-align:left; }
 .influence-matrix tr:last-child td{ border-bottom:none; }
+.influence-matrix td:not(:first-child){ position:relative; }
 .influence-matrix td:not(:first-child):active{ background:var(--signal-50); }
 .influence-dot{ display:inline-block; width:6.88px; height:6.88px; margin-right:3.44px; border-radius:50%; vertical-align:1px; }
-.influence-add{ display:block; margin-top:1.147px; color:#D93025; font-size:var(--fs-tiny); font-weight:800; }
-.influence-potential{ display:block; margin-top:1.147px; color:#9CA3AF; font-size:9px; line-height:1.2; }
+.influence-value{ display:inline-block; position:relative; line-height:1.2; }
+.influence-add{ position:absolute; top:-7px; right:-17px; min-width:14px; height:14px; padding:0 3px; border:1px solid rgba(255,255,255,.96); border-radius:8px; background:#D93025; color:#FFF; font-family:var(--font-mono); font-size:8px; font-weight:800; line-height:14px; text-align:center; box-shadow:0 1px 3px rgba(217,48,37,.22); }
+.influence-potential{ display:block; margin-top:3.44px; color:#9CA3AF; font-size:9px; line-height:1.2; }
 .influence-team-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
 .influence-team-cell{ position:relative; padding:10.32px 5.16px; border-radius:9.173px; background:var(--sunk); border:0.573px solid var(--line-soft); cursor:pointer; }
 .influence-team-v{ display:block; font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:800; color:var(--signal-800); }
@@ -588,10 +591,17 @@ function renderWorkbench(){
   var el = document.getElementById('tkWork');
   if (ROLE === 'member') { el.innerHTML = ''; return; }
   var tabs = ROLE_TABS[ROLE];
-  var actions = ROLE === 'agent'
-    ? '<div class="actbar-btn actbar-btn--ghost" data-gosub="influence" role="button">经营社群</div><div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募团长</div>'
-    : '<div class="actbar-btn actbar-btn--ghost mp-nav" data-nav="training" role="button">成长培训</div><div class="actbar-btn actbar-btn--pri" data-gosub="marketing" role="button">去推广</div>';
-  el.innerHTML = '<div class="subtab" id="subTab">' + tabs.map(function(t){ return '<div class="subtab-pill' + (t.key === SUBTAB ? ' subtab-pill--on' : '') + '" data-sub="' + t.key + '" role="button">' + t.label + '</div>'; }).join('') + '</div><div class="subbody" id="subBody"></div><div class="actbar" id="actBar">' + actions + '</div>';
+  var actions = '';
+  if (SUBTAB === 'process') {
+    actions = ROLE === 'agent'
+      ? '<div class="actbar-btn actbar-btn--pri" data-gosub="process" role="button">经营社群</div>'
+      : '<div class="actbar-btn actbar-btn--pri mp-nav" data-nav="training" role="button">成长培训</div>';
+  } else if (SUBTAB === 'marketing') {
+    actions = ROLE === 'agent'
+      ? '<div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募团长</div>'
+      : '<div class="actbar-btn actbar-btn--pri" data-gosub="marketing" role="button">去推广</div>';
+  }
+  el.innerHTML = '<div class="subtab" id="subTab">' + tabs.map(function(t){ return '<div class="subtab-pill' + (t.key === SUBTAB ? ' subtab-pill--on' : '') + '" data-sub="' + t.key + '" role="button">' + t.label + '</div>'; }).join('') + '</div><div class="subbody" id="subBody"></div>' + (actions ? '<div class="actbar" id="actBar">' + actions + '</div>' : '');
   renderSubBody();
 }
 
@@ -618,8 +628,8 @@ function renderInfluenceBody(D){
   };
   var current = shared[ROLE];
   var growth = isAgent
-    ? [['学', '培训学习', '团长赋能课程', '6', 'training'], ['证', '认证进度', '待完成认证', '2', '团队认证']]
-    : [['学', '培训学习', '成长课程', '6', 'training'], ['证', '认证进度', '待完成认证', '1', '团队认证']];
+    ? [['<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5A2.5 2.5 0 0 1 13 8v11H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5h-6.5A2.5 2.5 0 0 0 11 8v11h6.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>', '团队成长', '团长赋能课程', '6', 'training'], ['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '直属成员与发展关系', '10', '我的团队']]
+    : [['<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5A2.5 2.5 0 0 1 13 8v11H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5h-6.5A2.5 2.5 0 0 0 11 8v11h6.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>', '团队成长', '成长课程', '6', 'training'], ['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '推荐成员与社群关系', '8', '我的团队']];
   var growthItemsHtml = growth.map(function(item){ var action = item[4] === 'training' ? ' data-nav="training"' : ' data-team-detail="' + item[4] + '"'; return '<div class="team-growth-item"' + action + ' role="button"><span class="team-growth-icon">' + item[0] + '</span><span class="team-growth-copy"><span class="team-growth-title">' + esc(item[1]) + '</span><span class="team-growth-desc">' + esc(item[2]) + '</span></span><span class="team-growth-count">' + item[3] + '</span><span class="team-growth-arrow">›</span></div>'; }).join('');
   var growthHtml = '<div class="team-functions"><div class="team-growth-grid">' + growthItemsHtml + '</div></div>';
   var metricsHtml = '<div class="influence-metrics influence-metrics--standalone"><div class="influence-metric"><span class="influence-metric-v">' + esc(current.influence) + '</span><span class="influence-metric-l">影响力人数</span></div><div class="influence-metric"><span class="influence-metric-v">' + esc(current.income) + '</span><span class="influence-metric-l">' + esc(current.incomeNote) + '</span></div></div>';
@@ -629,9 +639,9 @@ function renderInfluenceBody(D){
   INFLUENCE_TAB = tabKey;
   var tabData = current.tabs[tabKey];
   var tabHtml = '<div class="influence-detail-tabs" role="tablist">' + tabKeys.map(function(key){ return '<div class="influence-detail-tab' + (key === tabKey ? ' is-active' : '') + '" data-influence-tab="' + key + '" role="tab">' + current.tabs[key].label + '</div>'; }).join('') + '</div>';
-  var rowsHtml = tabData.rows.map(function(row){ return '<tr><td>' + esc(row[0]) + '</td>' + row[1].map(function(cell, index){ var target = row[0] + ' · ' + tabData.headers[index]; return '<td data-team-detail="' + esc(target) + '">' + cell[0] + (cell[1] ? '<span class="influence-add">+' + cell[1] + ' 新增</span>' : '') + (cell[2] ? '<span class="influence-potential">潜在 ' + cell[2] + '</span>' : '') + '</td>'; }).join('') + '</tr>'; }).join('');
+  var rowsHtml = tabData.rows.map(function(row){ return '<tr><td>' + esc(row[0]) + '</td>' + row[1].map(function(cell, index){ var target = row[0] + ' · ' + tabData.headers[index]; return '<td data-team-detail="' + esc(target) + '"><span class="influence-value">' + cell[0] + (cell[1] ? '<span class="influence-add">+' + cell[1] + '</span>' : '') + '</span>' + (cell[2] ? '<span class="influence-potential">潜在 ' + cell[2] + '</span>' : '') + '</td>'; }).join('') + '</tr>'; }).join('');
   var headersHtml = tabData.headers.map(function(header, index){ return '<th><span class="influence-dot" style="background:' + tabData.colors[index] + '"></span>' + esc(header) + '</th>'; }).join('');
-  var matrixHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">影响力详情</span><span class="influence-card-note">' + esc(tabData.label) + '</span></div>' + tabHtml + '<div class="influence-tab-note" data-influence-note>' + esc(tabData.note) + '</div><table class="influence-matrix"><thead><tr><th>关系层级</th>' + headersHtml + '</tr></thead><tbody data-influence-rows>' + rowsHtml + '</tbody></table><div class="inf-note"><span class="inf-plus">+</span><span>红色数字为本周新增，点击表格数字查看授权范围内的来源明细</span></div></div>';
+  var matrixHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">影响力详情</span><span class="influence-card-note">' + esc(tabData.label) + '</span></div>' + tabHtml + '<div class="influence-tab-note" data-influence-note>' + esc(tabData.note) + '</div><table class="influence-matrix"><thead><tr><th>关系层级</th>' + headersHtml + '</tr></thead><tbody data-influence-rows>' + rowsHtml + '</tbody></table><div class="inf-note"><span class="inf-plus">+</span><span>红色徽标为本周新增人数，点击表格数字查看授权范围内的来源明细</span></div></div>';
   var teamTitle = isAgent ? '旗下运营网络' : '我的社群与推荐';
   var teamHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">' + teamTitle + '</span><span class="influence-card-note">点击查看成员与下一级关系</span></div><div class="influence-team-grid">' + current.teams.map(function(item){ return '<div class="influence-team-cell" data-team-detail="' + esc(item[1]) + '" role="button"><span class="influence-team-go">›</span><span class="influence-team-v">' + item[0] + '</span><span class="influence-team-l">' + esc(item[1]) + '</span><span class="influence-team-s">' + esc(item[2]) + '</span></div>'; }).join('') + '</div></div>';
   var boundaryHtml = '<div class="influence-boundary"><span><b>' + (isAgent ? '代理权限' : '团长权限') + '</b> · ' + (isAgent ? '直属团队可经营，发展与推荐关系仅查看授权聚合' : '直属社群可运营，推荐关系仅查看授权聚合') + '</span></div>';
@@ -829,10 +839,7 @@ document.getElementById('tkWork').addEventListener('click', function(e){
   var pill = e.target.closest ? e.target.closest('#subTab .subtab-pill[data-sub]') : null;
   if (pill) {
     SUBTAB = pill.getAttribute('data-sub');
-    document.querySelectorAll('#subTab .subtab-pill[data-sub]').forEach(function(p){
-      p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
-    });
-    renderSubBody();
+    renderWorkbench();
     return;
   }
   // 页内跳子页签（如团队页代理审核入口 → 审核子页）
