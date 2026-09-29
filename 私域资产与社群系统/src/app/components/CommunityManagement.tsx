@@ -97,8 +97,10 @@ function MemberList({ group, onBack }: { group: typeof mockGroups[0]; onBack: ()
     const status = m.inGroup ? "已进群" : "待进群";
     return (statusFilter === "全部状态" || status === statusFilter) && (m.wechatName.includes(search) || m.name.includes(search) || m.wechatId.includes(search) || m.phone.includes(search));
   });
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  // page 可能停在一个已不存在的页（筛选后结果变少）→ 未 clamp 的 slice 会切到空，表格整片空白。
+  const safePage = Math.min(page, totalPages);
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   const cols = [
     { label: "编号", w: 60 }, { label: "头像", w: 48 }, { label: "微信名", w: 130 },
@@ -256,7 +258,9 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
     (g.name.includes(search) || g.city.includes(search) || g.wechat.includes(search) || g.groupNo.includes(search))
   );
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // 同 MemberList：筛选后当前页可能越界，clamp 后再切，避免最后一页被筛掉时表格空白。
+  const safePage = Math.min(page, totalPages);
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
   const selectedGroupBase = groups.find(g => g.no === selectedGroupNo) || filtered[0] || groups[0] || mockGroups[0];
   const selectedGroup = { ...selectedGroupBase, ownerStatus: ownerStatusOverrides[selectedGroupBase.no] || selectedGroupBase.ownerStatus };
   const groupIndex = Math.max(0, Number(selectedGroup.no) - 1);
@@ -364,7 +368,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
         <div className="flex-1 flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
           <Search size={13} style={{ color: S.muted }} />
           <input className="bg-transparent outline-none text-xs flex-1" style={{ color: S.textSec, fontFamily: "monospace" }} placeholder="搜索群名、城市、微信号..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
-          {search && <button onClick={() => setSearch("")}><X size={12} style={{ color: S.muted }} /></button>}
+          {search && <button onClick={() => { setSearch(""); setPage(1); }}><X size={12} style={{ color: S.muted }} /></button>}
         </div>
         <div className="text-xs px-3 py-2 uppercase" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radius, fontFamily: "monospace" }}>共 {filtered.length} 个群</div>
       </div>
@@ -429,7 +433,7 @@ const [activeWorkspace, setActiveWorkspace] = useState<"groups" | "assignment">(
           </div>
 
           <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
-            <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>第 {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} 条，共 {filtered.length} 条</div>
+            <div className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>第 {(safePage - 1) * PAGE_SIZE + 1}–{Math.min(safePage * PAGE_SIZE, filtered.length)} 条，共 {filtered.length} 条</div>
             <div className="flex items-center gap-1">
               <button className="w-7 h-7 flex items-center justify-center" style={{ background: page === 1 ? S.bg : S.accent, color: page === 1 ? S.text : S.onAccent, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}><ChevronLeft size={13} /></button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
