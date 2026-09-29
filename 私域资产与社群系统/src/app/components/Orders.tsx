@@ -120,7 +120,9 @@ const [orders, setOrders] = useState<Order[]>(initialOrders);
   function handleExport() {
     const headers = ["订单号", "用户", "手机", "产品", "金额", "状态", "城市", "渠道", "下单时间"];
     const rows = filtered.map(o => [o.no, o.user, o.phone, o.product, o.amount, o.status, o.city, o.channel, o.date]);
-    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(",")).join("\n");
+    // CSV 里的双引号必须成对转义（"" ），否则产品名/用户名等自由文本里出现一个 " 就会提前闭合字段、
+    // 把该行后续每一列都串位。与 AccountsAndResourceCenter 的导出保持一致。
+    const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
