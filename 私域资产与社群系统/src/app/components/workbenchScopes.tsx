@@ -4,13 +4,16 @@ import { MessageSquare, Send, CalendarDays, ClipboardCheck } from "lucide-react"
    原则：布局与模块位置完全不动，仅按视角（社群/项目/代理）切换各模块内容：
    任务中心分类与列表 / 排行 Tab / 排行表格列与行 / 关系链树 / 运营操作台 / 右侧档案。 */
 
-export type DataScope = "members" | "community" | "project" | "agent";
+export type DataScope = "members" | "community" | "content" | "activity" | "project" | "agent" | "results";
 
 export const dataScopeOptions: Array<{ id: DataScope; label: string }> = [
   { id: "members", label: "会员数据" },
   { id: "community", label: "社群数据" },
+  { id: "content", label: "内容与触达" },
+  { id: "activity", label: "运营活动" },
   { id: "project", label: "项目数据" },
   { id: "agent", label: "代理数据" },
+  { id: "results", label: "运营结果" },
 ];
 
 export type ScopeOperationId = "issue" | "push" | "activity" | "moments";
@@ -369,4 +372,57 @@ const agent: ScopeConfig = {
   },
 };
 
-export const SCOPE_CONFIGS: Record<"community" | "project" | "agent", ScopeConfig> = { community, project, agent };
+const content: ScopeConfig = {
+  ...community,
+  noun: "内容与触达",
+  counterUnit: "条触达计划",
+  panelTitle: "触达计划详情",
+  panelSub: "内容、渠道、受众与执行状态",
+  taskCategories: [{ label: "待审核", count: 4 }, { label: "待发布", count: 6 }, { label: "待回填", count: 3 }, { label: "异常计划", count: 1 }],
+  taskLists: {
+    "待审核": [{ title: "秋季复购活动 · 群发内容审核", time: "2026-09-29 14:30", status: "待处理", unread: 2 }],
+    "待发布": [{ title: "服务老师案例 · 朋友圈计划", time: "2026-09-29 18:30", status: "待发布", unread: 0 }],
+    "待回填": [{ title: "周末直播提醒 · 发布证据回填", time: "2026-09-29 20:00", status: "待处理", unread: 1 }],
+    "异常计划": [{ title: "广州体验官群 · 执行账号失效", time: "2026-09-29 10:00", status: "待处理", unread: 1 }],
+  },
+  rankingTabs: ["全部计划", "微信群发", "朋友圈", "社群公告", "待审核"],
+  filterChips: ["全部", "待审核", "待发布", "已排期"],
+  columns: [{ label: "内容", width: 130, tone: "name" }, { label: "渠道", width: 90 }, { label: "目标群 / 人群", width: 150 }, { label: "执行账号", width: 90 }, { label: "发布时间", width: 110 }, { label: "状态", width: 80 }],
+  rows: [{ rank: 1, name: "秋季复购活动", initial: "秋", filter: "待发布", cells: ["秋季复购活动", "微信群发", "3 个会员群", "FLM001", "今日 20:00", "待发布"] }, { rank: 2, name: "服务老师案例", initial: "服", filter: "待审核", cells: ["服务老师案例", "朋友圈", "高价值会员", "林小燕", "今日 18:30", "待审核"] }, { rank: 3, name: "周末直播提醒", initial: "直", filter: "已排期", cells: ["周末直播提醒", "社群公告", "AI 学习社 6 群", "课程企微", "明日 10:00", "已排期"] }],
+  operations: [{ id: "issue", label: "编辑内容", icon: MessageSquare, button: "保存草稿" }, { id: "push", label: "发布触达", icon: Send, button: "提交发布" }, { id: "activity", label: "关联活动", icon: CalendarDays, button: "关联活动" }, { id: "moments", label: "朋友圈计划", icon: ClipboardCheck, button: "创建计划" }],
+  profileTabs: ["概览", "素材", "触达记录", "审批记录"],
+};
+
+const activity: ScopeConfig = {
+  ...community,
+  noun: "运营活动",
+  counterUnit: "场活动",
+  panelTitle: "活动详情",
+  panelSub: "报名、触达、活动群与转化任务",
+  taskCategories: [{ label: "进行中", count: 3 }, { label: "待发布", count: 4 }, { label: "报名中", count: 5 }, { label: "待复盘", count: 2 }],
+  taskLists: { "进行中": [{ title: "社群秋季复购 · 报名提醒", time: "2026-09-29 16:00", status: "进行中", unread: 2 }], "待发布": [{ title: "国庆用户关怀 · 待发通知", time: "2026-09-30 09:00", status: "待处理", unread: 1 }], "报名中": [{ title: "团长成长直播 · 报名审核", time: "2026-09-29 18:00", status: "待处理", unread: 3 }], "待复盘": [{ title: "AI 训练营开营 · 效果复盘", time: "2026-09-30 10:00", status: "待处理", unread: 0 }] },
+  rankingTabs: ["全部活动", "进行中", "待发布", "报名中", "待复盘"],
+  filterChips: ["全部", "进行中", "报名中", "待复盘"],
+  columns: [{ label: "活动", width: 140, tone: "name" }, { label: "项目", width: 90 }, { label: "目标对象", width: 130 }, { label: "报名 / 到场", width: 95 }, { label: "负责人", width: 80 }, { label: "状态", width: 80 }],
+  rows: [{ rank: 1, name: "社群秋季复购", initial: "秋", filter: "进行中", cells: ["社群秋季复购", "PRO会员", "3 个会员群", "86 / 42", "林小燕", "进行中"] }, { rank: 2, name: "团长成长直播", initial: "团", filter: "报名中", cells: ["团长成长直播", "一级代理", "团长与代理", "124 / --", "陈明", "报名中"] }, { rank: 3, name: "国庆用户关怀", initial: "国", filter: "待复盘", cells: ["国庆用户关怀", "体验官", "指定标签会员", "-- / --", "吴思远", "待发布"] }],
+  operations: [{ id: "issue", label: "编辑活动", icon: MessageSquare, button: "保存活动" }, { id: "push", label: "活动通知", icon: Send, button: "发布通知" }, { id: "activity", label: "报名管理", icon: CalendarDays, button: "查看报名" }, { id: "moments", label: "活动复盘", icon: ClipboardCheck, button: "创建复盘" }],
+  profileTabs: ["概览", "报名用户", "活动任务", "复盘记录"],
+};
+
+const results: ScopeConfig = {
+  ...community,
+  noun: "运营结果",
+  counterUnit: "项结果",
+  panelTitle: "运营结果详情",
+  panelSub: "内容、社群、活动与人员效果归因",
+  taskCategories: [{ label: "待确认", count: 3 }, { label: "待优化", count: 5 }, { label: "异常结果", count: 2 }, { label: "最佳实践", count: 4 }],
+  taskLists: { "待确认": [{ title: "秋季复购群发 · 复盘确认", time: "2026-09-29 21:00", status: "待处理", unread: 1 }], "待优化": [{ title: "服务老师案例 · 阅读率偏低", time: "2026-09-29 18:40", status: "待处理", unread: 0 }], "异常结果": [{ title: "AI 学习社训练营 · 群健康下降", time: "2026-09-29 15:00", status: "待处理", unread: 2 }], "最佳实践": [{ title: "北京 PRO会员群 · 高转化内容", time: "2026-09-29 12:00", status: "已完成", unread: 0 }] },
+  rankingTabs: ["触达效果", "社群健康", "入群转化", "活动转化", "人员绩效"],
+  filterChips: ["全部", "待优化", "异常", "最佳实践"],
+  columns: [{ label: "复盘对象", width: 140, tone: "name" }, { label: "覆盖对象", width: 130 }, { label: "指标", width: 80 }, { label: "结果", width: 80, tone: "bold" }, { label: "趋势", width: 70 }, { label: "处理建议", width: 120 }],
+  rows: [{ rank: 1, name: "秋季复购群发", initial: "秋", filter: "最佳实践", cells: ["秋季复购群发", "3 个群 / 842 人", "阅读率", "68%", "+8.2%", "复用内容"] }, { rank: 2, name: "北京 PRO会员群", initial: "北", filter: "待优化", cells: ["北京 PRO会员群", "487 位成员", "群健康分", "82", "-3", "启用备用群"] }, { rank: 3, name: "体验官入群流程", initial: "体", filter: "异常", cells: ["体验官入群流程", "126 位新会员", "入群转化", "74%", "+6%", "跟进待入群"] }],
+  operations: [{ id: "issue", label: "查看归因", icon: MessageSquare, button: "确认归因" }, { id: "push", label: "创建优化", icon: Send, button: "创建任务" }, { id: "activity", label: "复盘任务", icon: CalendarDays, button: "发起复盘" }, { id: "moments", label: "复用内容", icon: ClipboardCheck, button: "复制方案" }],
+  profileTabs: ["概览", "归因分析", "优化任务", "历史结果"],
+};
+
+export const SCOPE_CONFIGS: Record<Exclude<DataScope, "members">, ScopeConfig> = { community, content, activity, project, agent, results };

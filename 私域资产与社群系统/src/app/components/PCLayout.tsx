@@ -14,7 +14,7 @@ type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
 // ─── 软圆角赛博朋克 · 柔和边框 ────────────────────────────────
 const navGroups = [
   { label: "工作台", items: [
-    { id: "users",      label: "统一运营工作台", icon: User,            badge: null },
+    { id: "users",      label: "总运营工作台", icon: User,            badge: null },
     { id: "overview",   label: "跨项目总览",     icon: LayoutDashboard, badge: null },
   ]},
   { label: "客户与服务", items: [

@@ -8,6 +8,7 @@ import { calculateMemberNetworkScope, getMemberNetworkViews, memberNetworkExampl
 import { useProjectContext } from "../App";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const taskCategories = [
+  { label: "今日执行", count: 9 },
   { label: "全部待办", count: 12, active: true },
   { label: "客户关系", count: 3 },
   { label: "订单履约", count: 2 },
@@ -82,6 +83,7 @@ const taskSideList: TaskEntry[] = [
 ];
 
 const taskLists: Record<string, TaskEntry[]> = {
+  "今日执行": [taskSideList[0], taskSideList[1], taskSideList[3], { title: "12 位会员 · 待入群分配", time: "2026-07-05 15:30", status: "待处理", unread: 0, source: "入群分配", action: "分配入群" }],
   "全部待办": taskSideList,
   "客户关系": [taskSideList[0], { title: "皮卡丘 · 企业微信待添加", time: "2026-07-05 12:10", status: "待处理", unread: 0, source: "企微 SCRM", action: "发起添加" }],
   "订单履约": [taskSideList[1], { title: "ORD-202607-01818 · 退款申请待处理", time: "2026-07-05 10:40", status: "待处理", unread: 1, source: "商城订单", action: "处理退款" }],
