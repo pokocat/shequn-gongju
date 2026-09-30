@@ -151,9 +151,15 @@ export function useApprovalWriteback() {
         processedRef.current.add(ap.id);
         const payload = ap.payload;
         switch (payload.type) {
-          case "invite_register":
-            writebackInviteRegister(payload, { setAccounts, setInvites });
+          case "invite_register": {
+            // 幂等护栏：processedRef 只在本次组件挂载内有效，切走审批中心再切回会重挂、
+            // ref 清空，于是所有仍为 approved 的单子被再回写一遍 —— writebackInviteRegister
+            // 每次都用随机 uid 建一个全新账号，重复访问就重复建号。以源真值
+            // （邀请的 resultAccountUid 是否已写）为准：写过就不再建号。
+            const already = invites.find((it: any) => it.id === payload.inviteId)?.resultAccountUid;
+            if (!already) writebackInviteRegister(payload, { setAccounts, setInvites });
             break;
+          }
           case "tool_handover":
             writebackToolHandover(payload, {
               tools,
@@ -170,5 +176,5 @@ export function useApprovalWriteback() {
         }
       }
     });
-  }, [approvals, accounts, tools, setAccounts, setTools, setInvites]);
+  }, [approvals, accounts, tools, invites, setAccounts, setTools, setInvites]);
 }

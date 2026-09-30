@@ -789,7 +789,11 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
     const missingQr = selectedSlots.some((selected, index) => selected && !qrNames[index]);
     if (missingQr) { setError("已选群位必须上传微信群二维码，不能留空"); return; }
     const assigned = selectedCount > 0;
-    onSave({ project: draft.project, opsManager: draft.opsManager, serviceOfficer: draft.opsManager, city: draft.city, region: selectedRegionName, accountType: draft.accountType || "待配置", groupType: draft.groupType, groupCount: selectedCount, groupQrNames: qrNames, status: assigned ? "使用中" : "未使用", targetGroup: assigned ? `${draft.city}${draft.groupType}群01` : "待分配", targetGroupCount: selectedCount });
+    // 群位可以非连续勾选（slot 1/3/5），但所有读取方（详情卡、回填）都按「前 groupCount 个
+    // 连续群位」还原。若把整条 20 长的稀疏 qrNames 原样存下，回填时名字会错位（slot 2 变成
+    // 已绑定但空白）、末尾勾选的名字丢失。存前压实成「仅已选槽位」的连续数组，与 groupCount 对齐。
+    const selectedQrNames = qrNames.filter((_, index) => selectedSlots[index]);
+    onSave({ project: draft.project, opsManager: draft.opsManager, serviceOfficer: draft.opsManager, city: draft.city, region: selectedRegionName, accountType: draft.accountType || "待配置", groupType: draft.groupType, groupCount: selectedCount, groupQrNames: selectedQrNames, status: assigned ? "使用中" : "未使用", targetGroup: assigned ? `${draft.city}${draft.groupType}群01` : "待分配", targetGroupCount: selectedCount });
     onClose();
   };
   return <>
