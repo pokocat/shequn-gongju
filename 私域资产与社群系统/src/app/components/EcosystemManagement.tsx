@@ -368,6 +368,10 @@ function SuperView({
         setAccounts(list => [...list, {
           uid: `U${newEcoId}`,
           name: admin.name, email: admin.email, phone: admin.phone, status: "active", createdAt,
+          // SystemAccount 的必填字段一个都不能少：账号列表直接读 bindingStatus / projectIds，
+          // 缺了会在渲染时 bindingStatusMeta[undefined].bg / undefined.length 整列崩掉
+          // （手动「新建账号」走 emptyAcc()+save 才带齐，这条生态创建路径此前是裸写）。
+          bindingStatus: "idle", projectIds: [], operationLogs: [],
           identities: [{ roleKey: "eco_leader", scopeType: "eco", scopeIds: [`eco-${newEcoId}`], label: "生态负责人", permissionSummary: `${name}生态负责人` }],
           assignedToolIds: [],
         }]);
