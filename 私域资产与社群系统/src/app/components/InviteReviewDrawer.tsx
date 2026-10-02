@@ -61,7 +61,7 @@ export default function InviteReviewDrawer({
   useThemeSingleton();
 const _cls = useStyles();
   const { invites, setInvites } = useInvites();
-  const { setApprovals } = useApprovals();
+  const { approvals, setApprovals } = useApprovals();
 
   const [tab, setTab] = useState<"preview" | "edit">("preview");
 
@@ -108,6 +108,23 @@ const _cls = useStyles();
   function onApprove() {
     if (!invite || !canReview) return;
     if (roles.length === 0) return;
+    // 初审只推审批单、不改邀请状态（终审回写才置 approved），期间邀请一直是 submitted、
+    // canReview 恒真。若不拦，重开同一条邀请再点初审会为同一人再推一张审批单，两张都走到
+    // 终审就建两个账号。以「该邀请是否已有在途（未终结）的注册审批」为准，去重。
+    const inFlight = approvals.some(
+      (a) =>
+        a.payload.type === "invite_register" &&
+        a.payload.inviteId === invite.id &&
+        (a.status === "pending" || a.status === "in_progress")
+    );
+    if (inFlight) {
+      setSuccessToast("该邀请已提交审批中心，正在审批中，请勿重复初审");
+      setTimeout(() => {
+        setSuccessToast(null);
+        onClose();
+      }, 900);
+      return;
+    }
     const identities = buildIdentities();
     // 推送至审批中心走多级审批流程（邀请人初审 → 生态运营终审）
     const approval = createApproval("invite_register", {
