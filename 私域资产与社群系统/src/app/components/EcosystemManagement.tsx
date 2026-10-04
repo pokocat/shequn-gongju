@@ -1912,7 +1912,11 @@ function _withOpLog(acc: SystemAccount, log: AccountOperation): SystemAccount {
 }
 
 function _csvEscape(s: string | number | undefined | null): string {
-  const v = s == null ? "" : String(s);
+  let v = s == null ? "" : String(s);
+  // CSV 公式注入护栏：以 = + - @ 或制表/回车开头的单元格，Excel/WPS 打开时会当公式执行
+  // （如 =HYPERLINK(...)、=cmd|...）。账号名 / 备注 / 身份标签都是用户可编辑字段，导出前统一
+  // 在前面补一个单引号让它退化成纯文本。注意要在加引号包裹之前做，否则判断不到真实首字符。
+  if (/^[=+\-@\t\r]/.test(v)) v = "'" + v;
   if (/[",\n]/.test(v)) return `"${v.replace(/"/g, '""')}"`;
   return v;
 }
@@ -2146,16 +2150,28 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
   }
 
   function batchAssignTools(tids: string[]) {
-    if (batchSelection.length === 0) return;
+    if (batchSelection.length === 0 || tids.length === 0) return;
+    // 通讯工具（微信号 / 企微席位 / 手机号 / 媒体号）与账号是 1:1 占用：一个工具只能归一个账号持有。
+    // 旧实现把每个工具都绑到 batchSelection[0]，却又把这些工具 id 追加进「全部」选中账号的 assignedToolIds，
+    // 于是第 2..N 个账号会显示并统计它们其实并不持有的工具，而工具自身只绑在第一个账号上 —— 数据恒不一致。
+    // 正确做法：把选中的工具在选中的账号之间轮流分配，保证每个工具的 boundAccountId 与
+    // 持有它的那个账号的 assignedToolIds 始终对齐。
+    const assignment = new Map<string, string>(); // toolId -> accountUid
+    tids.forEach((tid, i) => assignment.set(tid, batchSelection[i % batchSelection.length]));
     if (tools && setTools) {
-      setTools((prev: CommunicationTool[]) => prev.map(t => tids.includes(t.id) ? ({ ...t, boundAccountId: batchSelection[0], status: t.status === "idle" ? "in_use" as const : t.status }) : t));
+      setTools((prev: CommunicationTool[]) => prev.map(t => assignment.has(t.id)
+        ? ({ ...t, boundAccountId: assignment.get(t.id)!, status: t.status === "idle" ? "in_use" as const : t.status })
+        : t));
     }
     setAccounts(list => list.map(a => {
       if (!batchSelection.includes(a.uid)) return a;
-      const merged = Array.from(new Set([...a.assignedToolIds, ...tids]));
-      return _withOpLog({ ...a, assignedToolIds: merged }, _buildOpLog("assign_tools", `批量分配 ${tids.length} 个通讯工具`, { via: "batch", toolIds: tids }));
+      const mine = tids.filter(tid => assignment.get(tid) === a.uid);
+      if (mine.length === 0) return a;
+      const merged = Array.from(new Set([...a.assignedToolIds, ...mine]));
+      return _withOpLog({ ...a, assignedToolIds: merged }, _buildOpLog("assign_tools", `批量分配 ${mine.length} 个通讯工具`, { via: "batch", toolIds: mine }));
     }));
-    setToast(`已给 ${batchSelection.length} 个账号追加分配 ${tids.length} 个工具`);
+    const covered = Math.min(tids.length, batchSelection.length);
+    setToast(`已把 ${tids.length} 个工具分配给 ${covered} 个账号`);
     setBatchSelection([]);
     setBatchAction(null);
   }

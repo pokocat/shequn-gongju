@@ -614,7 +614,14 @@ const { tools, setTools } = useTools();
       String(t.friendCount), String(t.groupCount), t.lastActiveDate, t.onboardDate || "", t.notes || "",
     ]);
     const headers = ["工具ID", "类型", "名称", "阶段", "风控", "归属人", "项目", "绑定号/平台", "好友/粉丝", "群数", "最后活跃", "入库日期", "备注"];
-    const csv = [headers, ...rowsCSV].map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+    // CSV 公式注入护栏：名称 / 备注等用户可编辑字段若以 = + - @ 或制表/回车开头，Excel/WPS 打开会当公式执行。
+    // 外层加引号只是 CSV 传输转义、解析后仍是公式，所以这里要在前面补单引号让其退化成纯文本（须早于加引号）。
+    const csvCell = (c: unknown) => {
+      let v = String(c ?? "");
+      if (/^[=+\-@\t\r]/.test(v)) v = "'" + v;
+      return `"${v.replace(/"/g, '""')}"`;
+    };
+    const csv = [headers, ...rowsCSV].map(r => r.map(csvCell).join(",")).join("\n");
     const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
