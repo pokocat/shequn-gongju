@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import {
   Search, Plus, Upload, Download, ChevronDown, ChevronRight, ChevronLeft, User, Building2, Users, Phone, Share2, Mail,
   AlertTriangle, Shield, History, X, Check, Clock, ArrowRightLeft, Archive, Edit3, Trash2,
-  Sparkles, Store, Link2, RefreshCw, Package, List, LayoutGrid, SlidersHorizontal, Eye, QrCode, MessageCircle,
+  Sparkles, Store, Link2, RefreshCw, Package, List, LayoutGrid, SlidersHorizontal, Eye, QrCode, MessageCircle, Activity, MoreHorizontal,
 } from "lucide-react";
 import type { ResourceTool as Tool, CommunicationToolType, ToolHealthStatus, ToolRiskLevel, ResourceToolLog, Project } from "../data/communicationTools";
 import { typeMeta, statusMeta, riskMeta, needsNurturing, initialProjects, PLATFORM_POOL_ID, projectStatusBadge, aggregateProject } from "../data/communicationTools";
@@ -17,7 +17,7 @@ import { S, useThemeSingleton } from "../theme";
 // 色板：软蓝灰 SaaS 极简风（无黑框、无荧光黄），与微信账号管理统一。
 // ────────────────────────────────────────────────────────────────
 type LogAction = ResourceToolLog["action"];
-type DetailTabKey = "general" | "ops" | "risk" | "log";
+type DetailTabKey = "profile" | "assignment" | "operations" | "security";
 type BrowseMode = "list" | "cards";
 type TopTabKey = CommunicationToolType | "all";
 type StatusTabKey = "全部" | "使用中" | "异常" | "待交接" | "未使用" | "已停用";
@@ -347,7 +347,7 @@ const { tools, setTools } = useTools();
   const [page, setPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
-  const [detailTab, setDetailTab] = useState<DetailTabKey>("ops");
+  const [detailTab, setDetailTab] = useState<DetailTabKey>("profile");
 
   // ── 按项目 / 按人 视图专用 state ─────────────────────────────
   const [activeProjectId, setActiveProjectId] = useState<string>(PLATFORM_POOL_ID);
@@ -492,20 +492,20 @@ const { tools, setTools } = useTools();
     return metricType;
   }, [filteredTools, pagedTools, metricType]);
 
-  // 默认选中一个工具给详情抽屉
+  // 默认详情始终跟随当前筛选结果，避免显示筛选范围外的旧资源
   useEffect(() => {
-    if (!selectedToolId && filteredTools.length > 0) {
-      const pref = filteredTools.find(t => t.id === "dy_bj_01") || filteredTools[0];
-      setSelectedToolId(pref.id);
+    if (!filteredTools.length) {
+      setSelectedToolId(null);
+      return;
     }
-    if (selectedToolId && !filteredTools.find(t => t.id === selectedToolId) && filteredTools[0]) {
+    if (!selectedToolId || !filteredTools.some(tool => tool.id === selectedToolId)) {
       setSelectedToolId(filteredTools[0].id);
     }
   }, [filteredTools, selectedToolId]);
 
   const selectedTool = useMemo(
-    () => filteredTools.find(t => t.id === selectedToolId) || tools.find(t => t.id === selectedToolId) || null,
-    [selectedToolId, filteredTools, tools],
+    () => filteredTools.find(t => t.id === selectedToolId) || null,
+    [selectedToolId, filteredTools],
   );
 
   const activeFilterCount =
@@ -939,7 +939,7 @@ const { tools, setTools } = useTools();
                     </button>
                     <button type="button" title={expanded ? "收起工具" : "展开工具"} aria-label={expanded ? "收起工具" : "展开工具"} aria-expanded={expanded} onClick={() => setExpandedDimensionGroup(expanded ? null : group.key)} className="w-6 h-6 grid place-items-center" style={{ color: S.muted, borderRadius: S.radiusSm }}><ChevronDown size={13} style={{ transform: expanded ? "rotate(180deg)" : "none", transition: "transform .2s" }} /></button>
                   </div>
-                  {expanded && <div className="mt-2 pt-2 space-y-1" style={{ borderTop: `1px solid ${S.border}` }}>{group.tools.slice(0, 4).map(tool => <button key={tool.id} type="button" className="w-full flex items-center justify-between gap-2 text-[10px] text-left" onClick={() => { setSelectedToolId(tool.id); setDetailTab("ops"); }}><span className="truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{tool.name}</span><span style={{ color: S.muted, fontFamily: "monospace" }}>{tool.identifier}</span></button>)}{group.tools.length > 4 && <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>还有 {group.tools.length - 4} 个，列表中查看</div>}</div>}
+                  {expanded && <div className="mt-2 pt-2 space-y-1" style={{ borderTop: `1px solid ${S.border}` }}>{group.tools.slice(0, 4).map(tool => <button key={tool.id} type="button" className="w-full flex items-center justify-between gap-2 text-[10px] text-left" onClick={() => { setSelectedToolId(tool.id); setDetailTab("profile"); }}><span className="truncate" style={{ color: S.textSec, fontFamily: "monospace" }}>{tool.name}</span><span style={{ color: S.muted, fontFamily: "monospace" }}>{tool.identifier}</span></button>)}{group.tools.length > 4 && <div className="text-[10px]" style={{ color: S.muted, fontFamily: "monospace" }}>还有 {group.tools.length - 4} 个，列表中查看</div>}</div>}
                 </div>
               );
             })}
@@ -1125,7 +1125,7 @@ const { tools, setTools } = useTools();
               projects={initialProjects}
               tools={tools}
               selectedToolId={selectedToolId}
-              onSelectTool={id => { setSelectedToolId(id); setDetailTab("ops"); }}
+              onSelectTool={id => { setSelectedToolId(id); setDetailTab("profile"); }}
               accountNameById={accountNameById}
             />
           </div>
@@ -1137,6 +1137,7 @@ const { tools, setTools } = useTools();
               accountName={accountNameById(selectedTool.boundAccountId)}
               accountUid={selectedTool.boundAccountId}
               accounts={accounts}
+              lifecycleStages={lifecycleStages}
               tab={detailTab}
               setTab={setDetailTab}
               onRequestHandover={toolId => setHandoverDraft({ toolId, targetUid: accounts[0]?.uid || "" })}
@@ -1154,7 +1155,7 @@ const { tools, setTools } = useTools();
               style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusLg, color: S.muted }}>
               <Package size={32} style={{ marginBottom: 8, color: S.mutedLight }} />
               <div className="text-sm" style={{ color: S.muted, fontFamily: "monospace" }}>点击中栏任意账号行查看完整详情</div>
-              <div className="text-xs mt-2" style={{ color: S.mutedLight, fontFamily: "monospace" }}>通用 · 运营专属 · 风控 · 操作日志</div>
+              <div className="text-xs mt-2" style={{ color: S.mutedLight, fontFamily: "monospace" }}>账号资料 · 绑定分配 · 运营数据 · 个人安全</div>
             </div>
           )}
         </div>
@@ -1308,6 +1309,7 @@ const { tools, setTools } = useTools();
             accountName={accountNameById(selectedTool.boundAccountId)}
             accountUid={selectedTool.boundAccountId}
             accounts={accounts}
+            lifecycleStages={lifecycleStages}
             tab={detailTab}
             setTab={setDetailTab}
             onRequestHandover={toolId => setHandoverDraft({ toolId, targetUid: accounts[0]?.uid || "" })}
@@ -1325,7 +1327,7 @@ const { tools, setTools } = useTools();
             style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusLg, color: S.muted }}>
             <Package size={32} style={{ marginBottom: 8, color: S.mutedLight }} />
             <div className="text-sm" style={{ color: S.muted, fontFamily: "monospace" }}>点击左侧任意资源行查看完整详情</div>
-            <div className="text-xs mt-2" style={{ color: S.mutedLight, fontFamily: "monospace" }}>支持 通用 · 运营专属 · 风控 · 操作日志 4 Tab</div>
+            <div className="text-xs mt-2" style={{ color: S.mutedLight, fontFamily: "monospace" }}>支持 账号资料 · 绑定分配 · 运营数据 · 个人安全 4 Tab</div>
           </div>
         )}
       </div>
@@ -1451,7 +1453,7 @@ function accountShortName(uid: string): string {
 // 视觉风格匹配 WeChatManagement（黑底 header + accent 蓝色 Tab）
 // ────────────────────────────────────────────────────────────────
 function DetailPanel({
-  tool, accountName, accounts, tab, setTab,
+  tool, accountName, accounts, lifecycleStages, tab, setTab,
   onRequestHandover, onConfirmAction, onMutate,
   onSwitchProject, onSwitchOwner,
   onMediaMatrix, onMediaBiz,
@@ -1461,6 +1463,7 @@ function DetailPanel({
   accountName: string;
   accountUid: string | null;
   accounts: SystemAccount[];
+  lifecycleStages: { key: string; label: string; hint: string }[];
   tab: DetailTabKey;
   setTab: (t: DetailTabKey) => void;
   onRequestHandover: (toolId: string) => void;
@@ -1480,11 +1483,12 @@ function DetailPanel({
   const cap = getToolCapacity(tool);
   const syncMeta = getSyncMeta(tool, cap);
 
+  const [moreOpen, setMoreOpen] = useState(false);
   const tabs: { key: DetailTabKey; label: string; icon: React.ReactNode; title: string }[] = [
-    { key: "general", label: "通用", icon: <Package size={12} />, title: "通用字段：阶段/归属/项目/活跃" },
-    { key: "ops", label: tm.short + "·运营专属", icon: <Sparkles size={12} />, title: "按类型切换 4 套专属模板（微信/企微/手机/媒体）" },
-    { key: "risk", label: "🛡 风控", icon: <Shield size={12} />, title: "风控等级 + 异常事件 + 登录设备" },
-    { key: "log", label: "📜 操作日志", icon: <History size={12} />, title: "完整操作时间线" },
+    { key: "profile", label: "账号资料", icon: <Package size={12} />, title: "账号标识、状态、认证与同步信息" },
+    { key: "assignment", label: "绑定分配", icon: <Link2 size={12} />, title: "项目、归属人、部门与绑定信息" },
+    { key: "operations", label: "运营数据", icon: <Activity size={12} />, title: "容量、活跃度与类型专属运营数据" },
+    { key: "security", label: "个人安全", icon: <Shield size={12} />, title: "风险、登录设备、安全配置与操作记录" },
   ];
 
   return (
@@ -1565,8 +1569,10 @@ function DetailPanel({
           </div>
         )}
 
-        {/* 归属信息（上移至容量摘要上方，与微信账号管理对齐） */}
-        <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}>
+        {tab === "profile" && (
+          <>
+            {/* 归属信息 */}
+            <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}>
           <div className="flex items-center gap-2 text-xs font-bold mb-2" style={{ color: S.text, fontFamily: "monospace" }}>
             <Link2 size={13} />归属信息
           </div>
@@ -1590,7 +1596,7 @@ function DetailPanel({
           </div>
         </div>
 
-        {tab === "general" && (
+        {tab === "profile" && (
           <div className="space-y-3">
             <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
               <Row k="状态阶段" v={<span style={{ padding: "1px 5px", background: sm.badgeBg, color: sm.badgeColor, borderRadius: 3, fontWeight: 700 }}>{sm.label}</span>} />
@@ -1623,10 +1629,28 @@ function DetailPanel({
             )}
           </div>
         )}
+        </>
+        )}
 
-        {tab === "ops" && <OpsTemplate tool={tool} />}
+        {tab === "assignment" && (
+          <div className="space-y-3">
+            <div className="p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}>
+              <div className="flex items-center gap-2 text-xs font-bold mb-2" style={{ color: S.text, fontFamily: "monospace" }}><Link2 size={13} />绑定与分配</div>
+              <div className="grid grid-cols-2 gap-3">
+                <Row k="归属项目" v={projectName(tool.boundProjectIds)} />
+                <Row k="归属人" v={accountName} />
+                <Row k="归属岗位" v={tool.accountPosition || "—"} />
+                <Row k="归属部门" v={tool.department || "—"} />
+                <Row k="绑定号" v={tool.boundPhone || tool.identifier} />
+                <Row k="入库日期" v={tool.onboardDate || "—"} />
+              </div>
+            </div>
+          </div>
+        )}
 
-        {tab === "risk" && (
+        {tab === "operations" && <OpsTemplate tool={tool} />}
+
+        {tab === "security" && (
           <div className="space-y-3 text-xs" style={{ lineHeight: 1.8 }}>
             <div className="p-3" style={{ background: rm.bg, border: `1px solid ${rm.color}33`, borderRadius: S.radius }}>
               <div style={{ color: rm.color, fontWeight: 700 }}>风控等级：{rm.label}</div>
@@ -1639,84 +1663,63 @@ function DetailPanel({
             <Row k="风险事件(近30天)" v={tool.riskLevel === "high" ? <span style={{ color: "#c53030", fontWeight: 700 }}>2 次 · 长期未登录 + 设备异常</span> : tool.riskLevel === "warning" ? <span style={{ color: "#c05621" }}>1 次 · 接近交接或风控阈值</span> : "0 次"} />
             <Row k="最近登录设备" v={<span style={{ fontFamily: "monospace", color: S.text }}>{tool.lastLoginDevice || "—"}</span>} />
             <Row k="最近登录IP(示例)" v={<span style={{ fontFamily: "monospace", color: S.text }}>{tool.type === "wechat" ? "221.220.12.88 北京" : tool.type === "media" ? "221.220.12.88 北京" : tool.type === "phone" ? "4G基站(移动·北京LAC-10032)" : "124.65.33.2 北京 企业专线"}</span>} />
-            <Row k="是否开启安全守护" v={tool.type === "wechat" && tool.wechatPasswordConfigured ? <span style={{ color: S.success, fontWeight: 700 }}>✅ 微信/QQ/邮箱 三项密保已配置</span> : <span style={{ color: "#c05621" }}>部分安全项未完整配置（见运营Tab）</span>} />
-          </div>
-        )}
-
-        {tab === "log" && (
-          <div className="text-xs">
-            {(tool.operationLogs || []).length === 0 ? (
-              <div style={{ color: S.muted, padding: 20, textAlign: "center" }}>暂无操作日志（旧数据请以系统审批中心为准）</div>
-            ) : (
-              <div style={{ position: "relative", paddingLeft: 16 }}>
-                <div style={{ position: "absolute", left: 5, top: 2, bottom: 2, width: 2, background: S.borderMed }} />
-                {(tool.operationLogs || []).map(l => (
-                  <div key={l.id} style={{ position: "relative", marginBottom: 10 }}>
-                    <div style={{ position: "absolute", left: -14, top: 3, width: 10, height: 10, background: "#ffffff", border: `2px solid ${S.primary}`, borderRadius: "50%", boxShadow: `0 0 0 3px ${S.primaryLight}` }} />
-                    <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>{l.time} · <span style={{ color: S.textSec }}>{l.actor}</span></div>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: S.text }}>{l.action}</div>
-                    {l.summary && <div style={{ fontSize: 11, color: S.textSec, marginTop: 1 }}>{l.summary}</div>}
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="pt-3" style={{ borderTop: `1px solid ${S.border}` }}>
+              <div className="mb-2 text-[10px] font-bold" style={{ color: S.textSec, fontFamily: "monospace" }}>最近操作</div>
+              {(tool.operationLogs || []).length === 0 ? (
+                <div style={{ color: S.muted, padding: 20, textAlign: "center" }}>暂无操作日志（旧数据请以系统审批中心为准）</div>
+              ) : (
+                <div style={{ position: "relative", paddingLeft: 16 }}>
+                  <div style={{ position: "absolute", left: 5, top: 2, bottom: 2, width: 2, background: S.borderMed }} />
+                  {(tool.operationLogs || []).map(l => (
+                    <div key={l.id} style={{ position: "relative", marginBottom: 10 }}>
+                      <div style={{ position: "absolute", left: -14, top: 3, width: 10, height: 10, background: "#ffffff", border: `2px solid ${S.primary}`, borderRadius: "50%", boxShadow: `0 0 0 3px ${S.primaryLight}` }} />
+                      <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>{l.time} · <span style={{ color: S.textSec }}>{l.actor}</span></div>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: S.text }}>{l.action}</div>
+                      {l.summary && <div style={{ fontSize: 11, color: S.textSec, marginTop: 1 }}>{l.summary}</div>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
 
-      {/* 动作按钮 */}
-      <div className="p-3 grid grid-cols-2 gap-2 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
-        <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
-          style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-          onClick={() => onSwitchProject()}>
-          <Building2 size={12} /> 改项目
-        </button>
-        <button type="button" className="py-2 text-xs font-bold flex items-center justify-center gap-1"
-          style={{ background: S.ink, color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-          onClick={() => onRequestHandover(tool.id)}>
-          <ArrowRightLeft size={12} /> 工具交接
-        </button>
-        <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
-          style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-          onClick={() => onSwitchOwner()}>
-          <User size={12} /> 改归属人
-        </button>
-        {needsNurturing(tool.type) && (
-        <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
-          style={{ background: S.warningBg, color: S.warning, border: `1px solid #fde68a`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-          onClick={() => onConfirmAction(tool.id, "send_nurture", "送回养号")}>
-          <Clock size={12} /> 送回养号
-        </button>
-        )}
-        <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
+      <div className="p-3 flex items-center gap-2 flex-shrink-0" style={{ borderTop: `1px solid ${S.border}` }}>
+        <button type="button" className="flex-1 py-2 text-xs font-semibold flex items-center justify-center gap-1"
           style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
           onClick={() => onMutate({} as any, "编辑详情", "手动更新资料（示例）")}>
-          <Edit3 size={12} /> 编辑详情
+          <Edit3 size={12} /> 编辑
         </button>
-        <button type="button" className="py-2 text-xs font-bold flex items-center justify-center gap-1"
-          style={{ background: S.dangerBg, color: S.danger, border: `1px solid #fecaca`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-          onClick={() => onConfirmAction(tool.id, "disable", "立即停用")}>
-          <Trash2 size={12} /> 停用
+        <button type="button" className="flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1"
+          style={{ background: S.ink, color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}
+          onClick={() => onRequestHandover(tool.id)}>
+          <ArrowRightLeft size={12} /> 发起交接
         </button>
-        <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
-          style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-          onClick={() => onConfirmAction(tool.id, "archive", "归档到资产库")}>
-          <Archive size={12} /> 归档
-        </button>
-        {tool.type === "media" && (
-          <>
-            <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
-              style={{ background: S.primaryLight, color: S.primary, border: `1px solid ${S.primaryMid}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-              onClick={onMediaMatrix}>
-              <Link2 size={12} /> 加入矩阵
-            </button>
-            <button type="button" className="py-2 text-xs font-semibold flex items-center justify-center gap-1"
-              style={{ background: S.primaryLight, color: S.primary, border: `1px solid ${S.primaryMid}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-              onClick={onMediaBiz}>
-              <Store size={12} /> 申请商单
-            </button>
-          </>
-        )}
+        <div className="relative">
+          <button type="button" className="w-9 h-9 grid place-items-center"
+            aria-label="更多操作" aria-expanded={moreOpen}
+            style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}
+            onClick={() => setMoreOpen(open => !open)}>
+            <MoreHorizontal size={15} />
+          </button>
+          {moreOpen && (
+            <div className="absolute right-0 bottom-11 z-20 w-40 p-1 space-y-0.5" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, boxShadow: "0 12px 28px rgba(15,23,42,.14)" }}>
+              <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.textSec }} onClick={() => { setMoreOpen(false); onSwitchProject(); }}>改项目</button>
+              <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.textSec }} onClick={() => { setMoreOpen(false); onSwitchOwner(); }}>改归属人</button>
+              <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.textSec }} onClick={() => { setMoreOpen(false); onToast(`🔁 已刷新 ${tool.name} 的同步状态`); }}>同步</button>
+              <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.textSec }} onClick={() => { setMoreOpen(false); onToast(`${tool.identifier} 的二维码查看入口已打开`); }}>查看二维码</button>
+              {needsNurturing(tool.type) && <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.warning }} onClick={() => { setMoreOpen(false); onConfirmAction(tool.id, "send_nurture", "送回养号"); }}>送回养号</button>}
+              {tool.type === "media" && <>
+                <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.primary }} onClick={() => { setMoreOpen(false); onMediaMatrix(); }}>加入矩阵</button>
+                <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.primary }} onClick={() => { setMoreOpen(false); onMediaBiz(); }}>申请商单</button>
+              </>}
+              <div style={{ borderTop: `1px solid ${S.border}`, margin: "3px 0" }} />
+              <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.danger }} onClick={() => { setMoreOpen(false); onConfirmAction(tool.id, "disable", "立即停用"); }}>停用</button>
+              <button type="button" className="w-full px-3 py-2 text-left text-xs" style={{ color: S.danger }} onClick={() => { setMoreOpen(false); onConfirmAction(tool.id, "archive", "归档到资产库"); }}>归档</button>
+            </div>
+          )}
+        </div>
       </div>
     </aside>
   );

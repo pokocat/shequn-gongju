@@ -1,0 +1,82 @@
+<main class="page-shell">
+  <section class="intro">
+    <span class="eyebrow">行业生态 / 平台管理 · 布局提案</span>
+    <h1>先选层级，再做运营</h1>
+    <p>三个方案都将「超级生态、生态、SaaS 合作伙伴、平台」平铺为可直接点击的导航；差异在于信息密度与当前对象的呈现方式。</p>
+  </section>
+
+  <section class="cards" aria-label="布局方案选择">
+    <article class="option-card selected" data-choice="A" onclick="toggleSelect(this)" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSelect(this)}">
+      <header class="option-header">
+        <span class="option-label">方案 A · 推荐</span>
+        <span class="choice-state">已选择</span>
+      </header>
+      <div class="mockup">
+        <div class="mock-topbar"><span class="brand-dot"></span><span>行业生态</span><span class="top-spacer"></span><span class="ghost">主理人公社</span><span class="avatar">O</span></div>
+        <div class="mock-content">
+          <div class="mock-title-row"><div><b>平台管理</b><small>主理人公社 · 正在运营</small></div><button class="dark-button">+ 新建平台</button></div>
+          <div class="layer-strip">
+            <button class="layer"><em>01</em><strong>超级生态</strong><span>1 个</span></button><i>›</i>
+            <button class="layer"><em>02</em><strong>生态</strong><span>6 个</span></button><i>›</i>
+            <button class="layer"><em>03</em><strong>SaaS 合作伙伴</strong><span>18 个</span></button><i>›</i>
+            <button class="layer active"><em>04</em><strong>平台</strong><span>32 个</span></button>
+          </div>
+          <div class="context-row"><span class="live-dot"></span><b>主理人公社</b><span class="muted">健康医药美业生态 · 健康产业发展伙伴</span><span class="context-spacer"></span><button class="text-button">查看架构</button></div>
+          <div class="metric-grid"><div><small>运营项目</small><b>9</b></div><div><small>平台用户</small><b>39,832</b></div><div><small>平台群组</small><b>181</b></div><div><small>本月营收</small><b>¥86.4万</b></div></div>
+          <div class="tabs"><button class="tab active-tab">总览</button><button class="tab">项目运营 <span>9</span></button><button class="tab">平台级社群 <span>12</span></button><button class="tab">平台配置</button></div>
+          <div class="workspace"><div class="workspace-head"><b>项目运营</b><span>按项目查看进度与风险</span><button>全部项目 →</button></div><div class="table-row"><b>V001 军师</b><span>运营中</span><span>9,842 用户</span><span class="positive">健康</span></div><div class="table-row"><b>AI 超级广告公司</b><span>运营中</span><span>7,209 用户</span><span class="positive">健康</span></div></div>
+        </div>
+      </div>
+      <div class="option-copy"><h2>横向层级条 + 单一工作台</h2><p>层级选择、当前对象与运营入口按“从上到下”的单线任务流组织；首屏能看到完整层级、关键指标与下一步操作。</p><ul><li>最紧凑，适合日常运营</li><li>当前层与下级数量一眼可读</li><li>移动端可横向滑动层级条</li></ul></div>
+    </article>
+
+    <article class="option-card" data-choice="B" onclick="toggleSelect(this)" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSelect(this)}">
+      <header class="option-header"><span class="option-label">方案 B</span><span class="choice-state">点击选择</span></header>
+      <div class="mockup b-theme">
+        <div class="mock-topbar"><span class="brand-dot"></span><span>行业生态</span><span class="top-spacer"></span><span class="ghost">主理人公社</span><span class="avatar">O</span></div>
+        <div class="mock-content">
+          <div class="mock-title-row"><div><b>生态层级</b><small>直接进入任一管理层</small></div><button class="dark-button">+ 新建</button></div>
+          <div class="step-grid">
+            <button class="step-card"><em>第 1 层</em><strong>超级生态</strong><span>品牌与总规则</span><b>01</b></button>
+            <button class="step-card"><em>第 2 层</em><strong>生态</strong><span>行业生态集合</span><b>06</b></button>
+            <button class="step-card"><em>第 3 层</em><strong>SaaS 合作伙伴</strong><span>发展平台的伙伴</span><b>18</b></button>
+            <button class="step-card active"><em>第 4 层</em><strong>平台</strong><span>项目与社群运营</span><b>32</b></button>
+          </div>
+          <div class="focus-card"><div><span class="pill">当前层 · 平台</span><h3>主理人公社</h3><p>归属：健康医药美业生态 / 健康产业发展伙伴</p></div><div class="focus-actions"><button>项目运营</button><button>平台社群</button><button class="outline">配置</button></div></div>
+          <div class="metric-grid"><div><small>项目</small><b>9</b></div><div><small>用户</small><b>39,832</b></div><div><small>群组</small><b>181</b></div><div><small>营收</small><b>¥86.4万</b></div></div>
+          <div class="workspace compact"><div class="workspace-head"><b>主理人公社 · 本周重点</b><button>进入工作台 →</button></div><div class="mini-columns"><span>2 个项目待配置</span><span>1 个社群规则待确认</span><span>营收较上周 +12%</span></div></div>
+        </div>
+      </div>
+      <div class="option-copy"><h2>四张层级卡 + 当前对象聚焦</h2><p>每层同时解释职责和数量，适合初次使用、需要频繁跨层管理的角色。</p><ul><li>层级含义最直观</li><li>当前平台信息更突出</li><li>占用高度略高于方案 A</li></ul></div>
+    </article>
+
+    <article class="option-card" data-choice="C" onclick="toggleSelect(this)" tabindex="0" role="button" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleSelect(this)}">
+      <header class="option-header"><span class="option-label">方案 C</span><span class="choice-state">点击选择</span></header>
+      <div class="mockup c-theme">
+        <div class="mock-topbar"><span class="brand-dot"></span><span>行业生态</span><span class="top-spacer"></span><span class="ghost">主理人公社</span><span class="avatar">O</span></div>
+        <div class="mock-content">
+          <div class="mock-title-row"><div><b>主理人公社</b><small>平台工作台</small></div><button class="dark-button">+ 新建平台</button></div>
+          <div class="rail-layout"><div class="vertical-rail"><button><em>01</em><strong>超级生态</strong></button><button><em>02</em><strong>生态</strong></button><button><em>03</em><strong>SaaS 合作伙伴</strong></button><button class="active"><em>04</em><strong>平台</strong></button></div><div class="rail-main"><div class="rail-head"><span class="pill">平台</span><b>主理人公社</b><button>切换平台⌄</button></div><div class="metric-grid two"><div><small>项目</small><b>9</b></div><div><small>用户</small><b>39,832</b></div><div><small>群组</small><b>181</b></div><div><small>营收</small><b>¥86.4万</b></div></div><div class="tabs slim"><button class="active-tab">项目 9</button><button>社群 12</button><button>配置</button></div><div class="workspace compact"><div class="workspace-head"><b>需要关注</b><button>查看全部 →</button></div><div class="alert-line"><span class="alert-dot"></span>AI 大健康项目有 1 条规则待确认</div><div class="alert-line"><span class="alert-dot yellow"></span>2 个群组容量接近阈值</div></div></div></div>
+        </div>
+      </div>
+      <div class="option-copy"><h2>左侧常驻层级轨道</h2><p>将层级视作页面内的二级导航，主区域高度聚焦当前工作对象与待办。</p><ul><li>连续管理多个对象时定位稳定</li><li>适合大屏管理台</li><li>窄屏时会收为横向层级条</li></ul></div>
+    </article>
+  </section>
+
+  <aside class="selection-bar" id="selection-bar" aria-live="polite"><span>当前选择：<b id="selected-name">方案 A · 横向层级条</b></span><span class="selection-hint">点击任一方案可切换选择</span></aside>
+</main>
+
+<style>
+:root{--ink:#172033;--muted:#6b7280;--line:#dfe4eb;--lime:#d6ff2f;--panel:#fff;--soft:#f5f7fa;--blue:#4866f5}*{box-sizing:border-box}body{margin:0;background:#f3f5f8;color:var(--ink);font-family:Inter,"PingFang SC","Microsoft YaHei",Arial,sans-serif}.page-shell{max-width:1600px;margin:0 auto;padding:36px 28px 80px}.intro{max-width:850px;margin:0 auto 28px;text-align:center}.eyebrow{display:inline-flex;padding:6px 10px;border-radius:999px;background:#e7ebff;color:#4051bd;font-size:12px;font-weight:700}.intro h1{margin:12px 0 10px;font-size:30px;letter-spacing:-.04em}.intro p{margin:0;color:var(--muted);font-size:14px;line-height:1.65}.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}.option-card{overflow:hidden;border:1px solid var(--line);border-radius:18px;background:#fff;box-shadow:0 7px 22px rgba(28,39,60,.04);transition:.2s ease;cursor:pointer}.option-card:hover{box-shadow:0 12px 30px rgba(28,39,60,.1);transform:translateY(-2px)}.option-card.selected{border:2px solid var(--blue);box-shadow:0 12px 32px rgba(72,102,245,.14)}.option-header{height:42px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);font-size:12px}.option-label{font-weight:800}.choice-state{color:var(--muted)}.selected .choice-state{color:#3651d1;font-weight:700}.mockup{aspect-ratio:1.48;background:#f6f7f9;overflow:hidden;font-size:9px;color:#1d2939;text-align:left;pointer-events:none}.mock-topbar{height:27px;padding:0 10px;display:flex;align-items:center;gap:5px;background:#182235;color:#fff;font-size:7px}.brand-dot{width:10px;height:10px;background:var(--lime);border-radius:3px}.top-spacer,.context-spacer{flex:1}.ghost{color:#aeb9c9}.avatar{width:14px;height:14px;border-radius:50%;background:#d6ff2f;color:#182235;display:grid;place-items:center;font-weight:800}.mock-content{padding:13px}.mock-title-row{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}.mock-title-row b{display:block;font-size:12px}.mock-title-row small{display:block;color:var(--muted);margin-top:3px}.dark-button{padding:6px 8px;border:0;border-radius:4px;background:#1f2a3b;color:#d6ff2f;font-size:8px;font-weight:700}.layer-strip{display:flex;align-items:stretch;gap:4px;margin-bottom:9px}.layer-strip i{align-self:center;font-size:14px;color:#a6afbb;font-style:normal}.layer{min-width:0;flex:1;padding:6px;text-align:left;border:1px solid #dce2ea;border-radius:5px;background:#fff;color:#52606f}.layer em,.step-card em{display:block;color:#8b96a5;font-size:7px;font-style:normal;font-weight:700}.layer strong{display:block;font-size:8px;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:2px 0}.layer span{font-size:7px}.layer.active{border-color:#1f2a3b;background:#1f2a3b;color:#d6ff2f}.layer.active strong,.layer.active em{color:inherit}.context-row{min-height:30px;padding:7px 8px;display:flex;align-items:center;gap:5px;border:1px solid #e1e5ea;background:#fff;border-radius:5px;font-size:8px}.live-dot{width:5px;height:5px;border-radius:50%;background:#21c17a}.muted{color:#7e8998}.text-button{border:0;background:transparent;color:#4051bd;font-size:8px;font-weight:700}.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:9px 0}.metric-grid>div{padding:7px;border:1px solid #e3e7ed;border-radius:5px;background:#fff}.metric-grid small{display:block;color:#8490a0;font-size:7px}.metric-grid b{display:block;font-size:10px;margin-top:3px}.tabs{display:flex;gap:4px;border-bottom:1px solid #e2e6eb;margin-top:10px}.tabs button{padding:6px 4px;border:0;background:transparent;color:#788494;font-size:8px}.tabs button span{padding:1px 3px;border-radius:9px;background:#e9edf2}.tabs .active-tab{border-bottom:2px solid #1f2a3b;color:#1f2937;font-weight:800}.workspace{margin-top:8px;border:1px solid #e2e6eb;border-radius:5px;background:#fff;overflow:hidden}.workspace-head{padding:7px;display:flex;align-items:center;gap:6px;font-size:8px}.workspace-head span{color:#8792a0}.workspace-head button{margin-left:auto;border:0;background:transparent;color:#3e56ca;font-size:8px}.table-row{display:grid;grid-template-columns:1.25fr .8fr 1fr .55fr;padding:7px;border-top:1px solid #edf0f3;color:#667382;font-size:7px}.table-row b{color:#2a3646}.positive{color:#17a468}.step-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:9px}.step-card{min-height:65px;padding:7px;text-align:left;border:1px solid #dce2ea;border-radius:6px;background:#fff;position:relative;color:#52606f}.step-card strong{display:block;font-size:9px;color:#354152;margin:4px 0 2px}.step-card span{font-size:7px}.step-card>b{position:absolute;right:7px;bottom:5px;font-size:14px;color:#e4e9ef}.step-card.active{border-color:#1e293b;background:#1e293b}.step-card.active strong{color:#d6ff2f}.step-card.active em,.step-card.active span{color:#c8d0d9}.focus-card{padding:10px;display:flex;justify-content:space-between;gap:8px;background:#1f2a3b;border-radius:6px;color:#fff}.pill{display:inline-block;padding:2px 4px;border-radius:9px;background:rgba(214,255,47,.14);color:#d6ff2f;font-size:7px;font-weight:700}.focus-card h3{font-size:11px;margin:4px 0}.focus-card p{font-size:7px;color:#b7c0cb;margin:0}.focus-actions{display:flex;align-items:center;gap:4px}.focus-actions button{padding:5px;border:0;border-radius:3px;background:#d6ff2f;color:#1f2a3b;font-size:7px;font-weight:800}.focus-actions .outline{background:transparent;color:#d6ff2f;border:1px solid rgba(214,255,47,.5)}.mini-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;padding:7px;border-top:1px solid #edf0f3;color:#667382;font-size:7px}.rail-layout{display:grid;grid-template-columns:92px 1fr;gap:8px}.vertical-rail{display:flex;flex-direction:column;gap:4px}.vertical-rail button{padding:7px;text-align:left;border:1px solid #e0e5eb;border-radius:5px;background:#fff;color:#667382}.vertical-rail em{display:block;font-size:7px;font-style:normal}.vertical-rail strong{display:block;margin-top:2px;font-size:8px}.vertical-rail .active{background:#1f2a3b;color:#d6ff2f;border-color:#1f2a3b}.rail-main{min-width:0}.rail-head{padding:7px;background:#fff;border:1px solid #e2e6eb;border-radius:5px;display:flex;align-items:center;gap:6px;font-size:10px}.rail-head button{margin-left:auto;border:0;background:transparent;color:#5665c6;font-size:7px}.metric-grid.two{grid-template-columns:repeat(2,1fr);gap:4px;margin:6px 0}.tabs.slim{margin-top:3px}.alert-line{padding:6px 7px;border-top:1px solid #edf0f3;font-size:7px;color:#667382}.alert-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#e86161;margin-right:4px}.alert-dot.yellow{background:#e7b43d}.option-copy{padding:16px}.option-copy h2{margin:0 0 7px;font-size:15px;letter-spacing:-.02em}.option-copy p{margin:0;color:#687587;font-size:12px;line-height:1.65}.option-copy ul{margin:11px 0 0;padding:0;list-style:none;color:#566273;font-size:12px;line-height:1.9}.option-copy li:before{content:'✓';color:#2a56d1;font-weight:800;margin-right:7px}.selection-bar{position:sticky;bottom:16px;margin:28px auto 0;max-width:720px;padding:12px 16px;display:flex;justify-content:space-between;gap:12px;border:1px solid rgba(72,102,245,.25);border-radius:10px;background:rgba(255,255,255,.94);box-shadow:0 10px 30px rgba(32,44,65,.12);font-size:13px;backdrop-filter:blur(10px)}.selection-hint{color:#778293;font-size:12px}@media(max-width:1120px){.cards{grid-template-columns:1fr}.option-card{display:grid;grid-template-columns:minmax(420px,.9fr) 1fr}.option-header{grid-column:1/-1}.option-copy{align-self:center}}@media(max-width:720px){.page-shell{padding:22px 14px 60px}.intro{text-align:left}.intro h1{font-size:25px}.option-card{display:block}.mockup{font-size:8px}.selection-bar{margin-top:16px;display:block}.selection-hint{display:block;margin-top:5px}.layer-strip{overflow:hidden}.layer{min-width:72px}.layer-strip i{display:none}.focus-actions{flex-wrap:wrap}.rail-layout{grid-template-columns:76px 1fr}}
+</style>
+<script>
+function toggleSelect(card){
+  document.querySelectorAll('.option-card').forEach(function(item){item.classList.remove('selected');item.querySelector('.choice-state').textContent='点击选择';});
+  card.classList.add('selected');
+  card.querySelector('.choice-state').textContent='已选择';
+  var choice=card.dataset.choice;
+  var labels={A:'方案 A · 横向层级条',B:'方案 B · 四张层级卡',C:'方案 C · 左侧层级轨道'};
+  document.getElementById('selected-name').textContent=labels[choice];
+  window.parent && window.parent.postMessage({type:'brainstorm-choice',choice:choice},'*');
+}
+</script>

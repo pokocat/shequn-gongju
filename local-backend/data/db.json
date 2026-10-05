@@ -1,0 +1,222 @@
+{
+  "members": [
+    {
+      "id": "member-demo-001",
+      "name": "演示主理人",
+      "memberStatus": "active",
+      "balance": 300,
+      "identity": "主理人",
+      "agentStatus": "none",
+      "trainingCompleted": true
+    },
+    {
+      "id": "member-demo-002",
+      "name": "演示团长",
+      "memberStatus": "active",
+      "balance": 180,
+      "identity": "团长",
+      "agentStatus": "active",
+      "trainingCompleted": true
+    },
+    {
+      "id": "member-demo-003",
+      "name": "演示代理",
+      "memberStatus": "active",
+      "balance": 260,
+      "identity": "代理",
+      "agentStatus": "active",
+      "trainingCompleted": true
+    },
+    {
+      "id": "member-demo-004",
+      "name": "待审核团长",
+      "memberStatus": "active",
+      "balance": 0,
+      "identity": "会员",
+      "agentStatus": "none",
+      "trainingCompleted": true
+    },
+    {
+      "id": "member-demo-005",
+      "name": "待审核代理",
+      "memberStatus": "active",
+      "balance": 0,
+      "identity": "会员",
+      "agentStatus": "none",
+      "trainingCompleted": true
+    },
+    {
+      "id": "member-demo-006",
+      "name": "非直属申请人",
+      "memberStatus": "active",
+      "balance": 0,
+      "identity": "会员",
+      "agentStatus": "none",
+      "trainingCompleted": true
+    }
+  ],
+  "inviteCodes": [
+    {
+      "code": "DEMO001",
+      "memberId": "member-demo-001"
+    },
+    {
+      "code": "DEMO002",
+      "memberId": "member-demo-002"
+    },
+    {
+      "code": "DEMO003",
+      "memberId": "member-demo-003"
+    }
+  ],
+  "inviteAttributions": [],
+  "inviteRelations": [
+    {
+      "id": "relation-demo-001",
+      "inviterId": "member-demo-001",
+      "inviteeId": "member-demo-002",
+      "status": "已激活",
+      "activatedAt": "2026-10-05T08:00:00.000Z"
+    },
+    {
+      "id": "relation-demo-002",
+      "inviterId": "member-demo-002",
+      "inviteeId": "member-demo-003",
+      "status": "已激活",
+      "activatedAt": "2026-10-05T08:00:00.000Z"
+    },
+    {
+      "id": "relation-demo-003",
+      "inviterId": "member-demo-003",
+      "inviteeId": "member-demo-004",
+      "status": "已激活",
+      "activatedAt": "2026-10-05T08:00:00.000Z"
+    },
+    {
+      "id": "relation-demo-004",
+      "inviterId": "member-demo-003",
+      "inviteeId": "member-demo-005",
+      "status": "已激活",
+      "activatedAt": "2026-10-05T08:00:00.000Z"
+    },
+    {
+      "id": "relation-demo-005",
+      "inviterId": "member-demo-001",
+      "inviteeId": "member-demo-006",
+      "status": "已激活",
+      "activatedAt": "2026-10-05T08:00:00.000Z"
+    }
+  ],
+  "inviteRewards": [],
+  "qualificationRules": {
+    "active": {
+      "mode": "A",
+      "requiredInvites": 0,
+      "trainingRequired": false,
+      "version": "V2026.10-A",
+      "effectiveAt": "2026-10-05T08:00:00.000Z"
+    },
+    "history": []
+  },
+  "agentApplications": [
+    {
+      "id": "application-demo-leader-direct-agent",
+      "memberId": "member-demo-004",
+      "sponsorId": "member-demo-003",
+      "identity": "团长",
+      "reason": "希望负责社群运营和会员服务",
+      "status": "审核中",
+      "qualification": {
+        "passed": true,
+        "mode": "A",
+        "ruleVersion": "V2026.10-A",
+        "summary": "当前规则下具备申请资格",
+        "invites": 0,
+        "requiredInvites": 0,
+        "trainingCompleted": true,
+        "identityOptions": [
+          "团长",
+          "代理"
+        ]
+      },
+      "ruleSnapshot": {
+        "mode": "A",
+        "requiredInvites": 0,
+        "trainingRequired": false,
+        "version": "V2026.10-A",
+        "effectiveAt": "2026-10-05T08:00:00.000Z"
+      },
+      "rejectReason": "",
+      "createdAt": "2026-10-05T08:00:00.000Z",
+      "updatedAt": "2026-10-05T08:00:00.000Z"
+    },
+    {
+      "id": "application-demo-agent-direct-agent",
+      "memberId": "member-demo-005",
+      "sponsorId": "member-demo-003",
+      "identity": "代理",
+      "reason": "申请成为低级别代理，协助发展会员",
+      "status": "审核中",
+      "qualification": {
+        "passed": true,
+        "mode": "A",
+        "ruleVersion": "V2026.10-A",
+        "summary": "当前规则下具备申请资格",
+        "invites": 0,
+        "requiredInvites": 0,
+        "trainingCompleted": true,
+        "identityOptions": [
+          "团长",
+          "代理"
+        ]
+      },
+      "ruleSnapshot": {
+        "mode": "A",
+        "requiredInvites": 0,
+        "trainingRequired": false,
+        "version": "V2026.10-A",
+        "effectiveAt": "2026-10-05T08:00:00.000Z"
+      },
+      "rejectReason": "",
+      "createdAt": "2026-10-05T08:00:00.000Z",
+      "updatedAt": "2026-10-05T08:00:00.000Z"
+    },
+    {
+      "id": "application-demo-leader-direct-leader",
+      "memberId": "member-demo-006",
+      "sponsorId": "member-demo-001",
+      "identity": "团长",
+      "reason": "申请负责新的社群小组",
+      "status": "审核中",
+      "qualification": {
+        "passed": true,
+        "mode": "A",
+        "ruleVersion": "V2026.10-A",
+        "summary": "当前规则下具备申请资格",
+        "invites": 0,
+        "requiredInvites": 0,
+        "trainingCompleted": true,
+        "identityOptions": [
+          "团长",
+          "代理"
+        ]
+      },
+      "ruleSnapshot": {
+        "mode": "A",
+        "requiredInvites": 0,
+        "trainingRequired": false,
+        "version": "V2026.10-A",
+        "effectiveAt": "2026-10-05T08:00:00.000Z"
+      },
+      "rejectReason": "",
+      "createdAt": "2026-10-05T08:00:00.000Z",
+      "updatedAt": "2026-10-05T08:00:00.000Z"
+    }
+  ],
+  "applicationReviews": [],
+  "contracts": [],
+  "payments": [],
+  "pendingRecoveries": [],
+  "auditLogs": [],
+  "idempotency": {}
+}

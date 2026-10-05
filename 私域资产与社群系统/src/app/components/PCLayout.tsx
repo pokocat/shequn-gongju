@@ -4,34 +4,33 @@ import {
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
   BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
-  Globe, Monitor, Smartphone, ChevronDown, Check, Store, BriefcaseBusiness
+  Globe, Monitor, Smartphone, ChevronDown, Check, Store, BriefcaseBusiness, Menu, X
 } from "lucide-react";
 import { S, useThemeSingleton, ThemeControls } from "../theme";
 import { useProjectContext } from "../App";
 
 type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
 
-// ─── 软圆角赛博朋克 · 柔和边框 ────────────────────────────────
 const navGroups = [
   { label: "工作台", items: [
-    { id: "users",      label: "总运营工作台", icon: User,            badge: null },
+    { id: "users",      label: "经营工作台",   icon: User,            badge: null },
     { id: "overview",   label: "跨项目总览",     icon: LayoutDashboard, badge: null },
   ]},
   { label: "客户与服务", items: [
     { id: "cs",         label: "服务资源与员工", icon: Headphones,      badge: null },
     { id: "tickets",    label: "工单中心",       icon: FileText,        badge: "12" },
   ]},
-  { label: "SCRM 业务模型", items: [
-    { id: "ecosystem",  label: "行业生态与角色关系", icon: Layers,       badge: null },
+  { label: "平台与生态", items: [
+    { id: "ecosystem",  label: "行业生态 / 平台管理", icon: Layers,       badge: null },
   ]},
   { label: "业务项目", items: [
-    { id: "orders",     label: "订单与履约",     icon: CreditCard,      badge: "3"  },
+    { id: "orders",     label: "订单与履约",     icon: CreditCard,      badge: "3" },
     { id: "channel",    label: "渠道与分销",     icon: Share2,          badge: null },
     { id: "cities",     label: "城市分站",       icon: MapPin,          badge: null },
   ]},
   { label: "资产与连接", items: [
-    { id: "wechat",      label: "账号资产中心",   icon: CreditCard,      badge: "2" },
-    { id: "capabilities", label: "业务能力中心",  icon: BriefcaseBusiness, badge: null },
+    { id: "wechat",      label: "账号资产中心",  icon: Shield,          badge: "2" },
+    { id: "capabilities", label: "业务能力中心", icon: BriefcaseBusiness, badge: null },
   ]},
   { label: "结算与治理", items: [
     { id: "commission", label: "佣金与结算",     icon: DollarSign,      badge: null },
@@ -61,7 +60,7 @@ const VIEW_MODES: VMItem[] = [
   { id: "landing",  label: "官网展示", short: "WEB",   desc: "公开官网 · 营销介绍页", icon: Globe,     accent: "#0ea5e9", onAccent: "#ffffff" },
   { id: "pc",       label: "PC 后台",  short: "PC",    desc: "工作台 · 全功能控制台", icon: Monitor,    accent: S.accent,   onAccent: S.onAccent },
   { id: "mobile",   label: "APP 预览", short: "APP",   desc: "会员小程序 · 私域用户端", icon: Smartphone, accent: "#22c55e", onAccent: "#14532d" },
-  { id: "zhuliren", label: "主理人",    short: "主理人", desc: "城市主理人 · 合伙人工作台", icon: Star,     accent: "#1e293b", onAccent: "#ffffff" },
+  { id: "zhuliren", label: "主理人",    short: "主理人", desc: "城市主理人 · 合伙人工作台", icon: Star,     accent: S.primaryDark, onAccent: "#ffffff" },
 ];
 
 function ViewModePicker({
@@ -102,7 +101,7 @@ function ViewModePicker({
         aria-expanded={open}
         aria-controls="view-mode-picker-menu"
         aria-label={`视图：${current.label} · 点击切换`}
-        title="切换视图 · WEB / PC / APP / 主理人"
+        title="切换工作视图 · 官网 / PC / APP / 主理人"
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-1.5 pr-1 transition-all duration-200 hover:-translate-y-0.5"
         style={{
@@ -120,7 +119,7 @@ function ViewModePicker({
           fontFamily: "monospace",
         }}
       >
-        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: S.muted, userSelect: "none" }}>VIEW</span>
+        <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: S.muted, userSelect: "none" }}>视图</span>
         <span
           style={{
             display: "inline-flex", alignItems: "center", gap: 4,
@@ -231,67 +230,94 @@ interface PCLayoutProps {
 export default function PCLayout({
  view, selectView, activeModule, onModuleChange, children }: PCLayoutProps) {
   useThemeSingleton();
-  const { platform, project, setPlatform, setProject, projectsByPlatform } = useProjectContext();
+  const { platform, project, workspaceContext, setPlatform, setProject, projectsByPlatform } = useProjectContext();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isCompactViewport, setIsCompactViewport] = useState(() => typeof window !== "undefined" && window.innerWidth < 980);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const activeItem = navItems.find(i => i.id === activeModule);
+  const sidebarCollapsed = isSidebarCollapsed || isCompactViewport;
+
+  useEffect(() => {
+    const syncViewport = () => {
+      const compact = window.innerWidth < 980;
+      setIsCompactViewport(compact);
+      if (!compact) setMobileNavOpen(false);
+    };
+    window.addEventListener("resize", syncViewport);
+    return () => window.removeEventListener("resize", syncViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!mobileNavOpen) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setMobileNavOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [mobileNavOpen]);
+
+  const handleModuleChange = (id: string) => {
+    onModuleChange(id);
+    setMobileNavOpen(false);
+  };
 
   return (
     <div className="flex h-full" style={{ background: S.bg }}>
       {/* ── SIDEBAR ─────────────────────────────────────────── */}
-      <div className="flex-shrink-0 flex flex-col transition-all duration-200" style={{ width: isSidebarCollapsed ? 64 : 220, background: S.surface, borderRight: `1px solid ${S.border}` }}>
+      {isCompactViewport && mobileNavOpen && <button type="button" aria-label="关闭导航" className="fixed inset-0 z-40 bg-slate-950/25" onClick={() => setMobileNavOpen(false)} />}
+      <div className={`${isCompactViewport ? "fixed inset-y-0 left-0 z-50 w-[min(84vw,280px)]" : "relative flex-shrink-0"} flex flex-col transition-transform duration-200 ${isCompactViewport && !mobileNavOpen ? "-translate-x-full" : "translate-x-0"}`} style={{ width: isCompactViewport ? undefined : sidebarCollapsed ? 64 : 220, background: S.surface, borderRight: `1px solid ${S.border}`, boxShadow: isCompactViewport ? "12px 0 30px rgba(15,23,42,.12)" : "none" }}>
 
         {/* Logo */}
-        <div className={isSidebarCollapsed ? "h-14 flex items-center justify-center gap-1 flex-shrink-0" : "h-14 flex items-center px-4 gap-3 flex-shrink-0"} style={{ borderBottom: `1px solid ${S.border}` }}>
+        <div className={sidebarCollapsed ? "h-14 flex items-center justify-center gap-1 flex-shrink-0" : "h-14 flex items-center px-4 gap-3 flex-shrink-0"} style={{ borderBottom: `1px solid ${S.border}` }}>
           <div className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, borderRadius: S.radiusSm }}>
             <Zap size={15} style={{ color: S.onPrimary }} />
           </div>
-          {!isSidebarCollapsed && <div className="min-w-0">
-            <div className="font-black tracking-wide" style={{ fontSize: "14px", color: S.text, fontFamily: "monospace", letterSpacing: "0.08em" }}>聚域</div>
-            <div style={{ color: S.muted, fontSize: "9px", fontFamily: "monospace", letterSpacing: "0.1em" }}>PRIVATE DOMAIN OS</div>
+          {!sidebarCollapsed && <div className="min-w-0">
+            <div className="font-black tracking-wide" style={{ fontSize: "14px", color: S.text, letterSpacing: "0.08em" }}>聚域</div>
+            <div style={{ color: S.muted, fontSize: "9px", letterSpacing: "0.1em" }}>PRIVATE DOMAIN OPERATIONS</div>
           </div>}
           <button
             type="button"
-            title={isSidebarCollapsed ? "展开导航栏" : "收起导航栏"}
-            aria-label={isSidebarCollapsed ? "展开导航栏" : "收起导航栏"}
+            title={sidebarCollapsed ? "展开导航栏" : "收起导航栏"}
+            aria-label={sidebarCollapsed ? "展开导航栏" : "收起导航栏"}
             onClick={() => setIsSidebarCollapsed(value => !value)}
             className="w-6 h-6 flex items-center justify-center flex-shrink-0"
-            style={{ color: S.muted, marginLeft: isSidebarCollapsed ? 0 : "auto" }}
+            style={{ color: S.muted, marginLeft: sidebarCollapsed ? 0 : "auto" }}
           >
-            {isSidebarCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
+            {sidebarCollapsed ? <PanelLeftOpen size={15} /> : <PanelLeftClose size={15} />}
           </button>
         </div>
 
         {/* Risk alert */}
-        {!isSidebarCollapsed && <div className="mx-3 mt-3 px-3 py-1.5 flex items-center gap-2" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>
+        {!sidebarCollapsed && <div className="mx-3 mt-3 px-3 py-1.5 flex items-center gap-2" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>
           <AlertTriangle size={11} style={{ color: "#5a6e00", flexShrink: 0 }} />
-          <span style={{ color: "#5a6e00", fontSize: "10px", fontFamily: "monospace", fontWeight: 700 }}>2 RISK ITEMS</span>
+          <span style={{ color: S.warning, fontSize: "10px", fontWeight: 700 }}>2 项运营提醒</span>
         </div>}
 
         {/* Nav */}
         <nav className="flex-1 py-2 overflow-y-auto px-2">
           {navGroups.map(group => (
             <div key={group.label}>
-              {!isSidebarCollapsed && <div style={{ color: S.mutedLight, fontSize: "9px", padding: "10px 10px 3px", letterSpacing: "0.14em", fontFamily: "monospace", fontWeight: 700 }}>{group.label}</div>}
+              {!sidebarCollapsed && <div style={{ color: S.mutedLight, fontSize: "9px", padding: "10px 10px 3px", letterSpacing: "0.14em", fontFamily: "monospace", fontWeight: 700 }}>{group.label}</div>}
               {group.items.map(item => {
                 const Icon = item.icon;
                 const isActive = activeModule === item.id;
                 return (
                   <button
                     key={item.id}
-                    onClick={() => onModuleChange(item.id)}
-                    className={isSidebarCollapsed ? "w-full flex items-center justify-center px-0 py-2 text-left transition-all mb-0.5" : "w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all mb-0.5"}
+                    onClick={() => handleModuleChange(item.id)}
+                    className={sidebarCollapsed ? "w-full flex items-center justify-center px-0 py-2 text-left transition-all mb-0.5" : "w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all mb-0.5"}
                     style={{
-                      background: isActive ? S.accent : "transparent",
+                      background: isActive ? S.primary : "transparent",
                       borderRadius: S.radiusSm,
-                      color: isActive ? "#ffffff" : S.muted,
+                      color: isActive ? S.onPrimary : S.muted,
                       fontSize: "12px",
-                      fontFamily: "monospace",
                       fontWeight: isActive ? 700 : 400,
                     }}
                   >
                     <Icon size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.6 }} />
-                    {!isSidebarCollapsed && <span className="flex-1 truncate">{item.label}</span>}
-                    {!isSidebarCollapsed && item.badge && (
+                    {!sidebarCollapsed && <span className="flex-1 truncate">{item.label}</span>}
+                    {!sidebarCollapsed && item.badge && (
                       <span className="px-1.5 py-0.5 font-bold" style={{ background: isActive ? "rgba(0,0,0,0.15)" : S.accent, color: isActive ? "#ffffff" : S.onAccent, fontSize: "9px", borderRadius: "4px", fontFamily: "monospace" }}>
                         {item.badge}
                       </span>
@@ -304,16 +330,16 @@ export default function PCLayout({
         </nav>
 
         {/* User */}
-        <div className={isSidebarCollapsed ? "p-2 mb-2 flex-shrink-0" : "p-3 mx-2 mb-2 flex-shrink-0"} style={{ borderTop: `1px solid ${S.border}` }}>
+        <div className={sidebarCollapsed ? "p-2 mb-2 flex-shrink-0" : "p-3 mx-2 mb-2 flex-shrink-0"} style={{ borderTop: `1px solid ${S.border}` }}>
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}>
+            <div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: S.primaryLight, color: S.primaryDark, borderRadius: S.radiusSm }}>
               创
             </div>
-            {!isSidebarCollapsed && <div className="flex-1 min-w-0">
-              <div className="font-bold truncate" style={{ fontSize: "11px", color: S.text, fontFamily: "monospace" }}>王总·创始人</div>
-              <div style={{ color: S.muted, fontSize: "9px", fontFamily: "monospace" }}>ROOT ACCESS</div>
+            {!sidebarCollapsed && <div className="flex-1 min-w-0">
+              <div className="font-bold truncate" style={{ fontSize: "11px", color: S.text }}>王总·创始人</div>
+              <div style={{ color: S.muted, fontSize: "9px" }}>主理人</div>
             </div>}
-            {!isSidebarCollapsed && <LogOut size={12} style={{ color: S.mutedLight, cursor: "pointer", flexShrink: 0 }} />}
+            {!sidebarCollapsed && <LogOut size={12} style={{ color: S.mutedLight, cursor: "pointer", flexShrink: 0 }} />}
           </div>
         </div>
       </div>
@@ -321,23 +347,29 @@ export default function PCLayout({
       {/* ── MAIN ─────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <div className="h-14 flex items-center px-6 gap-4 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
+        <div className="min-h-14 flex items-center px-3 sm:px-5 gap-2 sm:gap-3 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
+          {isCompactViewport && <button type="button" aria-label={mobileNavOpen ? "关闭导航" : "打开导航"} title={mobileNavOpen ? "关闭导航" : "打开导航"} onClick={() => setMobileNavOpen(value => !value)} className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.textSec }}>{mobileNavOpen ? <X size={16} /> : <Menu size={16} />}</button>}
           {/* 视图切换：浮动下拉选择器 */}
           <ViewModePicker view={view} setView={selectView} />
 
-          <div className="flex items-center gap-1.5 flex-shrink-0" aria-label="平台项目切换">
-            <select value={platform} onChange={event => setPlatform(event.target.value)} aria-label="切换平台" className="max-w-[132px] px-2 py-1.5 text-[10px] font-bold outline-none" style={{ background: S.bg, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}>
-              {Object.keys(projectsByPlatform).map(item => <option key={item}>{item}</option>)}
-            </select>
-            <span className="text-[10px]" style={{ color: S.mutedLight }}>/</span>
-            <select value={project} onChange={event => setProject(event.target.value)} aria-label="切换项目" className="max-w-[112px] px-2 py-1.5 text-[10px] font-bold outline-none" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, color: S.textSec, borderRadius: S.radiusSm }}>
-              {(projectsByPlatform[platform] || []).map(item => <option key={item}>{item}</option>)}
-            </select>
-          </div>
+          {workspaceContext === "platform" ? (
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink min-w-0" aria-label="当前平台">
+              <span className="px-1.5 sm:px-2 py-1.5 text-[10px] font-bold truncate max-w-[132px]" style={{ background: S.bg, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}>{platform}</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-1 sm:gap-1.5 flex-shrink min-w-0" aria-label="平台项目切换">
+              <select value={platform} onChange={event => setPlatform(event.target.value)} aria-label="切换平台" className="max-w-[96px] sm:max-w-[132px] min-w-0 px-1.5 sm:px-2 py-1.5 text-[10px] font-bold outline-none" style={{ background: S.bg, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }}>
+                {Object.keys(projectsByPlatform).map(item => <option key={item}>{item}</option>)}</select>
+              <span className="text-[10px] flex-shrink-0" style={{ color: S.mutedLight }}>/</span>
+              <select value={project} onChange={event => setProject(event.target.value)} aria-label="切换项目" className="max-w-[86px] sm:max-w-[112px] min-w-0 px-1.5 sm:px-2 py-1.5 text-[10px] font-bold outline-none" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, color: S.textSec, borderRadius: S.radiusSm }}>
+                {(projectsByPlatform[platform] || []).map(item => <option key={item}>{item}</option>)}
+              </select>
+            </div>
+          )}
 
           {/* Breadcrumb */}
           <div className="hidden xl:flex items-center gap-1.5 text-xs flex-shrink-0" style={{ fontFamily: "monospace" }}>
-            {[platform, project, activeItem?.label].map((seg, i, arr) => (
+            {(workspaceContext === "platform" ? [platform, activeItem?.label] : [platform, project, activeItem?.label]).map((seg, i, arr) => (
               <span key={i} className="flex items-center gap-1.5">
                 <span className="px-2 py-0.5 font-bold text-xs" style={{
                   background: i === arr.length - 1 ? S.accent : "rgba(15,23,42,0.06)",
@@ -353,10 +385,10 @@ export default function PCLayout({
           </div>
 
           {/* Search */}
-          <div className="flex-1 max-w-sm ml-4">
+          <div className="flex-1 min-w-0 max-w-sm ml-1 sm:ml-2">
             <div className="flex items-center gap-2 px-3 py-1.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
               <Search size={12} style={{ color: S.muted }} />
-              <input className="bg-transparent outline-none flex-1 text-xs" style={{ color: S.text, fontFamily: "monospace" }} placeholder="SEARCH..." />
+              <input className="bg-transparent outline-none flex-1 text-xs" style={{ color: S.text }} placeholder="搜索工作台" />
             </div>
           </div>
 
@@ -368,7 +400,7 @@ export default function PCLayout({
               <div className="absolute top-0 right-0 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center font-bold" style={{ background: S.accent, color: S.onPrimary, fontSize: "8px", borderRadius: "4px", fontFamily: "monospace" }}>18</div>
             </button>
             <Settings size={15} style={{ color: S.muted, cursor: "pointer" }} />
-            <div className="px-3 py-1 font-bold" style={{ background: "#1e293b", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm, fontFamily: "monospace", letterSpacing: "0.04em" }}>
+            <div className="px-3 py-1 font-bold" style={{ background: S.primaryLight, color: S.primaryDark, fontSize: "10px", borderRadius: S.radiusSm, letterSpacing: "0.04em" }}>
               2026-07-05
             </div>
           </div>

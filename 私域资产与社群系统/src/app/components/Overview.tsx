@@ -1,9 +1,6 @@
 import { useState } from "react";
 import { TrendingUp, Database, Users2, UserPlus, AlertTriangle, Zap, CheckCircle, Clock, ArrowUp, ArrowDown, MessageCircle, ChevronRight, X } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
-
-// ─── Soft rounded cyberpunk constants ────────────────────────
-// ─── Recharts-free charts ────────────────────────────────────
 function SVGLineChart({ data, keys, colors, height = 160 }: { data: any[]; keys: string[]; colors: string[]; height?: number }) {
   const W = 500; const H = height; const PAD = { top: 8, right: 8, bottom: 22, left: 32 };
   const innerW = W - PAD.left - PAD.right; const innerH = H - PAD.top - PAD.bottom;
@@ -76,7 +73,7 @@ interface AISuggestion {
 }
 
 const initialSuggestions: AISuggestion[] = [
-  { id: 1, icon: "!", title: "北京PRO会员群01 接近满员", desc: "当前 487/500，建议立即建立备用群", level: "high", action: "处理", targetModule: "community" },
+  { id: 1, icon: "!", title: "北京PRO会员群01 接近满员", desc: "当前 487/500，建议立即建立备用群", level: "high", action: "处理", targetModule: "ecosystem" },
   { id: 2, icon: "→", title: "上海有 12 名用户待分配群组", desc: "建议优先分配至上海体验官群02", level: "medium", action: "分配", targetModule: "users" },
   { id: 3, icon: "!", title: "wx_gz_01 微信已30天未登录", desc: "存在账号封禁风险，请尽快处理", level: "high", action: "登录", targetModule: "wechat" },
   { id: 4, icon: "↑", title: "本周订单量较上周提升 28%", desc: "成都新增用户增长明显，建议增加服务资源", level: "info", action: "查看", targetModule: "reports" },
@@ -93,7 +90,7 @@ interface TodoItem {
 
 const initialTodos: TodoItem[] = [
   { id: 1, text: "审核退款申请 3 条", urgent: true, time: "09:30", done: false, targetModule: "orders" },
-  { id: 2, text: "更新广州代理群群码", urgent: false, time: "11:00", done: false, targetModule: "community" },
+  { id: 2, text: "更新广州代理群群码", urgent: false, time: "11:00", done: false, targetModule: "ecosystem" },
   { id: 3, text: "完成新用户分群 8 人", urgent: true, time: "12:00", done: false, targetModule: "users" },
   { id: 4, text: "工单回访：陈美玲", urgent: false, time: "14:00", done: false, targetModule: "tickets" },
   { id: 5, text: "城市分站月报审核", urgent: false, time: "16:00", done: false, targetModule: "reports" },
@@ -111,7 +108,7 @@ interface RiskItem {
 const initialRisks: RiskItem[] = [
   { id: 1, text: "王建国退款申请超时 2h，SLA 风险", level: "high", delta: "+2h", action: "立即处理", targetModule: "orders" },
   { id: 2, text: "wx_gz_01 微信异常，30天未登录", level: "high", delta: "30d", action: "查看工具", targetModule: "wechat" },
-  { id: 3, text: "深圳代理群接近满员 (290/300)", level: "warning", delta: "97%", action: "扩容", targetModule: "community" },
+  { id: 3, text: "深圳代理群接近满员 (290/300)", level: "warning", delta: "97%", action: "扩容", targetModule: "ecosystem" },
 ];
 
 interface OverviewProps {
@@ -175,29 +172,29 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
   }
 
   const kpis = [
-    { icon: Database,      label: "// ACCOUNT ASSETS", value: "1,247", delta: "12 本月新增", deltaDir: "up" as const,   accentColor: S.accent, targetModule: "accounts" },
-    { icon: MessageCircle, label: "// ACTIVE WECHATS", value: "68",    delta: "3 待交接",  deltaDir: "down" as const, accentColor: "#3b82f6", targetModule: "wechat" },
-    { icon: Users2,        label: "// ACTIVE GROUPS",   value: "34",    delta: "2 接近满员", deltaDir: "down" as const, accentColor: "#3b82f6", targetModule: "community" },
-    { icon: UserPlus,      label: "// PENDING ASSIGN",  value: "23",    delta: "8 今日新增", deltaDir: "up" as const,   accentColor: S.accent, targetModule: "users" },
+    { icon: Database,      label: "会员关系总数", value: "1,247", delta: "12 本月新增", deltaDir: "up" as const, accentColor: S.primary, targetModule: "users" },
+    { icon: MessageCircle, label: "待服务会员",   value: "68",    delta: "3 待交接",  deltaDir: "down" as const, accentColor: S.primary, targetModule: "users" },
+    { icon: Users2,        label: "服务群运行中", value: "34",    delta: "2 接近满员", deltaDir: "down" as const, accentColor: S.primary, targetModule: "ecosystem" },
+    { icon: UserPlus,      label: "待分配任务",   value: "23",    delta: "8 今日新增", deltaDir: "up" as const, accentColor: S.primary, targetModule: "users" },
   ];
 
   const completedCount = todos.filter(t => t.done).length;
   const highRiskCount = risks.filter(r => r.level === "high").length;
 
   return (
-    <div className="p-6 space-y-5 relative" style={{ background: S.bg, minHeight: "100%", fontFamily: "monospace" }}>
+    <div className="p-6 space-y-5 relative" style={{ background: S.bg, minHeight: "100%" }}>
       {/* Toast */}
       {toast && (
-        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, boxShadow: "0 8px 24px rgba(0,0,0,0.2)" }}>
+        <div className="fixed top-4 right-4 z-50 px-4 py-2.5 text-xs font-bold" style={{ background: S.surface, color: S.primaryDark, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, boxShadow: S.shadow }}>
           {toast}
         </div>
       )}
 
       {/* Risk bar - real-time with action */}
-      <div className="p-3 flex items-center gap-4 flex-wrap" style={{ background: "#1e293b", border: `1px solid ${S.accent}`, borderRadius: S.radiusSm }}>
+      <div className="p-3 flex items-center gap-4 flex-wrap" style={{ background: S.warningBg, border: `1px solid ${S.warning}`, borderRadius: S.radius }}>
         <div className="flex items-center gap-2">
           <AlertTriangle size={13} style={{ color: S.accent }} />
-          <span className="text-xs font-bold font-mono tracking-wider" style={{ color: S.accent }}>// HIGH RISK ALERT</span>
+          <span className="text-xs font-bold tracking-wider" style={{ color: S.warning }}>运营提醒</span>
           <span className="text-xs font-bold px-1.5 py-0.5" style={{ background: highRiskCount > 0 ? "#cc0000" : S.accent, color: highRiskCount > 0 ? "#ffffff" : S.onAccent, borderRadius: "4px" }}>{risks.length}</span>
         </div>
         <div className="flex gap-3 flex-wrap">
@@ -216,8 +213,8 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
             </div>
           ))}
         </div>
-        <button className="ml-auto text-xs font-mono font-bold px-3 py-1 flex items-center gap-1" style={{ background: S.accent, color: S.onPrimary, borderRadius: "6px" }} onClick={handleViewAllRisks}>
-          VIEW ALL <ChevronRight size={10} className="inline" />
+        <button className="ml-auto text-xs font-bold px-3 py-1 flex items-center gap-1" style={{ background: S.warning, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={handleViewAllRisks}>
+          查看全部 <ChevronRight size={10} className="inline" />
         </button>
       </div>
 
@@ -233,11 +230,11 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
               onClick={() => navigate(k.targetModule)}
             >
               <div className="flex items-center justify-between">
-                <div className="w-8 h-8 flex items-center justify-center" style={{ background: k.accentColor === S.accent ? S.accent : "#1e293b", borderRadius: S.radiusSm }}>
-                  <Icon size={16} style={{ color: k.accentColor === S.accent ? "#ffffff" : S.accent }} />
+                <div className="w-8 h-8 flex items-center justify-center" style={{ background: k.accentColor, borderRadius: S.radiusSm }}>
+                  <Icon size={16} style={{ color: S.onPrimary }} />
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="flex items-center gap-1 text-xs font-mono font-bold" style={{ color: k.deltaDir === "up" ? "#1e293b" : "#e53e3e" }}>
+                  <div className="flex items-center gap-1 text-xs font-mono font-bold" style={{ color: k.deltaDir === "up" ? S.primaryDark : S.danger }}>
                     {k.deltaDir === "up" ? <ArrowUp size={11} /> : <ArrowDown size={11} />}{k.delta}
                   </div>
                   <ChevronRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: S.muted }} />
@@ -257,19 +254,19 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
         <div className="col-span-2 p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div className="flex items-center justify-between mb-4">
             <div>
-              <div className="text-xs font-bold font-mono tracking-wider" style={{ color: S.text }}>// USER_GROWTH_7D</div>
-              <div className="text-xs font-mono mt-0.5" style={{ color: S.muted }}>近 7 日新增用户 &amp; 订单</div>
+              <div className="text-xs font-semibold" style={{ color: S.text }}>会员关系趋势</div>
+              <div className="text-xs mt-0.5" style={{ color: S.muted }}>近 7 日会员新增与服务订单</div>
             </div>
             <div className="flex gap-4 text-xs font-mono">
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3" style={{ background: S.accent, borderRadius: "3px" }} /><span style={{ color: S.muted }}>USERS</span></div>
-              <div className="flex items-center gap-1.5"><div className="w-3 h-3" style={{ background: S.text, borderRadius: "3px" }} /><span style={{ color: S.muted }}>ORDERS</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3" style={{ background: S.accent, borderRadius: "3px" }} /><span style={{ color: S.muted }}>会员</span></div>
+              <div className="flex items-center gap-1.5"><div className="w-3 h-3" style={{ background: S.text, borderRadius: "3px" }} /><span style={{ color: S.muted }}>订单</span></div>
             </div>
           </div>
           <SVGLineChart data={userGrowth} keys={["users","orders"]} colors={[S.accent, S.text]} height={160} />
         </div>
         <div className="p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-          <div className="text-xs font-bold font-mono tracking-wider mb-1" style={{ color: S.text }}>// CITY_MEMBERS</div>
-          <div className="text-xs font-mono mb-4" style={{ color: S.muted }}>各城市 PRO 会员数量</div>
+          <div className="text-xs font-semibold mb-1" style={{ color: S.text }}>城市会员服务</div>
+          <div className="text-xs mb-4" style={{ color: S.muted }}>各城市会员数量</div>
           <CSSBarChart data={cityData} dataKey="members" color={S.accent} />
         </div>
       </div>
@@ -282,28 +279,23 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
             <div className="w-5 h-5 flex items-center justify-center" style={{ background: S.accent, borderRadius: S.radiusSm }}>
               <Zap size={12} style={{ color: S.onPrimary }} />
             </div>
-            <span className="text-xs font-bold font-mono tracking-wider" style={{ color: S.text }}>// AI_SUGGESTIONS</span>
-            <span className="ml-auto text-xs font-mono px-2 py-0.5" style={{ background: "#1e293b", color: S.accent, borderRadius: "6px" }}>{suggestions.length} 待处理</span>
+            <span className="text-xs font-semibold" style={{ color: S.text }}>AI 服务建议</span>
+            <span className="ml-auto text-xs px-2 py-0.5" style={{ background: S.primaryLight, color: S.primaryDark, borderRadius: "999px" }}>{suggestions.length} 待处理</span>
           </div>
           <div className="space-y-2">
             {suggestions.map(s => {
               const isHigh = s.level === "high";
               return (
-                <div key={s.id} className="flex items-start gap-3 px-3 py-2.5 group transition-all" style={{ background: isHigh ? "#1e293b" : S.bg, border: `1px solid ${isHigh ? S.accent : S.border}`, borderRadius: S.radiusSm }}>
-                  <span className="font-bold font-mono flex-shrink-0 mt-0.5" style={{ color: isHigh ? S.accent : s.level === "medium" ? "#b45309" : S.muted, fontSize: "14px" }}>{s.icon}</span>
+                <div key={s.id} className="flex items-start gap-3 px-3 py-2.5 group transition-all" style={{ background: isHigh ? S.warningBg : S.bg, border: `1px solid ${isHigh ? S.warning : S.border}`, borderRadius: S.radiusSm }}>
+                  <span className="font-bold font-mono flex-shrink-0 mt-0.5" style={{ color: isHigh ? S.warning : s.level === "medium" ? S.warning : S.muted, fontSize: "14px" }}>{s.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs font-bold" style={{ color: isHigh ? S.accent : S.text }}>{s.title}</div>
+                    <div className="text-xs font-bold" style={{ color: isHigh ? S.warning : S.text }}>{s.title}</div>
                     <div className="text-xs font-mono mt-0.5" style={{ color: isHigh ? "#888" : S.muted }}>{s.desc}</div>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <button
                       className="text-xs font-bold font-mono px-2.5 py-1 transition-all"
-                      style={{
-                        background: s.level === "high" ? S.accent : "#1e293b",
-                        color: s.level === "high" ? "#ffffff" : S.accent,
-                        borderRadius: "6px",
-                        border: "none",
-                      }}
+                      style={{ background: s.level === "high" ? S.warning : S.primaryLight, color: s.level === "high" ? S.onPrimary : S.primaryDark, borderRadius: S.radiusSm, border: "none" }}
                       onClick={() => handleSuggestionAction(s.id, s.action, s.targetModule)}
                     >
                       {s.action}
@@ -333,7 +325,7 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
         <div className="p-5 flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div className="flex items-center gap-2 mb-4">
             <CheckCircle size={13} style={{ color: S.accent }} />
-            <span className="text-xs font-bold font-mono tracking-wider" style={{ color: S.text }}>// TASKS</span>
+            <span className="text-xs font-semibold" style={{ color: S.text }}>今日工作清单</span>
             <span className="ml-auto text-xs font-mono font-bold" style={{ color: S.muted }}>{completedCount}/{todos.length}</span>
           </div>
           <div className="space-y-0 flex-1">
@@ -365,14 +357,14 @@ const [suggestions, setSuggestions] = useState<AISuggestion[]>(initialSuggestion
           <div className="flex gap-2 mt-3">
             <button
               className="flex-1 py-2 text-xs font-bold font-mono tracking-wider transition-all"
-              style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, border: "none" }}
+              style={{ background: S.primaryLight, color: S.primaryDark, borderRadius: S.radiusSm, border: "none" }}
               onClick={() => navigate("tickets")}
             >
               工单中心 →
             </button>
             <button
               className="flex-1 py-2 text-xs font-bold font-mono tracking-wider transition-all"
-              style={{ background: completedCount > 0 ? S.accent : "#f1f5f9", color: completedCount > 0 ? "#ffffff" : S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}
+              style={{ background: completedCount > 0 ? S.primary : S.bg, color: completedCount > 0 ? S.onPrimary : S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}
               disabled={completedCount === 0}
               onClick={() => { setTodos(prev => prev.map(t => ({ ...t, done: false }))); showToast("已重置所有任务"); }}
             >

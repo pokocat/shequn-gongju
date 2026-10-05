@@ -303,7 +303,7 @@ function readStoredId(): ThemeId {
     const v = localStorage.getItem(ID_KEY);
     if (v && (v === "neon" || v === "sunset" || v === "mint" || v === "obsidian" || v === "acid")) return v;
   } catch {}
-  return "sunset";
+  return "mint";
 }
 function readStoredMode(): DarkMode {
   try {

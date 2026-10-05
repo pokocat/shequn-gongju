@@ -225,6 +225,12 @@ export const canViewMemberNetworkEntity = (
   entityId: string,
   relationType: MemberRelationType,
 ) => {
+  if (relationType === "direct_ownership") {
+    return (
+      scope.directLeaderIds.includes(entityId) ||
+      scope.directAgentIds.includes(entityId)
+    );
+  }
   if (relationType === "operation") {
     return scope.directCommunityIds.includes(entityId);
   }

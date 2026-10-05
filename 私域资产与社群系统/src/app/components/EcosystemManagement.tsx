@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { ChevronRight, Globe, Layers, Zap, TrendingUp, Plus, Settings, ArrowRight, Package, LayoutDashboard, CheckCircle, X, Save, ShieldCheck, MessageSquare, Eye, EyeOff, Clock, Building2, UsersRound, Workflow, SlidersHorizontal, AlertTriangle, Radio, Phone, UserPlus, Filter, Share2, ThumbsUp, ThumbsDown, Search, Download, ChevronDown, ChevronUp, Square, CheckSquare, History, MapPin, ArrowLeftRight, XCircle, Check, RotateCcw, Info, FileSpreadsheet } from "lucide-react";
-import { defaultGroupTypeRules, type GroupTypeRule } from "../data/projectGroupRules";
-import { registerProjectRules, saveProjectRules, useCommunityData } from "../data/communityDataStore";
-import { useTools, useAccounts, useInvites, useApprovals } from "../App";
+import { ChevronRight, Globe, Layers, Zap, TrendingUp, Plus, Settings, ArrowRight, Package, LayoutDashboard, CheckCircle, X, Save, ShieldCheck, MessageSquare, Eye, EyeOff, Clock, Building2, Users, UsersRound, Workflow, SlidersHorizontal, AlertTriangle, Radio, Phone, UserPlus, Filter, Share2, ThumbsUp, ThumbsDown, Search, Download, ChevronDown, ChevronUp, Square, CheckSquare, History, MapPin, ArrowLeftRight, XCircle, Check, RotateCcw, Info, FileSpreadsheet } from "lucide-react";
+import { getGroupRulesForProject, type GroupTypeRule } from "../data/projectGroupRules";
+import { getCommunityScopeKey, registerScopeRules, saveScopeRules, useCommunityData } from "../data/communityDataStore";
+import { useTools, useAccounts, useInvites, useApprovals, useProjectContext } from "../App";
 import type { CommunicationTool } from "../data/communicationTools";
 import type { IdentityRole, SystemAccount, ScopeTypeLabelMap, BindingStatus, AccountOperation } from "../data/accountTypes";
 import { roleKeyMeta, buildScopeTypeLabelMap, mockAccounts as defaultAccounts, bindingStatusMeta, availableProjects } from "../data/accountTypes";
@@ -11,6 +11,7 @@ import { inviteStatusMeta } from "../data/inviteRecords";
 import { createApproval } from "../data/approvalTypes";
 import InviteDrawer from "./InviteDrawer";
 import InviteReviewDrawer from "./InviteReviewDrawer";
+import ProjectCommunitySystem from "./ProjectCommunitySystem";
 import { S, useThemeSingleton } from "../theme";
 import { memberLevelOptions } from "../data/levelConfig";
 // ─── 四层架构定义（工厂函数，counts 动态联动） ────────────────
@@ -22,12 +23,12 @@ function buildTiers(c: TierCounts) {
       level: 1,
       label: "超级生态",
       icon: Zap,
-      desc: "最顶层的生态体系，统一管理所有下属生态、SaaS 系统、平台和资源。拥有全局数据视角和最高权限。",
+      desc: "最顶层的生态体系，统一管理所有下属生态、SaaS 合作伙伴、平台和资源。拥有全局数据视角和最高权限。",
       role: "平台创始人 / 超级管理员",
       count: 1,
       metrics: [
         { label: "下属生态数", value: String(c.eco) },
-        { label: "SaaS 系统数", value: String(c.saas) },
+        { label: "SaaS 合作伙伴数", value: String(c.saas) },
         { label: "平台数",    value: String(c.platforms) },
         { label: "项目总数",   value: String(c.projects) },
       ],
@@ -37,11 +38,11 @@ function buildTiers(c: TierCounts) {
       level: 2,
       label: "生态",
       icon: Globe,
-      desc: "按行业垂直划分的生态体系，如健康医药美业、宠物、知识付费、教育等。每个生态聚焦特定行业场景，下辖多个SaaS 系统和资源池，形成行业闭环。",
+      desc: "按行业垂直划分的生态体系，如健康医药美业、宠物、知识付费、教育等。每个生态聚焦特定行业场景，下辖多个 SaaS 合作伙伴和资源池，形成行业闭环。",
       role: "生态负责人 / 联合创始人",
       count: c.eco,
       metrics: [
-        { label: "下属SaaS 系统", value: String(c.saas) },
+        { label: "下属 SaaS 合作伙伴", value: String(c.saas) },
         { label: "招募平台",    value: String(c.platforms) },
         { label: "生态会员",    value: c.users.toLocaleString() },
         { label: "月营收",      value: "¥84万" },
@@ -50,10 +51,10 @@ function buildTiers(c: TierCounts) {
     {
       id: "saas",
       level: 3,
-      label: "SaaS",
+      label: "SaaS 合作伙伴",
       icon: Package,
-      desc: "生态下的SaaS 系统，可招募多个平台。作为平台的上一层系统，统一管理平台权益、账号资产、会员体系与资源调配，向平台下发能力与权益。",
-      role: "SaaS 系统负责人 / SaaS 运营",
+      desc: "生态下的 SaaS 合作伙伴，负责发展多个平台并提供能力与运营支持。",
+      role: "SaaS 合作伙伴负责人 / SaaS 合作伙伴运营",
       count: c.saas,
       metrics: [
         { label: "招募平台数", value: String(c.platforms) },
@@ -67,7 +68,7 @@ function buildTiers(c: TierCounts) {
       level: 4,
       label: "平台",
       icon: Building2,
-      desc: "由SaaS 系统招募的运营实体，每个平台管理下辖多个运营项目。拥有独立的运营团队、资源池和运营数据视角，通过上层SaaS 系统统一管控。",
+      desc: "由 SaaS 合作伙伴发展的运营实体，每个平台管理下辖多个运营项目。拥有独立的运营团队、资源池和运营数据视角，获得上层合作伙伴的能力与运营支持。",
       role: "平台管理员 / 平台运营",
       count: c.platforms,
       metrics: [
@@ -92,33 +93,26 @@ const ecosystems = [
   { id: 4, name: "教育生态",        desc: "在线教育、实体培训、教研、家校互通等教育场景生态",                             platforms: 2, projects: 8,  members: 2050, revenue: "¥15万/月", status: "孵化中", company: { name: "育才（成都）教育服务有限公司", creditCode: "91510104MA6XYZ7890", legalPerson: "郑雨桐", contactName: "赵文轩", contactPhone: "13800000003", region: "四川省/成都市", bankName: "中国农业银行成都分行", bankAccount: "6228 4807 0055 6677" } as CompanyInfo },
 ];
 
-// ─── SaaS 系统列表 ───────────────────────────────────────
+// ─── SaaS 合作伙伴列表 ───────────────────────────────────────
 const saasPlatforms = [
-  { id: 1, name: "私域工具",    eco: "健康医药美业生态", desc: "私域账号资产 + 微信社群 + 用户服务 + 订单工单一体化SaaS 系统，向招募的平台和项目下发私域能力", platformCount: 2, projects: 4, users: 2200, groups: 30, status: "生产中", isCurrent: true  },
-  { id: 2, name: "课程平台",    eco: "知识付费生态",     desc: "在线课程、学员互动、结业认证与课程权益下发系统，招募知识付费类平台",                             platformCount: 1, projects: 3, users: 1500, groups: 18, status: "生产中", isCurrent: false },
-  { id: 3, name: "代理系统",    eco: "健康医药美业生态", desc: "代理招募、培训、分销佣金与代理权益管理系统，招募代理分销类平台",                               platformCount: 1, projects: 3, users: 900,  groups: 14, status: "生产中", isCurrent: false },
-  { id: 4, name: "学习平台",    eco: "教育生态",         desc: "学习路径、积分激励、学习报告与学习权益下发系统，招募教育学习类平台",                           platformCount: 1, projects: 4, users: 1400, groups: 20, status: "测试中", isCurrent: false },
-  { id: 5, name: "直播工具",    eco: "教育生态",         desc: "在线直播、回放管理与观看SaaS 系统，招募教育直播类平台",                                         platformCount: 1, projects: 4, users: 650,  groups: 9,  status: "开发中", isCurrent: false },
-  { id: 6, name: "城市合伙人",  eco: "健康医药美业生态", desc: "城市站长招募、资源分配与区域合伙人SaaS 系统，招募城市运营类平台",                               platformCount: 1, projects: 3, users: 770,  groups: 16, status: "测试中", isCurrent: false },
-  { id: 7, name: "分销系统",    eco: "宠物生态",         desc: "多级分销、佣金计算与实时结算的渠道SaaS 系统，招募宠物产业分销类平台",                           platformCount: 1, projects: 3, users: 900,  groups: 12, status: "生产中", isCurrent: false },
+  { id: 1, name: "健康产业发展伙伴",    eco: "健康医药美业生态", desc: "负责发展健康产业相关平台，提供会员运营、账号资产、社群运营与项目管理能力。", platformCount: 2, projects: 4, users: 2200, groups: 30, status: "运营中", isCurrent: true  },
+  { id: 2, name: "知识教育发展伙伴",    eco: "知识付费生态",     desc: "负责发展知识教育类平台，提供课程运营、学员互动、认证与权益支持。",                             platformCount: 1, projects: 3, users: 1500, groups: 18, status: "运营中", isCurrent: false },
+  { id: 3, name: "代理渠道发展伙伴",    eco: "健康医药美业生态", desc: "负责发展代理分销类平台，提供代理招募、培训、佣金与权益管理支持。",                               platformCount: 1, projects: 3, users: 900,  groups: 14, status: "运营中", isCurrent: false },
+  { id: 4, name: "教育学习发展伙伴",    eco: "教育生态",         desc: "负责发展教育学习类平台，提供学习路径、积分激励、学习报告与权益支持。",                           platformCount: 1, projects: 4, users: 1400, groups: 20, status: "测试中", isCurrent: false },
+  { id: 5, name: "教育内容发展伙伴",    eco: "教育生态",         desc: "负责发展教育内容类平台，提供直播、回放管理与内容运营支持。",                                         platformCount: 1, projects: 4, users: 650,  groups: 9,  status: "开发中", isCurrent: false },
+  { id: 6, name: "城市运营发展伙伴",    eco: "健康医药美业生态", desc: "负责发展城市运营类平台，提供城市站长招募、资源分配与区域运营支持。",                               platformCount: 1, projects: 3, users: 770,  groups: 16, status: "测试中", isCurrent: false },
+  { id: 7, name: "宠物产业发展伙伴",    eco: "宠物生态",         desc: "负责发展宠物产业分销类平台，提供渠道分销、佣金计算与结算支持。",                           platformCount: 1, projects: 3, users: 900,  groups: 12, status: "运营中", isCurrent: false },
 ];
 
 // ─── 平台列表数据 ─────────────────────────────────────────────
 const platforms = [
-  { id: 1, name: "健康运营平台", saas: "私域工具", eco: "健康医药美业生态", desc: "由私域工具SaaS 系统招募，承载会员、体验官、代理商等核心项目", projects: 4, users: 1600, groups: 25, teachers: 8, revenue: "¥36万/月", status: "生产中" },
-  { id: 2, name: "健康课程平台", saas: "课程平台", eco: "知识付费生态",   desc: "由课程平台SaaS 系统招募，承载训练营、进阶班、认证课程等项目", projects: 3, users: 1500, groups: 18, teachers: 6, revenue: "¥16万/月", status: "生产中" },
-  { id: 3, name: "代理分销平台", saas: "代理系统", eco: "健康医药美业生态", desc: "由代理系统SaaS 系统招募，代理招募、分销、佣金结算一体化平台",     projects: 3, users: 900, groups: 14, teachers: 4, revenue: "¥11万/月", status: "生产中" },
-  { id: 4, name: "教育学习平台", saas: "学习平台", eco: "教育生态",       desc: "由学习平台SaaS 系统招募，在线学习、知识路径、学习报告等",       projects: 4, users: 1400, groups: 20, teachers: 5, revenue: "¥10万/月", status: "测试中" },
-  { id: 5, name: "教育直播平台", saas: "直播工具", eco: "教育生态",       desc: "由直播工具SaaS 系统招募，承载直播公开课、大师课、教研直播",       projects: 4, users: 650, groups: 9, teachers: 3, revenue: "¥5万/月", status: "开发中" },
-  { id: 6, name: "商业城市平台", saas: "城市合伙人", eco: "健康医药美业生态", desc: "由城市合伙人SaaS 系统招募，面向B端城市站长的区域运营平台", projects: 3, users: 770, groups: 16, teachers: 4, revenue: "¥4万/月", status: "测试中" },
-  { id: 7, name: "宠物分销平台", saas: "分销系统", eco: "宠物生态",       desc: "由分销系统SaaS 系统招募，多级分销、渠道分润、实时结算一体化平台",   projects: 3, users: 900, groups: 12, teachers: 4, revenue: "¥2万/月", status: "生产中" },
-  { id: 8, name: "品牌会员平台", saas: "私域工具", eco: "健康医药美业生态", desc: "由私域工具SaaS 系统招募，统一品牌会员体系、权益中心与积分商城", projects: 0, users: 0, groups: 5, teachers: 0, revenue: "孵化中", status: "孵化中" },
+  { id: 1, name: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", desc: "聚域旗下主平台，承载 OPC 生态项目与平台运营", projects: 9, users: 0, groups: 0, teachers: 0, revenue: "待接入", status: "运营中", dataStatus: "待接入" },
 ];
 
 // ─── 项目列表（归属平台） ─────────────────────────────────────
 type ProjectTier = { name: string; rule: string; group: string; service: string; benefits?: string };
 type ProjectRecord = {
-  id: number; name: string; platform: string; saas: string; eco: string; users: number; groups: number; teacher: string; cities: string[]; revenue: string; status: string;
+  id: number; name: string; platform: string; partner: string; saas?: string; eco: string; users: number; groups: number; teacher: string; cities: string[]; revenue: string; status: string;
   enterpriseWx: string; enterpriseProjectCount: number; tiers: ProjectTier[];
   groupTypes: GroupTypeRule[];
   mechanism: { welcome: string; cadence: string; route: string; escalation: string };
@@ -136,30 +130,15 @@ const defaultTiers: ProjectTier[] = memberLevelOptions.map((name, index) => {
   return { name, rule: configured[1], group: configured[2], service: configured[3], benefits: index <= 1 ? "新人资料包、基础活动资格" : index === 2 ? "会员专属课、社群优先服务、积分" : "专属活动、优先服务、定制权益" };
 });
 const projects: ProjectRecord[] = [
-  { id: 1,  name: "PRO会员",      platform: "健康运营平台", saas: "私域工具",   eco: "健康医药美业生态", users: 1023, groups: 12, teacher: "吴思远/林小燕", cities: ["北京","上海","深圳"],       revenue: "¥28万/月",   status: "主力项目", enterpriseWx: "健康企业微信", enterpriseProjectCount: 3, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "欢迎语 + 入群任务",         cadence: "每周 2 次", route: "按城市 + 会员等级分群", escalation: "异常自动通知项目负责人" }, visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
-  { id: 2,  name: "体验官",       platform: "健康运营平台", saas: "私域工具",   eco: "健康医药美业生态", users: 387,  groups: 8,  teacher: "刘刚/李梦华",   cities: ["广州","成都","杭州"],       revenue: "¥12万/月",   status: "增长中",   enterpriseWx: "健康企业微信", enterpriseProjectCount: 3, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "欢迎语 + 新人打卡",         cadence: "每周 3 次", route: "按城市分群",             escalation: "低活跃会员提醒客服" },     visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
-  { id: 3,  name: "代理商",       platform: "健康运营平台", saas: "私域工具",   eco: "健康医药美业生态", users: 134,  groups: 6,  teacher: "赵志远",        cities: ["全国"],                    revenue: "¥7万/月",    status: "稳定运营", enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "代理商欢迎流程",            cadence: "每周 1 次", route: "按代理等级分群",         escalation: "审批事项通知项目负责人" }, visibility: { "项目负责人": true, "区域运营": true,  "客服": false, "生态负责人": true  } },
-  { id: 4,  name: "城市分站",     platform: "健康运营平台", saas: "私域工具",   eco: "健康医药美业生态", users: 79,   groups: 8,  teacher: "陈明/王芳",     cities: ["武汉","南京","西安"],       revenue: "¥4.6万/月",  status: "孵化中",   enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "城市站长欢迎流程",          cadence: "每周 1 次", route: "按城市 + 等级分群",      escalation: "跨城问题通知区域运营" },   visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
-  { id: 5,  name: "7日训练营",    platform: "健康课程平台", saas: "课程平台",   eco: "知识付费生态",     users: 450,  groups: 5,  teacher: "课程组",        cities: ["线上"],                    revenue: "¥6万/月",    status: "季节性",   enterpriseWx: "课程企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "训练营开营提醒",            cadence: "每日 1 次", route: "按课程期次分群",         escalation: "课程问题通知课程组" },     visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": false } },
-  { id: 6,  name: "进阶班认证",   platform: "健康课程平台", saas: "课程平台",   eco: "知识付费生态",     users: 650,  groups: 8,  teacher: "课程组/张讲师", cities: ["线上","北京","上海"],      revenue: "¥6万/月",    status: "增长中",   enterpriseWx: "课程企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "认证班欢迎 + 学习地图",    cadence: "每周 2 次", route: "按班次分群",             escalation: "考核异常通知课程组" },     visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": false } },
-  { id: 7,  name: "付费会员俱乐部", platform: "健康课程平台", saas: "课程平台", eco: "知识付费生态",     users: 400,  groups: 5,  teacher: "会员服务组",    cities: ["全国"],                    revenue: "¥4万/月",    status: "稳定运营", enterpriseWx: "课程企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "俱乐部会员欢迎礼包",       cadence: "每周 2 次", route: "按会员等级分群",         escalation: "投诉升级客服主管" },       visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": true  } },
-  { id: 8,  name: "健康学院",     platform: "教育学习平台", saas: "学习平台",   eco: "教育生态",         users: 820,  groups: 10, teacher: "教研团队",      cities: ["线上"],                    revenue: "¥15万/月",   status: "主力项目", enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "学习路径欢迎语",           cadence: "每周 2 次", route: "按课程 + 会员等级分群",  escalation: "学习异常通知教研团队" },   visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": true  } },
-  { id: 9,  name: "亲子教育课",   platform: "教育学习平台", saas: "学习平台",   eco: "教育生态",         users: 250,  groups: 4,  teacher: "亲子教研团",    cities: ["线上","广州","深圳"],      revenue: "¥3万/月",    status: "增长中",   enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "亲子课程欢迎 + 礼包",      cadence: "每周 2 次", route: "按孩子年龄段分群",       escalation: "家长反馈通知教研" },       visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": false } },
-  { id: 10, name: "成人兴趣班",   platform: "教育学习平台", saas: "学习平台",   eco: "教育生态",         users: 200,  groups: 3,  teacher: "兴趣课讲师",    cities: ["北京","上海","成都"],       revenue: "¥1.5万/月",  status: "稳定运营", enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "兴趣班欢迎流程",           cadence: "每周 1 次", route: "按兴趣方向分群",         escalation: "调课申请通知班主任" },     visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": false } },
-  { id: 11, name: "教师研修班",   platform: "教育学习平台", saas: "学习平台",   eco: "教育生态",         users: 130,  groups: 3,  teacher: "教研专家组",    cities: ["线上","杭州"],              revenue: "¥0.5万/月",  status: "孵化中",   enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "研修班入学欢迎",           cadence: "每周 1 次", route: "按研修专题分群",         escalation: "师资问题通知专家组" },     visibility: { "项目负责人": true, "区域运营": false, "客服": false, "生态负责人": true  } },
-  { id: 12, name: "公开大师课",   platform: "教育直播平台", saas: "直播工具",   eco: "教育生态",         users: 250,  groups: 3,  teacher: "特邀讲师团",    cities: ["线上"],                    revenue: "¥2万/月",    status: "主力项目", enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "大师课开播提醒 + 资料",    cadence: "每月 2 次", route: "按讲座期次分群",         escalation: "直播异常通知技术组" },     visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": true  } },
-  { id: 13, name: "教研直播会",   platform: "教育直播平台", saas: "直播工具",   eco: "教育生态",         users: 150,  groups: 2,  teacher: "教研团队",      cities: ["线上"],                    revenue: "¥1.2万/月",  status: "稳定运营", enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "教研直播开播提醒",         cadence: "每周 1 次", route: "按教研主题分群",         escalation: "内容争议通知教研主管" },   visibility: { "项目负责人": true, "区域运营": false, "客服": false, "生态负责人": false } },
-  { id: 14, name: "家长讲座",     platform: "教育直播平台", saas: "直播工具",   eco: "教育生态",         users: 150,  groups: 2,  teacher: "教育顾问团",    cities: ["线上","全国"],              revenue: "¥1万/月",    status: "季节性",   enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "家长讲座预约提醒",         cadence: "每月 1 次", route: "按孩子学龄分群",         escalation: "投诉升级客服主管" },       visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": false } },
-  { id: 15, name: "年度盛典",     platform: "教育直播平台", saas: "直播工具",   eco: "教育生态",         users: 100,  groups: 2,  teacher: "活动组委会",    cities: ["线上"],                    revenue: "¥0.8万/月",  status: "孵化中",   enterpriseWx: "教育企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "年度盛典倒计时 + 议程",    cadence: "每年 1 次", route: "按VIP等级分群",           escalation: "重大问题通知总负责人" },   visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": true  } },
-  { id: 16, name: "一级代理",     platform: "代理分销平台", saas: "代理系统",   eco: "健康医药美业生态", users: 300,  groups: 5,  teacher: "赵志远/区域经理", cities: ["全国"],                  revenue: "¥5万/月",    status: "主力项目", enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "一级代理授权欢迎流程",     cadence: "每周 1 次", route: "按区域分群",             escalation: "审批事项通知项目负责人" }, visibility: { "项目负责人": true, "区域运营": true,  "客服": false, "生态负责人": true  } },
-  { id: 17, name: "二级代理",     platform: "代理分销平台", saas: "代理系统",   eco: "健康医药美业生态", users: 350,  groups: 5,  teacher: "区域主管",      cities: ["广州","成都","武汉"],       revenue: "¥3.5万/月",  status: "增长中",   enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "二级代理入驻欢迎",         cadence: "每周 1 次", route: "按城市分群",             escalation: "佣金异常通知财务" },       visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
-  { id: 18, name: "分销站长",     platform: "代理分销平台", saas: "代理系统",   eco: "健康医药美业生态", users: 250,  groups: 4,  teacher: "站长运营组",    cities: ["杭州","南京","西安"],       revenue: "¥2.5万/月",  status: "稳定运营", enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "分销站长开通欢迎",         cadence: "每周 2 次", route: "按站点分群",             escalation: "订单异常通知运营" },       visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
-  { id: 19, name: "城市运营中心", platform: "商业城市平台", saas: "城市合伙人", eco: "健康医药美业生态", users: 300,  groups: 6,  teacher: "陈明/王芳",     cities: ["武汉","南京","西安"],       revenue: "¥2万/月",    status: "主力项目", enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "城市中心入驻欢迎",         cadence: "每周 1 次", route: "按城市分群",             escalation: "跨城协作通知区域主管" },   visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
-  { id: 20, name: "区域服务站",   platform: "商业城市平台", saas: "城市合伙人", eco: "健康医药美业生态", users: 270,  groups: 5,  teacher: "区域站长",      cities: ["成都","重庆","郑州"],       revenue: "¥1.2万/月",  status: "增长中",   enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "区域服务站开通欢迎",       cadence: "每周 1 次", route: "按服务区域分群",         escalation: "服务投诉升级区域主管" },   visibility: { "项目负责人": true, "区域运营": true,  "客服": true,  "生态负责人": false } },
-  { id: 21, name: "资源对接会",   platform: "商业城市平台", saas: "城市合伙人", eco: "健康医药美业生态", users: 200,  groups: 5,  teacher: "商务对接组",    cities: ["全国"],                    revenue: "¥0.8万/月",  status: "孵化中",   enterpriseWx: "商务企业微信", enterpriseProjectCount: 2, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "对接会报名确认提醒",       cadence: "每月 2 次", route: "按行业主题分群",         escalation: "对接纠纷通知项目负责人" }, visibility: { "项目负责人": true, "区域运营": true,  "客服": false, "生态负责人": true  } },
-  { id: 22, name: "宠物用品商城", platform: "宠物分销平台", saas: "分销系统",   eco: "宠物生态",         users: 350,  groups: 4,  teacher: "商城运营组",    cities: ["全国"],                    revenue: "¥0.8万/月",  status: "增长中",   enterpriseWx: "宠物企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "商城会员欢迎 + 优惠券",    cadence: "每周 2 次", route: "按消费等级分群",         escalation: "售后问题升级主管" },       visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": false } },
-  { id: 23, name: "宠物医疗会员", platform: "宠物分销平台", saas: "分销系统",   eco: "宠物生态",         users: 300,  groups: 4,  teacher: "宠物医师团",    cities: ["北京","上海","广州"],       revenue: "¥0.7万/月",  status: "稳定运营", enterpriseWx: "宠物企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "医疗会员激活欢迎",         cadence: "每月 1 次", route: "按城市 + 宠物品类分群",  escalation: "医疗投诉升级医师主管" },   visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": true  } },
-  { id: 24, name: "洗护美容会员", platform: "宠物分销平台", saas: "分销系统",   eco: "宠物生态",         users: 250,  groups: 4,  teacher: "美容服务组",    cities: ["深圳","成都","杭州"],       revenue: "¥0.5万/月",  status: "孵化中",   enterpriseWx: "宠物企业微信", enterpriseProjectCount: 1, tiers: defaultTiers, groupTypes: defaultGroupTypeRules, mechanism: { welcome: "美容会员开通欢迎",         cadence: "每周 1 次", route: "按城市 + 会员等级分群",  escalation: "预约异常通知门店" },       visibility: { "项目负责人": true, "区域运营": false, "客服": true,  "生态负责人": false } },
+  { id: 1, name: "V001 军师", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "正式项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("V001 军师"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 2, name: "AI超级广告公司", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "招商项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI超级广告公司"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 3, name: "AI艺人孵化", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "招商项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI艺人孵化"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 4, name: "AI数字资产平台", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "招商项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI数字资产平台"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 5, name: "AI大健康", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "招商项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI大健康"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 6, name: "AI知识付费", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "招商项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI知识付费"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 7, name: "AI教育", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "招商项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI教育"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 8, name: "AI明星艺人授权", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "招商项目", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI明星艺人授权"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
+  { id: 9, name: "AI企业礼品采购", platform: "主理人公社", partner: "聚域", saas: "聚域", eco: "OPC超级生态", users: 0, groups: 0, teacher: "待配置", cities: ["全国"], revenue: "待接入", status: "规划中", enterpriseWx: "待配置", enterpriseProjectCount: 0, tiers: defaultTiers, groupTypes: getGroupRulesForProject("AI企业礼品采购"), mechanism: { welcome: "待配置", cadence: "待配置", route: "待配置", escalation: "待配置" }, visibility: { "项目负责人": true, "区域运营": true, "客服": true, "生态负责人": true } },
 ];
 
 const statusCfg: Record<string, { bg: string; color: string }> = {
@@ -178,7 +157,7 @@ const statusCfg: Record<string, { bg: string; color: string }> = {
 // ─── 架构流程图 ───────────────────────────────────────────────
 function ArchitectureDiagram({ tiers, activeTier, onSelect }: { tiers: ReturnType<typeof buildTiers>; activeTier: string; onSelect: (id: string) => void }) {
   return (
-    <div className="flex items-stretch gap-0 overflow-hidden" style={{ border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 overflow-hidden" style={{ border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
       {tiers.map((t, idx) => {
         const Icon = t.icon;
         const isActive = activeTier === t.id;
@@ -186,12 +165,13 @@ function ArchitectureDiagram({ tiers, activeTier, onSelect }: { tiers: ReturnTyp
           <button
             key={t.id}
             type="button"
-            className="flex-1 flex flex-col items-start gap-3 p-5 transition-all relative"
+            className="min-w-0 flex flex-col items-start gap-3 p-4 sm:p-5 transition-all relative text-left"
             style={{
               background: isActive ? S.accentLight : S.surface,
-              borderRight: idx < 3 ? `1px solid ${S.border}` : "none",
+              borderRight: idx % 2 === 1 ? "none" : `1px solid ${S.border}`,
+              borderBottom: idx < 2 ? `1px solid ${S.border}` : "none",
               borderRadius: 0,
-              borderBottom: isActive ? `3px solid ${S.accent}` : "3px solid transparent",
+              borderLeft: isActive ? `3px solid ${S.accent}` : "3px solid transparent",
             }}
             onClick={() => onSelect(t.id)}
           >
@@ -207,7 +187,7 @@ function ArchitectureDiagram({ tiers, activeTier, onSelect }: { tiers: ReturnTyp
                 <Icon size={18} style={{ color: isActive ? "#1e293b" : S.muted }} />
                 <span className="text-sm font-bold" style={{ color: S.text }}>{t.label}</span>
               </div>
-              <p className="text-xs leading-relaxed font-mono" style={{ color: S.muted }}>{t.desc.slice(0, 48)}...</p>
+              <p className="text-xs leading-relaxed font-mono line-clamp-3" style={{ color: S.muted }}>{t.desc}</p>
             </div>
 
             <div className="flex items-center gap-1.5">
@@ -234,12 +214,16 @@ type ProjectItem = ProjectRecord;
 function SuperView({
   ecoList, setEcoList, saasList, setSaasList,
   accounts, setAccounts, subs, setSubs, bills, setBills,
+  onOpenPlatforms, onOpenProjects, onOpenReports,
 }: {
   ecoList: EcoItem[]; setEcoList: React.Dispatch<React.SetStateAction<EcoItem[]>>;
   saasList: SaasItem[]; setSaasList: React.Dispatch<React.SetStateAction<SaasItem[]>>;
   accounts: SystemAccount[]; setAccounts: React.Dispatch<React.SetStateAction<SystemAccount[]>>;
   subs: Subscription[]; setSubs: React.Dispatch<React.SetStateAction<Subscription[]>>;
   bills: BillRecord[]; setBills: React.Dispatch<React.SetStateAction<BillRecord[]>>;
+  onOpenPlatforms: (ecoName: string) => void;
+  onOpenProjects: (ecoName: string) => void;
+  onOpenReports: () => void;
 }) {
   const maskAccount = (acc?: string) => {
     if (!acc) return "—";
@@ -258,7 +242,7 @@ function SuperView({
       <div className="grid grid-cols-7 gap-3">
         {[
           { label: "下属生态", value: total.ecosystems },
-          { label: "SaaS 系统", value: total.saas },
+          { label: "SaaS 合作伙伴", value: total.saas },
           { label: "招募平台", value: total.platforms },
           { label: "运营项目", value: total.projects },
           { label: "全局用户", value: total.users.toLocaleString() },
@@ -279,8 +263,8 @@ function SuperView({
           <span className="px-2 py-0.5 text-xs font-bold ml-2" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>最高层级</span>
         </div>
         <p className="text-xs leading-relaxed mb-4 font-mono" style={{ color: S.textSec }}>
-          超级生态是整个体系的最顶层。统一管理旗下所有生态、SaaS 系统、平台和具体项目。拥有全局数据视角、最高级权限、多租户管控和生态资源调配能力。
-          每个下属生态按行业划分，下辖多个SaaS 系统，SaaS 系统招募平台并下发能力与权益。
+          超级生态是整个体系的最顶层。统一管理旗下所有生态、SaaS 合作伙伴、平台和具体项目。拥有全局数据视角、最高级权限、多租户管控和生态资源调配能力。
+          每个下属生态按行业划分，下辖多个 SaaS 合作伙伴，由合作伙伴发展平台并提供能力与权益支持。
         </p>
         <div className="flex gap-2 flex-wrap">
           {["全局数据看板", "跨生态权限管理", "多租户隔离", "统一账号资产", "生态营收汇总"].map(t => (
@@ -291,7 +275,7 @@ function SuperView({
 
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div><span className="text-sm font-bold" style={{ color: S.text }}>旗下生态 ({ecoList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>超级生态下辖的行业垂直生态，每个生态下辖多个 SaaS 系统与资源池</div></div>
+          <div><span className="text-sm font-bold" style={{ color: S.text }}>旗下生态 ({ecoList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>超级生态下辖的行业垂直生态，每个生态下辖多个 SaaS 合作伙伴与资源池</div></div>
           <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateEcoOpen(true)}>
             <Plus size={12} /> 新建生态
           </button>
@@ -324,7 +308,7 @@ function SuperView({
                 <div className="text-xs mt-0.5 font-mono" style={{ color: S.muted }}>{e.desc}</div>
               </div>
               <div className="grid grid-cols-2 gap-3 text-center flex-shrink-0">
-                {[["下属SaaS 系统", e.platforms], ["招募平台", e.projects], ["生态会员", e.members.toLocaleString()], ["月营收", e.revenue]].map(([l, v]) => (
+                {[["下属 SaaS 合作伙伴", e.platforms], ["招募平台", e.projects], ["生态会员", e.members.toLocaleString()], ["月营收", e.revenue]].map(([l, v]) => (
                   <div key={l as string} className="px-3 py-1.5" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                     <div className="text-xs font-bold font-mono" style={{ color: S.text }}>{v}</div>
                     <div className="font-mono" style={{ color: S.muted, fontSize: "10px" }}>{l}</div>
@@ -352,9 +336,13 @@ function SuperView({
                   )}
                 </div>
                 <div className="flex gap-2">
-                  <button type="button" className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasEcoId(e.id)}><Plus size={12} /> 新建 SaaS 系统</button>
-                  {["查看平台", "项目列表", "数据报表"].map(a => (
-                    <button key={a} type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>{a}</button>
+                  <button type="button" className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasEcoId(e.id)}><Plus size={12} /> 新建 SaaS 合作伙伴</button>
+                  {[
+                    ["查看平台", () => onOpenPlatforms(e.name)],
+                    ["项目列表", () => onOpenProjects(e.name)],
+                    ["数据报表", onOpenReports],
+                  ].map(([label, action]) => (
+                    <button key={label as string} type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={ev => { ev.stopPropagation(); (action as () => void)(); }}>{label as string}</button>
                   ))}
                 </div>
               </div>
@@ -386,10 +374,10 @@ function SuperView({
       {createSaasEcoId !== null && <CreateSaasDrawer ecoList={ecoList} defaultEco={currentEco?.name} onClose={() => setCreateSaasEcoId(null)} onCreate={data => {
         setSaasList(list => [...list, { id: Date.now(), ...data, platformCount: 0, projects: 0, users: 0, groups: 0, status: "孵化中", isCurrent: false }]);
         const approval = createApproval("saas_onboard", {
-          title: `SaaS 入驻：${data.name}（${data.eco}）`,
+          title: `SaaS 合作伙伴入驻：${data.name}（${data.eco}）`,
           submitter: "超级管理员",
-          description: `在${data.eco}下新建 SaaS 系统「${data.name}」，${data.desc || "无描述"}`,
-          detail: { SaaS名称: data.name, 所属生态: data.eco, 描述: data.desc || "—" },
+          description: `在${data.eco}下新建 SaaS 合作伙伴「${data.name}」，${data.desc || "无描述"}`,
+          detail: { SaaS合作伙伴名称: data.name, 所属生态: data.eco, 描述: data.desc || "—" },
           payload: { type: "saas_onboard", name: data.name, eco: data.eco, desc: data.desc },
         });
         setApprovals(prev => [approval, ...prev]);
@@ -420,13 +408,13 @@ function EcoView({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div><span className="text-sm font-bold" style={{ color: S.text }}>SaaS 系统 ({saasList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>生态下辖的 SaaS 系统，为招募的平台下发能力</div></div>
+        <div><span className="text-sm font-bold" style={{ color: S.text }}>SaaS 合作伙伴 ({saasList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>生态下辖的 SaaS 合作伙伴，为招募的平台下发能力</div></div>
         <div className="flex gap-2">
           <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
             {ecoOptions.map(o => <option key={o}>{o}</option>)}
           </select>
           <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasOpen(true)}>
-            <Plus size={12} /> 新建 SaaS 系统
+            <Plus size={12} /> 新建 SaaS 合作伙伴
           </button>
         </div>
       </div>
@@ -445,7 +433,7 @@ function EcoView({
             {p.isCurrent && (
               <div className="absolute top-3 right-3 flex items-center gap-1 px-2 py-0.5" style={{ background: "#1e293b", borderRadius: S.radiusSm }}>
                 <CheckCircle size={10} style={{ color: S.accent }} />
-                <span style={{ color: S.accent, fontSize: "10px", fontFamily: "monospace" }}>当前系统</span>
+                <span style={{ color: S.accent, fontSize: "10px", fontFamily: "monospace" }}>当前合作伙伴</span>
               </div>
             )}
             <div className="flex items-center gap-2 mb-2">
@@ -478,23 +466,23 @@ function EcoView({
       {createSaasOpen && <CreateSaasDrawer ecoList={ecoList} onClose={() => setCreateSaasOpen(false)} onCreate={({ name, eco, desc }) => {
         setSaasList(list => [...list, { id: Date.now(), name, eco, desc, platformCount: 0, projects: 0, users: 0, groups: 0, status: "孵化中", isCurrent: false }]);
         const approval = createApproval("saas_onboard", {
-          title: `SaaS 入驻：${name}（${eco}）`,
+          title: `SaaS 合作伙伴入驻：${name}（${eco}）`,
           submitter: "生态运营",
-          description: `在${eco}下新建 SaaS 系统「${name}」，${desc || "无描述"}`,
-          detail: { SaaS名称: name, 所属生态: eco, 描述: desc || "—" },
+          description: `在${eco}下新建 SaaS 合作伙伴「${name}」，${desc || "无描述"}`,
+          detail: { SaaS合作伙伴名称: name, 所属生态: eco, 描述: desc || "—" },
           payload: { type: "saas_onboard", name, eco, desc },
         });
         setApprovals(prev => [approval, ...prev]);
         setCreateSaasOpen(false);
       }} />}
-      {createPlatformSaasId !== null && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} defaultSaas={currentSaas?.name} defaultEco={currentSaas?.eco} onClose={() => setCreatePlatformSaasId(null)} onCreate={data => {
-        setPlatformList(list => [...list, { id: Date.now(), ...data, projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
+      {createPlatformSaasId !== null && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} defaultSaas={currentSaas?.name} defaultEco={currentSaas?.eco} onClose={() => setCreatePlatformSaasId(null)} onCreate={({ name, saas, partner, eco, desc }) => {
+        setPlatformList(list => [...list, { id: Date.now(), name, partner, saas, eco, desc: desc || "", projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
         const approval = createApproval("platform_onboard", {
-          title: `平台入驻：${data.name}（${data.saas}）`,
+          title: `平台入驻：${name}（${partner}）`,
           submitter: "生态运营",
-          description: `在${data.saas} SaaS 下新建平台「${data.name}」，所属${data.eco}生态`,
-          detail: { 平台名称: data.name, 所属SaaS: data.saas, 所属生态: data.eco, 描述: data.desc || "—" },
-          payload: { type: "platform_onboard", name: data.name, saas: data.saas, eco: data.eco, desc: data.desc },
+          description: `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态`,
+          detail: { 平台名称: name, 所属合作伙伴: partner, 所属生态: eco, 描述: desc || "—" },
+          payload: { type: "platform_onboard", name, saas, eco, desc },
         });
         setApprovals(prev => [approval, ...prev]);
         setCreatePlatformSaasId(null);
@@ -505,7 +493,7 @@ function EcoView({
   );
 }
 
-// ─── SaaS 系统视图 ───────────────────────────────────────
+// ─── SaaS 合作伙伴视图 ───────────────────────────────────
 function SaasView({
   ecoList, saasList, platformList, setPlatformList, setActiveTier, setActivePlatformId, setActivePlatformName,
 }: {
@@ -517,12 +505,12 @@ function SaasView({
   setActivePlatformName: (name: string) => void;
 }) {
   const [filterEco, setFilterEco] = useState<string>("全部生态");
-  const [filterSaas, setFilterSaas] = useState<string>("全部 SaaS");
+  const [filterPartner, setFilterPartner] = useState<string>("全部 SaaS 合作伙伴");
   const [createPlatformOpen, setCreatePlatformOpen] = useState(false);
   const { setApprovals } = useApprovals();
   const ecoOptions = ["全部生态", ...Array.from(new Set(platformList.map(p => p.eco)))];
-  const saasOptions = ["全部 SaaS", ...Array.from(new Set(platformList.map(p => p.saas)))];
-  const filtered = platformList.filter(p => (filterEco === "全部生态" || p.eco === filterEco) && (filterSaas === "全部 SaaS" || p.saas === filterSaas));
+  const partnerOptions = ["全部 SaaS 合作伙伴", ...Array.from(new Set(platformList.map(p => p.partner ?? p.saas)))];
+  const filtered = platformList.filter(p => (filterEco === "全部生态" || p.eco === filterEco) && (filterPartner === "全部 SaaS 合作伙伴" || (p.partner ?? p.saas) === filterPartner));
   const totalProjects = filtered.reduce((n, p) => n + p.projects, 0);
   const totalUsers = filtered.reduce((n, p) => n + p.users, 0);
   const totalGroups = filtered.reduce((n, p) => n + p.groups, 0);
@@ -530,13 +518,13 @@ function SaasView({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <div><span className="text-sm font-bold" style={{ color: S.text }}>旗下平台 ({platformList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 系统招募的平台实体，每个平台下辖多个运营项目</div></div>
+        <div><span className="text-sm font-bold" style={{ color: S.text }}>旗下平台 ({platformList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 合作伙伴招募的平台实体，每个平台下辖多个运营项目</div></div>
         <div className="flex gap-2">
           <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
             {ecoOptions.map(o => <option key={o}>{o}</option>)}
           </select>
-          <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterSaas} onChange={e => setFilterSaas(e.target.value)}>
-            {saasOptions.map(o => <option key={o}>{o}</option>)}
+          <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterPartner} onChange={e => setFilterPartner(e.target.value)}>
+            {partnerOptions.map(o => <option key={o}>{o}</option>)}
           </select>
           <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
         </div>
@@ -566,7 +554,7 @@ function SaasView({
                   <span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span>
                 </div>
                 <div className="flex gap-1.5 flex-wrap">
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{pf.saas}</span>
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{pf.partner ?? pf.saas}</span>
                   <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{pf.eco}</span>
                 </div>
               </div>
@@ -585,13 +573,13 @@ function SaasView({
           </div>
         ))}
       </div>
-      {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} onClose={() => setCreatePlatformOpen(false)} onCreate={({ name, saas, eco, desc }) => {
-        setPlatformList(list => [...list, { id: Date.now(), name, saas, eco, desc: desc || "", projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
+      {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} onClose={() => setCreatePlatformOpen(false)} onCreate={({ name, saas, partner, eco, desc }) => {
+        setPlatformList(list => [...list, { id: Date.now(), name, partner, saas, eco, desc: desc || "", projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
         const approval = createApproval("platform_onboard", {
-          title: `平台入驻：${name}（${saas}）`,
-          submitter: "SaaS 负责人",
-          description: `在${saas} SaaS 下新建平台「${name}」，所属${eco}生态`,
-          detail: { 平台名称: name, 所属SaaS: saas, 所属生态: eco, 描述: desc || "—" },
+          title: `平台入驻：${name}（${partner}）`,
+          submitter: "SaaS 合作伙伴负责人",
+          description: `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态`,
+          detail: { 平台名称: name, 所属合作伙伴: partner, 所属生态: eco, 描述: desc || "—" },
           payload: { type: "platform_onboard", name, saas, eco, desc: desc || "" },
         });
         setApprovals(prev => [approval, ...prev]);
@@ -603,12 +591,12 @@ function SaasView({
 
 // ─── 项目/平台视图 ────────────────────────────────────────────
 const fieldStyle = { background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text, padding: "8px 10px", fontSize: 12, width: "100%" };
-const roleNames = ["超级管理员", "生态负责人", "生态COO", "SaaS负责人", "SaaS运营", "平台管理员", "平台运营", "项目负责人", "区域运营", "客服", "老师"];
-const projectVisibilityRoles = ["生态负责人", "SaaS负责人", "平台管理员", "项目负责人", "区域运营", "客服", "老师"];
+const roleNames = ["超级管理员", "生态负责人", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "平台管理员", "平台运营", "项目负责人", "区域运营", "客服", "老师"];
+const projectVisibilityRoles = ["生态负责人", "SaaS 合作伙伴负责人", "平台管理员", "项目负责人", "区域运营", "客服", "老师"];
 
-const groupRuleRoleOptions = ["游客", "体验官", "VIP0", "VIP1", "VIP2", "VIP3", "VIP4", "SVIP0", "SVIP1", "SVIP2", "SVIP3", "SVIP4", "SVIP5", "普通会员", "核心会员", "城市合伙人"];
+const groupRuleRoleOptions = ["游客", "体验官", "VIP0", "VIP1", "VIP2", "VIP3", "VIP4", "SVIP0", "SVIP1", "SVIP2", "SVIP3", "SVIP4", "SVIP5", "普通会员", "核心会员", "城市运营发展伙伴"];
 const groupRuleCityOptions = ["北京", "吉林", "上海", "广州", "深圳", "成都", "杭州", "武汉", "南京", "西安", "全国"];
-type ProjectTab = "overview" | "tiers" | "groupRules" | "mechanism" | "visibility";
+type ProjectTab = "overview" | "tiers" | "groupRules" | "community" | "mechanism" | "visibility";
 
 function GroupRulesEditor({ project, updateDraft }: { project: ProjectRecord; updateDraft: (updater: (current: ProjectRecord) => ProjectRecord) => void }) {
   const [roleDraft, setRoleDraft] = useState<Record<string, string>>({});
@@ -631,19 +619,19 @@ function ProjectDrawer({ project, onClose, onSave }: { project: ProjectRecord; o
   const updateTier = (idx: number, key: keyof ProjectTier, value: string) => setDraft(d => ({ ...d, tiers: d.tiers.map((t, i) => i === idx ? { ...t, [key]: value } : t) }));
   return (
     <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,0.16)" }} onClick={onClose}>
-      <aside className="h-full w-full max-w-[520px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}>
+      <aside className={`h-full w-full overflow-auto ${tab === "community" ? "max-w-[960px]" : "max-w-[520px]"}`} style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}>
         <div className="sticky top-0 z-10 flex items-start justify-between px-5 py-4" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
           <div><div className="text-base font-bold">项目配置 · {draft.name}</div><div className="text-xs mt-1 font-mono" style={{ color: S.muted }}>项目数据、会员等级与社群规则独立隔离</div></div>
           <button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button>
         </div>
         <div className="flex gap-1 p-4 pb-2">
-          {([["overview", "概览", LayoutDashboard], ["tiers", "客户与权益", UsersRound], ["groupRules", "群类型规则", SlidersHorizontal], ["mechanism", "社群机制", Workflow], ["visibility", "可见范围", Eye]] as [ProjectTab, string, any][]).map(([id, label, Icon]) => <button key={id} type="button" className="flex-1 flex items-center justify-center gap-1 px-2 py-2 text-xs font-bold" style={{ background: tab === id ? "#1e293b" : S.surface, color: tab === id ? S.accent : S.muted, border: `1px solid ${tab === id ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }} onClick={() => setTab(id)}><Icon size={13} />{label}</button>)}
+          {([["overview", "概览", LayoutDashboard], ["tiers", "客户与权益", UsersRound], ["groupRules", "群类型规则", SlidersHorizontal], ["community", "社群体系", Users], ["mechanism", "社群机制", Workflow], ["visibility", "可见范围", Eye]] as [ProjectTab, string, any][]).map(([id, label, Icon]) => <button key={id} type="button" className="flex-1 flex items-center justify-center gap-1 px-2 py-2 text-xs font-bold" style={{ background: tab === id ? "#1e293b" : S.surface, color: tab === id ? S.accent : S.muted, border: `1px solid ${tab === id ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }} onClick={() => setTab(id)}><Icon size={13} />{label}</button>)}
         </div>
         <div className="p-4 space-y-3">
           {tab === "overview" && <>
             <div className="grid grid-cols-3 gap-3">
-              <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属平台</div><div className="text-sm font-bold mt-1">{draft.platform}</div><div className="text-xs mt-1" style={{ color: S.muted }}>SaaS 使用方</div></div>
-              <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属 SaaS / 生态</div><div className="text-sm font-bold mt-1">{draft.saas}</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.eco}</div></div>
+              <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属平台</div><div className="text-sm font-bold mt-1">{draft.platform}</div><div className="text-xs mt-1" style={{ color: S.muted }}>SaaS 合作伙伴</div></div>
+              <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属合作伙伴 / 生态</div><div className="text-sm font-bold mt-1">{draft.partner ?? draft.saas}</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.eco}</div></div>
               <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>当前运营数据</div><div className="text-sm font-bold mt-1">{draft.users.toLocaleString()} 用户 · {draft.groups} 群</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.revenue}</div></div>
             </div>
             <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><Building2 size={16} />企业微信归属</div><div className="text-sm font-bold mt-2">{draft.enterpriseWx}</div><div className="text-xs mt-1" style={{ color: S.muted }}>同一企业已承载 {draft.enterpriseProjectCount} 个项目 · 项目数据按项目隔离</div><button type="button" className="mt-3 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setTab("visibility")}>管理项目范围</button></div>
@@ -652,6 +640,7 @@ function ProjectDrawer({ project, onClose, onSave }: { project: ProjectRecord; o
           {tab === "tiers" && <div className="space-y-2">{draft.tiers.map((tier, idx) => <div key={idx} className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between mb-2"><span className="text-xs font-bold px-2 py-1" style={{ background: idx === 0 ? "#f1f5f9" : S.accent, borderRadius: S.radiusSm }}>等级 {idx + 1}</span><button type="button" className="text-xs" style={{ color: "#888" }} onClick={() => setDraft(d => ({ ...d, tiers: d.tiers.filter((_, i) => i !== idx) }))}>移除</button></div><div className="grid grid-cols-2 gap-2"><input value={tier.name} style={fieldStyle} onChange={e => updateTier(idx, "name", e.target.value)} placeholder="等级名称" /><input value={tier.rule} style={fieldStyle} onChange={e => updateTier(idx, "rule", e.target.value)} placeholder="升级条件" /><input value={tier.group} style={fieldStyle} onChange={e => updateTier(idx, "group", e.target.value)} placeholder="对应社群" /><input value={tier.service} style={fieldStyle} onChange={e => updateTier(idx, "service", e.target.value)} placeholder="服务 SLA" /></div></div>)}<button type="button" className="w-full py-2 text-xs font-bold" style={{ border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setDraft(d => ({ ...d, tiers: [...d.tiers, { name: "新会员等级", rule: "待配置", group: "待配置社群", service: "待配置" }] }))}><Plus size={13} className="inline mr-1" />新增会员等级</button></div>}
           {tab === "tiers" && <><div className="p-3 text-xs leading-relaxed" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><b>项目权益规则源</b>：客户等级、获取条件和权益包只在项目中配置；小程序、商城和外部系统仅做展示、核销与数据映射。</div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2">等级权益包</div>{draft.tiers.map((tier, idx) => <label key={`benefit-${tier.name}-${idx}`} className="block mb-2 text-[10px]" style={{ color: S.muted }}>{tier.name}<input className="mt-1" value={tier.benefits} style={{ ...fieldStyle, padding: "6px 8px", fontSize: 11 }} onChange={e => updateTier(idx, "benefits", e.target.value)} placeholder="权益包" /></label>)}</div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold">已连接应用的权益映射</div><div className="text-[10px] mt-1" style={{ color: S.muted }}>配置哪些端展示或核销本项目权益，不重复定义会员等级。</div><div className="flex flex-wrap gap-1.5 mt-2">{["主理人公社小程序", "企业微信 SCRM", "订单系统"].map(app => <span key={app} className="px-2 py-1 text-[10px]" style={{ background: "#f1f5f9", color: S.textSec, borderRadius: S.radiusSm }}>{app} · 已映射</span>)}</div></div></>}
           {tab === "groupRules" && <GroupRulesEditor project={draft} updateDraft={updateDraft} />}
+          {tab === "community" && <ProjectCommunitySystem platform={draft.platform} scope="project" project={draft.name} rules={draft.groupTypes} onGoRules={() => setTab("groupRules")} />}
           {tab === "mechanism" && <div className="p-4 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><MessageSquare size={16} />社群运营机制</div><p className="text-xs" style={{ color: S.muted }}>规则绑定当前项目，会员等级变化后自动路由到对应社群。</p>{([ ["welcome", "入群与欢迎流程"], ["cadence", "内容运营频次"], ["route", "分群路由规则"], ["escalation", "异常升级路径"]] as [keyof ProjectRecord["mechanism"], string][]).map(([key, label]) => <label key={key} className="block text-xs font-bold">{label}<input className="mt-1" value={draft.mechanism[key]} style={fieldStyle} onChange={e => updateMechanism(key, e.target.value)} /></label>)}</div>}
           {tab === "visibility" && <div className="space-y-3"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><Eye size={16} />身份可见范围</div><p className="text-xs mt-1" style={{ color: S.muted }}>控制谁可以进入该项目并查看项目、企业微信和社群运营数据。勾选后对应角色可在其工作台看到本项目。</p></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2" style={{ color: S.textSec }}>项目相关身份（7 档）</div>{projectVisibilityRoles.map(role => <label key={role} className="flex items-center justify-between py-2 text-xs font-bold" style={{ borderBottom: `1px solid ${S.border}` }}><span className="flex items-center gap-2"><span className="w-5 h-5 flex items-center justify-center" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm, fontSize: 10 }}>{role[0]}</span>{role}</span><input type="checkbox" checked={!!draft.visibility[role]} onChange={e => setDraft(d => ({ ...d, visibility: { ...d.visibility, [role]: e.target.checked } }))} /></label>)}</div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2">其他角色（全局/生态/SaaS/平台运营层）</div><div className="flex flex-wrap gap-1.5">{roleNames.filter(r => !projectVisibilityRoles.includes(r)).map(role => <label key={role} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: !!draft.visibility[role] ? "#1e293b" : "#f1f5f9", color: !!draft.visibility[role] ? S.accent : S.muted, border: `1px solid ${!!draft.visibility[role] ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={!!draft.visibility[role]} onChange={e => setDraft(d => ({ ...d, visibility: { ...d.visibility, [role]: e.target.checked } }))} />{role}</label>)}</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs font-bold mb-2">企业微信下的项目</div><div className="flex items-center gap-2 flex-wrap">{["PRO会员", "体验官", "代理商"].map(name => <span key={name} className={name === draft.name ? "px-2 py-1 text-xs font-bold" : "px-2 py-1 text-xs"} style={{ background: name === draft.name ? "#1e293b" : "#f1f5f9", color: name === draft.name ? S.accent : S.muted, borderRadius: S.radiusSm }}>{name}</span>)}</div></div></div>}
         </div>
@@ -666,23 +655,24 @@ function CreateProjectDrawer({ ecoList, saasList, platformList, defaultPlatform,
   defaultPlatform?: string; onClose: () => void; onCreate: (p: ProjectRecord) => void;
 }) {
   const [name, setName] = useState("");
-  const [platform, setPlatform] = useState(defaultPlatform || (platformList[0]?.name ?? "健康运营平台"));
+  const [platform, setPlatform] = useState(defaultPlatform || (platformList[0]?.name ?? "主理人公社"));
   const [enterpriseWx, setEnterpriseWx] = useState("健康企业微信");
   const firstPlatform = platformList.find(p => p.name === platform);
   const [eco, setEco] = useState(firstPlatform?.eco || (ecoList[0]?.name ?? "健康医药美业生态"));
-  const [saas, setSaas] = useState(firstPlatform?.saas || (saasList[0]?.name ?? "私域工具"));
+  const [partner, setPartner] = useState(firstPlatform?.partner ?? firstPlatform?.saas ?? (saasList[0]?.name ?? "健康产业发展伙伴"));
+  const [saas, setSaas] = useState(firstPlatform?.saas ?? (saasList[0]?.name ?? "健康产业发展伙伴"));
   const [creatorRole, setCreatorRole] = useState("项目负责人");
   const canCreate = name.trim().length > 1 && platform.trim().length > 0;
   const platformNameOptions = platformList.map(p => p.name);
   const ecoOptions = ecoList.map(e => e.name);
   const saasOptions = saasList.filter(s => eco ? s.eco === eco : true).map(s => s.name);
-  const filteredPlatformOptions = platformList.filter(p => (!saas || p.saas === saas) && (!eco || p.eco === eco)).map(p => p.name);
+  const filteredPlatformOptions = platformList.filter(p => (!partner || (p.partner ?? p.saas) === partner) && (!eco || p.eco === eco)).map(p => p.name);
   const onPlatformChange = (next: string) => {
     setPlatform(next);
     const linked = platformList.find(p => p.name === next);
-    if (linked) { setSaas(linked.saas); setEco(linked.eco); }
+    if (linked) { setPartner(linked.partner ?? linked.saas); setSaas(linked.saas ?? linked.partner ?? ""); setEco(linked.eco); }
   };
-  return <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,.16)" }} onClick={onClose}><aside className="h-full w-full max-w-[460px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}><div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}><div><div className="text-base font-bold">接入新项目</div><div className="text-xs mt-1" style={{ color: S.muted }}>创建后继续配置会员等级和社群机制</div></div><button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button></div><div className="p-5 space-y-4"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目归属关系</div><p className="text-xs mt-1" style={{ color: S.muted }}>生态 → SaaS 系统 → 平台 → 项目：项目归属到具体平台下，平台由 SaaS 系统招募；一个企业微信可以承载多个项目，项目数据、会员等级和社群规则独立隔离。</p></div><label className="block text-xs font-bold">项目名称<input className="mt-1" value={name} placeholder="例如：PRO会员" style={fieldStyle} onChange={e => setName(e.target.value)} /></label><label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">SaaS 系统<select className="mt-1" value={saas} style={fieldStyle} onChange={e => setSaas(e.target.value)}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">所属平台<select className="mt-1" value={platform} style={fieldStyle} onChange={e => onPlatformChange(e.target.value)}>{(filteredPlatformOptions.length ? filteredPlatformOptions : platformNameOptions).map(n => <option key={n}>{n}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>项目必须归属到某个平台下，平台由SaaS 系统招募</span></label><label className="block text-xs font-bold">企业微信归属<input className="mt-1" value={enterpriseWx} placeholder="选择企业微信" style={fieldStyle} onChange={e => setEnterpriseWx(e.target.value)} /></label><label className="block text-xs font-bold">创建身份<select className="mt-1" value={creatorRole} style={fieldStyle} onChange={e => setCreatorRole(e.target.value)}>{roleNames.map(role => <option key={role}>{role}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>创建身份决定默认项目范围，后续可在“可见范围”中继续收敛。</span></label><div className="grid grid-cols-2 gap-2"><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认会员等级</div><div className="text-sm font-bold mt-1">3 个</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认可见身份</div><div className="text-sm font-bold mt-1">负责人 / 运营 / 客服</div></div></div></div><div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ id: Date.now(), name, platform, saas, eco, users: 0, groups: 0, teacher: "待分配", cities: ["待配置"], revenue: "待核算", status: "孵化中", enterpriseWx, enterpriseProjectCount: 1, tiers: defaultTiers.map(t => ({ ...t })), groupTypes: [], mechanism: { welcome: "欢迎语 + 入群任务", cadence: "每周 1 次", route: "按城市 + 会员等级分群", escalation: "异常通知项目负责人" }, visibility: { "超级管理员": true, "生态负责人": creatorRole === "生态负责人" || true, "生态COO": false, "SaaS负责人": creatorRole === "SaaS负责人", "SaaS运营": false, "平台管理员": creatorRole === "平台管理员", "平台运营": false, "项目负责人": creatorRole === "项目负责人" || true, "区域运营": creatorRole === "区域运营" || true, "客服": creatorRole === "客服" || true, "老师": false } })}>创建项目</button></div></aside></div>;
+  return <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,.16)" }} onClick={onClose}><aside className="h-full w-full max-w-[460px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}><div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}><div><div className="text-base font-bold">接入新项目</div><div className="text-xs mt-1" style={{ color: S.muted }}>创建后继续配置会员等级和社群机制</div></div><button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button></div><div className="p-5 space-y-4"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目归属关系</div><p className="text-xs mt-1" style={{ color: S.muted }}>生态 → SaaS 合作伙伴 → 平台 → 项目：项目归属到具体平台下，平台由 SaaS 合作伙伴招募；一个企业微信可以承载多个项目，项目数据、会员等级和社群规则独立隔离。</p></div><label className="block text-xs font-bold">项目名称<input className="mt-1" value={name} placeholder="例如：PRO会员" style={fieldStyle} onChange={e => setName(e.target.value)} /></label><label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">SaaS 合作伙伴<select className="mt-1" value={partner} style={fieldStyle} onChange={e => setPartner(e.target.value)}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">所属平台<select className="mt-1" value={platform} style={fieldStyle} onChange={e => onPlatformChange(e.target.value)}>{(filteredPlatformOptions.length ? filteredPlatformOptions : platformNameOptions).map(n => <option key={n}>{n}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>项目必须归属到某个平台下，平台由 SaaS 合作伙伴招募</span></label><label className="block text-xs font-bold">企业微信归属<input className="mt-1" value={enterpriseWx} placeholder="选择企业微信" style={fieldStyle} onChange={e => setEnterpriseWx(e.target.value)} /></label><label className="block text-xs font-bold">创建身份<select className="mt-1" value={creatorRole} style={fieldStyle} onChange={e => setCreatorRole(e.target.value)}>{roleNames.map(role => <option key={role}>{role}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>创建身份决定默认项目范围，后续可在“可见范围”中继续收敛。</span></label><div className="grid grid-cols-2 gap-2"><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认会员等级</div><div className="text-sm font-bold mt-1">3 个</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认可见身份</div><div className="text-sm font-bold mt-1">负责人 / 运营 / 客服</div></div></div></div><div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ id: Date.now(), name, platform, partner, saas, eco, users: 0, groups: 0, teacher: "待分配", cities: ["待配置"], revenue: "待核算", status: "孵化中", enterpriseWx, enterpriseProjectCount: 1, tiers: defaultTiers.map(t => ({ ...t })), groupTypes: [], mechanism: { welcome: "欢迎语 + 入群任务", cadence: "每周 1 次", route: "按城市 + 会员等级分群", escalation: "异常通知项目负责人" }, visibility: { "超级管理员": true, "生态负责人": creatorRole === "生态负责人" || true, "生态COO": false, "合作伙伴负责人": creatorRole === "合作伙伴负责人", "合作伙伴运营": false, "平台管理员": creatorRole === "平台管理员", "平台运营": false, "项目负责人": creatorRole === "项目负责人" || true, "区域运营": creatorRole === "区域运营" || true, "客服": creatorRole === "客服" || true, "老师": false } })}>创建项目</button></div></aside></div>;
 }
 
 // ─── 新建抽屉与 Toast ─────────────────────────────────────────
@@ -737,7 +727,7 @@ function CreateEcosystemDrawer({ onClose, onCreate }: { onClose: () => void; onC
         <div className="p-5 space-y-4">
           <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}>
             <div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />生态归属关系</div>
-            <p className="text-xs mt-1" style={{ color: S.muted }}>新建生态归属到超级生态下，下辖多个 SaaS 系统与平台，形成行业闭环。</p>
+            <p className="text-xs mt-1" style={{ color: S.muted }}>新建生态归属到超级生态下，下辖多个 SaaS 合作伙伴与平台，形成行业闭环。</p>
           </div>
           <label className="block text-xs font-bold">生态名称<span style={{ color: "#c00" }}> *</span><input className="mt-1" value={name} placeholder="例如：健康医药美业生态" style={fieldStyle} onChange={e => setName(e.target.value)} /></label>
           <label className="block text-xs font-bold">生态描述<input className="mt-1" value={desc} placeholder="例如：大健康、医药、医美、美业综合生态" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
@@ -790,32 +780,33 @@ function CreateSaasDrawer({ ecoList, defaultEco, onClose, onCreate }: { ecoList:
       <aside className="h-full w-full max-w-[460px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}>
         <div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
           <div>
-            <div className="text-base font-bold">新建 SaaS 系统</div>
-            <div className="text-xs mt-1" style={{ color: S.muted }}>在生态下开 SaaS，招募平台并下发能力与权益</div>
+            <div className="text-base font-bold">新建 SaaS 合作伙伴</div>
+            <div className="text-xs mt-1" style={{ color: S.muted }}>在生态下开 SaaS 合作伙伴，招募平台并下发能力与权益</div>
           </div>
           <button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button>
         </div>
         <div className="p-5 space-y-4">
           <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}>
-            <div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />SaaS 归属关系</div>
-            <p className="text-xs mt-1" style={{ color: S.muted }}>生态 → SaaS 系统 → 平台 → 项目：SaaS 系统归属到某个生态，可招募多个平台并下发能力与权益。</p>
+            <div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />SaaS 合作伙伴归属关系</div>
+            <p className="text-xs mt-1" style={{ color: S.muted }}>生态 → SaaS 合作伙伴 → 平台 → 项目：SaaS 合作伙伴归属到某个生态，可招募多个平台并下发能力与权益。</p>
           </div>
-          <label className="block text-xs font-bold">SaaS 系统名称<span style={{ color: "#c00" }}> *</span><input className="mt-1" value={name} placeholder="例如：私域工具" style={fieldStyle} onChange={e => setName(e.target.value)} /></label>
+          <label className="block text-xs font-bold">SaaS 合作伙伴名称<span style={{ color: "#c00" }}> *</span><input className="mt-1" value={name} placeholder="例如：健康产业发展伙伴" style={fieldStyle} onChange={e => setName(e.target.value)} /></label>
           <label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label>
-          <label className="block text-xs font-bold">描述<input className="mt-1" value={desc} placeholder="例如：私域账号资产+微信社群一体化 SaaS 系统" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
+          <label className="block text-xs font-bold">描述<input className="mt-1" value={desc} placeholder="例如：负责发展健康产业相关平台并提供运营支持" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
         </div>
         <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}>
           <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button>
-          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), eco, desc: desc.trim() })}>创建 SaaS 系统</button>
+          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), eco, desc: desc.trim() })}>创建 SaaS 合作伙伴</button>
         </div>
       </aside>
     </div>
   );
 }
 
-function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onClose, onCreate }: { saasList: SaasItem[]; ecoList: EcoItem[]; defaultSaas?: string; defaultEco?: string; onClose: () => void; onCreate: (data: { name: string; saas: string; eco: string; desc: string }) => void }) {
+function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onClose, onCreate }: { saasList: SaasItem[]; ecoList: EcoItem[]; defaultSaas?: string; defaultEco?: string; onClose: () => void; onCreate: (data: { name: string; partner: string; saas: string; eco: string; desc: string }) => void }) {
   const initialSaas = defaultSaas || saasList[0]?.name || saasPlatforms[0].name;
   const [name, setName] = useState("");
+  const [partner, setPartner] = useState(initialSaas);
   const [saas, setSaas] = useState(initialSaas);
   const [eco, setEco] = useState(defaultEco || saasList.find(s => s.name === initialSaas)?.eco || ecoList[0]?.name || ecosystems[0].name);
   const [desc, setDesc] = useState("");
@@ -833,23 +824,23 @@ function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onCl
         <div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
           <div>
             <div className="text-base font-bold">新建平台</div>
-            <div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 系统招募的运营实体，下辖多个项目</div>
+            <div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 合作伙伴招募的运营实体，下辖多个项目</div>
           </div>
           <button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button>
         </div>
         <div className="p-5 space-y-4">
           <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}>
             <div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />平台归属关系</div>
-            <p className="text-xs mt-1" style={{ color: S.muted }}>SaaS 系统 → 平台 → 项目：平台由 SaaS 系统招募，下辖多个运营项目，拥有独立运营团队与资源池。</p>
+            <p className="text-xs mt-1" style={{ color: S.muted }}>SaaS 合作伙伴 → 平台 → 项目：平台由 SaaS 合作伙伴招募，下辖多个运营项目，拥有独立运营团队与资源池。</p>
           </div>
           <label className="block text-xs font-bold">平台名称<span style={{ color: "#c00" }}> *</span><input className="mt-1" value={name} placeholder="例如：健康运营平台" style={fieldStyle} onChange={e => setName(e.target.value)} /></label>
-          <label className="block text-xs font-bold">所属 SaaS 系统<select className="mt-1" value={saas} style={fieldStyle} onChange={e => onSaasChange(e.target.value)}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label>
+          <label className="block text-xs font-bold">所属 SaaS 合作伙伴<select className="mt-1" value={partner} style={fieldStyle} onChange={e => { setPartner(e.target.value); setSaas(e.target.value); onSaasChange(e.target.value); }}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label>
           <label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label>
-          <label className="block text-xs font-bold">描述<input className="mt-1" value={desc} placeholder="例如：由 SaaS 系统招募的运营平台" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
+          <label className="block text-xs font-bold">描述<input className="mt-1" value={desc} placeholder="例如：由 SaaS 合作伙伴招募的运营平台" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
         </div>
         <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}>
           <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button>
-          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), saas, eco, desc: desc.trim() })}>创建平台</button>
+          <button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), partner, saas, eco, desc: desc.trim() })}>创建平台</button>
         </div>
       </aside>
     </div>
@@ -858,11 +849,12 @@ function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onCl
 
 // ─── 平台下的项目列表 ─────────────────────────────────────────
 function ProjectList({
-  projectList, setProjectList, ecoList, saasList, platformList, platformName, platformId, onBack,
+  projectList, setProjectList, ecoList, saasList, platformList, platformName, platformId, onEnterProject, onBack,
 }: {
   projectList: ProjectItem[]; setProjectList: React.Dispatch<React.SetStateAction<ProjectItem[]>>;
   ecoList: EcoItem[]; saasList: SaasItem[]; platformList: PlatformItem[];
   platformName: string; platformId: number;
+  onEnterProject: (name: string) => void;
   onBack: () => void;
 }) {
   const platform = platformList.find(pf => pf.id === platformId) || platformList.find(pf => pf.name === platformName);
@@ -870,23 +862,25 @@ function ProjectList({
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [configProject, setConfigProject] = useState<ProjectRecord | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
-  const { rulesByProject } = useCommunityData();
-  useEffect(() => { filteredProjects.forEach(project => registerProjectRules(project.name, project.groupTypes)); }, [platformName, filteredProjects.length]);
-  const saveProject = (next: ProjectRecord) => { setProjectList(list => list.map(p => p.id === next.id ? next : p)); saveProjectRules(next.name, next.groupTypes); };
-  return <div className="space-y-3">
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <button type="button" className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={onBack}>← 返回平台列表</button>
-        <div>
-          <div className="text-sm font-bold" style={{ color: S.text }}>{platformName} · 项目工作台 <span style={{ color: S.muted, fontWeight: "normal" }}>({filteredProjects.length})</span></div>
-          <div className="text-xs mt-1 font-mono" style={{ color: S.muted }}>所属 SaaS：{platform?.saas} · 所属生态：{platform?.eco}</div>
+  const { rulesByScope } = useCommunityData();
+  useEffect(() => { filteredProjects.forEach(project => registerScopeRules(project.platform, "project", project.name, project.groupTypes)); }, [platformName, filteredProjects]);
+  const saveProject = (next: ProjectRecord) => { setProjectList(list => list.map(p => p.id === next.id ? next : p)); saveScopeRules(next.platform, "project", next.name, next.groupTypes); };
+  const projectScopeRules = (project: ProjectRecord) => rulesByScope[getCommunityScopeKey(project.platform, "project", project.name)] ?? project.groupTypes;
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button type="button" className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={onBack}>← 返回平台列表</button>
+          <div>
+            <div className="text-sm font-bold" style={{ color: S.text }}>{platformName} · 项目工作台 <span style={{ color: S.muted, fontWeight: "normal" }}>({filteredProjects.length})</span></div>
+            <div className="text-xs mt-1 font-mono" style={{ color: S.muted }}>所属合作伙伴：{platform?.partner ?? platform?.saas} · 所属生态：{platform?.eco}</div>
+          </div>
         </div>
+        <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateOpen(true)}><Plus size={12} /> 接入新项目</button>
       </div>
-      <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateOpen(true)}><Plus size={12} /> 接入新项目</button>
-    </div>
-    <div className="grid grid-cols-4 gap-2">{[["可见项目", filteredProjects.length, Eye], ["企业微信", new Set(filteredProjects.map(p => p.enterpriseWx)).size, Building2], ["会员等级", filteredProjects.reduce((n, p) => n + p.tiers.length, 0), UsersRound], ["运营群组", filteredProjects.reduce((n, p) => n + p.groups, 0), MessageSquare]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}</div>
-    <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Building2 size={16} /><div className="text-xs leading-relaxed"><b>平台与项目关系</b>：平台由上层SaaS 系统招募，下辖多个运营项目；项目是权限和运营数据隔离的最小单元。进入项目后，成员、会员等级、社群和报表只展示当前身份有权访问的范围。</div></div>
-    <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{[["可见项目", filteredProjects.length, Eye], ["企业微信", new Set(filteredProjects.map(p => p.enterpriseWx)).size, Building2], ["会员等级", filteredProjects.reduce((n, p) => n + p.tiers.length, 0), UsersRound], ["运营群组", filteredProjects.reduce((n, p) => n + p.groups, 0), MessageSquare]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}</div>
+    <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Building2 size={16} /><div className="text-xs leading-relaxed"><b>平台与项目关系</b>：平台由上层 SaaS 合作伙伴招募，下辖多个运营项目；项目是权限和运营数据隔离的最小单元。进入项目后，成员、会员等级、社群和报表只展示当前身份有权访问的范围。</div></div>
+    <div className="hidden lg:block overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
       <div className="min-w-[1260px]">
         <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
           {([["项目名称",190],["企业微信归属",170],["用户/群组",100],["服务老师",120],["覆盖城市",150],["状态",90],["操作",100]] as [string, number][]).map(([l, w]) => <div key={l} className="flex-shrink-0" style={{ width: w }}>{l}</div>)}
@@ -900,28 +894,93 @@ function ProjectList({
             <div className="flex-shrink-0" style={{ width: 100 }}><b>{p.users.toLocaleString()}</b><span style={{ color: S.muted }}> / {p.groups} 群</span></div><div className="flex-shrink-0" style={{ width: 120, color: S.muted }}>{p.teacher}</div>
             <div className="flex-shrink-0" style={{ width: 150 }}><div className="flex flex-wrap gap-1">{p.cities.map(c => <span key={c} className="px-1.5 py-0.5 font-bold" style={{ background: "#1e293b", color: S.accent, fontSize: "10px", borderRadius: S.radiusSm }}>{c}</span>)}</div></div>
             <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 font-bold" style={{ background: statusCfg[p.status]?.bg, color: statusCfg[p.status]?.color, borderRadius: S.radiusSm }}>{p.status}</span></div>
-            <div className="flex-shrink-0 flex gap-1" style={{ width: 100 }} onClick={e => e.stopPropagation()}><button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => { setSelectedId(p.id); setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}>进入</button><button type="button" className="px-1.5 py-1" title="配置项目" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => { setConfigProject({ ...p, groupTypes: rulesByProject[p.name] ?? p.groupTypes }); }}><Settings size={11} /></button></div>
+            <div className="flex-shrink-0 flex gap-1" style={{ width: 100 }} onClick={e => e.stopPropagation()}><button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => { setSelectedId(p.id); onEnterProject(p.name); setConfigProject({ ...p, groupTypes: projectScopeRules(p) }); }}>进入</button><button type="button" className="px-1.5 py-1" title="配置项目" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => { setConfigProject({ ...p, groupTypes: projectScopeRules(p) }); }}><Settings size={11} /></button></div>
           </div>
         ))}
       </div>
     </div>
-    <div className="p-4 flex items-start gap-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}><LayoutDashboard size={18} style={{ color: "#1e293b", marginTop: 1, flexShrink: 0 }} /><div><div className="text-sm font-bold mb-1">项目是权限和运营隔离的最小单元</div><p className="text-xs leading-relaxed font-mono" style={{ color: S.textSec }}>平台管理员可在本平台下创建项目；项目负责人可配置自己负责的项目；区域运营、客服按可见范围进入项目。企业微信负责账号承载，项目负责会员等级、社群规则和运营数据。</p></div></div>
+    <div data-section="projects" className="lg:hidden space-y-2">
+      {filteredProjects.length === 0 ? (
+        <div className="p-6 text-center text-xs" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, color: S.muted }}>该平台下暂无项目，点击右上角「接入新项目」开始创建。</div>
+      ) : filteredProjects.map(p => (
+        <article key={p.id} className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-2 min-w-0"><div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{p.name[3] ?? p.name[0]}</div><div className="min-w-0"><div className="text-sm font-bold truncate">{p.name}</div><div className="text-[10px] mt-0.5" style={{ color: S.muted }}>{p.enterpriseWx} · {p.teacher}</div></div></div>
+            <span className="px-1.5 py-0.5 text-[10px] font-bold flex-shrink-0" style={{ background: statusCfg[p.status]?.bg, color: statusCfg[p.status]?.color, borderRadius: S.radiusSm }}>{p.status}</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2 text-xs"><div><div className="font-bold">{p.users.toLocaleString()}</div><div style={{ color: S.muted }}>用户</div></div><div><div className="font-bold">{p.groups}</div><div style={{ color: S.muted }}>群组</div></div><div><div className="font-bold">{p.cities.join("、")}</div><div style={{ color: S.muted }}>覆盖城市</div></div></div>
+          <div className="flex gap-2" onClick={e => e.stopPropagation()}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => { setSelectedId(p.id); onEnterProject(p.name); setConfigProject({ ...p, groupTypes: projectScopeRules(p) }); }}>进入项目</button><button type="button" className="px-3 py-2 text-xs font-bold" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => setConfigProject({ ...p, groupTypes: projectScopeRules(p) })}>配置</button></div>
+        </article>
+      ))}
+    </div>
     {configProject && <ProjectDrawer project={configProject} onClose={() => setConfigProject(null)} onSave={saveProject} />}
-    {createOpen && <CreateProjectDrawer ecoList={ecoList} saasList={saasList} platformList={platformList} defaultPlatform={platformName} onClose={() => setCreateOpen(false)} onCreate={p => { registerProjectRules(p.name, p.groupTypes); setProjectList(list => [p, ...list]); setCreateOpen(false); setConfigProject(p); }} />}
-  </div>;
+    {createOpen && <CreateProjectDrawer ecoList={ecoList} saasList={saasList} platformList={platformList} defaultPlatform={platformName} onClose={() => setCreateOpen(false)} onCreate={p => { registerScopeRules(p.platform, "project", p.name, p.groupTypes); setProjectList(list => [p, ...list]); setCreateOpen(false); setConfigProject(p); }} />}
+    </div>
+  );
+}
+
+function PlatformGroupRulesEditor({ platform, rules, onChange }: { platform: string; rules: GroupTypeRule[]; onChange: (rules: GroupTypeRule[]) => void }) {
+  const updateRule = (idx: number, patch: Partial<GroupTypeRule>) => onChange(rules.map((rule, index) => index === idx ? { ...rule, ...patch } : rule));
+  const toggleListValue = (idx: number, key: "cities" | "memberRoles", value: string) => onChange(rules.map((rule, index) => index === idx ? { ...rule, [key]: rule[key].includes(value) ? rule[key].filter(item => item !== value) : [...rule[key], value] } : rule));
+  return <div className="space-y-2"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />平台群类型规则</div><p className="text-xs mt-1 leading-relaxed" style={{ color: S.muted }}>平台级规则只作用于「{platform}」平台社群，不会覆盖任何项目的社群规则。</p></div>{rules.map((rule, idx) => <div key={rule.id} className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-2"><span className="px-2 py-1 text-xs font-bold" style={{ background: rule.enabled ? "#1e293b" : "#f1f5f9", color: rule.enabled ? S.accent : S.muted, borderRadius: S.radiusSm }}>{rule.code}</span><input value={rule.name} style={{ ...fieldStyle, width: 132, padding: "5px 7px" }} onChange={e => updateRule(idx, { name: e.target.value })} /></div><label className="flex items-center gap-1 text-xs font-bold" style={{ color: rule.enabled ? "#276749" : S.muted }}><input type="checkbox" checked={rule.enabled} onChange={e => updateRule(idx, { enabled: e.target.checked })} />启用</label></div><div className="grid grid-cols-1 md:grid-cols-2 gap-3"><label className="text-xs" style={{ color: S.muted }}>默认群容量<input type="number" min="1" value={rule.capacity} style={{ ...fieldStyle, marginTop: 4 }} onChange={e => updateRule(idx, { capacity: Number(e.target.value) })} /></label><label className="text-xs" style={{ color: S.muted }}>分配方式<select value={rule.allocationMode} style={{ ...fieldStyle, marginTop: 4 }} onChange={e => updateRule(idx, { allocationMode: e.target.value as GroupTypeRule["allocationMode"] })}><option>轮巡分配</option><option>统一分配</option></select></label></div><div><div className="text-xs font-bold mb-1.5">匹配会员身份</div><div className="flex flex-wrap gap-1.5">{groupRuleRoleOptions.map(role => <label key={role} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: rule.memberRoles.includes(role) ? "#1e293b" : "#f1f5f9", color: rule.memberRoles.includes(role) ? S.accent : S.muted, border: `1px solid ${rule.memberRoles.includes(role) ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={rule.memberRoles.includes(role)} onChange={() => toggleListValue(idx, "memberRoles", role)} />{role}</label>)}</div></div><div><div className="text-xs font-bold mb-1.5">管理地区</div><div className="flex flex-wrap gap-1.5">{groupRuleCityOptions.map(city => <label key={city} className="flex items-center gap-1 px-2 py-1 text-[10px] cursor-pointer" style={{ background: rule.cities.includes(city) ? "#1e293b" : "#f1f5f9", color: rule.cities.includes(city) ? S.accent : S.muted, border: `1px solid ${rule.cities.includes(city) ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}><input className="sr-only" type="checkbox" checked={rule.cities.includes(city)} onChange={() => toggleListValue(idx, "cities", city)} />{city}</label>)}</div></div></div>)}<button type="button" className="w-full py-2 text-xs font-bold" style={{ border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => onChange([...rules, { id: `custom-${Date.now()}`, name: "新群类型", code: `PL${String(rules.length + 1).padStart(2, "0")}`, memberRoles: [], capacity: 500, cities: ["全国"], allocationMode: "轮巡分配", nameTemplate: `{project}·{type}·{seq}群`, enabled: false }])}><Plus size={13} className="inline mr-1" />新增平台群类型规则</button></div>;
+}
+
+function PlatformConfigDrawer({
+  platform,
+  onClose,
+  onSave,
+}: {
+  platform: PlatformItem;
+  onClose: () => void;
+  onSave: (platform: PlatformItem) => void;
+}) {
+  const [draft, setDraft] = useState(platform);
+  const { rulesByScope } = useCommunityData();
+  const platformRulesKey = getCommunityScopeKey(platform.name, "platform");
+  const [groupRules, setGroupRules] = useState<GroupTypeRule[]>(() => rulesByScope[platformRulesKey] ?? []);
+  useEffect(() => {
+    setGroupRules(rulesByScope[platformRulesKey] ?? []);
+  }, [platformRulesKey, rulesByScope]);
+  const fieldStyle = { width: "100%", border: `1px solid ${S.border}`, borderRadius: S.radiusSm, padding: "8px 10px", fontSize: 12, background: S.surface, color: S.text };
+  return (
+    <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,0.16)" }} onClick={onClose}>
+      <aside className="h-full w-full max-w-[520px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-4" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
+          <div><div className="text-sm font-bold" style={{ color: S.text }}>平台配置</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.name}</div></div>
+          <button type="button" aria-label="关闭平台配置" onClick={onClose}><X size={16} /></button>
+        </div>
+        <div className="p-5 space-y-4">
+          <div className="p-3 text-xs leading-relaxed" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radiusSm }}><b>归属关系</b><div className="mt-1" style={{ color: S.textSec }}>SaaS 合作伙伴：{draft.partner ?? draft.saas} · 所属生态：{draft.eco}</div></div>
+          <label className="block text-xs font-bold">平台名称<input className="mt-1" style={fieldStyle} value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label>
+          <label className="block text-xs font-bold">平台描述<textarea className="mt-1" rows={4} style={{ ...fieldStyle, resize: "vertical" }} value={draft.desc} onChange={e => setDraft({ ...draft, desc: e.target.value })} /></label>
+          <label className="block text-xs font-bold">平台状态<select className="mt-1" style={fieldStyle} value={draft.status} onChange={e => setDraft({ ...draft, status: e.target.value })}><option>运营中</option><option>生产中</option><option>孵化中</option><option>暂停运营</option><option>已归档</option></select></label>
+          <label className="block text-xs font-bold">数据接入状态<select className="mt-1" style={fieldStyle} value={draft.dataStatus ?? "待接入"} onChange={e => setDraft({ ...draft, dataStatus: e.target.value })}><option>待接入</option><option>接入中</option><option>已接入</option><option>异常</option></select></label>
+          <PlatformGroupRulesEditor platform={draft.name} rules={groupRules} onChange={setGroupRules} />
+          <div className="grid grid-cols-2 gap-3 text-xs"><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div style={{ color: S.muted }}>下辖项目</div><b className="text-base">{draft.projects}</b></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div style={{ color: S.muted }}>平台用户</div><b className="text-base">{draft.users.toLocaleString()}</b></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div style={{ color: S.muted }}>运营群组</div><b className="text-base">{draft.groups}</b></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div style={{ color: S.muted }}>平台状态</div><b className="text-base">{draft.status}</b></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div style={{ color: S.muted }}>数据接入</div><b className="text-base">{draft.dataStatus ?? "待接入"}</b></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div style={{ color: S.muted }}>月营收</div><b className="text-base">{draft.revenue}</b></div></div>
+        </div>
+        <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => { saveScopeRules(draft.name, "platform", undefined, groupRules); onSave(draft); onClose(); }}><Save size={13} className="inline mr-1" />保存平台配置</button></div>
+      </aside>
+    </div>
+  );
 }
 
 // ─── 第 4 层：平台视图（平台列表 → 进入平台 → 项目列表） ─────
 function PlatformView({
-  platformList, setPlatformList, ecoList, saasList, projectList, setProjectList, onEnterPlatform,
+  platformList, setPlatformList, ecoList, saasList, projectList, setProjectList, onEnterPlatform, ecoFilter,
 }: {
-  platformList: PlatformItem[]; setPlatformList: React.Dispatch<React.SetStateAction<PlatformItem[]>>;
-  ecoList: EcoItem[]; saasList: SaasItem[];
+  platformList: PlatformItem[]; setPlatformList: React.Dispatch<React.SetStateAction<PlatformItem[]>>; ecoList: EcoItem[]; saasList: SaasItem[];
   projectList: ProjectItem[]; setProjectList: React.Dispatch<React.SetStateAction<ProjectItem[]>>;
   onEnterPlatform: (id: number, name: string) => void;
+  ecoFilter?: string;
 }) {
-  const [filterEco, setFilterEco] = useState<string>("全部生态");
+  const [filterEco, setFilterEco] = useState<string>(ecoFilter || "全部生态");
+  useEffect(() => {
+    setFilterEco(ecoFilter || "全部生态");
+  }, [ecoFilter]);
   const [createPlatformOpen, setCreatePlatformOpen] = useState(false);
+  const [configPlatform, setConfigPlatform] = useState<PlatformItem | null>(null);
+  const [communityPlatform, setCommunityPlatform] = useState<string>(platformList[0]?.name || "");
+  const { rulesByScope } = useCommunityData();
   const { setApprovals } = useApprovals();
 
   const filtered = filterEco === "全部生态" ? platformList : platformList.filter(p => p.eco === filterEco);
@@ -930,10 +989,14 @@ function PlatformView({
   const totalUsers = platformList.reduce((n, p) => n + p.users, 0);
   const totalGroups = platformList.reduce((n, p) => n + p.groups, 0);
   const totalTeachers = platformList.reduce((n, p) => n + p.teachers, 0);
+  const scrollToSection = (section: string) => {
+    const target = Array.from(document.querySelectorAll<HTMLElement>(`[data-section="${section}"]`)).find(element => element.offsetParent !== null);
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
-  return <div className="space-y-3">
+  return <div id="platform-overview" data-section="overview" className="space-y-3">
     <div className="flex items-center justify-between">
-      <div><span className="text-sm font-bold" style={{ color: S.text }}>平台工作台 ({platformList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>由SaaS 系统招募的运营实体，每个平台下辖多个运营项目</div></div>
+      <div><span className="text-sm font-bold" style={{ color: S.text }}>平台工作台 ({platformList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 合作伙伴招募的运营实体，每个平台下辖多个运营项目</div></div>
       <div className="flex gap-2">
         <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
           {ecoOptions.map(o => <option key={o}>{o}</option>)}
@@ -941,19 +1004,46 @@ function PlatformView({
         <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
       </div>
     </div>
-    <div className="grid grid-cols-5 gap-2">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
       {[["可见平台", platformList.length, Building2], ["下辖项目", totalProjects, LayoutDashboard], ["服务老师", totalTeachers, UsersRound], ["平台用户", totalUsers.toLocaleString(), Eye], ["运营群组", totalGroups, MessageSquare]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as string | number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}
     </div>
-    <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Layers size={16} /><div className="text-xs leading-relaxed"><b>平台与SaaS 系统关系</b>：SaaS 系统招募平台并下发能力与权益；一个SaaS 系统可招募多个平台，一个平台下辖多个项目。平台聚合多个项目的运营团队、资源池和汇总视角。</div></div>
-    <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-      <div className="min-w-[1180px]">
+    <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Layers size={16} /><div className="text-xs leading-relaxed"><b>平台与SaaS 合作伙伴关系</b>：SaaS 合作伙伴招募平台并下发能力与权益；一个SaaS 合作伙伴可招募多个平台，一个平台下辖多个项目。平台聚合多个项目的运营团队、资源池和汇总视角。</div></div>
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" aria-label="平台管理快捷入口">
+      {[
+        ["平台总览", LayoutDashboard, () => scrollToSection("overview")],
+        ["项目运营", Package, () => scrollToSection("projects")],
+        ["平台级社群", MessageSquare, () => scrollToSection("community")],
+        ["平台配置", Settings, () => setConfigPlatform(platformList.find(platform => platform.name === communityPlatform) || platformList[0] || null)],
+      ].map(([label, Icon, action]) => (
+        <button key={label as string} type="button" className="flex items-center gap-2 px-3 py-2 text-left text-xs font-bold transition-colors" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={action as () => void}>
+          <Icon size={14} style={{ color: S.primary }} />
+          <span>{label as string}</span>
+          <ChevronRight size={12} className="ml-auto" style={{ color: S.mutedLight }} />
+        </button>
+      ))}
+    </div>
+    <div data-section="community" className="p-4 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+      <div className="flex items-center justify-between gap-3">
+        <div><div className="text-sm font-bold">平台级社群工作台</div><div className="text-xs mt-1" style={{ color: S.muted }}>当前平台：{communityPlatform} · 平台 Scope 独立管理社群规则与群组</div></div>
+        <select className="px-2.5 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }} value={communityPlatform} onChange={event => setCommunityPlatform(event.target.value)}>
+          {platformList.map(platform => <option key={platform.id} value={platform.name}>{platform.name}</option>)}
+        </select>
+      </div>
+      <ProjectCommunitySystem
+        platform={communityPlatform}
+        scope="platform"
+        rules={rulesByScope[getCommunityScopeKey(communityPlatform, "platform")] ?? []}
+        onGoRules={() => setConfigPlatform(platformList.find(platform => platform.name === communityPlatform) || null)}
+      />
+    </div>
+    <div id="platform-projects" data-section="projects" className="hidden lg:block overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
         <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
-          {([["平台名称",220],["SaaS 系统",150],["所属生态",130],["下辖项目/用户/群组",200],["服务老师",100],["月营收",110],["状态",90],["操作",140]] as [string, number][]).map(([l, w]) => <div key={l} className="flex-shrink-0" style={{ width: w }}>{l}</div>)}
+          {([["平台名称",220],["SaaS 合作伙伴",150],["所属生态",130],["下辖项目/用户/群组",200],["服务老师",100],["月营收",110],["状态",90],["操作",140]] as [string, number][]).map(([l, w]) => <div key={l} className="flex-shrink-0" style={{ width: w }}>{l}</div>)}
         </div>
         {filtered.map((pf, idx) => (
           <div key={pf.id} role="button" tabIndex={0} className="flex items-center px-4 py-3 cursor-pointer transition-all text-xs font-mono" style={{ background: idx % 2 === 0 ? "#ffffff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }} onClick={() => onEnterPlatform(pf.id, pf.name)} onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onEnterPlatform(pf.id, pf.name); } }}>
             <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 220 }}><div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{pf.name[3] ?? pf.name[0]}</div><span className="font-bold">{pf.name}</span></div>
-            <div className="flex-shrink-0" style={{ width: 150, color: S.muted }}>{pf.saas}</div>
+            <div className="flex-shrink-0" style={{ width: 150, color: S.muted }}>{pf.partner ?? pf.saas}</div>
             <div className="flex-shrink-0" style={{ width: 130, color: S.muted }}>{pf.eco}</div>
             <div className="flex-shrink-0" style={{ width: 200 }}><span className="font-bold">{pf.projects}</span><span style={{ color: S.muted }}> 项目 / </span><span className="font-bold">{pf.users.toLocaleString()}</span><span style={{ color: S.muted }}> 用户 / </span><span className="font-bold">{pf.groups}</span><span style={{ color: S.muted }}> 群</span></div>
             <div className="flex-shrink-0" style={{ width: 100, color: S.text }}>{pf.teachers} 人</div>
@@ -961,25 +1051,33 @@ function PlatformView({
             <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 font-bold" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span></div>
             <div className="flex-shrink-0 flex gap-1" style={{ width: 140 }} onClick={e => e.stopPropagation()}>
               <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => onEnterPlatform(pf.id, pf.name)}>进入平台</button>
-              <button type="button" className="px-1.5 py-1" title="平台配置" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }}><Settings size={11} /></button>
+              <button type="button" className="px-1.5 py-1" title="平台配置" aria-label={`配置平台 ${pf.name}`} style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => setConfigPlatform(pf)}><Settings size={11} /></button>
             </div>
           </div>
         ))}
       </div>
+    <div data-section="projects" className="lg:hidden space-y-2">
+      {filtered.map(pf => (
+        <article key={pf.id} className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
+          <div className="flex items-start justify-between gap-3"><div className="flex items-center gap-2 min-w-0"><div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{pf.name[3] ?? pf.name[0]}</div><div className="min-w-0"><div className="text-sm font-bold truncate">{pf.name}</div><div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>{pf.partner ?? pf.saas} · {pf.eco}</div></div></div><span className="px-1.5 py-0.5 text-[10px] font-bold flex-shrink-0" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span></div>
+          <div className="grid grid-cols-3 gap-2 text-xs"><div><div className="font-bold">{pf.projects}</div><div style={{ color: S.muted }}>项目</div></div><div><div className="font-bold">{pf.users.toLocaleString()}</div><div style={{ color: S.muted }}>用户</div></div><div><div className="font-bold">{pf.groups}</div><div style={{ color: S.muted }}>群组</div></div></div>
+          <div className="flex gap-2" onClick={e => e.stopPropagation()}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => onEnterPlatform(pf.id, pf.name)}>进入平台</button><button type="button" className="px-3 py-2 text-xs font-bold" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => setConfigPlatform(pf)}>配置</button></div>
+        </article>
+      ))}
     </div>
-    <div className="p-4 flex items-start gap-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}><Building2 size={18} style={{ color: "#1e293b", marginTop: 1, flexShrink: 0 }} /><div><div className="text-sm font-bold mb-1">平台由SaaS 系统招募，下辖多个项目</div><p className="text-xs leading-relaxed font-mono" style={{ color: S.textSec }}>每个平台由平台管理员负责，在同一个SaaS 系统下拥有独立的运营团队和独立的项目隔离。项目是权限与运营数据隔离的最小单元，可单独配置会员等级、社群规则和可见范围。</p></div></div>
-    {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} onClose={() => setCreatePlatformOpen(false)} onCreate={({ name, saas, eco, desc }) => {
-      setPlatformList(list => [...list, { id: Date.now(), name, saas, eco, desc, projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
+    {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} onClose={() => setCreatePlatformOpen(false)} onCreate={({ name, saas, partner, eco, desc }) => {
+      setPlatformList(list => [...list, { id: Date.now(), name, partner, saas, eco, desc, projects: 0, users: 0, groups: 0, teachers: 0, revenue: "待接入", status: "孵化中", dataStatus: "待接入" }]);
       const approval = createApproval("platform_onboard", {
-        title: `平台入驻：${name}（${saas}）`,
+        title: `平台入驻：${name}（${partner}）`,
         submitter: "平台管理员",
-        description: `在${saas} SaaS 下新建平台「${name}」，所属${eco}生态`,
-        detail: { 平台名称: name, 所属SaaS: saas, 所属生态: eco, 描述: desc || "—" },
+        description: `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态`,
+        detail: { 平台名称: name, 所属合作伙伴: partner, 所属生态: eco, 描述: desc || "—" },
         payload: { type: "platform_onboard", name, saas, eco, desc: desc || "" },
       });
       setApprovals(prev => [approval, ...prev]);
       setCreatePlatformOpen(false);
     }} />}
+    {configPlatform && <PlatformConfigDrawer platform={configPlatform} onClose={() => setConfigPlatform(null)} onSave={next => setPlatformList(list => list.map(item => item.id === next.id ? next : item))} />}
   </div>;
 }
 
@@ -1098,12 +1196,12 @@ const subscriptions: Subscription[] = [
   { id: "SUB-002", subscriberType: "eco", subscriberName: "知识付费生态", planKey: "eco-growth", priceCny: 98000, cycle: "yearly", startAt: "2026-03-01", endAt: "2027-02-28", status: "active", gmvShareRate: 0.08 },
   { id: "SUB-003", subscriberType: "eco", subscriberName: "宠物生态", planKey: "eco-starter", priceCny: 29800, cycle: "yearly", startAt: "2026-04-10", endAt: "2027-04-09", status: "active", gmvShareRate: 0.05 },
   { id: "SUB-004", subscriberType: "eco", subscriberName: "教育生态", planKey: "eco-growth", priceCny: 98000, cycle: "yearly", startAt: "2025-12-01", endAt: "2026-11-30", status: "expiring", gmvShareRate: 0.08 },
-  { id: "SUB-005", subscriberType: "saas", subscriberName: "私域工具", planKey: "saas-flagship", priceCny: 168000, cycle: "yearly", startAt: "2026-02-20", endAt: "2027-02-19", status: "active", gmvShareRate: 0.10 },
-  { id: "SUB-006", subscriberType: "saas", subscriberName: "课程平台", planKey: "saas-standard", priceCny: 59800, cycle: "yearly", startAt: "2026-01-10", endAt: "2027-01-09", status: "active", gmvShareRate: 0.07 },
-  { id: "SUB-007", subscriberType: "saas", subscriberName: "代理系统", planKey: "saas-standard", priceCny: 59800, cycle: "yearly", startAt: "2026-03-15", endAt: "2027-03-14", status: "active", gmvShareRate: 0.07 },
-  { id: "SUB-008", subscriberType: "saas", subscriberName: "学习平台", planKey: "saas-basic", priceCny: 19800, cycle: "yearly", startAt: "2025-11-20", endAt: "2026-11-19", status: "expiring", gmvShareRate: 0.05 },
-  { id: "SUB-009", subscriberType: "saas", subscriberName: "直播工具", planKey: "saas-basic", priceCny: 19800, cycle: "yearly", startAt: "2026-05-01", endAt: "2027-04-30", status: "pending" },
-  { id: "SUB-010", subscriberType: "saas", subscriberName: "城市合伙人", planKey: "saas-standard", priceCny: 59800, cycle: "yearly", startAt: "2025-09-01", endAt: "2026-08-31", status: "expired", gmvShareRate: 0.07 },
+  { id: "SUB-005", subscriberType: "saas", subscriberName: "健康产业发展伙伴", planKey: "saas-flagship", priceCny: 168000, cycle: "yearly", startAt: "2026-02-20", endAt: "2027-02-19", status: "active", gmvShareRate: 0.10 },
+  { id: "SUB-006", subscriberType: "saas", subscriberName: "知识教育发展伙伴", planKey: "saas-standard", priceCny: 59800, cycle: "yearly", startAt: "2026-01-10", endAt: "2027-01-09", status: "active", gmvShareRate: 0.07 },
+  { id: "SUB-007", subscriberType: "saas", subscriberName: "代理渠道发展伙伴", planKey: "saas-standard", priceCny: 59800, cycle: "yearly", startAt: "2026-03-15", endAt: "2027-03-14", status: "active", gmvShareRate: 0.07 },
+  { id: "SUB-008", subscriberType: "saas", subscriberName: "教育学习发展伙伴", planKey: "saas-basic", priceCny: 19800, cycle: "yearly", startAt: "2025-11-20", endAt: "2026-11-19", status: "expiring", gmvShareRate: 0.05 },
+  { id: "SUB-009", subscriberType: "saas", subscriberName: "教育内容发展伙伴", planKey: "saas-basic", priceCny: 19800, cycle: "yearly", startAt: "2026-05-01", endAt: "2027-04-30", status: "pending" },
+  { id: "SUB-010", subscriberType: "saas", subscriberName: "城市运营发展伙伴", planKey: "saas-standard", priceCny: 59800, cycle: "yearly", startAt: "2025-09-01", endAt: "2026-08-31", status: "expired", gmvShareRate: 0.07 },
   { id: "SUB-011", subscriberType: "platform", subscriberName: "健康运营平台", planKey: "platform-brand", priceCny: 19800, cycle: "yearly", startAt: "2026-01-20", endAt: "2027-01-19", status: "active", gmvShareRate: 0.05 },
   { id: "SUB-012", subscriberType: "platform", subscriberName: "健康课程平台", planKey: "platform-brand", priceCny: 19800, cycle: "yearly", startAt: "2026-02-10", endAt: "2027-02-09", status: "active", gmvShareRate: 0.05 },
   { id: "SUB-013", subscriberType: "platform", subscriberName: "代理分销平台", planKey: "platform-operator", priceCny: 5980, cycle: "yearly", startAt: "2026-03-25", endAt: "2027-03-24", status: "active" },
@@ -1112,7 +1210,7 @@ const subscriptions: Subscription[] = [
   { id: "SUB-016", subscriberType: "project", subscriberName: "PRO会员", planKey: "project-flagship", priceCny: 9999, cycle: "yearly", startAt: "2026-01-05", endAt: "2027-01-04", status: "active" },
   { id: "SUB-017", subscriberType: "project", subscriberName: "体验官", planKey: "project-standard", priceCny: 3999, cycle: "yearly", startAt: "2026-02-15", endAt: "2027-02-14", status: "active" },
   { id: "SUB-018", subscriberType: "project", subscriberName: "7日训练营", planKey: "project-basic", priceCny: 999, cycle: "once", startAt: "2026-06-01", endAt: "2099-12-31", status: "active" },
-  { id: "SUB-019", subscriberType: "addon", subscriberName: "私域工具·数据中台", planKey: "addon-data", priceCny: 49800, cycle: "yearly", startAt: "2026-03-01", endAt: "2027-02-28", status: "active" },
+  { id: "SUB-019", subscriberType: "addon", subscriberName: "健康产业发展伙伴·数据中台", planKey: "addon-data", priceCny: 49800, cycle: "yearly", startAt: "2026-03-01", endAt: "2027-02-28", status: "active" },
   { id: "SUB-020", subscriberType: "addon", subscriberName: "健康医药美业·分润结算", planKey: "addon-settlement", priceCny: 39800, cycle: "yearly", startAt: "2026-04-15", endAt: "2027-04-14", status: "active" },
 ];
 
@@ -1120,16 +1218,16 @@ const subscriptions: Subscription[] = [
 const billRecords: BillRecord[] = [
   { id: "INV-2026-0801", payerType: "eco", payerName: "健康医药美业生态", amountCny: 298000, items: ["生态·旗舰版 年费"], status: "paid", dueAt: "2026-01-15" },
   { id: "INV-2026-0802", payerType: "eco", payerName: "知识付费生态", amountCny: 98000, items: ["生态·成长版 年费"], status: "paid", dueAt: "2026-03-01" },
-  { id: "INV-2026-0803", payerType: "saas", payerName: "私域工具", amountCny: 168000, items: ["SaaS·旗舰版 年费"], status: "paid", dueAt: "2026-02-20" },
-  { id: "INV-2026-0804", payerType: "saas", payerName: "课程平台", amountCny: 59800, items: ["SaaS·标准版 年费"], status: "paid", dueAt: "2026-01-10" },
+  { id: "INV-2026-0803", payerType: "saas", payerName: "健康产业发展伙伴", amountCny: 168000, items: ["SaaS·旗舰版 年费"], status: "paid", dueAt: "2026-02-20" },
+  { id: "INV-2026-0804", payerType: "saas", payerName: "知识教育发展伙伴", amountCny: 59800, items: ["SaaS·标准版 年费"], status: "paid", dueAt: "2026-01-10" },
   { id: "INV-2026-0805", payerType: "eco", payerName: "教育生态", amountCny: 98000, items: ["生态·成长版 续费"], status: "pending", dueAt: "2026-11-30" },
-  { id: "INV-2026-0806", payerType: "saas", payerName: "学习平台", amountCny: 19800, items: ["SaaS·基础版 续费"], status: "pending", dueAt: "2026-11-19" },
+  { id: "INV-2026-0806", payerType: "saas", payerName: "教育学习发展伙伴", amountCny: 19800, items: ["SaaS·基础版 续费"], status: "pending", dueAt: "2026-11-19" },
   { id: "INV-2026-0807", payerType: "platform", payerName: "教育学习平台", amountCny: 5980, items: ["平台·运营版 续费"], status: "pending", dueAt: "2026-12-14" },
-  { id: "INV-2026-0808", payerType: "saas", payerName: "城市合伙人", amountCny: 59800, items: ["SaaS·标准版 欠费"], status: "overdue", dueAt: "2026-08-31" },
-  { id: "INV-2026-0809", payerType: "saas", payerName: "直播工具", amountCny: 19800, items: ["SaaS·基础版 首年"], status: "pending", dueAt: "2026-05-01" },
+  { id: "INV-2026-0808", payerType: "saas", payerName: "城市运营发展伙伴", amountCny: 59800, items: ["SaaS·标准版 欠费"], status: "overdue", dueAt: "2026-08-31" },
+  { id: "INV-2026-0809", payerType: "saas", payerName: "教育内容发展伙伴", amountCny: 19800, items: ["SaaS·基础版 首年"], status: "pending", dueAt: "2026-05-01" },
   { id: "INV-2026-0810", payerType: "platform", payerName: "健康运营平台", amountCny: 19800, items: ["平台·品牌版 年费"], status: "paid", dueAt: "2026-01-20" },
   { id: "INV-2026-0811", payerType: "project", payerName: "PRO会员", amountCny: 9999, items: ["项目·旗舰版 年费"], status: "paid", dueAt: "2026-01-05" },
-  { id: "INV-2026-0812", payerType: "addon", payerName: "私域工具·数据中台", amountCny: 49800, items: ["增值·数据中台 年费"], status: "paid", dueAt: "2026-03-01" },
+  { id: "INV-2026-0812", payerType: "addon", payerName: "健康产业发展伙伴·数据中台", amountCny: 49800, items: ["增值·数据中台 年费"], status: "paid", dueAt: "2026-03-01" },
   { id: "INV-2026-0813", payerType: "addon", payerName: "健康医药美业·分润结算", amountCny: 39800, items: ["增值·分润结算 年费"], status: "paid", dueAt: "2026-04-15" },
   { id: "INV-2026-0814", payerType: "eco", payerName: "宠物生态", amountCny: 29800, items: ["生态·孵化版 年费"], status: "paid", dueAt: "2026-04-10" },
   { id: "INV-2026-0815", payerType: "project", payerName: "7日训练营", amountCny: 999, items: ["项目·基础版 一次性"], status: "paid", dueAt: "2026-06-01" },
@@ -1138,28 +1236,28 @@ const billRecords: BillRecord[] = [
 // ─── 商业与计费：Mock 分润流水 ─────────────────────────────────
 const gmvShares: GmvShare[] = [
   { id: "SH-001", fromTier: "project", fromName: "PRO会员", toTier: "platform", toName: "健康运营平台", amountCny: 28000, gmv: 280000, rate: 0.10, period: "2026-08" },
-  { id: "SH-002", fromTier: "platform", fromName: "健康运营平台", toTier: "saas", toName: "私域工具", amountCny: 42000, gmv: 420000, rate: 0.10, period: "2026-08" },
-  { id: "SH-003", fromTier: "saas", fromName: "私域工具", toTier: "eco", toName: "健康医药美业生态", amountCny: 50400, gmv: 504000, rate: 0.10, period: "2026-08" },
+  { id: "SH-002", fromTier: "platform", fromName: "健康运营平台", toTier: "saas", toName: "健康产业发展伙伴", amountCny: 42000, gmv: 420000, rate: 0.10, period: "2026-08" },
+  { id: "SH-003", fromTier: "saas", fromName: "健康产业发展伙伴", toTier: "eco", toName: "健康医药美业生态", amountCny: 50400, gmv: 504000, rate: 0.10, period: "2026-08" },
   { id: "SH-004", fromTier: "eco", fromName: "健康医药美业生态", toTier: "super", toName: "超级生态", amountCny: 60480, gmv: 504000, rate: 0.12, period: "2026-08" },
   { id: "SH-005", fromTier: "project", fromName: "体验官", toTier: "platform", toName: "健康运营平台", amountCny: 12000, gmv: 120000, rate: 0.10, period: "2026-08" },
   { id: "SH-006", fromTier: "project", fromName: "7日训练营", toTier: "platform", toName: "健康课程平台", amountCny: 6000, gmv: 60000, rate: 0.10, period: "2026-08" },
-  { id: "SH-007", fromTier: "platform", fromName: "健康课程平台", toTier: "saas", toName: "课程平台", amountCny: 11200, gmv: 160000, rate: 0.07, period: "2026-08" },
-  { id: "SH-008", fromTier: "saas", fromName: "课程平台", toTier: "eco", toName: "知识付费生态", amountCny: 12800, gmv: 160000, rate: 0.08, period: "2026-08" },
+  { id: "SH-007", fromTier: "platform", fromName: "健康课程平台", toTier: "saas", toName: "知识教育发展伙伴", amountCny: 11200, gmv: 160000, rate: 0.07, period: "2026-08" },
+  { id: "SH-008", fromTier: "saas", fromName: "知识教育发展伙伴", toTier: "eco", toName: "知识付费生态", amountCny: 12800, gmv: 160000, rate: 0.08, period: "2026-08" },
   { id: "SH-009", fromTier: "project", fromName: "健康学院", toTier: "platform", toName: "教育学习平台", amountCny: 15000, gmv: 150000, rate: 0.10, period: "2026-07" },
-  { id: "SH-010", fromTier: "platform", fromName: "教育学习平台", toTier: "saas", toName: "学习平台", amountCny: 8000, gmv: 160000, rate: 0.05, period: "2026-07" },
-  { id: "SH-011", fromTier: "saas", fromName: "学习平台", toTier: "eco", toName: "教育生态", amountCny: 12800, gmv: 160000, rate: 0.08, period: "2026-07" },
+  { id: "SH-010", fromTier: "platform", fromName: "教育学习平台", toTier: "saas", toName: "教育学习发展伙伴", amountCny: 8000, gmv: 160000, rate: 0.05, period: "2026-07" },
+  { id: "SH-011", fromTier: "saas", fromName: "教育学习发展伙伴", toTier: "eco", toName: "教育生态", amountCny: 12800, gmv: 160000, rate: 0.08, period: "2026-07" },
   { id: "SH-012", fromTier: "project", fromName: "代理商", toTier: "platform", toName: "代理分销平台", amountCny: 7000, gmv: 70000, rate: 0.10, period: "2026-08" },
-  { id: "SH-013", fromTier: "platform", fromName: "代理分销平台", toTier: "saas", toName: "代理系统", amountCny: 7700, gmv: 110000, rate: 0.07, period: "2026-08" },
-  { id: "SH-014", fromTier: "saas", fromName: "代理系统", toTier: "eco", toName: "健康医药美业生态", amountCny: 13200, gmv: 110000, rate: 0.12, period: "2026-08" },
+  { id: "SH-013", fromTier: "platform", fromName: "代理分销平台", toTier: "saas", toName: "代理渠道发展伙伴", amountCny: 7700, gmv: 110000, rate: 0.07, period: "2026-08" },
+  { id: "SH-014", fromTier: "saas", fromName: "代理渠道发展伙伴", toTier: "eco", toName: "健康医药美业生态", amountCny: 13200, gmv: 110000, rate: 0.12, period: "2026-08" },
   { id: "SH-015", fromTier: "project", fromName: "宠物用品商城", toTier: "platform", toName: "宠物分销平台", amountCny: 800, gmv: 8000, rate: 0.10, period: "2026-08" },
-  { id: "SH-016", fromTier: "platform", fromName: "宠物分销平台", toTier: "saas", toName: "分销系统", amountCny: 1200, gmv: 24000, rate: 0.05, period: "2026-08" },
+  { id: "SH-016", fromTier: "platform", fromName: "宠物分销平台", toTier: "saas", toName: "宠物产业发展伙伴", amountCny: 1200, gmv: 24000, rate: 0.05, period: "2026-08" },
   { id: "SH-017", fromTier: "eco", fromName: "知识付费生态", toTier: "super", toName: "超级生态", amountCny: 19200, gmv: 240000, rate: 0.08, period: "2026-07" },
   { id: "SH-018", fromTier: "eco", fromName: "教育生态", toTier: "super", toName: "超级生态", amountCny: 19200, gmv: 240000, rate: 0.08, period: "2026-08" },
 ];
 
 // ─── 商业与计费：组件辅助 ─────────────────────────────────────
 const tierLabels: Record<PricingTier, string> = {
-  super: "超级态", eco: "生态", saas: "SaaS", platform: "平台", project: "项目", addon: "增值包",
+  super: "超级态", eco: "生态", saas: "SaaS 合作伙伴", platform: "平台", project: "项目", addon: "增值包",
 };
 const tierIcons: Record<PricingTier, any> = {
   super: Zap, eco: Globe, saas: Package, platform: Building2, project: LayoutDashboard, addon: Layers,
@@ -1926,7 +2024,7 @@ function _csvEscape(s: string | number | undefined | null): string {
 }
 
 const scopeTypeLabelZh: Record<IdentityRole["scopeType"], string> = {
-  global: "全局", eco: "生态", saas: "SaaS", platform: "平台", project: "项目", city: "城市",
+  global: "全局", eco: "生态", saas: "SaaS 合作伙伴", platform: "平台", project: "项目", city: "城市",
 };
 
 function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: SystemAccount[]; setAccounts: React.Dispatch<React.SetStateAction<SystemAccount[]>>; projectList: ProjectRecord[] }) {
@@ -3017,8 +3115,8 @@ const mockCurrentAccounts: { name: string; role: string; avatar: string }[] = [
   { name: "孙悦",  role: "超级管理员", avatar: "孙" },
   { name: "李昊",  role: "生态负责人", avatar: "李" },
   { name: "周敏",  role: "生态COO", avatar: "周" },
-  { name: "钱程",  role: "SaaS负责人", avatar: "钱" },
-  { name: "吴倩",  role: "SaaS运营", avatar: "吴" },
+  { name: "钱程",  role: "SaaS 合作伙伴负责人", avatar: "钱" },
+  { name: "吴倩",  role: "SaaS 合作伙伴运营", avatar: "吴" },
   { name: "郑宇",  role: "平台管理员", avatar: "郑" },
   { name: "冯雪",  role: "平台运营", avatar: "冯" },
   { name: "王磊",  role: "项目负责人", avatar: "王" },
@@ -3029,6 +3127,7 @@ const mockCurrentAccounts: { name: string; role: string; avatar: string }[] = [
 export default function EcosystemManagement() {
   useThemeSingleton();
 const { accounts, setAccounts } = useAccounts();
+  const { platformMode, projectMode } = useProjectContext();
   const [activeTier, setActiveTier] = useState("super");
   const [ecoList, setEcoList] = useState<EcoItem[]>(() => ecosystems.map(e => ({ ...e })));
   const [saasList, setSaasList] = useState<SaasItem[]>(() => saasPlatforms.map(p => ({ ...p })));
@@ -3038,30 +3137,31 @@ const { accounts, setAccounts } = useAccounts();
   const [bills, setBills] = useState<BillRecord[]>(() => billRecords.map(b => ({ ...b })));
   const [activePlatformId, setActivePlatformId] = useState<number | null>(null);
   const [activePlatformName, setActivePlatformName] = useState<string | null>(null);
+  const [ecosystemFilter, setEcosystemFilter] = useState<string | undefined>(undefined);
   const [mainTab, setMainTab] = useState<MainTab>("architecture");
   // 当前登录身份（联动：按身份过滤生态/SaaS/平台/项目的可见性；仅作为演示态）
   const [currentRole, setCurrentRole] = useState<string>("超级管理员");
   const currentUser = mockCurrentAccounts.find(u => u.role === currentRole) ?? mockCurrentAccounts[0];
   // 超级态：全量可见；生态层仅当 visibility/生态相关身份才能看到某个生态；这里做简化：按身份过滤项目列表 + 平台列表；生态/SaaS/超级态不变
   const scopedProjects = projectList.filter(p => {
-    if (["超级管理员", "生态COO", "SaaS负责人", "SaaS运营"].includes(currentRole)) return true;
+    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营"].includes(currentRole)) return true;
     if (currentRole === "生态负责人") return !!p.visibility["生态负责人"] || true; // 生态负责人看旗下生态所有项目
     if (currentRole === "平台管理员") return !!p.visibility["平台管理员"] || true; // 平台管理员看旗下平台所有项目
     if (currentRole === "平台运营") return !!p.visibility["平台运营"] || true;
     return !!p.visibility[currentRole];
   });
   const scopedPlatforms = platformList.filter(pf => {
-    if (["超级管理员", "生态COO", "SaaS负责人", "SaaS运营", "生态负责人", "平台管理员", "平台运营"].includes(currentRole)) return true;
+    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "生态负责人", "平台管理员", "平台运营"].includes(currentRole)) return true;
     const pfProjects = scopedProjects.filter(p => p.platform === pf.name);
     return pfProjects.length > 0;
   });
   const scopedEcos = ecoList.filter(eco => {
-    if (["超级管理员", "生态COO", "SaaS负责人", "SaaS运营"].includes(currentRole)) return true;
+    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营"].includes(currentRole)) return true;
     if (currentRole === "生态负责人") return true; // 模拟：生态负责人看全部（真实需按 uid 绑定）
     return scopedProjects.some(p => p.eco === eco.name);
   });
   const scopedSaas = saasList.filter(s => {
-    if (["超级管理员", "生态COO", "SaaS负责人", "SaaS运营", "生态负责人"].includes(currentRole)) return true;
+    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "生态负责人"].includes(currentRole)) return true;
     return scopedProjects.some(p => p.saas === s.name);
   });
   const counts: TierCounts = {
@@ -3080,16 +3180,16 @@ const { accounts, setAccounts } = useAccounts();
       {/* 页头 */}
       <div className="flex items-start justify-between flex-shrink-0 gap-4 flex-wrap">
         <div>
-          <h2 className="font-bold" style={{ color: S.text, letterSpacing: "0.05em" }}>行业生态与 SCRM 角色关系</h2>
+          <h2 className="font-bold" style={{ color: S.text, letterSpacing: "0.05em" }}>行业生态与平台管理</h2>
           <p className="text-xs mt-0.5 font-mono" style={{ color: S.muted }}>
-            定义行业生态、SaaS、平台和 SCRM 角色关系模板；此处不管理真实经营项目，实际孵化项目请进入“业务项目库”配置应用、权益与经营数据。
+            从行业生态逐层进入 SaaS 合作伙伴、平台和项目，进入项目后可继续配置会员权益与社群体系。
           </p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
           <div className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
             <div className="w-2 h-2" style={{ background: S.accent, borderRadius: "50%" }} />
             <span className="text-xs font-mono" style={{ color: S.muted }}>当前：</span>
-            <span className="text-xs font-bold font-mono" style={{ color: S.text }}>SaaS 系统 · 私域工具</span>
+            <span className="text-xs font-bold font-mono" style={{ color: S.text }}>{activePlatformName ? `平台 · ${activePlatformName}` : "平台管理"}</span>
           </div>
           {/* 当前登录身份选择器（权限联动演示） */}
           <div className="flex items-center gap-2 px-3 py-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radiusSm }}>
@@ -3115,6 +3215,13 @@ const { accounts, setAccounts } = useAccounts();
         </div>
       </div>
 
+      <div className="flex items-center gap-2 px-3 py-2 text-xs font-mono flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.textSec }}>
+        <span style={{ color: S.text }}>行业生态</span>
+        <ChevronRight size={13} style={{ color: S.muted }} />
+        <span style={{ color: activeTier === "platform" ? S.text : S.muted }}>平台</span>
+        {activePlatformName && <><ChevronRight size={13} style={{ color: S.muted }} /><span style={{ color: S.text }}>{activePlatformName}</span><ChevronRight size={13} style={{ color: S.muted }} /><span style={{ color: S.muted }}>项目配置</span></>}
+      </div>
+
       {/* 四层架构图 */}
       <ArchitectureDiagram tiers={tiers} activeTier={activeTier} onSelect={(id) => { setActiveTier(id); if (id !== "platform") { setActivePlatformId(null); setActivePlatformName(null); } }} />
 
@@ -3136,6 +3243,13 @@ const { accounts, setAccounts } = useAccounts();
         <div className="flex-shrink-0 px-3 py-1.5 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
           {tier.role}
         </div>
+      </div>
+
+      <div className="flex items-center justify-between gap-3 px-4 py-3 flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+        <div className="text-xs font-mono" style={{ color: S.textSec }}>
+          <span style={{ color: S.text, fontWeight: 700 }}>操作路径：</span>选择平台 → 进入平台 → 配置项目 → 社群体系
+        </div>
+        {activeTier !== "platform" && <button type="button" className="text-xs font-bold px-3 py-1.5" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => { setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }}>进入平台工作台 <ArrowRight size={13} className="inline ml-1" /></button>}
       </div>
 
       {/* 横排主 Tab：架构视图 / 账号管理 / 商业与计费（层级说明条下方、层级内容上方） */}
@@ -3169,23 +3283,25 @@ const { accounts, setAccounts } = useAccounts();
         {mainTab === "accounts" && <AccountManagerTab accounts={accounts} setAccounts={setAccounts} projectList={projectList} />}
         {mainTab === "commercial" && <CommercialTab subs={subs} bills={bills} />}
         {mainTab === "architecture" && (<>
-          {activeTier === "super"    && <SuperView ecoList={ecoList} setEcoList={setEcoList} saasList={saasList} setSaasList={setSaasList} accounts={accounts} setAccounts={setAccounts} subs={subs} setSubs={setSubs} bills={bills} setBills={setBills} />}
+          {activeTier === "super"    && <SuperView ecoList={ecoList} setEcoList={setEcoList} saasList={saasList} setSaasList={setSaasList} accounts={accounts} setAccounts={setAccounts} subs={subs} setSubs={setSubs} bills={bills} setBills={setBills} onOpenPlatforms={ecoName => { setEcosystemFilter(ecoName); setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }} onOpenProjects={ecoName => { setEcosystemFilter(ecoName); setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }} onOpenReports={() => { const url = new URL(window.location.href); url.searchParams.set("module", "reports"); window.history.pushState({}, "", url); window.dispatchEvent(new PopStateEvent("popstate")); }} />}
           {activeTier === "eco"      && <EcoView ecoList={ecoList} saasList={saasList} setSaasList={setSaasList} platformList={platformList} setPlatformList={setPlatformList} />}
           {activeTier === "saas"     && <SaasView ecoList={ecoList} saasList={saasList} platformList={platformList} setPlatformList={setPlatformList} setActiveTier={setActiveTier} setActivePlatformId={(id) => setActivePlatformId(id)} setActivePlatformName={(n) => setActivePlatformName(n)} />}
           {activeTier === "platform" && (
-            activePlatformId !== null && activePlatformName !== null ? (
-              <ProjectList
-                projectList={projectList} setProjectList={setProjectList}
-                ecoList={ecoList} saasList={saasList} platformList={platformList}
-                platformName={activePlatformName} platformId={activePlatformId}
-                onBack={() => { setActivePlatformId(null); setActivePlatformName(null); }}
-              />
+              activePlatformId !== null && activePlatformName !== null ? (
+                <ProjectList
+                  projectList={projectList} setProjectList={setProjectList}
+                  ecoList={ecoList} saasList={saasList} platformList={platformList}
+                  platformName={activePlatformName} platformId={activePlatformId}
+                  onEnterProject={(name) => projectMode(activePlatformName, name)}
+                  onBack={() => { platformMode(); setActivePlatformId(null); setActivePlatformName(null); }}
+                />
             ) : (
               <PlatformView
                 platformList={platformList} setPlatformList={setPlatformList}
                 ecoList={ecoList} saasList={saasList}
                 projectList={projectList} setProjectList={setProjectList}
-                onEnterPlatform={(id, name) => { setActivePlatformId(id); setActivePlatformName(name); }}
+                onEnterPlatform={(id, name) => { setEcosystemFilter(undefined); setActiveTier("platform"); setActivePlatformId(id); setActivePlatformName(name); }}
+                ecoFilter={ecosystemFilter}
               />
             )
           )}

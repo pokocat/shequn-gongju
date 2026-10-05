@@ -190,96 +190,222 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .team-row-t{ flex:1; font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
 .team-row-v{ font-size:var(--fs-meta); font-weight:800; color:var(--signal-700); font-family:var(--font-mono); }
 .team-row-go{ color:var(--ink-400); font-size:var(--fs-meta); }
+.application-row{ align-items:flex-start; }
+.application-row .team-row-t{ line-height:1.45; }
+.application-meta{ display:block; margin-top:3px; color:var(--ink-500); font-size:10px; font-weight:500; }
+.application-status{ color:var(--signal-700); font-size:10px; font-weight:800; white-space:nowrap; }
+.application-detail{ padding:12px 14px 20px; }
+.application-detail-card{ background:#fff; border:1px solid var(--line-soft); border-radius:12px; padding:14px; }
+.application-detail-label{ color:var(--ink-500); font-size:11px; margin-bottom:5px; }
+.application-detail-value{ color:var(--ink-900); font-size:14px; line-height:1.55; font-weight:700; }
+.application-actions{ display:flex; gap:10px; margin-top:14px; }
+.application-action{ flex:1; border:0; border-radius:10px; padding:11px 8px; font:inherit; font-size:13px; font-weight:800; cursor:pointer; }
+.application-action--approve{ background:#34A37A; color:#fff; }
+.application-action--reject{ background:#FFF0EA; color:#B94A2C; }
+.application-empty{ padding:22px 8px; text-align:center; color:var(--ink-500); font-size:12px; }
 
 /* ===== 团队页：影响力双指标卡（参考我的影响力：渐变底+白卡两列） ===== */
 .inf-hero{
-  margin:10.32px 10.32px 0; padding:14.907px; border-radius:var(--r-box);
+  margin:8.027px 10.32px 0; padding:12.04px; border-radius:var(--r-box);
   background:linear-gradient(160deg,#5B21B6 0%,#7C3AED 48%,#A98BF5 100%);
-  box-shadow:0 6px 22px rgba(91,33,182,.28);
+  box-shadow:0 5px 18px rgba(91,33,182,.24);
 }
 .inf-hero-card{
-  background:rgba(255,252,246,.96); border-radius:10.893px; padding:13.76px 0;
+  background:rgba(255,252,246,.96); border-radius:10.893px; padding:11.467px 0;
   display:flex; align-items:stretch;
 }
 .inf-hero-cell{ flex:1; text-align:center; min-width:0; }
 .inf-hero-cell + .inf-hero-cell{ border-left:0.573px solid var(--line-soft); }
-.inf-hero-v{ display:block; font-size:var(--fs-h2); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); line-height:1.25; }
-.inf-hero-l{ display:block; margin-top:2.293px; font-size:var(--fs-micro); color:var(--ink-600); }
-.influence-scope-tabs{ margin:0 10.32px; padding:10.32px 0 8.027px; overflow-x:auto; scrollbar-width:none; }
+.inf-hero-v{ display:block; font-size:var(--fs-h2); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); line-height:1.2; }
+.inf-hero-l{ display:block; margin-top:1.72px; font-size:var(--fs-micro); color:var(--ink-600); }
+.influence-scope-tabs{ margin:0 10.32px; padding:8.027px 0 6.88px; overflow-x:auto; scrollbar-width:none; }
 .influence-scope-tabs::-webkit-scrollbar{ display:none; }
 .influence-scope-tabs .subtab-pill{ flex:0 0 auto; min-width:72px; padding-left:8px; padding-right:8px; }
-.influence-metrics{ display:grid; grid-template-columns:repeat(2,1fr); gap:8.027px; margin-top:13.76px; }
-.influence-metrics--standalone{ margin:10.32px 10.32px 0; }
-.influence-metric{ position:relative; overflow:hidden; padding:11.467px; border-radius:11.467px; background:rgba(255,252,246,.96); color:var(--ink-900); border:0.573px solid var(--line-soft); }
-.influence-metric::after{ content:''; position:absolute; width:38px; height:38px; right:-13px; top:-13px; border-radius:50%; background:rgba(124,58,237,.08); }
-.influence-metric-v{ display:block; font-family:var(--font-mono); font-size:var(--fs-h2); font-weight:800; line-height:1.2; }
-.influence-metric-l{ display:block; margin-top:2.293px; font-size:var(--fs-tiny); color:var(--ink-600); }
-.team-functions{ margin:10.32px 10.32px 0; padding:11.467px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
-.influence-card-note{ font-size:var(--fs-tiny); color:var(--ink-500); text-align:right; }
-.team-growth-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:8.027px; }
-.team-growth-item{ display:flex; align-items:center; gap:6.88px; min-height:48px; padding:9.173px; border-radius:10.32px; background:linear-gradient(145deg,#FFF 0%,var(--sunk) 100%); border:0.573px solid var(--line-soft); cursor:pointer; }
+.influence-metrics{ display:grid; grid-template-columns:repeat(2,1fr); gap:6.88px; margin-top:10.32px; }
+.influence-metrics--standalone{ margin:8.027px 10.32px 0; }
+.influence-metric{ position:relative; overflow:hidden; padding:10.32px; border-radius:10.32px; background:rgba(255,252,246,.96); color:var(--ink-900); border:0.573px solid var(--line-soft); }
+.influence-metric::after{ content:''; position:absolute; width:34px; height:34px; right:-12px; top:-12px; border-radius:50%; background:rgba(124,58,237,.08); }
+.influence-metric-v{ display:block; font-family:var(--font-mono); font-size:var(--fs-h2); font-weight:800; line-height:1.15; }
+.influence-metric-l{ display:block; margin-top:1.72px; font-size:var(--fs-tiny); color:var(--ink-600); }
+.team-functions{ margin:8.027px 10.32px 0; padding:8.027px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.influence-card-note{ flex:0 1 auto; min-width:0; font-size:var(--fs-tiny); color:var(--ink-500); text-align:right; line-height:1.35; }
+.team-growth-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6.88px; }
+.team-growth-item{ display:flex; align-items:center; gap:5.733px; min-height:50px; padding:8.027px; border-radius:9.173px; background:linear-gradient(145deg,#FFF 0%,var(--sunk) 100%); border:0.573px solid var(--line-soft); cursor:pointer; }
 .team-growth-item:active{ background:var(--signal-50); }
-.team-growth-icon{ width:28.667px; height:28.667px; flex:0 0 28.667px; display:flex; align-items:center; justify-content:center; border-radius:9.173px; background:rgba(124,58,237,.1); color:var(--signal-700); }
-.team-growth-icon svg{ width:16.053px; height:16.053px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.team-growth-icon{ width:26px; height:26px; flex:0 0 26px; display:flex; align-items:center; justify-content:center; border-radius:8.027px; background:rgba(124,58,237,.1); color:var(--signal-700); }
+.team-growth-icon svg{ width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
 .team-growth-copy{ min-width:0; flex:1; }
-.team-growth-title{ display:block; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
-.team-growth-desc{ display:block; margin-top:1.147px; font-size:var(--fs-tiny); color:var(--ink-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.team-growth-title{ display:block; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.team-growth-desc{ display:block; margin-top:1px; font-size:var(--fs-micro); color:var(--ink-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .team-growth-count{ flex:0 0 auto; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:800; color:var(--signal-700); }
-.team-growth-arrow{ flex:0 0 auto; color:var(--ink-400); font-size:var(--fs-h4); }
-.influence-detail-tabs{ display:flex; gap:4.587px; margin:0 0 8.027px; padding:3.44px; border-radius:9.173px; background:var(--sunk-2); }
+.team-growth-arrow{ flex:0 0 auto; color:var(--ink-400); font-size:var(--fs-meta); }
+.influence-detail-tabs{ display:flex; gap:4.587px; margin:0 0 6.88px; padding:3.44px; border-radius:9.173px; background:var(--sunk-2); }
 .influence-detail-tab{ flex:1; padding:6.88px 4px; border-radius:7.45px; font-size:var(--fs-meta); font-weight:600; color:var(--ink-600); text-align:center; cursor:pointer; }
 .influence-detail-tab.is-active{ background:#FFF; color:var(--signal-700); font-weight:800; box-shadow:0 1px 5px rgba(124,58,237,.10); }
-.influence-tab-note{ margin:-1.147px 0 8.027px; font-size:var(--fs-tiny); color:var(--ink-500); line-height:1.45; }
-.influence-card{ margin:10.32px 10.32px 0; }
-.influence-card-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:8.027px; margin-bottom:8.027px; }
+.influence-tab-note{ margin:0 0 6.88px; font-size:var(--fs-tiny); color:var(--ink-500); line-height:1.4; }
+.influence-card{ margin:8.027px 10.32px 0; }
+.influence-card-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:6.88px; margin-bottom:6.88px; }
 .influence-card-title{ font-size:var(--fs-sec); font-weight:800; color:var(--ink-900); }
-.influence-matrix{ width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0; overflow:hidden; border:0.573px solid var(--line-soft); border-radius:10.32px; }
-.influence-matrix th{ padding:7.45px 2px; background:rgba(124,58,237,.08); border-bottom:0.573px solid var(--line-soft); font-size:var(--fs-tiny); font-weight:800; color:var(--signal-800); text-align:center; }
-.influence-matrix th:first-child{ width:72px; padding-left:6.88px; text-align:left; }
-.influence-matrix td{ padding:8.6px 2px; border-bottom:0.573px solid var(--line-soft); background:#FFF; font-family:var(--font-mono); font-size:var(--fs-tiny); font-weight:800; color:var(--ink-900); text-align:center; cursor:default; }
-.influence-matrix td[data-team-detail]{ cursor:pointer; }
-.influence-matrix td:first-child{ padding-left:6.88px; font-family:inherit; font-weight:700; color:var(--ink-600); text-align:left; }
+.influence-matrix{ width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0; overflow:hidden; border:0.573px solid var(--line-soft); border-radius:9.173px; }
+.influence-matrix th{ padding:6.88px 1px; background:rgba(124,58,237,.08); border-bottom:0.573px solid var(--line-soft); font-size:var(--fs-micro); font-weight:800; color:var(--signal-800); line-height:1.25; text-align:center; word-break:break-all; }
+.influence-matrix th:first-child{ width:62px; padding-left:5.16px; text-align:left; word-break:normal; }
+.influence-matrix td{ padding:7.45px 1px; border-bottom:0.573px solid var(--line-soft); background:#FFF; font-family:var(--font-mono); font-size:var(--fs-tiny); font-weight:800; color:var(--ink-900); text-align:center; cursor:default; }
+.influence-matrix td[data-team-page]{ cursor:pointer; }
+.influence-matrix td:first-child{ padding-left:5.16px; font-family:inherit; font-weight:700; color:var(--ink-600); text-align:left; }
 .influence-matrix tr:last-child td{ border-bottom:none; }
 .influence-matrix td:not(:first-child){ position:relative; }
 .influence-matrix td:not(:first-child):active{ background:var(--signal-50); }
-.influence-dot{ display:inline-block; width:6.88px; height:6.88px; margin-right:3.44px; border-radius:50%; vertical-align:1px; }
-.influence-value{ display:inline-block; position:relative; line-height:1.2; }
-.influence-add{ position:absolute; top:-7px; right:-17px; min-width:14px; height:14px; padding:0 3px; border:1px solid rgba(255,255,255,.96); border-radius:8px; background:#D93025; color:#FFF; font-family:var(--font-mono); font-size:8px; font-weight:800; line-height:14px; text-align:center; box-shadow:0 1px 3px rgba(217,48,37,.22); }
-.influence-potential{ display:block; margin-top:3.44px; color:#9CA3AF; font-size:9px; line-height:1.2; }
-.influence-team-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
-.influence-team-cell{ position:relative; padding:10.32px 5.16px; border-radius:9.173px; background:var(--sunk); border:0.573px solid var(--line-soft); cursor:pointer; }
-.influence-team-v{ display:block; font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:800; color:var(--signal-800); }
-.influence-team-l{ display:block; margin-top:2.293px; font-size:var(--fs-tiny); font-weight:700; color:var(--ink-700); }
-.influence-team-s{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-500); }
-.influence-team-go{ position:absolute; top:8.027px; right:6.88px; color:var(--ink-400); }
-.influence-boundary{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; margin:10.32px 10.32px 0; padding:8.6px 10.32px; border-radius:9.173px; background:rgba(124,58,237,.06); border:0.573px solid rgba(124,58,237,.14); font-size:var(--fs-tiny); color:var(--ink-600); }
+.influence-dot{ display:inline-block; width:6px; height:6px; margin-right:2.293px; border-radius:50%; vertical-align:1px; }
+.influence-value{ display:inline-flex; align-items:baseline; gap:2px; line-height:1.1; white-space:nowrap; }
+.influence-add{ color:#D93025; font-family:var(--font-mono); font-size:8px; font-weight:800; line-height:1; }
+.influence-potential{ display:block; margin-top:3px; color:#9CA3AF; font-size:8px; line-height:1.2; white-space:nowrap; }
+.influence-team-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5.733px; }
+.influence-team-cell{ position:relative; min-width:0; padding:8.027px 5.16px; border-radius:9.173px; background:var(--sunk); border:0.573px solid var(--line-soft); cursor:pointer; }
+.influence-team-v{ display:block; padding-right:11px; font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:800; color:var(--signal-800); line-height:1.05; }
+.influence-team-l{ display:block; margin-top:3px; font-size:var(--fs-micro); font-weight:800; color:var(--ink-700); line-height:1.25; }
+.influence-team-s{ display:block; margin-top:2px; font-size:var(--fs-micro); color:var(--ink-500); line-height:1.2; }
+.influence-team-go{ position:absolute; top:7px; right:5px; color:var(--ink-400); }
+.influence-boundary{ display:flex; align-items:flex-start; justify-content:space-between; gap:6.88px; margin:8.027px 10.32px 0; padding:7.45px 9.173px; border-radius:9.173px; background:rgba(124,58,237,.06); border:0.573px solid rgba(124,58,237,.14); font-size:var(--fs-micro); color:var(--ink-600); line-height:1.45; }
 .influence-boundary b{ color:var(--signal-800); }
-.team-detail-mask{ position:absolute; inset:0; z-index:110; display:flex; align-items:flex-end; background:rgba(51,33,15,.35); opacity:0; pointer-events:none; transition:opacity .2s; }
-.team-detail-mask.is-open{ opacity:1; pointer-events:auto; }
-.team-detail-sheet{ width:100%; max-height:82%; overflow-y:auto; padding:13.76px 10.32px calc(18.347px + var(--sab)); border-radius:18.347px 18.347px 0 0; background:#FFF7EC; box-shadow:0 -12px 36px rgba(51,33,15,.18); transform:translateY(24px); transition:transform .2s; }
-.team-detail-mask.is-open .team-detail-sheet{ transform:translateY(0); }
-.team-detail-head{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; }
-.team-detail-back,.team-detail-close{ width:28.667px; height:28.667px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--sunk-2); color:var(--ink-700); font-size:16px; cursor:pointer; }
-.team-detail-title{ flex:1; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); text-align:center; }
-.team-detail-path{ margin-top:8.027px; padding:6.88px 8.027px; border-radius:8.027px; background:rgba(124,58,237,.07); font-size:var(--fs-micro); color:var(--signal-800); line-height:1.45; }
-.team-detail-summary{ display:grid; grid-template-columns:96px 1fr; gap:10.32px; align-items:center; margin-top:10.32px; padding:10.32px; border-radius:12.04px; background:#FFF; border:0.573px solid var(--line-soft); }
-.team-detail-summary .donut svg{ width:88px; height:88px; }
-.team-detail-summary .donut{ width:88px; height:88px; }
-.team-detail-summary .donut-cv{ font-size:var(--fs-h4); }
-.team-detail-stats{ display:grid; gap:6.88px; }
-.team-detail-stat{ display:flex; align-items:center; justify-content:space-between; gap:6.88px; font-size:var(--fs-micro); color:var(--ink-600); }
-.team-detail-stat b{ font-family:var(--font-mono); color:var(--ink-900); }
-.team-member-list{ margin-top:10.32px; overflow:hidden; border-radius:12.04px; background:#FFF; border:0.573px solid var(--line-soft); }
-.team-member-row{ display:flex; align-items:center; gap:8.027px; padding:10.32px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.team-fullscreen{ position:absolute; inset:0; z-index:110; display:none; overflow-y:auto; background:var(--bg-base); }
+.team-fullscreen.is-open{ display:block; }
+.team-fullscreen-page{ min-height:100%; box-sizing:border-box; padding:var(--sat) 10.32px calc(20px + var(--sab)); font-family:var(--font-zh); font-size:var(--fs-body); line-height:1.5; color:var(--ink-800); }
+.team-fullscreen-head{ position:relative; display:flex; align-items:center; min-height:40px; box-sizing:border-box; padding:4.587px 0 10.32px; }
+.team-fullscreen-back{ width:25.227px; height:25.227px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:transparent; color:var(--ink-700); font-size:24px; line-height:25.227px; cursor:pointer; }
+.team-fullscreen-title{ position:absolute; left:50%; transform:translateX(-50%); max-width:calc(100% - 80px); overflow:hidden; font-size:var(--fs-h3); line-height:25.227px; font-weight:700; color:var(--ink-900); text-align:center; text-overflow:ellipsis; white-space:nowrap; }
+.team-fullscreen-spacer{ width:25.227px; height:25.227px; margin-left:auto; }
+.team-page-path{ margin-top:0; padding:6.88px 8.027px; border-radius:var(--r-ctl); background:rgba(124,58,237,.06); font-size:var(--fs-micro); color:var(--signal-800); line-height:1.4; }
+.team-page-summary{ display:grid; grid-template-columns:88px minmax(0,1fr); gap:8.027px; align-items:center; margin-top:8.027px; padding:9.173px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-page-summary .donut svg,.team-page-summary .donut{ width:80px; height:80px; }
+.team-page-summary .donut-cv{ font-size:var(--fs-h4); }
+.team-page-stats{ display:grid; gap:5.16px; }
+.team-page-stat{ display:flex; align-items:center; justify-content:space-between; gap:6.88px; font-size:var(--fs-micro); color:var(--ink-600); }
+.team-page-stat b{ font-family:var(--font-mono); color:var(--ink-900); }
+.team-page-tabs{ display:flex; gap:5.733px; margin-top:8.027px; overflow-x:auto; scrollbar-width:none; }
+.team-page-tabs::-webkit-scrollbar{ display:none; }
+.team-page-tab{ flex:0 0 auto; padding:6px 9.173px; border-radius:var(--r-chip); background:var(--sunk-2); color:var(--ink-600); font-size:var(--fs-tiny); font-weight:700; cursor:pointer; }
+.team-page-tab.is-active{ background:var(--signal-700); color:#FFF; }
+.team-page-search{ display:flex; gap:5.733px; margin-top:8.027px; }
+.team-page-search input{ min-width:0; flex:1; padding:8.027px 9.173px; border:0.573px solid var(--line-soft); border-radius:var(--r-ctl); outline:none; background:#FFF; color:var(--ink-900); font:inherit; font-size:var(--fs-tiny); }
+.team-page-search button{ min-height:34px; padding:0 11px; border:0; border-radius:var(--r-ctl); background:var(--signal-700); color:#FFF; font:inherit; font-size:var(--fs-tiny); font-weight:700; }
+.team-page-section-head{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; margin-top:10.32px; }
+.team-page-section-title{ font-size:var(--fs-sec); font-weight:800; color:var(--ink-900); }
+.team-page-section-note{ flex:0 1 auto; min-width:0; overflow:hidden; font-size:var(--fs-micro); color:var(--ink-500); text-align:right; text-overflow:ellipsis; white-space:nowrap; }
+.team-page-list{ margin-top:6.88px; overflow:hidden; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-member-row{ display:flex; align-items:center; gap:7.45px; padding:9.173px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
 .team-member-row:last-child{ border-bottom:none; }
-.team-member-avatar{ width:34.4px; height:34.4px; flex:0 0 34.4px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:linear-gradient(145deg,#7C3AED,#A98BF5); color:#FFF; font-size:var(--fs-meta); font-weight:800; }
+.team-member-avatar{ width:32px; height:32px; flex:0 0 32px; display:block; object-fit:cover; border-radius:50%; background:linear-gradient(145deg,#7C3AED,#A98BF5); color:#FFF; font-size:var(--fs-meta); font-weight:800; }
 .team-member-copy{ min-width:0; flex:1; }
-.team-member-name{ display:block; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
-.team-member-meta{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-500); }
+.team-member-name{ display:block; overflow:hidden; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); text-overflow:ellipsis; white-space:nowrap; }
+.team-member-meta{ display:block; overflow:hidden; margin-top:1px; font-size:var(--fs-micro); color:var(--ink-500); text-overflow:ellipsis; white-space:nowrap; }
 .team-member-value{ flex:0 0 auto; text-align:right; }
 .team-member-value b{ display:block; font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--signal-800); }
-.team-member-value span{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-500); }
+.team-member-value span{ display:block; margin-top:1px; font-size:var(--fs-micro); color:var(--ink-500); }
 .team-member-go{ color:var(--ink-400); }
+.team-member-profile{ margin-top:8.027px; padding:10.32px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-profile-top{ display:flex; align-items:center; gap:9.173px; }
+.team-profile-avatar{ width:46px; height:46px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:linear-gradient(145deg,#7C3AED,#A98BF5); color:#FFF; font-size:17px; font-weight:800; }
+.team-profile-name{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.team-profile-id{ margin-top:2px; font-size:var(--fs-micro); color:var(--ink-500); }
+.team-profile-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6.88px; margin-top:10.32px; }
+.team-profile-cell{ min-width:0; padding:7.45px; border-radius:var(--r-ctl); background:var(--sunk); }
+.team-profile-cell b,.team-profile-cell span{ display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.team-profile-cell b{ font-family:var(--font-mono); color:var(--signal-800); font-size:var(--fs-meta); }
+.team-profile-cell span{ margin-top:2px; color:var(--ink-500); font-size:var(--fs-micro); }
+.team-page-date{ margin-top:10.32px; font-size:var(--fs-tiny); font-weight:800; color:var(--ink-600); }
+
+/* ===== 团队总览 / 查看推荐人（T62 / T63 设计） ===== */
+.team-hero{ margin-top:8.027px; padding:13.187px; border-radius:var(--r-box); background:linear-gradient(160deg,#6D28D9 0%,#7C3AED 48%,#A98BF5 100%); color:#FFF; border:0.573px solid rgba(109,40,217,.3); box-shadow:0 5px 18px rgba(91,33,182,.18); }
+.team-hero-label{ font-size:var(--fs-tiny); font-weight:700; opacity:.9; }
+.team-hero-total{ margin-top:3.44px; font-family:var(--font-mono); font-size:var(--fs-hero); font-weight:800; line-height:1.1; }
+.team-donut-card{ display:flex; align-items:center; gap:10.32px; margin-top:8.027px; padding:11px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-donut-card .donut,.team-donut-card .donut svg{ width:76px; height:76px; flex:0 0 76px; }
+.team-donut-card .donut-cv{ font-size:var(--fs-h4); }
+.team-level-legend{ min-width:0; flex:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px 8px; }
+.team-level-li{ display:flex; align-items:center; gap:5px; font-size:var(--fs-micro); color:var(--ink-600); }
+.team-level-dot{ width:8px; height:8px; flex:0 0 8px; border-radius:50%; }
+.team-level-name{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.team-level-count{ margin-left:auto; font-family:var(--font-mono); font-weight:800; color:var(--ink-900); }
+.team-recommend-row{ display:flex; align-items:center; justify-content:space-between; margin-top:8.027px; padding:10.32px 11px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-recommend-label{ font-size:var(--fs-meta); color:var(--ink-700); }
+.team-recommend-label b{ font-family:var(--font-mono); color:var(--signal-700); font-size:var(--fs-h4); margin-left:2px; }
+.team-recommend-btn{ color:var(--signal-700); font-size:var(--fs-meta); font-weight:700; cursor:pointer; }
+.mbr-agent-id{ display:block; margin-top:3px; font-family:var(--font-mono); font-size:var(--fs-micro); color:var(--ink-500); }
+.team-page-list{ margin-top:6.88px; overflow:hidden; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-page-list .mbr-row{ min-height:58px; box-sizing:border-box; gap:8.027px; padding:10.32px 13.187px; }
+.team-page-list .mbr-copy{ min-width:0; }
+.team-page-list .mbr-name{ font-size:var(--fs-meta); line-height:1.35; }
+.team-page-list .mbr-agent-id{ margin-top:2px; font-size:var(--fs-micro); line-height:1.25; }
+.team-page-list .mbr-agent-balance{ margin-top:2px; font-size:var(--fs-micro); line-height:1.25; }
+.team-tree-row--nested{ padding-left:38px !important; }
+.team-tree-row--nested:before{ left:20px; }
+.team-level-legend{ gap:6px 8px; }
+.team-level-li{ min-width:0; line-height:1.35; }
+.team-recommend-row{ gap:8px; padding-left:13.187px; padding-right:13.187px; }
+.mbr-agent-balance{ display:block; margin-top:2px; font-size:10px; color:var(--ink-400); }
+.team-tree-row{ position:relative; }
+.team-tree-row--nested{ padding-left:38px !important; }
+.team-tree-row--nested:before{ content:''; position:absolute; left:20px; top:0; bottom:0; border-left:1px solid var(--line-soft); }
+.team-avatar-wrap{ position:relative; width:36px; height:36px; flex:0 0 36px; }
+.team-avatar-wrap .mbr-avatar{ width:36px; height:36px; }
+.team-avatar-level{ position:absolute; right:-7px; bottom:-3px; padding:1px 4px; border:2px solid #FFF; border-radius:7px; background:var(--signal-700); color:#FFF; font-family:var(--font-mono); font-size:8px; font-weight:800; line-height:1.2; white-space:nowrap; }
+.team-tree-row[data-team-expand]{ cursor:pointer; }
+.mbr-go[data-team-view-profile]{ cursor:pointer; padding:4px; margin:-4px; }
+.mbr-ref-count{ display:block; margin-top:2px; font-size:10px; color:var(--ink-500); }
+.mbr-ref-count b{ color:var(--signal-700); font-family:var(--font-mono); }
+
+/* ===== 新增成员列表页（参考图设计） ===== */
+.mbr-summary .influence-metric-v{ font-size:var(--fs-h2); }
+.mbr-date-bar{ display:flex; align-items:center; justify-content:space-between; margin-top:10.32px; padding:6.88px 9.173px; border-radius:8.027px; background:var(--sunk-2); font-size:var(--fs-micro); color:var(--ink-600); font-weight:700; }
+.mbr-date-bar span:last-child{ color:var(--signal-700); font-weight:800; }
+.mbr-empty{ padding:32px 0; text-align:center; color:var(--ink-400); font-size:var(--fs-meta); }
+.mbr-row{ display:flex; align-items:center; gap:8.027px; padding:10.32px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.mbr-row:last-child{ border-bottom:none; }
+.mbr-row:active{ background:var(--sunk); }
+.mbr-avatar{ width:36px; height:36px; flex:0 0 36px; border-radius:50%; object-fit:cover; display:block; background:var(--sunk-2); }
+.mbr-copy{ min-width:0; flex:1; }
+.mbr-name-line{ display:flex; align-items:center; gap:5.16px; flex-wrap:wrap; }
+.mbr-name{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
+.mbr-level{ flex:0 0 auto; padding:1px 5px; border-radius:4px; color:#FFF; font-size:9px; font-weight:800; line-height:1.4; font-family:var(--font-mono); }
+.mbr-copy-btn{ flex:0 0 auto; padding:2px 8px; border:0.573px solid var(--line-soft); border-radius:10px; background:#FFF; color:var(--ink-500); font-size:10px; font-weight:600; cursor:pointer; }
+.mbr-copy-btn:active{ background:var(--signal-50); color:var(--signal-700); }
+.mbr-action{ display:block; margin-top:3px; font-size:var(--fs-micro); color:var(--ink-500); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mbr-sub{ display:block; margin-top:2px; font-size:10px; color:var(--ink-400); }
+.mbr-go{ flex:0 0 auto; color:var(--ink-400); font-size:var(--fs-h4); }
+
+/* ===== 成员详情页（参考图设计） ===== */
+.mbr-profile-card{ margin-top:8.027px; padding:12.04px; border-radius:11.467px; background:#FFF; border:0.573px solid var(--line-soft); }
+.mbr-profile-top{ display:flex; align-items:center; gap:10.32px; }
+.mbr-profile-avatar{ width:52px; height:52px; flex:0 0 52px; border-radius:50%; object-fit:cover; display:block; background:var(--sunk-2); }
+.mbr-profile-head{ min-width:0; flex:1; }
+.mbr-profile-name-line{ display:flex; align-items:center; gap:6.88px; flex-wrap:wrap; }
+.mbr-profile-name{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.mbr-profile-rel{ margin-top:3px; font-size:var(--fs-micro); color:var(--ink-500); }
+.mbr-contact-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6.88px; margin-top:11.467px; }
+.mbr-contact-cell{ display:flex; align-items:center; gap:5.16px; min-width:0; padding:6.88px 8.027px; border-radius:8.027px; background:var(--sunk); }
+.mbr-contact-ico{ flex:0 0 auto; font-size:10px; font-weight:700; color:var(--signal-700); background:rgba(124,58,237,.1); padding:1px 6px; border-radius:8px; }
+.mbr-contact-v{ min-width:0; flex:1; font-family:var(--font-mono); font-size:var(--fs-tiny); font-weight:700; color:var(--ink-900); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mbr-contact-cell .mbr-copy-btn{ padding:1px 6px; font-size:9px; }
+.mbr-skin-tags{ margin-top:9.173px; padding:6.88px 8.027px; border-radius:8.027px; background:rgba(247,182,92,.1); color:#A9772E; font-size:var(--fs-micro); font-weight:600; }
+.mbr-sub-head{ margin-top:11.467px; padding:6.88px 9.173px; background:var(--sunk-2); border-radius:8.027px 8.027px 0 0; font-size:var(--fs-micro); font-weight:800; color:var(--ink-700); }
+.mbr-sub-row{ display:flex; align-items:center; gap:8.027px; padding:10.32px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.mbr-sub-row:last-child{ border-bottom:none; }
+.mbr-sub-row:active{ background:var(--sunk); }
+.mbr-sub-avatar{ width:34px; height:34px; flex:0 0 34px; border-radius:50%; object-fit:cover; display:block; background:var(--sunk-2); }
+.mbr-sub-copy{ min-width:0; flex:1; }
+.mbr-sub-name{ display:flex; align-items:center; gap:5.16px; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
+.mbr-sub-count{ display:block; margin-top:2px; font-size:10px; color:var(--ink-400); }
+.mbr-view-btn{ flex:0 0 auto; padding:5px 11px; border:0.573px solid var(--signal-700); border-radius:14px; color:var(--signal-700); font-size:var(--fs-micro); font-weight:700; background:#FFF; cursor:pointer; }
+.mbr-view-btn:active{ background:var(--signal-50); }
+@media (max-width:390px){
+  .team-growth-item{ padding:7px 6px; }
+  .team-growth-icon{ width:24px; height:24px; flex-basis:24px; }
+  .team-growth-count{ font-size:var(--fs-tiny); }
+  .influence-matrix th:first-child{ width:56px; }
+  .influence-matrix th{ font-size:8px; }
+  .influence-matrix td{ font-size:9px; }
+  .influence-team-cell{ padding-left:4px; padding-right:4px; }
+}
 
 /* ===== 审核子页（管流程事：证据/审批/订单） ===== */
 .audit-todo{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
@@ -377,6 +503,54 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .tk-meta .tag:not([class*="tag--"]){
   background: var(--sunk-3); color: var(--signal-800); border-color: var(--line-signal);
 }
+.growth-path{ margin:10.32px 10.32px 0; padding:12.04px; border-radius:var(--r-box); background:linear-gradient(145deg,#FFF 0%,var(--sunk) 100%); border:0.573px solid var(--line-soft); }
+.growth-path-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:8.027px; }
+.growth-path-title{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.growth-path-note{ font-size:var(--fs-micro); color:var(--signal-700); white-space:nowrap; }
+.growth-path-steps{ display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4.013px; margin-top:12.04px; }
+.growth-path-step{ position:relative; text-align:center; min-width:0; }
+.growth-path-step:not(:last-child)::after{ content:''; position:absolute; top:10px; left:60%; width:80%; height:1.72px; background:var(--line-soft); }
+.growth-path-dot{ position:relative; z-index:1; width:20.64px; height:20.64px; margin:0 auto; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--sunk-3); color:var(--ink-500); border:0.573px solid var(--line-soft); font-size:var(--fs-micro); font-weight:800; }
+.growth-path-step--done .growth-path-dot,.growth-path-step--active .growth-path-dot{ background:var(--signal-700); color:#FFF; border-color:var(--signal-700); }
+.growth-path-step--done:not(:last-child)::after{ background:var(--signal-700); }
+.growth-path-label{ display:block; margin-top:4.013px; font-size:var(--fs-micro); color:var(--ink-600); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.growth-path-step--active .growth-path-label{ color:var(--signal-800); font-weight:800; }
+.growth-path-current{ margin-top:10.32px; padding:8.027px; border-radius:9.173px; background:rgba(124,58,237,.07); }
+.growth-path-current strong{ display:block; font-size:var(--fs-meta); color:var(--ink-900); }
+.growth-path-current span{ display:block; margin-top:2.293px; font-size:var(--fs-micro); line-height:1.45; color:var(--ink-600); }
+.learning-grid,.mentor-grid,.group-grid{ display:grid; gap:6.88px; }
+.learning-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+.learning-card,.mentor-card,.group-card{ min-width:0; padding:9.173px; border-radius:9.173px; background:#FFF; border:0.573px solid var(--line-soft); }
+.learning-card{ cursor:pointer; }
+.learning-card:active,.mentor-card:active,.group-card:active{ background:var(--signal-50); }
+.learning-top,.mentor-top,.group-top{ display:flex; align-items:center; gap:6.88px; }
+.learning-icon,.mentor-avatar,.group-icon{ width:28px; height:28px; flex:0 0 28px; border-radius:8.027px; display:flex; align-items:center; justify-content:center; background:var(--signal-50); color:var(--signal-700); font-size:var(--fs-meta); font-weight:800; }
+.learning-icon svg,.group-icon svg{ width:15px; height:15px; }
+.learning-title,.mentor-name,.group-title{ min-width:0; flex:1; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.learning-meta,.mentor-role,.group-meta{ margin-top:4.587px; font-size:var(--fs-micro); line-height:1.4; color:var(--ink-600); }
+.learning-progress{ margin-top:7.45px; }
+.mentor-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.mentor-card{ cursor:pointer; }
+.mentor-avatar{ border-radius:50%; background:linear-gradient(135deg,#F7B65C,#E88C4A); color:#FFF; }
+.mentor-role{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.group-grid{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+.group-card{ cursor:pointer; }
+.group-icon{ border-radius:50%; background:rgba(52,163,122,.12); color:#27855E; }
+.group-title{ display:block; margin-top:6.88px; }
+.group-meta{ min-height:28px; }
+.group-go{ display:block; margin-top:6.88px; font-size:var(--fs-micro); color:var(--signal-700); font-weight:700; }
+@media (max-width:390px){
+  .growth-path{ padding:9.173px; }
+  .growth-path-label{ font-size:9px; }
+  .mentor-grid,.group-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:4.013px; }
+  .mentor-card,.group-card{ padding:7.45px 5.733px; }
+  .mentor-avatar,.group-icon{ width:24px; height:24px; flex-basis:24px; }
+}
+@media (max-width:340px){
+  .growth-path-steps{ gap:2px; }
+  .growth-path-label{ font-size:8px; }
+  .learning-grid{ grid-template-columns:1fr; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .tk-row{ transition: none; }
@@ -411,7 +585,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   <span class="mp-sep"></span>
   <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
 </div>
-      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer tk-layer wx-view"><div class="topseg tk-topseg" id="roleSw"></div><div id="tkHeroZone"></div><div id="tkWork"></div><div id="tkSections"></div><div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div></div><div class="team-detail-mask" id="teamDetailMask"><div class="team-detail-sheet" id="teamDetailSheet"></div></div></div>
+      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer tk-layer wx-view"><div class="topseg tk-topseg" id="roleSw"></div><div id="tkHeroZone"></div><div id="tkWork"></div><div id="tkSections"></div><div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div></div><div class="team-fullscreen" id="teamFullscreen"></div></div>
       <div class="tabbar wx-view"><div class="tab wx-view mp-nav" data-nav="notifications"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M22%2017a2%202%200%200%201-2%202H6.828a2%202%200%200%200-1.414.586l-2.202%202.202A.71.71%200%200%201%202%2021.286V5a2%202%200%200%201%202-2h16a2%202%200%200%201%202%202z%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div><span class="tab-badge wx-text">3</span></div><span class="tab-label wx-text">消息</span></div><div class="tab wx-view mp-nav" data-nav="group"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">微信群</span></div><div class="tab tab--on tab--center wx-view mp-nav" data-nav="tasks"><div class="tab-knob-box wx-view"><div class="tab-knob wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222.235%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div></div><span class="tab-label wx-text">主理台</span></div><div class="tab wx-view mp-nav" data-nav="index"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3Cpath%20d%3D%22M3%2015h18%22%20%2F%3E%3Cpath%20d%3D%22M9%203v18%22%20%2F%3E%3Cpath%20d%3D%22M15%203v18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">发现</span></div><div class="tab wx-view mp-nav" data-nav="mine"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236D28D9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M19%2021v-2a4%204%200%200%200-4-4H9a4%204%200%200%200-4%204v2%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">我的</span></div></div>
 
       <div class="unlock-mask" id="unlockMask"><div class="unlock-sheet"><div class="unlock-h" id="unlockH"></div><div class="unlock-d" id="unlockD"></div><div class="unlock-list" id="unlockList"></div><div class="unlock-btns"><div class="unlock-btn unlock-btn--ghost" id="unlockClose">知道了</div><div class="unlock-btn unlock-btn--pri" id="unlockGo">演示解锁</div></div></div></div>
@@ -435,6 +609,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   });
 })();
 </script>
+<script src="./team-member-utils.js"></script>
 <script>
 // ===== 主理台（身份解锁制 + 周期目标 + 推广闭环入口） =====
 // 图标模板（与全站 SVG 线条风格一致）
@@ -554,29 +729,29 @@ function renderHero(targetId){
 }
 
 var ROLE_TABS = {
-  agent: [{ key: 'influence', label: '团队' }, { key: 'process', label: '履约' }, { key: 'money', label: '经营' }, { key: 'marketing', label: '推广' }],
-  leader: [{ key: 'influence', label: '团队' }, { key: 'marketing', label: '推广' }, { key: 'process', label: '订单' }, { key: 'money', label: '佣金' }]
+  agent: [{ key: 'team', label: '团队' }, { key: 'operations', label: '经营' }, { key: 'assets', label: '资产' }, { key: 'promotion', label: '推广' }],
+  leader: [{ key: 'team', label: '团队' }, { key: 'operations', label: '经营' }, { key: 'assets', label: '资产' }, { key: 'promotion', label: '推广' }]
 };
-var SUBTAB = 'influence';
+var SUBTAB = 'team';
 var INFLUENCE_TAB = 'team';
 var NETWORK_SCOPE = 'all';
 
 var DASHBOARD = {
   agent: {
-    money: { title: '预计经营利润', total: '1,246', labels: ['销售回款', '进货成本', '待结算团长佣金'], values: ['4,860', '2,980', '634'], status: [['8,620', '库存价值'], ['1,240', '库存占用'], ['2', '低库存 SKU']], categories: [['引流收入', '186 笔', '¥186'], ['会员招募', '9 笔', '¥486'], ['会员升级', '6 笔', '¥324'], ['社群消费', '12 笔', '¥250']], donut: { total: '¥1,246', items: [['引流收入', '#34A37A', 186], ['会员招募', '#7C3AED', 486], ['会员升级', '#A98BF5', 324], ['社群消费', '#F7B65C', 250]] } },
     people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
     team: { hero: ['8 位', '286 人'], funnel: [['待初审', '2'], ['复审中', '1'], ['已通过', '8']], donut: { total: '286', items: [['活跃成员', '#7C3AED', 184], ['新增会员', '#F7B65C', 46], ['待跟进', '#E88C4A', 56]] }, rows: [['王敏', '杭州妈妈成长群', '86'], ['李芳', '职场成长社群', '64'], ['周舟', '亲子阅读群', '52']] },
     network: { hero: ['2 个', '5 位'], funnel: [['发展代理', '2'], ['发展团长', '5'], ['聚合社群', '6']], donut: { total: '6', items: [['代理社群', '#7C3AED', 3], ['团长社群', '#A98BF5', 2], ['推荐社群', '#F7B65C', 1]] }, rows: [['华东发展代理', '发展关系 · 2 位团长', '3 个群'], ['王敏团长', '下属代理发展的团长', '86 人'], ['李芳团长', '下属代理发展的团长', '64 人']] },
     recommend: { hero: ['12 人', '4 位'], funnel: [['我推荐的人', '12'], ['已发展团长', '4'], ['可查看社群', '6']], donut: { total: '4', items: [['推荐成员', '#7C3AED', 12], ['发展团长', '#A98BF5', 4], ['聚合社群', '#F7B65C', 6]] }, rows: [['陈晨', '推荐关系 · 发展 2 位团长', '2 位'], ['赵宁', '推荐关系 · 发展 1 位团长', '1 位'], ['孙悦', '推荐关系 · 发展 1 位团长', '1 位']] },
-    process: { todo: [['2', '团长初审'], ['3', '待发货'], ['2', '库存预警']], list: [['王敏提交团长申请', '资料已齐全，等待代理初审', '待初审', 'amber'], ['订单 #2026092108', '王敏成交 · 库存已占用', '待发货', 'purple'], ['轻享装 SKU', '可用库存 6 件，建议补货', '低库存', 'red'], ['订单 #2026092076', '已交物流揽收', '运输中', 'green']], orders: [['待发货订单', '3 笔 · 已占库存'], ['物流与售后', '2 项待跟进']] },
-    marketing: { tag: '本周推广方向 · 由代理下发', title: '社群秋季复购活动', desc: '向名下团长下发内容、活动和培训任务，追踪素材领取、完成率与订单转化。', chips: ['8 位团长已领取', '完成率 64%', '素材包 6 件'], tools: [{ ico: 'invite', t: '招募团长', d: '生成招募海报与申请链接', nav: 'invite-poster' }, { ico: 'training', t: '团长赋能', d: '内容、活动与培训任务', nav: 'training' }] }
+    operations: { todo: [['2', '团长申请审核'], ['3', '待发货'], ['2', '库存预警']], list: [['王敏提交团长申请', '资料已齐全，等待代理初审', '待初审', 'amber'], ['订单 #2026092108', '王敏成交 · 库存已占用', '待发货', 'purple'], ['轻享装 SKU', '可用库存 6 件，建议补货', '低库存', 'red'], ['订单 #2026092076', '已交物流揽收', '运输中', 'green']], orders: [['待发货订单', '3 笔 · 已占库存'], ['物流与售后', '2 项待跟进']] },
+    assets: { title: '预计经营利润', total: '1,246', labels: ['销售回款', '进货成本', '待结算团长佣金'], values: ['4,860', '2,980', '634'], status: [['8,620', '库存价值'], ['1,240', '库存占用'], ['2', '低库存 SKU']], categories: [['引流收入', '186 笔', '¥186'], ['会员招募', '9 笔', '¥486'], ['会员升级', '6 笔', '¥324'], ['社群消费', '12 笔', '¥250']], donut: { total: '¥1,246', items: [['引流收入', '#34A37A', 186], ['会员招募', '#7C3AED', 486], ['会员升级', '#A98BF5', 324], ['社群消费', '#F7B65C', 250]] } },
+    promotion: { tag: '本周推广方向 · 由代理下发', title: '社群秋季复购活动', desc: '向名下团长下发内容、活动和推广任务，追踪素材领取、完成率与订单转化。', chips: ['8 位团长已领取', '完成率 64%', '素材包 6 件'], tools: [{ ico: 'invite', t: '招募团长与代理', d: '生成招募海报与申请链接', nav: 'invite-poster' }, { ico: 'matrix', t: '推广任务看板', d: '查看素材、活动与转化进度', nav: 'matrix' }] }
   },
   leader: {
-    money: { title: '本周预计佣金', total: '1,890', labels: ['已结算佣金', '预计佣金', '待结算佣金'], values: ['1,120', '1,120', '260'], status: [['1,120', '已结算'], ['1,890', '预计佣金'], ['260', '待结算']], categories: [['会员招募佣金', '12 笔', '¥860'], ['会员升级佣金', '9 笔', '¥640'], ['社群消费佣金', '6 笔', '¥390']], donut: { total: '¥1,890', items: [['招募佣金', '#7C3AED', 860], ['升级佣金', '#A98BF5', 640], ['消费佣金', '#F7B65C', 390]] } },
     people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
     recommend: { hero: ['8 人', '3 位'], funnel: [['我推荐的人', '8'], ['已发展团长', '3'], ['可查看社群', '3']], donut: { total: '3', items: [['推荐成员', '#7C3AED', 8], ['发展团长', '#A98BF5', 3], ['聚合社群', '#F7B65C', 3]] }, rows: [['林晓', '推荐关系 · 发展 2 位团长', '2 位'], ['周宁', '推荐关系 · 发展 1 位团长', '1 位'], ['孙悦', '推荐关系 · 已加入社群', '1 个群']] },
-    process: { todo: [['1', '审核中'], ['3', '代理待发货'], ['1', '售后跟进']], list: [['团长入驻申请', '代理初审已通过，等待平台复审', '复审中', 'purple'], ['订单 #2026092108', '已路由至上级代理库存', '待发货', 'amber'], ['订单 #2026092076', '代理已发货，物流运输中', '运输中', 'green'], ['订单 #2026092061', '会员申请退款，等待处理', '售后中', 'red']], orders: [['我推广的订单', '18 笔 · 本周'], ['发货与售后', '4 项待跟进']] },
-    marketing: { tag: '本周推广任务 · 来自上级代理', title: '社群秋季复购活动', desc: '领取推广素材、完成内容发布和成员跟进；成交订单将自动路由至上级代理库存发货。', chips: ['素材包 6 件', '分享链接已生成', '完成 8 / 14 项'], tools: [{ ico: 'matrix', t: '推广素材与链接', d: '文案、海报、分享链接', nav: 'matrix' }, { ico: 'training', t: '成长培训', d: '标准话术与社群服务课程', nav: 'training' }] }
+    operations: { todo: [['1', '经营任务'], ['3', '代理待发货'], ['1', '售后跟进']], list: [['团长入驻申请', '代理初审已通过，等待平台复审', '复审中', 'purple'], ['订单 #2026092108', '已路由至上级代理库存', '待发货', 'amber'], ['订单 #2026092076', '代理已发货，物流运输中', '运输中', 'green'], ['订单 #2026092061', '会员申请退款，等待处理', '售后中', 'red']], orders: [['我推广的订单', '18 笔 · 本周'], ['发货与售后', '4 项待跟进']] },
+    assets: { title: '本周预计佣金', total: '1,890', labels: ['已结算佣金', '预计佣金', '待结算佣金'], values: ['1,120', '1,120', '260'], status: [['1,120', '已结算'], ['1,890', '预计佣金'], ['260', '待结算']], categories: [['会员招募佣金', '12 笔', '¥860'], ['会员升级佣金', '9 笔', '¥640'], ['社群消费佣金', '6 笔', '¥390']], donut: { total: '¥1,890', items: [['招募佣金', '#7C3AED', 860], ['升级佣金', '#A98BF5', 640], ['消费佣金', '#F7B65C', 390]] } },
+    promotion: { tag: '本周推广任务 · 来自上级代理', title: '社群秋季复购活动', desc: '领取推广素材、完成内容发布和成员跟进；成交订单将自动路由至上级代理库存发货。', chips: ['素材包 6 件', '分享链接已生成', '完成 8 / 14 项'], tools: [{ ico: 'matrix', t: '推广素材与链接', d: '文案、海报、分享链接', nav: 'matrix' }, { ico: 'invite', t: '招募与邀请', d: '生成分享链接和推广海报', nav: 'invite-poster' }] }
   }
 };
 
@@ -592,17 +767,83 @@ function renderWorkbench(){
   if (ROLE === 'member') { el.innerHTML = ''; return; }
   var tabs = ROLE_TABS[ROLE];
   var actions = '';
-  if (SUBTAB === 'process') {
+  if (SUBTAB === 'operations') {
     actions = ROLE === 'agent'
-      ? '<div class="actbar-btn actbar-btn--pri" data-gosub="process" role="button">经营社群</div>'
-      : '<div class="actbar-btn actbar-btn--pri mp-nav" data-nav="training" role="button">成长培训</div>';
-  } else if (SUBTAB === 'marketing') {
+      ? '<div class="actbar-btn actbar-btn--pri" data-gosub="operations" role="button">处理经营任务</div>'
+      : '<div class="actbar-btn actbar-btn--pri mp-nav" data-nav="orders" role="button">查看经营订单</div>';
+  } else if (SUBTAB === 'promotion') {
     actions = ROLE === 'agent'
-      ? '<div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募团长</div>'
-      : '<div class="actbar-btn actbar-btn--pri" data-gosub="marketing" role="button">去推广</div>';
+      ? '<div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募与邀请</div>'
+      : '<div class="actbar-btn actbar-btn--pri" data-gosub="promotion" role="button">查看推广</div>';
   }
   el.innerHTML = '<div class="subtab" id="subTab">' + tabs.map(function(t){ return '<div class="subtab-pill' + (t.key === SUBTAB ? ' subtab-pill--on' : '') + '" data-sub="' + t.key + '" role="button">' + t.label + '</div>'; }).join('') + '</div><div class="subbody" id="subBody"></div>' + (actions ? '<div class="actbar" id="actBar">' + actions + '</div>' : '');
   renderSubBody();
+}
+
+var AGENT_APPLICATIONS = { applications: [], counts: { leader: 0, agent: 0, total: 0 }, loading: false, error: '' };
+var TEAM_TREE = { nodes: [], stats: {}, viewer: null, scope: '', loading: false, error: '', version: 0 };
+var APPLICATION_API = 'http://127.0.0.1:8787';
+
+function applicationHeaders(){
+  var memberId = new URLSearchParams(location.search).get('memberId') || 'member-demo-001';
+  return { 'x-demo-member-id': memberId };
+}
+function loadTeamTree(){
+  TEAM_TREE.loading = true;
+  TEAM_TREE.error = '';
+  if (TEAM_PAGE_STACK.length && TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1].type === 'overview') renderTeamPage();
+  return fetch(APPLICATION_API + '/mp/team-tree', { headers: applicationHeaders() })
+    .then(function(res){ return res.json().then(function(body){ if (!res.ok) throw new Error(body.message || (body.error && body.error.message) || '暂时无法加载团队数据'); return body.data; }); })
+    .then(function(data){
+      TEAM_TREE = {
+        nodes: (data.nodes || []).map(function(item){ return Object.assign({}, item, { avatar: item.avatarPath }); }),
+        stats: data.stats || {},
+        viewer: data.viewer || null,
+        scope: data.scope || '',
+        loading: false,
+        error: '',
+        version: TEAM_TREE.version + 1
+      };
+      if (TEAM_PAGE_STACK.length && TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1].type === 'overview') renderTeamPage();
+      return data;
+    })
+    .catch(function(error){
+      TEAM_TREE.loading = false;
+      TEAM_TREE.error = error.message || '暂时无法加载团队数据';
+      if (TEAM_PAGE_STACK.length && TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1].type === 'overview') renderTeamPage();
+    });
+}
+function loadPendingApplications(){
+  if (ROLE !== 'agent') return Promise.resolve();
+  AGENT_APPLICATIONS.loading = true;
+  AGENT_APPLICATIONS.error = '';
+  if (SUBTAB === 'team') renderSubBody();
+  return fetch(APPLICATION_API + '/mp/agent/applications/pending', { headers: applicationHeaders() })
+    .then(function(res){ return res.json().then(function(body){ if (!res.ok) throw new Error(body.error && body.error.message ? body.error.message : '暂时无法加载审核数据'); return body.data; }); })
+    .then(function(data){ AGENT_APPLICATIONS = { applications: data.applications || [], counts: data.counts || { leader: 0, agent: 0, total: 0 }, loading: false, error: '' }; if (ROLE === 'agent' && SUBTAB === 'team') renderSubBody(); })
+    .catch(function(error){ AGENT_APPLICATIONS.loading = false; AGENT_APPLICATIONS.error = error.message || '暂时无法加载审核数据'; if (ROLE === 'agent' && SUBTAB === 'team') renderSubBody(); });
+}
+function applicationListHtml(){
+  if (AGENT_APPLICATIONS.loading) return '<div class="application-empty">正在加载直属申请…</div>';
+  if (AGENT_APPLICATIONS.error) return '<div class="application-empty">' + esc(AGENT_APPLICATIONS.error) + '<br><span class="application-meta">请确认本地服务已启动</span></div>';
+  if (!AGENT_APPLICATIONS.applications.length) return '<div class="application-empty">暂无待审核的直属申请</div>';
+  return AGENT_APPLICATIONS.applications.map(function(item){
+    var identity = item.identity === '代理' ? '低级别代理申请' : '团长申请';
+    return '<div class="team-row application-row" data-application-id="' + esc(item.id) + '" role="button"><span class="team-row-t">' + esc(item.applicantName) + '<span class="application-meta">' + identity + ' · ' + esc(item.reason || '未填写申请说明') + '</span></span><span class="application-status">审核中</span><span class="team-row-go">›</span></div>';
+  }).join('');
+}
+function applicationDetailHtml(item){
+  var identity = item.identity === '代理' ? '低级别代理' : '团长';
+  return '<div class="team-fullscreen-head"><span class="team-fullscreen-back" data-team-full-back role="button">‹</span><span class="team-fullscreen-title">申请审核</span><span class="team-fullscreen-spacer"></span></div><div class="application-detail"><div class="team-page-path">团队 › 团队准入 › ' + esc(item.applicantName) + '</div><div class="application-detail-card"><div class="application-detail-label">申请人</div><div class="application-detail-value">' + esc(item.applicantName) + '</div><div class="application-detail-label" style="margin-top:14px;">申请身份</div><div class="application-detail-value">' + identity + '</div><div class="application-detail-label" style="margin-top:14px;">申请说明</div><div class="application-detail-value">' + esc(item.reason || '未填写申请说明') + '</div><div class="application-detail-label" style="margin-top:14px;">提交时间</div><div class="application-detail-value">' + esc(item.createdAt || '-') + '</div></div><div class="application-actions"><button class="application-action application-action--reject" data-application-action="reject" data-application-id="' + esc(item.id) + '">拒绝申请</button><button class="application-action application-action--approve" data-application-action="approve" data-application-id="' + esc(item.id) + '">通过申请</button></div></div>';
+}
+function openApplication(item){
+  var el = document.getElementById('teamFullscreen');
+  el.innerHTML = '<div class="team-fullscreen-page">' + applicationDetailHtml(item) + '</div>';
+  el.classList.add('is-open');
+}
+function reviewApplication(id, approved, rejectReason){
+  return fetch(APPLICATION_API + '/local/agent/applications/' + encodeURIComponent(id) + '/review', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, applicationHeaders()), body: JSON.stringify({ approved: approved, rejectReason: rejectReason || '' }) })
+    .then(function(res){ return res.json().then(function(body){ if (!res.ok) throw new Error(body.error && body.error.message ? body.error.message : '审核失败'); return body.data; }); });
 }
 
 function renderInfluenceBody(D){
@@ -612,96 +853,250 @@ function renderInfluenceBody(D){
     agent: {
       influence: '326', income: '¥1,246', incomeNote: '预计经营利润',
       tabs: {
-        team: { label: '团队发展', note: '聚焦代理发展与直属团长，意向代理为待跟进线索', headers: ['市级代理', '区县代理', '直属团长', '意向代理'], colors: ['#34A37A', '#5B8DEF', '#F7B65C', '#E88C4A'], rows: [['我直接发展', [[2, 0], [8, 1], [18, 2], [5, 3]]], ['旗下发展', [[2, 0], [5, 1], [32, 5], [8, 2]]], ['推荐关系', [[1, 0], [4, 1], [12, 4], [3, 1]]]] },
-        community: { label: '社群会员', note: '聚焦会员漏斗：引流学员含潜在游客标注，红色数字为本周新增', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['我直接运营', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['团队带动', [[8, 0], [96, 12, 86], [86, 8], [62, 6], [42, 4]]], ['推荐关系', [[4, 0], [32, 4, 28], [28, 3], [20, 2], [16, 2]]]] }
+        team: { label: '团队发展', note: '聚焦代理发展与直属团长，意向代理为待跟进线索', headers: ['市级代理', '区县代理', '直属团长', '意向代理'], colors: ['#34A37A', '#5B8DEF', '#F7B65C', '#E88C4A'], rows: [['直推', [[2, 0], [8, 1], [18, 2], [5, 3]]], ['团队', [[2, 0], [5, 1], [32, 5], [8, 2]]], ['推荐', [[1, 0], [4, 1], [12, 4], [3, 1]]]] },
+        community: { label: '社群会员', note: '聚焦会员漏斗：引流学员含潜在游客标注，红色数字为本周新增', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['直推', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['团队', [[8, 0], [96, 12, 86], [86, 8], [62, 6], [42, 4]]], ['推荐', [[4, 0], [32, 4, 28], [28, 3], [20, 2], [16, 2]]]] }
       },
       teams: [['8', '直属团长', '可经营'], ['2', '发展代理', '只读聚合'], ['12', '推荐关系', '只读聚合']]
     },
     leader: {
       influence: '182', income: '¥1,890', incomeNote: '本周预计佣金',
       tabs: {
-        community: { label: '社群会员', note: '查看本人社群与授权推荐关系带来的会员增长，引流学员含潜在游客', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['我直接运营', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['我推荐的人', [[2, 0], [14, 2, 12], [12, 1], [8, 1], [4, 0]]], ['推荐关系发展', [[1, 0], [6, 1, 5], [5, 0], [4, 0], [3, 0]]]] },
-        referral: { label: '推荐关系', note: '仅展示授权范围内的聚合结果，不代表团队经营权限', headers: ['推荐团长', '其社群数', '社群成员', '本周新增'], colors: ['#F7B65C', '#34A37A', '#7C3AED', '#D93025'], rows: [['我推荐的人', [[3, 1], [5, 0], [38, 0], [6, 6]]], ['推荐关系发展', [[2, 0], [3, 0], [18, 0], [3, 3]]], ['会员推荐', [[0, 0], [1, 0], [12, 0], [2, 2]]]] }
+        community: { label: '社群会员', note: '查看本人社群与授权推荐关系带来的会员增长，引流学员含潜在游客', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['直推', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['推荐', [[2, 0], [14, 2, 12], [12, 1], [8, 1], [4, 0]]], ['发展', [[1, 0], [6, 1, 5], [5, 0], [4, 0], [3, 0]]]] },
+        referral: { label: '推荐关系', note: '仅展示授权范围内的聚合结果，不代表团队经营权限', headers: ['推荐团长', '其社群数', '社群成员', '本周新增'], colors: ['#F7B65C', '#34A37A', '#7C3AED', '#D93025'], rows: [['推荐', [[3, 1], [5, 0], [38, 0], [6, 6]]], ['发展', [[2, 0], [3, 0], [18, 0], [3, 3]]], ['会员', [[0, 0], [1, 0], [12, 0], [2, 2]]]] }
       },
       teams: [['3', '直属社群', '可运营'], ['3', '推荐团长', '只读聚合'], ['8', '推荐会员', '只读聚合']]
     }
   };
   var current = shared[ROLE];
   var growth = isAgent
-    ? [['<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5A2.5 2.5 0 0 1 13 8v11H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5h-6.5A2.5 2.5 0 0 0 11 8v11h6.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>', '团队成长', '团长赋能课程', '6', 'training'], ['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '直属成员与发展关系', '10', '我的团队']]
-    : [['<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5A2.5 2.5 0 0 1 13 8v11H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5h-6.5A2.5 2.5 0 0 0 11 8v11h6.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>', '团队成长', '成长课程', '6', 'training'], ['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '推荐成员与社群关系', '8', '我的团队']];
-  var growthItemsHtml = growth.map(function(item){ var action = item[4] === 'training' ? ' data-nav="training"' : ' data-team-detail="' + item[4] + '"'; return '<div class="team-growth-item"' + action + ' role="button"><span class="team-growth-icon">' + item[0] + '</span><span class="team-growth-copy"><span class="team-growth-title">' + esc(item[1]) + '</span><span class="team-growth-desc">' + esc(item[2]) + '</span></span><span class="team-growth-count">' + item[3] + '</span><span class="team-growth-arrow">›</span></div>'; }).join('');
+    ? [['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '直属成员与发展关系', '10', '我的团队']]
+    : [['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '推荐成员与社群关系', '8', '我的团队']];
+  var growthItemsHtml = growth.map(function(item){ var action = ' data-team-page="overview" data-team-title="我的团队"'; return '<div class="team-growth-item"' + action + ' role="button"><span class="team-growth-icon">' + item[0] + '</span><span class="team-growth-copy"><span class="team-growth-title">' + esc(item[1]) + '</span><span class="team-growth-desc">' + esc(item[2]) + '</span></span><span class="team-growth-count">' + item[3] + '</span><span class="team-growth-arrow">›</span></div>'; }).join('');
   var growthHtml = '<div class="team-functions"><div class="team-growth-grid">' + growthItemsHtml + '</div></div>';
   var metricsHtml = '<div class="influence-metrics influence-metrics--standalone"><div class="influence-metric"><span class="influence-metric-v">' + esc(current.influence) + '</span><span class="influence-metric-l">影响力人数</span></div><div class="influence-metric"><span class="influence-metric-v">' + esc(current.income) + '</span><span class="influence-metric-l">' + esc(current.incomeNote) + '</span></div></div>';
-  var incomeHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">预计收入分析</span><span class="influence-card-note">' + (isAgent ? '经营收益口径' : '佣金收益口径') + '</span></div><div class="donut-wrap"><div class="donut">' + donutSvg(D.money.donut.items) + '<div class="donut-c"><span class="donut-cv">' + esc(current.income) + '</span><span class="donut-cl">预计收入</span></div></div><div class="donut-legend">' + D.money.donut.items.map(function(it){ return '<div class="donut-li"><span class="donut-dot" style="background:' + it[1] + '"></span>' + esc(it[0]) + '<span class="dv">¥' + it[2] + '</span></div>'; }).join('') + '</div></div></div>';
+  var incomeHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">预计收入分析</span><span class="influence-card-note">' + (isAgent ? '经营收益口径' : '佣金收益口径') + '</span></div><div class="donut-wrap"><div class="donut">' + donutSvg(D.assets.donut.items) + '<div class="donut-c"><span class="donut-cv">' + esc(current.income) + '</span><span class="donut-cl">预计收入</span></div></div><div class="donut-legend">' + D.assets.donut.items.map(function(it){ return '<div class="donut-li"><span class="donut-dot" style="background:' + it[1] + '"></span>' + esc(it[0]) + '<span class="dv">¥' + it[2] + '</span></div>'; }).join('') + '</div></div></div>';
   var tabKeys = Object.keys(current.tabs);
   var tabKey = current.tabs[INFLUENCE_TAB] ? INFLUENCE_TAB : tabKeys[0];
   INFLUENCE_TAB = tabKey;
   var tabData = current.tabs[tabKey];
   var tabHtml = '<div class="influence-detail-tabs" role="tablist">' + tabKeys.map(function(key){ return '<div class="influence-detail-tab' + (key === tabKey ? ' is-active' : '') + '" data-influence-tab="' + key + '" role="tab">' + current.tabs[key].label + '</div>'; }).join('') + '</div>';
-  var rowsHtml = tabData.rows.map(function(row){ return '<tr><td>' + esc(row[0]) + '</td>' + row[1].map(function(cell, index){ var target = row[0] + ' · ' + tabData.headers[index]; return '<td data-team-detail="' + esc(target) + '"><span class="influence-value">' + cell[0] + (cell[1] ? '<span class="influence-add">+' + cell[1] + '</span>' : '') + '</span>' + (cell[2] ? '<span class="influence-potential">潜在 ' + cell[2] + '</span>' : '') + '</td>'; }).join('') + '</tr>'; }).join('');
+  var rowsHtml = tabData.rows.map(function(row){ return '<tr><td>' + esc(row[0]) + '</td>' + row[1].map(function(cell, index){ var metric = tabData.headers[index]; var title = row[0] + ' · ' + metric + '明细'; return '<td data-team-page="metric" data-team-title="' + esc(title) + '" data-team-scope="' + esc(row[0]) + '" data-team-metric="' + esc(metric) + '" data-team-count="' + esc(cell[0]) + '" data-team-weekly-add="' + esc(cell[1] || 0) + '" data-team-potential="' + esc(cell[2] || 0) + '"><span class="influence-value">' + cell[0] + (cell[1] ? '<span class="influence-add">+' + cell[1] + '</span>' : '') + '</span>' + (cell[2] ? '<span class="influence-potential">潜在 ' + cell[2] + '</span>' : '') + '</td>'; }).join('') + '</tr>'; }).join('');
   var headersHtml = tabData.headers.map(function(header, index){ return '<th><span class="influence-dot" style="background:' + tabData.colors[index] + '"></span>' + esc(header) + '</th>'; }).join('');
-  var matrixHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">影响力详情</span><span class="influence-card-note">' + esc(tabData.label) + '</span></div>' + tabHtml + '<div class="influence-tab-note" data-influence-note>' + esc(tabData.note) + '</div><table class="influence-matrix"><thead><tr><th>关系层级</th>' + headersHtml + '</tr></thead><tbody data-influence-rows>' + rowsHtml + '</tbody></table><div class="inf-note"><span class="inf-plus">+</span><span>红色徽标为本周新增人数，点击表格数字查看授权范围内的来源明细</span></div></div>';
+  var matrixHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">影响力详情</span><span class="influence-card-note">' + esc(tabData.label) + '</span></div>' + tabHtml + '<div class="influence-tab-note" data-influence-note>' + esc(tabData.note) + '</div><table class="influence-matrix"><thead><tr><th>关系层级</th>' + headersHtml + '</tr></thead><tbody data-influence-rows>' + rowsHtml + '</tbody></table><div class="inf-note"><span class="inf-plus">+</span><span>红色 +N 为本周新增人数，点击表格数字查看授权范围内的来源明细</span></div></div>';
   var teamTitle = isAgent ? '旗下运营网络' : '我的社群与推荐';
-  var teamHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">' + teamTitle + '</span><span class="influence-card-note">点击查看成员与下一级关系</span></div><div class="influence-team-grid">' + current.teams.map(function(item){ return '<div class="influence-team-cell" data-team-detail="' + esc(item[1]) + '" role="button"><span class="influence-team-go">›</span><span class="influence-team-v">' + item[0] + '</span><span class="influence-team-l">' + esc(item[1]) + '</span><span class="influence-team-s">' + esc(item[2]) + '</span></div>'; }).join('') + '</div></div>';
+  var teamHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">' + teamTitle + '</span><span class="influence-card-note">点击查看成员与下一级关系</span></div><div class="influence-team-grid">' + current.teams.map(function(item){ return '<div class="influence-team-cell" data-team-page="relation" data-team-title="' + esc(item[1]) + '" data-team-scope="' + esc(item[2]) + '" role="button"><span class="influence-team-go">›</span><span class="influence-team-v">' + item[0] + '</span><span class="influence-team-l">' + esc(item[1]) + '</span><span class="influence-team-s">' + esc(item[2]) + '</span></div>'; }).join('') + '</div></div>';
   var boundaryHtml = '<div class="influence-boundary"><span><b>' + (isAgent ? '代理权限' : '团长权限') + '</b> · ' + (isAgent ? '直属团队可经营，发展与推荐关系仅查看授权聚合' : '直属社群可运营，推荐关系仅查看授权聚合') + '</span></div>';
   return growthHtml + metricsHtml + incomeHtml + matrixHtml + teamHtml + boundaryHtml;
 }
 
-var TEAM_DETAIL_STACK = [];
-var TEAM_DETAIL_ROWS = {
+var TEAM_PAGE_STACK = [];
+var TEAM_TREE_EXPANDED = {};
+var TEAM_PAGE_ROWS = {
   agent: [['王敏', '直属团长 · 杭州妈妈成长群', '86', '累计成员'], ['李芳', '直属团长 · 职场成长社群', '64', '累计成员'], ['周舟', '直属团长 · 亲子阅读群', '52', '累计成员']],
   leader: [['林晓', '推荐团长 · 已发展 2 个社群', '38', '累计成员'], ['周宁', '推荐团长 · 已发展 1 个社群', '26', '累计成员'], ['孙悦', '推荐会员 · 已加入社群', '12', '累计推荐']]
 };
 
-function renderTeamDetail(){
-  var mask = document.getElementById('teamDetailMask');
-  var sheet = document.getElementById('teamDetailSheet');
-  if (!mask || !sheet || !TEAM_DETAIL_STACK.length) return;
-  var current = TEAM_DETAIL_STACK[TEAM_DETAIL_STACK.length - 1];
-  var rows = TEAM_DETAIL_ROWS[ROLE].map(function(row, index){
-    var name = current.depth ? row[0] + '团队' : row[0];
-    var meta = current.depth ? '下一级关系 · ' + (index + 1) + ' 个社群' : row[1];
-    var value = current.depth ? Math.max(3, Number(row[2]) - 18) : row[2];
-    return '<div class="team-member-row" data-team-member="' + esc(name) + '"><span class="team-member-avatar">' + esc(name.slice(0, 1)) + '</span><span class="team-member-copy"><span class="team-member-name">' + esc(name) + '</span><span class="team-member-meta">' + esc(meta) + '</span></span><span class="team-member-value"><b>' + value + '</b><span>' + esc(row[3]) + '</span></span><span class="team-member-go">›</span></div>';
+// 成员数据池、映射表及工具函数（esc/levelBadge/getMemberPool/memberRowHtml 等）
+// 已提取到同目录 team-member-utils.js，通过外部 script 引入
+
+
+function teamItems(){ return ROLE === 'agent' ? [['社群成员', '#7C3AED', 286], ['团长', '#F7B65C', 8], ['代理', '#34A37A', 2]] : [['社群成员', '#7C3AED', 168], ['团长', '#F7B65C', 5], ['推荐', '#34A37A', 9]]; }
+function teamRows(page){
+  var keyword = (page.keyword || '').trim();
+  return TEAM_PAGE_ROWS[ROLE].filter(function(row){ return !keyword || row[0].indexOf(keyword) > -1 || row[1].indexOf(keyword) > -1; }).map(function(row, index){
+    var name = page.type === 'next' ? row[0] + '团队' : row[0];
+    var meta = page.type === 'next' ? '下一级关系 · ' + (index + 1) + ' 个社群' : row[1];
+    var value = page.type === 'next' ? Math.max(3, Number(row[2]) - 18) : row[2];
+    return '<div class="team-member-row" data-team-member="' + esc(name) + '" role="button"><img class="team-member-avatar" src="' + avatarFor(name) + '" alt=""><span class="team-member-copy"><span class="team-member-name">' + levelBadge(page.type === 'next' ? 'LEADER' : (ROLE === 'agent' ? 'LEADER' : 'MEMBER')) + esc(name) + '</span><span class="team-member-meta">' + esc(meta) + '</span></span><span class="team-member-value"><b>' + value + '</b><span>' + esc(row[3]) + '</span></span><span class="team-member-go">›</span></div>';
   }).join('');
-  var title = current.depth ? '查看下一级关系' : current.title;
-  var path = TEAM_DETAIL_STACK.map(function(item){ return item.title; }).join('  ›  ');
-  var total = current.depth ? '68' : (ROLE === 'agent' ? '326' : '182');
-  var items = ROLE === 'agent' ? [['社群成员', '#7C3AED', 286], ['团长', '#F7B65C', 8], ['代理', '#34A37A', 2]] : [['社群成员', '#7C3AED', 168], ['团长', '#F7B65C', 5], ['推荐', '#34A37A', 9]];
-  sheet.innerHTML = '<div class="team-detail-head"><span class="team-detail-back" data-team-back role="button">' + (TEAM_DETAIL_STACK.length > 1 ? '‹' : '—') + '</span><span class="team-detail-title">' + esc(title) + '</span><span class="team-detail-close" data-team-close role="button">×</span></div><div class="team-detail-path">' + esc(path) + '</div><div class="team-detail-summary"><div class="donut">' + donutSvg(items) + '<div class="donut-c"><span class="donut-cv">' + total + '</span><span class="donut-cl">团队人数</span></div></div><div class="team-detail-stats">' + items.map(function(item){ return '<div class="team-detail-stat"><span><span class="influence-dot" style="background:' + item[1] + '"></span>' + esc(item[0]) + '</span><b>' + item[2] + '</b></div>'; }).join('') + '</div></div><div class="influence-card-head" style="margin-top:10.32px;"><span class="influence-card-title">成员名单</span><span class="influence-card-note">点击查看下一级关系</span></div><div class="team-member-list">' + rows + '</div>';
-  var screen = document.querySelector('.screen');
-  var rect = screen ? screen.getBoundingClientRect() : null;
-  if (mask.parentNode !== document.body) document.body.appendChild(mask);
-  if (rect) {
-    var left = Math.max(0, rect.left);
-    mask.style.position = 'fixed';
-    mask.style.inset = 'auto';
-    mask.style.left = left + 'px';
-    mask.style.top = Math.max(0, rect.top) + 'px';
-    mask.style.width = Math.min(rect.width, window.innerWidth - left) + 'px';
-    mask.style.height = (window.innerHeight - Math.max(0, rect.top)) + 'px';
+}
+function teamHeader(page){ return '<div class="team-fullscreen-head"><span class="team-fullscreen-back" data-team-full-back role="button">‹</span><span class="team-fullscreen-title">' + esc(page.title || '我的团队') + '</span><span class="team-fullscreen-spacer"></span></div>'; }
+function teamSummary(total, items){ return '<div class="team-page-summary"><div class="donut">' + donutSvg(items) + '<div class="donut-c"><span class="donut-cv">' + total + '</span><span class="donut-cl">团队人数</span></div></div><div class="team-page-stats">' + items.map(function(item){ return '<div class="team-page-stat"><span><span class="influence-dot" style="background:' + item[1] + '"></span>' + esc(item[0]) + '</span><b>' + item[2] + '</b></div>'; }).join('') + '</div></div>'; }
+function teamTreeChildren(nodes, parentId){
+  return nodes.filter(function(node){ return node.parentId === parentId; });
+}
+function flattenTeamTree(nodes, parentId, depth){
+  var result = [];
+  teamTreeChildren(nodes, parentId).forEach(function(node){
+    result.push({ node: node, depth: depth });
+    if (TEAM_TREE_EXPANDED[node.id]) result = result.concat(flattenTeamTree(nodes, node.id, depth + 1));
+  });
+  return result;
+}
+function expandTeamTreeToSecondLevel(nodes){
+  TEAM_TREE_EXPANDED = {};
+  teamTreeChildren(nodes, null).forEach(function(root){
+    TEAM_TREE_EXPANDED[root.id] = true;
+    teamTreeChildren(nodes, root.id).forEach(function(child){
+      TEAM_TREE_EXPANDED[child.id] = false;
+    });
+  });
+}
+function teamTreeRowHtml(item, nodes){
+  var m = item.node;
+  var hasChildren = teamTreeChildren(nodes, m.id).length > 0;
+  var expanded = !!TEAM_TREE_EXPANDED[m.id];
+  var nestedClass = item.depth > 0 ? ' team-tree-row--nested' : '';
+  var expandAttr = hasChildren ? ' data-team-expand="' + esc(m.id) + '"' : '';
+  var shortLevel = {
+    PRINCIPAL: '主理人',
+    LEADER: '团长',
+    AGENT: '代理',
+    MEMBER: '会员'
+  }[m.level] || esc(m.level);
+  return '<div class="mbr-row mbr-row--agent team-tree-row' + nestedClass + '" data-team-member="' + esc(m.name) + '"' + expandAttr + ' role="button" aria-expanded="' + (hasChildren ? String(expanded) : 'false') + '">' +
+      '<span class="team-avatar-wrap"><img class="mbr-avatar" src="' + m.avatar + '" alt=""><span class="team-avatar-level">' + shortLevel + '</span></span>' +
+    '<span class="mbr-copy">' +
+      '<span class="mbr-name-line"><span class="mbr-name">' + esc(m.name) + '</span></span>' +
+      '<span class="mbr-agent-id">' + esc(m.id) + '</span>' +
+      '<span class="mbr-agent-balance">余额：¥' + esc(m.balance) + '</span>' +
+    '</span>' +
+    '<span class="mbr-go" data-team-view-profile="' + esc(m.name) + '" role="button" aria-label="查看' + esc(m.name) + '详情">›</span>' +
+  '</div>';
+}
+function renderTeamPage(){
+  var el = document.getElementById('teamFullscreen');
+  if (!el || !TEAM_PAGE_STACK.length) return;
+  var page = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+  var items = teamItems();
+  var path = TEAM_PAGE_STACK.map(function(item){ return item.title; }).join('  ›  ');
+  var body = teamHeader(page) + '<div class="team-page-path">' + esc(path) + '</div>';
+  if (page.type === 'overview') {
+    var TEAM_LEVELS = [
+      { code: 'PRINCIPAL', name: '主理人', color: '#7C3AED', count: TEAM_TREE.stats.principal || 0 },
+      { code: 'LEADER', name: '团长', color: '#F7B65C', count: TEAM_TREE.stats.leader || 0 },
+      { code: 'AGENT', name: '代理', color: '#34A37A', count: TEAM_TREE.stats.agent || 0 },
+      { code: 'MEMBER', name: '会员', color: '#9CA3AF', count: TEAM_TREE.stats.member || 0 }
+    ];
+    var TEAM_TOTAL = TEAM_TREE.stats.total || 0;
+    var teamLv = page.levelTab || '全部';
+    var selectedLevel = TEAM_LEVELS.filter(function(level){ return level.name === teamLv; })[0];
+    var teamMembers = (selectedLevel ? TEAM_TREE.nodes.filter(function(member){ return member.level === selectedLevel.code; }) : TEAM_TREE.nodes.slice()).map(function(member){
+      var hasVisibleParent = TEAM_TREE.nodes.some(function(parent){ return parent.id === member.parentId && (!selectedLevel || parent.level === selectedLevel.code); });
+      return hasVisibleParent ? member : Object.assign({}, member, { parentId: null });
+    });
+    var treeKey = TEAM_TREE.version + ':' + teamLv;
+    if (page.teamTreeInitializedKey !== treeKey) {
+      expandTeamTreeToSecondLevel(teamMembers);
+      page.teamTreeInitializedKey = treeKey;
+    }
+    var teamDonutItems = TEAM_LEVELS.map(function(level){ return [level.name, level.color, level.count]; });
+    body += '<div class="team-hero"><div class="team-hero-label">' + (TEAM_TREE.scope === 'full' ? '完整团队总人数' : '我的直属及下级团队') + '</div><div class="team-hero-total">' + TEAM_TOTAL + '</div></div>';
+    if (TEAM_TREE.loading) {
+      body += '<div class="team-page-list"><div class="mbr-empty">正在加载真实团队关系…</div></div>';
+    } else if (TEAM_TREE.error) {
+      body += '<div class="team-page-list"><div class="mbr-empty">' + esc(TEAM_TREE.error) + '<br><span class="application-meta">请确认当前身份具备团队查看权限，且本地服务已启动</span></div></div>';
+    } else {
+      body += '<div class="team-donut-card"><div class="donut">' + donutSvg(teamDonutItems) + '<div class="donut-c"><span class="donut-cv">' + TEAM_TOTAL + '</span><span class="donut-cl">总人数</span></div></div><div class="team-level-legend">' + TEAM_LEVELS.map(function(level){ return '<div class="team-level-li"><span class="team-level-dot" style="background:' + level.color + '"></span><span class="team-level-name">' + level.name + '</span><span class="team-level-count">' + level.count + '</span></div>'; }).join('') + '</div></div>';
+      body += '<div class="team-page-tabs">' + ['全部'].concat(TEAM_LEVELS.map(function(level){ return level.name; })).map(function(tab){ return '<span class="team-page-tab' + (teamLv === tab ? ' is-active' : '') + '" data-team-level-tab="' + tab + '">' + tab + '</span>'; }).join('') + '</div>';
+      var teamTreeRows = flattenTeamTree(teamMembers, null, 0);
+      body += '<div class="team-page-list">' + (teamTreeRows.length ? teamTreeRows.map(function(item){ return teamTreeRowHtml(item, teamMembers); }).join('') : '<div class="mbr-empty">暂无该身份成员</div>') + '</div>';
+    }
+  } else if (page.type === 'referral') {
+    // 查看推荐人页（参考 T63 设计）
+    var REF_LEVELS = [
+      { code: 'D1', name: 'D1 · 创始人', color: '#7C3AED', count: 18 },
+      { code: 'D2', name: 'D2 · 核心合伙人', color: '#F7B65C', count: 32 },
+      { code: 'D3', name: 'D3 · 事业合伙人', color: '#5B8DEF', count: 68 },
+      { code: 'D4', name: 'D4 · 分公司负责人', color: '#34A37A', count: 62 },
+      { code: 'D5', name: 'D5 · 分公司合伙人', color: '#4C9B8A', count: 43 },
+      { code: 'LEADER', name: '团长', color: '#9CA3AF', count: 33 },
+      { code: 'MEMBER', name: '会员', color: '#D1D5DB', count: 22 }
+    ];
+    var REF_TOTAL = 278;
+    var REF_LIST = [
+      { name: '我是核心合伙人E', id: 'jiangjie0076', identity: 'D2', refCount: 25, avatar: avatarFor('王敏') },
+      { name: '推荐达人01', id: 'tuijian-001', identity: 'D3', refCount: 18, avatar: avatarFor('李芳') },
+      { name: '裂变小能手', id: 'liebian-888', identity: 'D4', refCount: 14, avatar: avatarFor('周舟') },
+      { name: '社群推广大使', id: 'sqtg-2024', identity: 'D5', refCount: 12, avatar: avatarFor('屋顶小仙女') },
+      { name: '好友收割机', id: 'hy-sgj', identity: 'LEADER', refCount: 9, avatar: avatarFor('周末') },
+      { name: '口碑传播者', id: 'kbcb-zhe', identity: 'MEMBER', refCount: 6, avatar: avatarFor('金小叼') }
+    ];
+    var refDonutItems = REF_LEVELS.map(function(l){ return [l.name, l.color, l.count]; });
+    body += '<div class="team-hero"><div class="team-hero-label">我 推荐的人数</div><div class="team-hero-total">' + REF_TOTAL + '</div></div>';
+    body += '<div class="team-donut-card"><div class="donut">' + donutSvg(refDonutItems) + '<div class="donut-c"><span class="donut-cv">' + REF_TOTAL + '</span><span class="donut-cl">推荐人数</span></div></div><div class="team-level-legend">' + REF_LEVELS.map(function(l){ return '<div class="team-level-li"><span class="team-level-dot" style="background:' + l.color + '"></span><span class="team-level-name">' + l.name + '</span><span class="team-level-count">' + l.count + '</span></div>'; }).join('') + '</div></div>';
+    body += '<div class="team-page-list">' + REF_LIST.map(function(m){
+      return '<div class="mbr-row mbr-row--referral" data-team-member="' + esc(m.name) + '" role="button">' +
+        '<img class="mbr-avatar" src="' + m.avatar + '" alt="">' +
+        '<span class="mbr-copy">' +
+          '<span class="mbr-name-line">' + levelBadge(m.identity) + '<span class="mbr-name">' + esc(m.name) + '</span></span>' +
+          '<span class="mbr-agent-id">' + esc(m.id) + '</span>' +
+          '<span class="mbr-ref-count">已累计推荐 <b>' + m.refCount + '</b> 人</span>' +
+        '</span>' +
+        '<span class="mbr-go">›</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  } else if (page.type === 'relation' || page.type === 'next') {
+    body += teamSummary(page.type === 'next' ? '68' : (ROLE === 'agent' ? '326' : '182'), items);
+    body += '<div class="team-page-tabs"><span class="team-page-tab is-active">全部</span><span class="team-page-tab">直属</span><span class="team-page-tab">本周新增</span></div>';
+    body += '<div class="team-page-section-head"><span class="team-page-section-title">' + (page.type === 'next' ? '下一级关系' : '成员名单') + '</span><span class="team-page-section-note">点击查看成员详情</span></div><div class="team-page-list">' + teamRows(page) + '</div>';
+  } else if (page.type === 'metric') {
+    // 新增成员列表页（参考图设计：搜索 + 关系Tab + 日期分组 + 成员行）
+    var pool = getMemberPool(page.metric);
+    var scope = page.scope || '全部';
+    var relTabs = getRelationTabs(pool.label);
+    var members = filterMembersByKeyword(pool.members, page.keyword);
+    members = filterMembersByScope(members, scope);
+    body += '<div class="team-page-summary mbr-summary"><div><span class="influence-metric-v">' + esc(page.count) + '</span><span class="influence-metric-l">' + esc(page.metric) + '</span></div><div class="team-page-stats"><div class="team-page-stat"><span>本周新增</span><b style="color:#D93025;">+' + esc(page.weeklyAdd || 0) + '</b></div>' + (Number(page.potential) > 0 ? '<div class="team-page-stat"><span>潜在</span><b>' + esc(page.potential) + '</b></div>' : '') + '<div class="team-page-stat"><span>关系范围</span><b>' + esc(scope) + '</b></div></div></div>';
+    body += '<div class="team-page-search"><input data-team-search value="' + esc(page.keyword || '') + '" placeholder="请输入微信名"><button data-team-search-submit>查询</button></div>';
+    body += '<div class="team-page-tabs">' + relTabs.map(function(t){ return '<span class="team-page-tab' + ((page.relTab || '全部') === t ? ' is-active' : '') + '" data-team-rel-tab="' + t + '">' + t + '</span>'; }).join('') + '</div>';
+    body += '<div class="mbr-date-bar"><span>10月1日（今日）</span><span>' + esc(pool.label) + '：' + members.length + '个</span></div>';
+    body += '<div class="team-page-list">' + (members.length ? members.map(function(m, i){ return memberRowHtml(m, pool.actions[i % pool.actions.length]); }).join('') : '<div class="mbr-empty">暂无匹配成员</div>') + '</div>';
+  } else if (page.type === 'member') {
+    // 成员详情页（参考图设计：信息卡 + 联系网格 + 下级用户列表）
+    var name = page.member;
+    var pool = getMemberPool(page.metric || '');
+    var member = pool.members.filter(function(m){ return m.name === name; })[0] || pool.members[0];
+    var relType = (page.scope && page.scope !== '全部') ? page.scope + (ROLE === 'agent' ? '成员' : '会员') : (ROLE === 'agent' ? '直属团长' : '直属体验');
+    var subMembers = pool.members.filter(function(m){ return m.name !== name; }).slice(0, 5);
+    body += '<div class="mbr-profile-card">' +
+      '<div class="mbr-profile-top">' +
+        '<img class="mbr-profile-avatar" src="' + avatarFor(member.name) + '" alt="">' +
+        '<div class="mbr-profile-head">' +
+          '<div class="mbr-profile-name-line">' + levelBadge(member.level) + '<span class="mbr-profile-name">' + esc(member.name) + '</span><span class="mbr-copy-btn" data-copy="' + esc(member.name) + '" role="button">复制</span></div>' +
+          '<div class="mbr-profile-rel">关系类型：' + esc(relType) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="mbr-contact-grid">' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">手机</span><span class="mbr-contact-v">' + esc(member.phone) + '</span><span class="mbr-copy-btn" data-copy="' + esc(member.phone) + '" role="button">复制</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">微信</span><span class="mbr-contact-v">' + esc(member.wechat) + '</span><span class="mbr-copy-btn" data-copy="' + esc(member.wechat) + '" role="button">复制</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">地区</span><span class="mbr-contact-v">' + esc(member.region) + '</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">推荐</span><span class="mbr-contact-v">' + esc(member.name) + '</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">注册</span><span class="mbr-contact-v">' + esc(member.date) + '</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">消费</span><span class="mbr-contact-v">' + esc(member.amount) + '</span></div>' +
+      '</div>' +
+      '<div class="mbr-skin-tags">' + esc(member.skin) + '</div>' +
+    '</div>';
+    body += '<div class="mbr-sub-head">下级用户：' + member.subCount + '人</div>';
+    body += '<div class="team-page-list">' + subMembers.map(function(sm){
+      return '<div class="mbr-sub-row" data-team-member="' + esc(sm.name) + '" role="button">' +
+        '<img class="mbr-sub-avatar" src="' + avatarFor(sm.name) + '" alt="">' +
+        '<span class="mbr-sub-copy">' +
+          '<span class="mbr-sub-name">' + levelBadge(sm.level) + esc(sm.name) + '</span>' +
+          '<span class="mbr-sub-count">下级用户：' + sm.subCount + '人</span>' +
+        '</span>' +
+        '<span class="mbr-view-btn" data-team-view-profile="' + esc(sm.name) + '" role="button">查看资料</span>' +
+      '</div>';
+    }).join('') + '</div>';
   }
-  mask.classList.add('is-open');
+  el.innerHTML = '<div class="team-fullscreen-page">' + body + '</div>';
+  el.classList.add('is-open');
 }
-
-function openTeamDetail(title){
-  TEAM_DETAIL_STACK = [{ title: title, depth: 0 }];
-  renderTeamDetail();
+function openTeamPage(page){
+  TEAM_PAGE_STACK = [page];
+  renderTeamPage();
+  if (page.type === 'overview') loadTeamTree();
 }
-
-function closeTeamDetail(){
-  TEAM_DETAIL_STACK = [];
-  var mask = document.getElementById('teamDetailMask');
-  if (mask) mask.classList.remove('is-open');
-}
+function pushTeamPage(page){ TEAM_PAGE_STACK.push(page); renderTeamPage(); }
+function closeTeamFullscreen(){ TEAM_PAGE_STACK = []; var el = document.getElementById('teamFullscreen'); if (el) { el.classList.remove('is-open'); el.innerHTML = ''; } }
+function backTeamPage(){ if (TEAM_PAGE_STACK.length > 1) { TEAM_PAGE_STACK.pop(); renderTeamPage(); } else closeTeamFullscreen(); }
 
 function renderSubBody(){
   var el = document.getElementById('subBody');
   if (!el) return;
   var D = DASHBOARD[ROLE];
   var h = '';
-  if (SUBTAB === 'influence') {
+  if (SUBTAB === 'team') {
     el.innerHTML = renderInfluenceBody(D);
     return;
   }
@@ -719,21 +1114,28 @@ function renderSubBody(){
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长状态（人）' : '社群成员概览') + '</span><span class="t-tiny wx-text">本周</span></div><div class="funnel-grid">' + P.funnel.map(function(f){ return '<div class="funnel-cell" data-funnel="' + esc(f[0]) + '" role="button"><span class="funnel-go">›</span><span class="funnel-v">' + esc(f[1]) + '</span><span class="funnel-l">' + esc(f[0]) + '</span></div>'; }).join('') + '</div></div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长状态（人）' : '成员状态（人）') + '</span><span class="t-tiny wx-text">点击查看明细</span></div><div class="donut-wrap"><div class="donut">' + donutSvg(P.donut.items) + '<div class="donut-c"><span class="donut-cv">' + P.donut.total + '</span><span class="donut-cl">' + (teamMode ? '团长总数' : '覆盖成员') + '</span></div></div><div class="donut-legend">' + P.donut.items.map(function(it){ return '<div class="donut-li"><span class="donut-dot" style="background:' + it[1] + '"></span>' + esc(it[0]) + '<span class="dv">' + it[2] + '</span></div>'; }).join('') + '</div></div></div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长档案与活跃度' : '我的社群') + '</span><span class="t-tiny wx-text">下钻详情</span></div>' + P.rows.map(function(r){ return '<div class="team-row' + (teamMode ? ' mp-nav' : '') + '"' + (teamMode ? ' data-nav="agent-info"' : '') + ' role="button"><span class="team-row-t">' + esc(r[0]) + '<small style="display:block;font-size:10px;color:#A9906F;margin-top:2px;">' + esc(r[1]) + '</small></span><span class="team-row-v">' + esc(r[2]) + '</span><span class="team-row-go">›</span></div>'; }).join('') + '</div>';
-    if (ROLE === 'agent' && teamMode) h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">团长申请</span><span class="t-tiny wx-text">待处理 3 项</span></div><div class="team-row" data-gosub="process" role="button"><span class="team-row-t">待初审团长申请</span><span class="team-row-v">2</span><span class="team-row-go">›</span></div><div class="team-row" data-gosub="process" role="button"><span class="team-row-t">平台复审中</span><span class="team-row-v">1</span><span class="team-row-go">›</span></div></div>';
-  } else if (SUBTAB === 'money') {
-    var M = D.money;
+    if (ROLE === 'agent' && teamMode) {
+      var counts = AGENT_APPLICATIONS.counts;
+      h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">团队准入</span><span class="t-tiny wx-text">待处理 ' + counts.total + ' 项</span></div>' +
+        '<div class="team-row" data-application-filter="leader" role="button"><span class="team-row-t">待审核团长申请</span><span class="team-row-v">' + counts.leader + '</span><span class="team-row-go">›</span></div>' +
+        '<div class="team-row" data-application-filter="agent" role="button"><span class="team-row-t">待审核低级别代理申请</span><span class="team-row-v">' + counts.agent + '</span><span class="team-row-go">›</span></div>' +
+        '<div class="team-row" data-application-filter="all" role="button"><span class="team-row-t">查看待审核申请</span><span class="team-row-v">' + counts.total + '</span><span class="team-row-go">›</span></div>' +
+        '<div class="application-list" data-application-list="all" style="display:none;">' + applicationListHtml() + '</div></div>';
+    }
+  } else if (SUBTAB === 'assets') {
+    var M = D.assets;
     var repTabs = PERIODS.map(function(p){ return '<div class="rep-tab' + (p === PERIOD ? ' rep-tab--on' : '') + '" data-period="' + p + '" role="button">' + p + '</div>'; }).join('');
-    h += '<div class="rep-head"><span class="rep-l">' + M.title + '（元）</span><div class="rep-num">¥' + M.total + '</div><div class="rep-sub"><span class="rep-wd">' + (ROLE === 'agent' ? '销售回款与库存经营' : '预计佣金 <b>¥' + M.status[1][0] + '</b>') + '</span>' + '<div class="rep-btn" data-gosub="process" role="button">' + (ROLE === 'agent' ? '查看订单' : '查看结算') + '</div>' + '</div><div class="rep-tabs">' + repTabs + '</div></div>';
+    h += '<div class="rep-head"><span class="rep-l">' + M.title + '（元）</span><div class="rep-num">¥' + M.total + '</div><div class="rep-sub"><span class="rep-wd">' + (ROLE === 'agent' ? '销售回款与库存经营' : '预计佣金 <b>¥' + M.status[1][0] + '</b>') + '</span>' + '<div class="rep-btn" data-gosub="operations" role="button">' + (ROLE === 'agent' ? '查看订单' : '查看结算') + '</div>' + '</div><div class="rep-tabs">' + repTabs + '</div></div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '经营构成（元）' : '佣金构成（元）') + '</span><span class="t-tiny wx-text">' + PERIOD + '</span></div><div class="rep-split">' + M.values.map(function(v, i){ return '<div class="rep-split-cell"><span class="rep-split-v">¥' + v + '</span><span class="rep-split-l">' + M.labels[i] + '</span></div>'; }).join('') + '</div></div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '经营状态' : '佣金状态') + '</span><span class="t-tiny wx-text">本周</span></div><div class="status-grid">' + M.status.map(function(s, i){ return '<div class="status-cell"><span class="status-v' + (i === 0 ? ' status-v--ok' : '') + '">' + (ROLE === 'agent' && i < 2 ? '¥' : '¥') + s[0] + '</span><span class="status-l">' + s[1] + '</span></div>'; }).join('') + '</div></div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '按团长成交贡献' : '订单佣金明细') + '</span><span class="t-tiny wx-text">本周</span></div><div class="rep-table-h"><span>类别</span><span>订单量</span><span>' + (ROLE === 'agent' ? '预计利润' : '预计佣金') + '</span><span></span></div>' + M.categories.map(function(c){ return '<div class="rep-table-r" data-funnel="' + esc(c[0]) + '" role="button"><span>' + esc(c[0]) + '</span><span class="m">' + esc(c[1]) + '</span><span class="m">' + esc(c[2]) + '</span><span class="r-go">›</span></div>'; }).join('') + '</div>';
-  } else if (SUBTAB === 'process') {
-    var R = D.process;
+  } else if (SUBTAB === 'operations') {
+    var R = D.operations;
     h += '<div class="audit-todo" style="padding:0 10.32px;">' + R.todo.map(function(t){ return '<div class="audit-todo-cell" data-funnel="' + esc(t[1]) + '" role="button"><span class="audit-todo-v">' + t[0] + '</span><span class="audit-todo-l">' + esc(t[1]) + '</span></div>'; }).join('') + '</div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '审核与履约事项' : '我的订单与服务事项') + '</span><span class="t-tiny wx-text">点击处理</span></div>' + R.list.map(function(r){ return '<div class="audit-row" data-funnel="' + esc(r[0]) + '" role="button"><span class="audit-dot audit-dot--' + r[3] + '"></span><div class="f-1"><div class="audit-t">' + esc(r[0]) + '</div><div class="audit-d">' + esc(r[1]) + '</div></div><span class="audit-st audit-st--' + r[3] + '">' + esc(r[2]) + '</span></div>'; }).join('') + '</div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '库存与订单履约' : '我推广的订单') + '</span><span class="t-tiny wx-text mp-nav" data-nav="orders" style="cursor:pointer;">全部 ›</span></div>' + R.orders.map(function(o){ return '<div class="team-row mp-nav" data-nav="orders" role="button"><span class="team-row-t">' + esc(o[0]) + '</span><span class="team-row-v">' + esc(o[1]) + '</span><span class="team-row-go">›</span></div>'; }).join('') + '</div>';
-  } else if (SUBTAB === 'marketing') {
-    var K = D.marketing;
+  } else if (SUBTAB === 'promotion') {
+    var K = D.promotion;
     h += '<div class="dir-card"><div class="dir-head"><span class="dir-tag">' + K.tag + '</span></div><div class="dir-t">' + K.title + '</div><div class="dir-d">' + K.desc + '</div><div class="dir-chips">' + K.chips.map(function(c){ return '<span class="dir-chip">' + esc(c) + '</span>'; }).join('') + '</div></div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '给团长下发任务' : '推广执行') + '</span><span class="t-tiny wx-text">点击平台 · AI 军师帮你写</span></div><div class="dist-grid">' + DIST.map(function(p){ return '<div class="dist-tile mp-nav" data-nav="ai"><div class="dist-ico">' + PLATS[p.n] + '</div><span class="dist-n">' + esc(p.n) + '</span><span class="dist-c">' + esc(p.c) + '</span></div>'; }).join('') + '</div></div>';
     h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;">' + K.tools.map(function(e){ return '<div class="entry-row mp-nav" data-nav="' + e.nav + '"><div class="entry-ico">' + ENTRY_ICOS[e.ico] + '</div><div class="f-1"><div class="entry-t">' + esc(e.t) + '</div><div class="entry-d">' + esc(e.d) + '</div></div><span class="entry-go">›</span></div>'; }).join('') + '</div>';
@@ -747,6 +1149,13 @@ function renderSubBody(){
 
 function renderSections(targetId){
   var html = '';
+  if (ROLE === 'member') {
+    html += '<div class="growth-path wx-view"><div class="growth-path-head"><span class="growth-path-title">五阶段成长路径</span><span class="growth-path-note">当前第 2 阶段</span></div><div class="growth-path-steps"><div class="growth-path-step growth-path-step--done"><span class="growth-path-dot">1</span><span class="growth-path-label">入门</span></div><div class="growth-path-step growth-path-step--active"><span class="growth-path-dot">2</span><span class="growth-path-label">训练</span></div><div class="growth-path-step"><span class="growth-path-dot">3</span><span class="growth-path-label">实训</span></div><div class="growth-path-step"><span class="growth-path-dot">4</span><span class="growth-path-label">经营</span></div><div class="growth-path-step"><span class="growth-path-dot">5</span><span class="growth-path-label">带教</span></div></div><div class="growth-path-current"><strong>当前阶段：训练期</strong><span>完成 3 节代理商培训、提交 1 次社群实训作业，即可进入实训期。</span></div></div>';
+    html += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">代理商培训任务</span><span class="t-tiny wx-text">完成 2 / 4 项</span></div>' + rowHtml({ t:'完成《社群服务标准》培训', tag:'必修', tagCls:'tag--purple', time:'本周内', pt:'1 / 3 节', ptMuted:true }, 'growth') + rowHtml({ t:'参加班级训练群实训', tag:'实训', tagCls:'tag--amber', time:'9 月 28 日前', pt:'待提交', ptMuted:true, urgent:true }, 'growth') + rowHtml({ t:'提交首个社群经营复盘', tag:'作业', tagCls:'tag--green', time:'完成训练后', pt:'+120 积分' }, 'growth') + '</div>';
+    html += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">课程 / 实训进度</span><span class="t-tiny wx-text mp-nav" data-nav="course-list" style="cursor:pointer;">全部课程 ›</span></div><div class="learning-grid"><div class="learning-card mp-nav" data-nav="course"><div class="learning-top"><span class="learning-icon">课</span><span class="learning-title">社群服务标准</span></div><div class="learning-meta">已学 68% · 剩 14 分钟</div><div class="prog-track learning-progress"><div class="prog-fill" style="width:68%;"></div></div></div><div class="learning-card mp-nav" data-nav="course"><div class="learning-top"><span class="learning-icon">练</span><span class="learning-title">首群经营实训</span></div><div class="learning-meta">已完成 3 / 6 章 · 待提交作业</div><div class="prog-track learning-progress"><div class="prog-fill" style="width:50%;"></div></div></div></div></div>';
+    html += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">三类导师</span><span class="t-tiny wx-text">按阶段获得辅导</span></div><div class="mentor-grid"><div class="mentor-card mp-nav" data-nav="advisor"><div class="mentor-top"><span class="mentor-avatar">成</span><span class="mentor-name">成长导师</span></div><div class="mentor-role">陪你完成入门与训练</div></div><div class="mentor-card mp-nav" data-nav="advisor"><div class="mentor-top"><span class="mentor-avatar">课</span><span class="mentor-name">课程导师</span></div><div class="mentor-role">答疑课程与实训作业</div></div><div class="mentor-card mp-nav" data-nav="advisor"><div class="mentor-top"><span class="mentor-avatar">经</span><span class="mentor-name">经营导师</span></div><div class="mentor-role">陪跑社群经营结果</div></div></div></div>';
+    html += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">加入训练社群</span><span class="t-tiny wx-text">选择适合你的群</span></div><div class="group-grid"><div class="group-card mp-nav" data-nav="group-qr"><span class="group-icon">群</span><span class="group-title">入门群</span><span class="group-meta">了解规则与成长路径</span><span class="group-go">查看入群 ›</span></div><div class="group-card mp-nav" data-nav="group-qr"><span class="group-icon">班</span><span class="group-title">班级训练群</span><span class="group-meta">跟着课程完成实训</span><span class="group-go">查看入群 ›</span></div><div class="group-card mp-nav" data-nav="group-qr"><span class="group-icon">陪</span><span class="group-title">经营陪跑群</span><span class="group-meta">复盘经营与持续答疑</span><span class="group-go">查看入群 ›</span></div></div></div>';
+  }
   ROLES[ROLE].sections.forEach(function(sec){
     html += '<div class="card card-pad gap wx-view">' +
       '<div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + esc(sec.title) + '</span>' +
@@ -769,6 +1178,7 @@ function renderAll(){
     document.getElementById('tkHeroZone').innerHTML = '';
     document.getElementById('tkSections').innerHTML = '';
     renderWorkbench();
+    if (ROLE === 'agent') loadPendingApplications();
   }
 }
 
@@ -777,9 +1187,9 @@ function switchRole(r){
   if (!ROLES[r]) return;
   if (!UNLOCKED[r]) { openUnlock(r); return; }
   if (ROLE === r) return;
-  closeTeamDetail();
+  closeTeamFullscreen();
   ROLE = r;
-  SUBTAB = 'influence';
+  SUBTAB = 'team';
   INFLUENCE_TAB = r === 'agent' ? 'team' : 'community';
   NETWORK_SCOPE = 'all';
   renderAll();
@@ -825,15 +1235,62 @@ document.getElementById('roleSw').addEventListener('click', function(e){
   if (p) switchRole(p.getAttribute('data-role'));
 });
 document.getElementById('tkWork').addEventListener('click', function(e){
+  var applicationAction = e.target.closest ? e.target.closest('[data-application-action]') : null;
+  if (applicationAction) {
+    var applicationId = applicationAction.getAttribute('data-application-id');
+    var approved = applicationAction.getAttribute('data-application-action') === 'approve';
+    var rejectReason = approved ? '' : window.prompt('请输入拒绝原因', '资料或资格未通过');
+    if (!approved && rejectReason === null) return;
+    applicationAction.disabled = true;
+    reviewApplication(applicationId, approved, rejectReason).then(function(){
+      closeTeamFullscreen();
+      loadPendingApplications();
+      loadTeamTree();
+    }).catch(function(error){
+      applicationAction.disabled = false;
+      window.alert(error.message || '审核失败');
+    });
+    return;
+  }
+  var applicationRow = e.target.closest ? e.target.closest('[data-application-id]') : null;
+  if (applicationRow) {
+    var application = AGENT_APPLICATIONS.applications.filter(function(item){ return item.id === applicationRow.getAttribute('data-application-id'); })[0];
+    if (application) openApplication(application);
+    return;
+  }
+  var applicationFilter = e.target.closest ? e.target.closest('[data-application-filter]') : null;
+  if (applicationFilter) {
+    var filter = applicationFilter.getAttribute('data-application-filter');
+    var list = document.querySelector('[data-application-list]');
+    if (list) {
+      list.innerHTML = applicationListHtml();
+      list.style.display = 'block';
+      list.querySelectorAll('[data-application-id]').forEach(function(row){
+        var item = AGENT_APPLICATIONS.applications.filter(function(application){ return application.id === row.getAttribute('data-application-id'); })[0];
+        row.style.display = filter === 'all' || (filter === 'leader' && item.identity === '团长') || (filter === 'agent' && item.identity === '代理') ? '' : 'none';
+      });
+    }
+    return;
+  }
   var influenceTab = e.target.closest ? e.target.closest('[data-influence-tab]') : null;
   if (influenceTab) {
     INFLUENCE_TAB = influenceTab.getAttribute('data-influence-tab');
     renderSubBody();
     return;
   }
-  var teamDetail = e.target.closest ? e.target.closest('[data-team-detail]') : null;
-  if (teamDetail) {
-    openTeamDetail(teamDetail.getAttribute('data-team-detail'));
+  var teamPage = e.target.closest ? e.target.closest('[data-team-page]') : null;
+  if (teamPage) {
+    openTeamPage({
+      type: teamPage.getAttribute('data-team-page'),
+      title: teamPage.getAttribute('data-team-title') || '我的团队',
+      scope: teamPage.getAttribute('data-team-scope') || '全部',
+      metric: teamPage.getAttribute('data-team-metric') || '',
+      count: teamPage.getAttribute('data-team-count') || '',
+      weeklyAdd: teamPage.getAttribute('data-team-weekly-add') || 0,
+      potential: teamPage.getAttribute('data-team-potential') || 0,
+      keyword: '',
+      filter: '本周'
+    });
     return;
   }
   var pill = e.target.closest ? e.target.closest('#subTab .subtab-pill[data-sub]') : null;
@@ -855,19 +1312,28 @@ document.getElementById('tkWork').addEventListener('click', function(e){
     window.scrollTo(0, 0);
     return;
   }
-  // 漏斗格下钻（原型示意）
+  // 漏斗格下钻 → 打开新增成员列表页
   var fcell = e.target.closest ? e.target.closest('[data-funnel]') : null;
   if (fcell) {
-    var t = document.createElement('div');
-    t.textContent = '「' + fcell.getAttribute('data-funnel') + '」明细：正式版可查看来源渠道与名单';
-    t.style.cssText = 'position:fixed;top:40%;left:50%;transform:translateX(-50%);background:rgba(51,33,15,.82);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;z-index:99999;white-space:nowrap;';
-    document.body.appendChild(t);
-    setTimeout(function(){ t.remove(); }, 1600);
+    var fLabel = fcell.getAttribute('data-funnel');
+    var fPool = getMemberPool(fLabel);
+    var fCount = fcell.querySelector('.funnel-v');
+    openTeamPage({
+      type: 'metric',
+      title: fPool.label,
+      scope: '全部',
+      metric: fLabel,
+      count: fCount ? fCount.textContent : fPool.members.length,
+      weeklyAdd: Math.max(1, Math.floor(fPool.members.length / 2)),
+      potential: 0,
+      keyword: '',
+      relTab: '全部'
+    });
     return;
   }
   var act = e.target.closest ? e.target.closest('[data-act="dist"]') : null;
   if (act) {
-    SUBTAB = 'marketing';
+    SUBTAB = 'promotion';
     document.querySelectorAll('#subTab .subtab-pill[data-sub]').forEach(function(p){
       p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
     });
@@ -882,29 +1348,93 @@ document.getElementById('tkWork').addEventListener('click', function(e){
   }
 });
 
-document.getElementById('teamDetailMask').addEventListener('click', function(e){
-  var close = e.target.closest ? e.target.closest('[data-team-close]') : null;
-  if (close || e.target === this) {
-    closeTeamDetail();
+document.getElementById('teamFullscreen').addEventListener('click', function(e){
+  var back = e.target.closest ? e.target.closest('[data-team-full-back]') : null;
+  if (back) {
+    backTeamPage();
     return;
   }
-  var back = e.target.closest ? e.target.closest('[data-team-back]') : null;
-  if (back) {
-    if (TEAM_DETAIL_STACK.length > 1) {
-      TEAM_DETAIL_STACK.pop();
-      renderTeamDetail();
-    } else {
-      closeTeamDetail();
-    }
+  // 复制按钮
+  var copyBtn = e.target.closest ? e.target.closest('[data-copy]') : null;
+  if (copyBtn) {
+    e.stopPropagation();
+    var text = copyBtn.getAttribute('data-copy');
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    } catch (err) {}
+    var tip = document.createElement('div');
+    tip.textContent = '已复制';
+    tip.style.cssText = 'position:fixed;top:40%;left:50%;transform:translateX(-50%);background:rgba(51,33,15,.82);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;z-index:99999;white-space:nowrap;';
+    document.body.appendChild(tip);
+    setTimeout(function(){ tip.remove(); }, 1200);
+    return;
+  }
+  // 查看资料按钮 → 进入该成员详情
+  var viewBtn = e.target.closest ? e.target.closest('[data-team-view-profile]') : null;
+  if (viewBtn) {
+    e.stopPropagation();
+    var vName = viewBtn.getAttribute('data-team-view-profile');
+    var curPage = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    pushTeamPage({ type: 'member', title: vName, member: vName, metric: curPage.metric || '', scope: curPage.scope || '全部' });
+    return;
+  }
+  var expandRow = e.target.closest ? e.target.closest('[data-team-expand]') : null;
+  if (expandRow) {
+    TEAM_TREE_EXPANDED[expandRow.getAttribute('data-team-expand')] = !TEAM_TREE_EXPANDED[expandRow.getAttribute('data-team-expand')];
+    renderTeamPage();
     return;
   }
   var member = e.target.closest ? e.target.closest('[data-team-member]') : null;
   if (member) {
-    TEAM_DETAIL_STACK.push({
-      title: member.getAttribute('data-team-member'),
-      depth: TEAM_DETAIL_STACK.length
-    });
-    renderTeamDetail();
+    var memberName = member.getAttribute('data-team-member');
+    var currentPage = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    pushTeamPage({ type: 'member', title: memberName, member: memberName, metric: currentPage.metric || '', scope: currentPage.scope || '全部' });
+    return;
+  }
+  var nextLevel = e.target.closest ? e.target.closest('[data-team-next-level]') : null;
+  if (nextLevel) {
+    var parentName = nextLevel.getAttribute('data-team-next-level');
+    pushTeamPage({ type: 'next', title: parentName + '的下一级关系', parent: parentName, keyword: '' });
+    return;
+  }
+  var searchSubmit = e.target.closest ? e.target.closest('[data-team-search-submit]') : null;
+  if (searchSubmit) {
+    var input = document.querySelector('#teamFullscreen [data-team-search]');
+    var pg = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    pg.keyword = input ? input.value : '';
+    renderTeamPage();
+    return;
+  }
+  // 关系类型 Tab 切换
+  var relTab = e.target.closest ? e.target.closest('[data-team-rel-tab]') : null;
+  if (relTab) {
+    var p = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    p.relTab = relTab.getAttribute('data-team-rel-tab');
+    renderTeamPage();
+    return;
+  }
+  // 团队等级 Tab 切换（总览页）
+  var levelTab = e.target.closest ? e.target.closest('[data-team-level-tab]') : null;
+  if (levelTab) {
+    var lp = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    lp.levelTab = levelTab.getAttribute('data-team-level-tab');
+    renderTeamPage();
+    return;
+  }
+  // 查看推荐 → 打开推荐人页
+  var refBtn = e.target.closest ? e.target.closest('[data-team-referral]') : null;
+  if (refBtn) {
+    pushTeamPage({ type: 'referral', title: '查看推荐人' });
+    return;
+  }
+  var filter = e.target.closest ? e.target.closest('[data-team-filter]') : null;
+  if (filter) {
+    var page = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    page.filter = filter.getAttribute('data-team-filter');
+    renderTeamPage();
   }
 });
 

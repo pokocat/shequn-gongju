@@ -1,0 +1,126 @@
+<style>
+  :root { --ink:#172033; --muted:#718097; --line:#dce9e5; --mint:#e9f7f0; --mint-2:#c9f0de; --lime:#d9ff38; --dark:#172438; --white:#fff; }
+  * { box-sizing:border-box; }
+  .comparison { color:var(--ink); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif; }
+  .intro { display:flex; justify-content:space-between; gap:24px; align-items:flex-end; margin-bottom:24px; }
+  .intro h2 { margin:0; font-size:30px; letter-spacing:-.04em; }
+  .intro p { margin:8px 0 0; color:var(--muted); max-width:700px; line-height:1.6; }
+  .badge { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:#f2f8f5; color:#527268; font-size:12px; font-weight:700; white-space:nowrap; }
+  .badge i { width:8px; height:8px; border-radius:50%; background:#75c89b; display:block; }
+  .options { display:grid; gap:20px; }
+  .option { background:rgba(255,255,255,.82); border:1px solid var(--line); border-radius:22px; padding:20px; cursor:pointer; transition:.2s ease; }
+  .option:hover { transform:translateY(-2px); border-color:#91cdb0; box-shadow:0 12px 28px rgba(49,100,82,.1); }
+  .option.selected { border:2px solid #69b68b; box-shadow:0 0 0 5px rgba(105,182,139,.14); }
+  .option-head { display:flex; justify-content:space-between; gap:14px; align-items:flex-start; margin-bottom:16px; }
+  .option-title { display:flex; gap:12px; align-items:flex-start; }
+  .letter { width:34px; height:34px; display:grid; place-items:center; border-radius:11px; background:var(--dark); color:white; font-weight:800; }
+  .option h3 { margin:0; font-size:19px; letter-spacing:-.025em; }
+  .option-head p { margin:4px 0 0; color:var(--muted); font-size:13px; line-height:1.5; }
+  .recommend { padding:6px 10px; border-radius:999px; background:var(--lime); color:#324000; font-size:11px; font-weight:800; white-space:nowrap; }
+  .mockups { display:grid; grid-template-columns:minmax(0,1.45fr) minmax(220px,.55fr); gap:16px; }
+  .device { border:1px solid #d7e6e0; background:#f6fbf8; border-radius:16px; overflow:hidden; min-width:0; }
+  .device-label { padding:9px 12px; color:#668077; font-size:11px; font-weight:800; border-bottom:1px solid #dcebe5; background:#fff; }
+  .screen { padding:14px; min-height:245px; }
+  .topbar { display:flex; align-items:center; gap:8px; padding:7px 9px; background:#fff; border-radius:10px; border:1px solid #e3eee9; font-size:11px; color:#586d75; }
+  .topbar strong { color:#253244; }
+  .dot { width:7px; height:7px; border-radius:50%; background:#7ac79a; }
+  .crumb { margin:12px 0 10px; font-size:10px; color:#7a8d93; }
+  .hero { display:flex; justify-content:space-between; gap:14px; align-items:center; padding:15px; border-radius:14px; background:linear-gradient(135deg,#e9f8f0,#d9f2e8); border:1px solid #c7ead8; }
+  .hero h4 { margin:0 0 5px; font-size:18px; letter-spacing:-.03em; }
+  .hero p { margin:0; color:#6a8180; font-size:10px; line-height:1.5; }
+  .hero-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-top:12px; }
+  .kpi { padding:10px 8px; border-radius:10px; background:#fff; border:1px solid #e4eee9; }
+  .kpi b { display:block; font-size:15px; }
+  .kpi span { color:#80918d; font-size:9px; }
+  .section-row { display:flex; justify-content:space-between; align-items:center; margin:13px 0 8px; }
+  .section-row strong { font-size:12px; }
+  .section-row span { font-size:10px; color:#759187; }
+  .mini-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .mini-card { min-height:46px; border:1px solid #e1ece7; border-radius:10px; background:#fff; padding:9px; font-size:10px; }
+  .mini-card b { display:block; margin-bottom:4px; font-size:11px; }
+  .mobile .screen { max-width:260px; margin:auto; min-height:320px; background:#f7fbf9; padding:11px; }
+  .mobile .topbar { font-size:9px; padding:6px; }
+  .mobile .hero { display:block; padding:12px; }
+  .mobile .hero h4 { font-size:16px; }
+  .mobile .hero-kpis { grid-template-columns:repeat(2,1fr); }
+  .mobile .mini-cards { grid-template-columns:1fr; }
+  .mobile .mini-card { min-height:34px; }
+  .phone-nav { display:flex; justify-content:space-around; margin-top:10px; padding:9px 3px 2px; border-top:1px solid #dfebe6; color:#7f948d; font-size:9px; }
+  .phone-nav strong { color:#2d6e58; }
+  .layout-b .screen { min-height:265px; display:grid; grid-template-columns:112px 1fr; gap:10px; }
+  .side { border-radius:10px; background:#172438; padding:10px 8px; color:#cbd9d5; font-size:9px; }
+  .side strong { color:#fff; display:block; margin-bottom:14px; font-size:11px; }
+  .side div { padding:7px 6px; border-radius:6px; margin-bottom:3px; }
+  .side .active { color:#172438; background:#d9ff38; font-weight:800; }
+  .workspace { min-width:0; }
+  .workspace .hero { padding:12px; }
+  .workspace .hero h4 { font-size:16px; }
+  .layout-c .screen { min-height:265px; }
+  .stepper { display:flex; gap:4px; margin-bottom:12px; }
+  .step { flex:1; height:6px; border-radius:5px; background:#dcebe4; }
+  .step.active { background:#65b98d; }
+  .flow-card { background:#fff; border:1px solid #e1ece7; border-radius:12px; padding:13px; }
+  .flow-card h4 { margin:0 0 6px; font-size:15px; }
+  .flow-card p { margin:0 0 12px; font-size:10px; line-height:1.5; color:#738985; }
+  .action { display:inline-flex; padding:7px 10px; border-radius:8px; background:#172438; color:#fff; font-size:10px; font-weight:800; }
+  .notes { display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
+  .note { padding:7px 10px; border-radius:8px; background:#f4f8f6; color:#617a72; font-size:11px; }
+  .decision { margin-top:20px; padding:16px 18px; background:#172438; color:#eef8f3; border-radius:16px; display:flex; gap:14px; align-items:flex-start; }
+  .decision strong { color:#d9ff38; }
+  .decision p { margin:4px 0 0; color:#c2d3cc; font-size:12px; line-height:1.6; }
+  @media (max-width:760px) { .intro { display:block; } .badge { margin-top:14px; } .mockups { grid-template-columns:1fr; } .mobile .screen { max-width:none; } .option { padding:15px; } }
+</style>
+
+<div class="comparison">
+  <div class="intro">
+    <div>
+      <h2>行业生态与平台管理 · 布局对比稿</h2>
+      <p>当前截图的核心问题不是颜色，而是信息层级和布局约束：平台卡片内容被拉成长列、操作路径不够聚焦、PC 信息没有在手机端重新编排。</p>
+    </div>
+    <div class="badge"><i></i> 点击方案卡片进行选择</div>
+  </div>
+
+  <div class="options">
+    <div class="option" data-choice="A" onclick="toggleSelect(this)">
+      <div class="option-head">
+        <div class="option-title"><div class="letter">A</div><div><h3>响应式自适应工作台</h3><p>推荐：保留现有业务结构，但重新建立 PC / 手机两套信息密度与组件排列规则。</p></div></div>
+        <div class="recommend">推荐</div>
+      </div>
+      <div class="mockups">
+        <div class="device"><div class="device-label">PC · 宽屏工作台</div><div class="screen">
+          <div class="topbar"><span class="dot"></span><strong>平台管理</strong><span>主理人公社</span><span style="margin-left:auto">超级管理员⌄</span></div>
+          <div class="crumb">行业生态　›　平台</div>
+          <div class="hero"><div><h4>主理人公社</h4><p>聚域旗下平台 · OPC 超级生态 · 下辖 9 个项目</p></div><span class="action">进入平台</span></div>
+          <div class="hero-kpis"><div class="kpi"><b>9</b><span>下辖项目</span></div><div class="kpi"><b>0</b><span>平台用户</span></div><div class="kpi"><b>0</b><span>运营群组</span></div><div class="kpi"><b>待接入</b><span>数据状态</span></div></div>
+          <div class="section-row"><strong>平台下辖项目</strong><span>查看全部 ›</span></div><div class="mini-cards"><div class="mini-card"><b>V001 军师</b>正式项目 · 0 群</div><div class="mini-card"><b>AI 超级广告公司</b>招商项目</div><div class="mini-card"><b>AI 大健康</b>招商项目</div></div>
+        </div></div>
+        <div class="device mobile"><div class="device-label">手机 · 单列卡片流</div><div class="screen">
+          <div class="topbar"><span class="dot"></span><strong>平台管理</strong><span style="margin-left:auto">☰</span></div><div class="crumb">行业生态 › 平台</div>
+          <div class="hero"><h4>主理人公社</h4><p>聚域 · OPC 超级生态</p><div class="hero-kpis"><div class="kpi"><b>9</b><span>项目</span></div><div class="kpi"><b>0</b><span>用户</span></div><div class="kpi"><b>待接入</b><span>数据</span></div><div class="kpi"><b>运营中</b><span>状态</span></div></div><div style="margin-top:12px"><span class="action">进入平台</span></div></div>
+          <div class="section-row"><strong>下辖项目</strong><span>全部 ›</span></div><div class="mini-cards"><div class="mini-card"><b>V001 军师</b>正式项目 · 进入 ›</div><div class="mini-card"><b>AI 超级广告公司</b>招商项目 · 进入 ›</div></div><div class="phone-nav"><strong>平台</strong><span>项目</span><span>社群</span><span>更多</span></div>
+        </div></div>
+      </div>
+      <div class="notes"><span class="note">优点：改造成本最低</span><span class="note">优点：PC / 手机逻辑一致</span><span class="note">重点：桌面端不再让卡片内容纵向挤压</span></div>
+    </div>
+
+    <div class="option" data-choice="B" onclick="toggleSelect(this)">
+      <div class="option-head"><div class="option-title"><div class="letter">B</div><div><h3>左侧导航 + 主工作区</h3><p>强化平台、项目、社群三层关系，适合高频运营人员长期使用。</p></div></div></div>
+      <div class="mockups">
+        <div class="device"><div class="device-label">PC · 管理后台形态</div><div class="screen layout-b"><div class="side"><strong>聚域运营中枢</strong><div>总览</div><div class="active">平台管理</div><div>项目运营</div><div>社群体系</div><div>账号资产</div><div>数据报表</div></div><div class="workspace"><div class="hero"><div><h4>主理人公社</h4><p>平台状态：运营中</p></div><span class="action">配置平台</span></div><div class="hero-kpis"><div class="kpi"><b>9</b><span>项目</span></div><div class="kpi"><b>0</b><span>用户</span></div><div class="kpi"><b>0</b><span>群组</span></div><div class="kpi"><b>84万</b><span>月营收</span></div></div><div class="section-row"><strong>运营模块</strong></div><div class="mini-cards"><div class="mini-card"><b>项目</b>管理 9 个项目</div><div class="mini-card"><b>社群</b>平台 Scope</div></div></div></div></div>
+        <div class="device mobile"><div class="device-label">手机 · 抽屉导航</div><div class="screen layout-b"><div class="topbar"><strong>主理人公社</strong><span style="margin-left:auto">☰</span></div><div class="workspace" style="margin-top:10px"><div class="hero"><h4>平台管理</h4><p>运营中 · 9 个项目</p></div><div class="section-row"><strong>快捷入口</strong></div><div class="mini-cards"><div class="mini-card"><b>项目运营</b>9 个项目 ›</div><div class="mini-card"><b>平台社群</b>0 个群组 ›</div><div class="mini-card"><b>数据报表</b>待接入 ›</div></div></div><div class="phone-nav"><strong>工作台</strong><span>项目</span><span>社群</span><span>我的</span></div></div></div>
+      </div>
+      <div class="notes"><span class="note">优点：层级最清晰</span><span class="note">优点：适合扩展模块</span><span class="note">代价：需要调整现有 PC 导航结构</span></div>
+    </div>
+
+    <div class="option" data-choice="C" onclick="toggleSelect(this)">
+      <div class="option-head"><div class="option-title"><div class="letter">C</div><div><h3>卡片流 + 分步进入</h3><p>把复杂层级拆成“平台概览 → 项目列表 → 项目配置”，优先降低理解成本。</p></div></div></div>
+      <div class="mockups">
+        <div class="device"><div class="device-label">PC · 分步工作流</div><div class="screen layout-c"><div class="topbar"><span class="dot"></span><strong>平台管理</strong><span style="margin-left:auto">步骤 1 / 3</span></div><div class="crumb">平台管理　›　主理人公社</div><div class="stepper"><div class="step active"></div><div class="step"></div><div class="step"></div></div><div class="flow-card"><h4>先确认平台</h4><p>平台负责承载多个项目。确认后，下一步只展示这个平台下的项目，不再混入其他层级。</p><span class="action">查看 9 个项目</span></div><div class="section-row"><strong>平台摘要</strong></div><div class="mini-cards"><div class="mini-card"><b>合作伙伴</b>聚域</div><div class="mini-card"><b>所属生态</b>OPC 超级生态</div><div class="mini-card"><b>数据接入</b>待接入</div></div></div></div>
+        <div class="device mobile"><div class="device-label">手机 · 一次只处理一层</div><div class="screen layout-c"><div class="topbar"><strong>平台管理</strong><span style="margin-left:auto">1 / 3</span></div><div class="crumb">主理人公社</div><div class="stepper"><div class="step active"></div><div class="step"></div><div class="step"></div></div><div class="flow-card"><h4>主理人公社</h4><p>聚域旗下平台，承载 9 个 OPC 项目。先查看平台，再进入项目。</p><span class="action">下一步：项目列表</span></div><div class="phone-nav"><strong>返回</strong><span>帮助</span><span>关闭</span></div></div></div>
+      </div>
+      <div class="notes"><span class="note">优点：最容易理解</span><span class="note">优点：手机端体验最好</span><span class="note">代价：运营人员需要多一步点击</span></div>
+    </div>
+  </div>
+
+  <div class="decision"><div style="font-size:22px">✦</div><div><strong>我的建议：先采用 A，再吸收 B 的导航关系。</strong><p>第一阶段先修复当前截图中最明显的响应式问题：平台摘要改为横向 KPI、项目改为清晰列表、手机端改为单列卡片；同时保留平台 → 项目 → 社群的业务层级。后续如果模块继续增加，再把左侧导航能力逐步引入。</p></div></div>
+</div>

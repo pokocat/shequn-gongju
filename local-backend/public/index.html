@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>主理人公社｜本地闭环控制台</title>
+  <style>
+    :root { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #241b13; background: #f8f1e7; }
+    body { max-width: 1080px; margin: 0 auto; padding: 28px; }
+    h1 { margin: 0 0 8px; } p { color: #725f4e; }
+    section { background: #fffaf3; border: 1px solid #eadbc8; border-radius: 18px; padding: 18px; margin: 16px 0; box-shadow: 0 8px 24px #6e4b2012; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    button, select, input { border: 1px solid #d8c5ad; border-radius: 10px; padding: 10px 12px; background: #fff; font: inherit; }
+    button { cursor: pointer; background: #4b2b16; color: #fff; border-color: #4b2b16; } button.secondary { background: #fff; color: #4b2b16; }
+    pre { white-space: pre-wrap; background: #251a12; color: #f8e9d5; border-radius: 12px; padding: 14px; min-height: 120px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  </style>
+</head>
+<body>
+  <h1>主理人公社本地闭环控制台</h1>
+  <p>仅用于本地原型：驱动邀请、代理申请、签约缴费和奖励回收。</p>
+  <section>
+    <div class="row"><label>演示身份 <select id="member"></select></label><button class="secondary" onclick="loadAll()">刷新数据</button><button onclick="resetDb()">重置数据</button></div>
+  </section>
+  <section><h2>资格规则</h2><div class="row"><select id="mode"><option value="A">模式 A</option><option value="B">模式 B</option><option value="C">模式 C</option></select><input id="required" type="number" min="0" value="0" placeholder="有效邀请数"><label><input id="training" type="checkbox"> 要求培训</label><button onclick="saveRule()">保存规则</button></div></section>
+  <section><h2>状态推进</h2><div class="grid"><button onclick="clickInvite()">member-002 首次点击 DEMO001</button><button onclick="activate('member-demo-002')">激活 member-002</button><button onclick="activate('member-demo-003')">激活 member-003</button><button onclick="applyAgent()">当前身份提交代理申请</button><button onclick="review(true)">审核通过最近申请</button><button onclick="review(false)">拒绝最近申请</button><button onclick="sign()">最近申请签约</button><button onclick="pay()">最近申请缴费</button><button onclick="refund()">member-002 退款</button><button onclick="cancelAgent()">当前身份取消代理</button></div></section>
+  <section><h2>当前数据</h2><pre id="output">加载中…</pre></section>
+<script>
+const state = { member: 'member-demo-001', application: null }
+const headers = () => ({ 'Content-Type': 'application/json', 'x-demo-member-id': state.member })
+async function api(path, options = {}) { const res = await fetch(path, { ...options, headers: { ...headers(), ...(options.headers || {}) } }); const body = await res.json(); if (body.code !== 0) throw new Error(body.message); return body.data }
+async function loadAll() { try { const members = await api('/local/demo/members'); member.innerHTML = members.map(x => `<option value="${x.id}">${x.id} · ${x.name}</option>`).join(''); member.value = state.member; const [rules, invite, application, rewards] = await Promise.all([api('/local/qualification-rules'), api('/mp/invite'), api('/mp/agent/application'), api('/local/rewards')]); output.textContent = JSON.stringify({ rules, invite, application, rewards }, null, 2) } catch (e) { output.textContent = e.message } }
+member.onchange = e => { state.member = e.target.value; loadAll() }
+async function action(path, options) { try { await api(path, options); await loadAll() } catch (e) { output.textContent = e.message } }
+function post(path, data) { return action(path, { method: 'POST', body: JSON.stringify(data || {}) }) }
+function clickInvite() { return post('/mp/invite/click', { inviteeId: 'member-demo-002', code: 'DEMO001' }) }
+function activate(id) { return post('/local/members/' + id + '/activate') }
+function saveRule() { return action('/local/qualification-rules', { method: 'PUT', body: JSON.stringify({ mode: mode.value, requiredInvites: Number(required.value), trainingRequired: training.checked }) }) }
+async function latest() { const members = await api('/local/demo/members'); const candidate = members.find(x => x.id === state.member); const app = await api('/mp/agent/application'); return app.application }
+async function applyAgent() { return post('/mp/agent/application', { identity: '团长', reason: '本地闭环演示' }) }
+async function review(approved) { const app = await latest(); if (app) return post('/local/agent/applications/' + app.id + '/review', { approved, rejectReason: approved ? '' : '请补充资料' }) }
+async function sign() { const app = await latest(); if (app) return post('/local/agent/applications/' + app.id + '/sign') }
+async function pay() { const app = await latest(); if (app) return post('/local/agent/applications/' + app.id + '/pay') }
+function refund() { return post('/local/members/member-demo-002/refund') }
+function cancelAgent() { return post('/local/agents/' + state.member + '/cancel') }
+function resetDb() { return post('/local/reset') }
+loadAll()
+</script>
+</body>
+</html>

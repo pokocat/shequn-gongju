@@ -15,7 +15,7 @@ import { S, useThemeSingleton } from "../theme";
 const identityMeta = (Object.keys(roleKeyMeta) as IdentityRole["roleKey"][]).map((rk) => {
   const m = roleKeyMeta[rk];
   const scopeTypeMap: Record<IdentityRole["scopeType"], string> = {
-    global: "全局", eco: "生态", saas: "SaaS", platform: "平台", project: "项目", city: "城市",
+    global: "全局", eco: "生态", saas: "SaaS 合作伙伴", platform: "平台", project: "项目", city: "城市",
   };
   return {
     roleKey: rk,

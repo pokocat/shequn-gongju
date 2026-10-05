@@ -4,23 +4,20 @@ import { MessageSquare, Send, CalendarDays, ClipboardCheck } from "lucide-react"
    原则：布局与模块位置完全不动，仅按视角（社群/项目/代理）切换各模块内容：
    任务中心分类与列表 / 排行 Tab / 排行表格列与行 / 关系链树 / 运营操作台 / 右侧档案。 */
 
-export type DataScope = "members" | "community" | "content" | "activity" | "project" | "agent" | "results";
+export type DataScope = "members" | "community" | "project" | "agent";
 
 export const dataScopeOptions: Array<{ id: DataScope; label: string }> = [
   { id: "members", label: "会员数据" },
   { id: "community", label: "社群数据" },
-  { id: "content", label: "内容与触达" },
-  { id: "activity", label: "运营活动" },
   { id: "project", label: "项目数据" },
   { id: "agent", label: "代理数据" },
-  { id: "results", label: "运营结果" },
 ];
 
 export type ScopeOperationId = "issue" | "push" | "activity" | "moments";
 
 export type ScopeTask = { title: string; time: string; status: string; unread: number };
 export type ScopeColumn = { label: string; width: number; tone?: "name" | "bold" | "muted" | "text" };
-export type ScopeRow = { rank: number; name: string; initial: string; filter: string; cells: string[] };
+export type ScopeRow = { rank: number; name: string; initial: string; filter: string; cells: string[]; agentId?: string };
 export type ScopeTreeNode = { name: string; children: ScopeTreeNode[] };
 export type ScopeOperation = { id: ScopeOperationId; label: string; icon: typeof MessageSquare; button: string };
 export type ScopeRecord = { title: string; desc: string; status: string };
@@ -306,11 +303,11 @@ const agent: ScopeConfig = {
     { label: "状态", width: 54, tone: "muted" },
   ],
   rows: [
-    { rank: 1, name: "皮卡丘", initial: "皮", filter: "活跃", cells: ["皮卡丘", "一级代理", "北京-朝阳", "326", "18", "¥42,600", "已结算", "正常"] },
-    { rank: 2, name: "文泽", initial: "文", filter: "活跃", cells: ["文泽", "一级代理", "北京-海淀", "284", "15", "¥38,200", "已结算", "正常"] },
-    { rank: 3, name: "梓几", initial: "梓", filter: "活跃", cells: ["梓几", "二级代理", "北京-西城", "196", "11", "¥21,400", "待结算", "正常"] },
-    { rank: 4, name: "海槽", initial: "海", filter: "待跟进", cells: ["海槽", "二级代理", "北京-东城", "152", "9", "¥16,800", "已结算", "正常"] },
-    { rank: 5, name: "王强", initial: "王", filter: "待安置", cells: ["王强", "三级代理", "北京-通州", "0", "3", "¥0", "—", "待安置"] },
+    { rank: 1, name: "皮卡丘", initial: "皮", filter: "活跃", agentId: "agent_001", cells: ["皮卡丘", "D2 · 核心合伙人", "北京-朝阳", "326", "18", "¥42,600", "已结算", "正常"] },
+    { rank: 2, name: "文泽", initial: "文", filter: "活跃", agentId: "agent_002", cells: ["文泽", "D3 · 事业合伙人", "北京-海淀", "284", "15", "¥38,200", "已结算", "正常"] },
+    { rank: 3, name: "梓几", initial: "梓", filter: "活跃", agentId: "agent_003", cells: ["梓几", "D4 · 分公司负责人", "北京-西城", "196", "11", "¥21,400", "待结算", "正常"] },
+    { rank: 4, name: "海槽", initial: "海", filter: "待跟进", agentId: "agent_004", cells: ["海槽", "D5 · 分公司合伙人", "北京-东城", "152", "9", "¥16,800", "已结算", "正常"] },
+    { rank: 5, name: "王强", initial: "王", filter: "待安置", agentId: "agent_005", cells: ["王强", "团长", "北京-通州", "0", "3", "¥0", "—", "待安置"] },
   ],
   tree: {
     name: "总部",
@@ -330,13 +327,13 @@ const agent: ScopeConfig = {
     { id: "moments", label: "考核登记", icon: ClipboardCheck, button: "登记考核" },
   ],
   profileTags: [
-    { label: "一级代理", background: "#fff0db", color: "#e77800" },
+    { label: "D2 · 核心合伙人", background: "#fff0db", color: "#e77800" },
     { label: "业绩Top1", background: "#effed4", color: "#253800" },
     { label: "高活跃", background: "#e8fbf4", color: "#00a978" },
   ],
-  profileSub: "一级代理 · 北京",
+  profileSub: "D2 · 核心合伙人 · 北京",
   profileFields: [
-    ["代理编号", "A-00002"], ["代理等级", "一级代理"],
+    ["代理编号", "A-00002"], ["业务身份", "D2 · 核心合伙人"],
     ["负责城市", "北京"], ["加入时间", "2026-02-20"],
     ["下线会员", "326 人"], ["本月招募", "18 人"],
     ["累计佣金", "¥42,600"], ["代理状态", "正常"],
@@ -365,10 +362,7 @@ const agent: ScopeConfig = {
       { title: "下线活跃", desc: "92% 活跃率", status: "达标" },
       { title: "合规检查", desc: "无违规记录", status: "100%" },
     ],
-    "培训记录": [
-      { title: "代理进阶课", desc: "9 月 1 日 · 已完成", status: "已完成" },
-      { title: "首期新人培训", desc: "8 月 12 日 · 已完成", status: "已完成" },
-    ],
+    "培训记录": [],
   },
 };
 
@@ -425,4 +419,4 @@ const results: ScopeConfig = {
   profileTabs: ["概览", "归因分析", "优化任务", "历史结果"],
 };
 
-export const SCOPE_CONFIGS: Record<Exclude<DataScope, "members">, ScopeConfig> = { community, content, activity, project, agent, results };
+export const SCOPE_CONFIGS: Record<Exclude<DataScope, "members">, ScopeConfig> = { community, project, agent };

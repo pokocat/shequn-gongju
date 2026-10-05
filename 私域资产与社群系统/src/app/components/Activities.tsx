@@ -6,6 +6,7 @@ import {
   Megaphone, BookOpen, Coffee, Flame
 } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
+import { agentTrainingStages, mentors, trainingGroups, type AgentTrainingStage } from "../data/agentTraining";
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
   "进行中":  { bg: S.accent,   color: S.text },
   "即将开始": { bg: "#1e293b", color: "#ffffff" },
@@ -51,13 +52,20 @@ interface Activity {
   capacity: number | null;
   targetUser: string;
   extra?: string;
+  training?: {
+    objective: string;
+    mentorIds: string[];
+    groupIds: string[];
+    progress: number;
+    stage: AgentTrainingStage;
+  };
 }
 
 const mockActivities: Activity[] = [
   { id: 1, name: "7月PRO会员特训营", type: "限时活动", status: "进行中", dateRange: "2026-07-01 ~ 2026-07-31", location: "线上", registered: 78, capacity: 100, targetUser: "PRO会员" },
   { id: 2, name: "北京城市分享会", type: "线下沙龙", status: "进行中", dateRange: "2026-07-10", location: "北京", registered: 45, capacity: 60, targetUser: "VIP+PRO" },
   { id: 3, name: "新手体验官7日打卡", type: "打卡挑战", status: "进行中", dateRange: "常规打卡", location: "线上", registered: 234, capacity: null, targetUser: "体验官", extra: "已参与234人" },
-  { id: 4, name: "8月代理商培训大会", type: "常规课程", status: "即将开始", dateRange: "2026-08-01", location: "线上", registered: 12, capacity: 50, targetUser: "代理商" },
+  { id: 4, name: "8月代理商培训大会", type: "常规课程", status: "即将开始", dateRange: "2026-08-01", location: "线上", registered: 12, capacity: 50, targetUser: "代理商", training: { objective: "完成代理商入门认证，掌握系统操作、业务规范和首个社群运营实训", mentorIds: ["mentor_liu", "mentor_chen"], groupIds: ["group_onboarding_202610", "group_class_202610"], progress: 28, stage: "S0" } },
   { id: 5, name: "成都线下沙龙", type: "线下沙龙", status: "即将开始", dateRange: "2026-08-15", location: "成都", registered: 8, capacity: 30, targetUser: "VIP" },
   { id: 6, name: "6月打卡挑战", type: "打卡挑战", status: "已结束", dateRange: "2026-06-01 ~ 2026-06-30", location: "线上", registered: 189, capacity: null, targetUser: "体验官", extra: "完成率82% · 参与189人" },
   { id: 7, name: "5月线上特训营", type: "限时活动", status: "已结束", dateRange: "2026-05-01 ~ 2026-05-31", location: "线上", registered: 156, capacity: null, targetUser: "全部", extra: "转化率34% · 参与156人" },
@@ -171,6 +179,24 @@ const [tab, setTab] = useState("全部活动");
             <div style={{ fontSize: 11, color: S.muted, fontFamily: "monospace" }}>已报名{viewActivity.capacity ? `/${viewActivity.capacity}` : ""}</div>
           </div>
         </div>
+
+        {viewActivity.training && (
+          <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr 1fr", gap: 12 }}>
+            <div style={{ padding: 12, background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>培训目标 · {viewActivity.training.stage} {agentTrainingStages.find(stage => stage.stage === viewActivity.training?.stage)?.name}</div>
+              <div style={{ marginTop: 6, fontSize: 12, lineHeight: 1.5, color: S.text, fontFamily: "monospace" }}>{viewActivity.training.objective}</div>
+            </div>
+            <div style={{ padding: 12, background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>导师</div>
+              <div style={{ marginTop: 6, fontSize: 12, color: S.text, fontFamily: "monospace" }}>{viewActivity.training.mentorIds.map(id => mentors.find(mentor => mentor.id === id)?.name).filter(Boolean).join("、")}</div>
+            </div>
+            <div style={{ padding: 12, background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <div style={{ fontSize: 10, color: S.muted, fontFamily: "monospace" }}>培训群 · 进度</div>
+              <div style={{ marginTop: 6, fontSize: 12, color: S.text, fontFamily: "monospace" }}>{viewActivity.training.groupIds.map(id => trainingGroups.find(group => group.id === id)?.name).filter(Boolean).join("、")}</div>
+              <div style={{ marginTop: 4, fontSize: 11, color: S.muted, fontFamily: "monospace" }}>完成度 {viewActivity.training.progress}%</div>
+            </div>
+          </div>
+        )}
 
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>

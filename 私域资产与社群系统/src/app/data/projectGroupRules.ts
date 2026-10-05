@@ -20,7 +20,8 @@ export type GroupTypeRule = {
 
 export type WechatAccount = {
   id: string;
-  project: string;
+  scope: "platform" | "project";
+  project?: string;
   wechat: string;
   city: string;
   createdAt: string;
@@ -152,6 +153,7 @@ export const projectGroupRules: Record<string, GroupTypeRule[]> = {
   "AI知识付费平台":     PAY_KNOWLEDGE,
   "AI教育平台":         EDU_PLATFORM,
   "AI军师":             AI_STRATEGIST,
+  "V001 军师":           AI_STRATEGIST,
   "AI创始IP":           FOUNDER_IP,
 };
 
@@ -165,14 +167,15 @@ const FALLBACK_RULES: GroupTypeRule[] = [
 ];
 
 export const wechatAccounts: WechatAccount[] = [
-  { id: "FLM001", project: "AI学习社群", wechat: "FLM001", city: "北京", createdAt: "2026-01-08", service: "吴思远", enabled: true, groupCapacity: 20 },
-  { id: "FLM002", project: "AI艺人孵化平台", wechat: "FLM002", city: "吉林", createdAt: "2026-02-14", service: "林小燕", enabled: true, groupCapacity: 20 },
-  { id: "FLM003", project: "AI知识付费平台", wechat: "FLM003", city: "上海", createdAt: "2026-03-02", service: "刘刚", enabled: true, groupCapacity: 20 },
-  { id: "FLM004", project: "AI营养补剂会员平台", wechat: "FLM004", city: "广州", createdAt: "2026-03-18", service: "陈明", enabled: true, groupCapacity: 20 },
-  { id: "FLP001", project: "AI短剧平台", wechat: "FLP001", city: "北京", createdAt: "2026-01-06", service: "吴思远", enabled: true, groupCapacity: 20 },
-  { id: "FLP002", project: "AI超级广告平台", wechat: "FLP002", city: "上海", createdAt: "2026-02-10", service: "林小燕", enabled: true, groupCapacity: 20 },
-  { id: "FLE001", project: "AI明星切片平台", wechat: "FLE001", city: "广州", createdAt: "2026-01-21", service: "刘刚", enabled: true, groupCapacity: 20 },
-  { id: "FLE002", project: "AI教育平台", wechat: "FLE002", city: "成都", createdAt: "2026-02-06", service: "陈明", enabled: true, groupCapacity: 20 },
+  { id: "PLT001", scope: "platform", wechat: "PLT001", city: "全国", createdAt: "2026-01-05", service: "吴思远", enabled: true, groupCapacity: 30 },
+  { id: "FLM001", scope: "project", project: "AI学习社群", wechat: "FLM001", city: "北京", createdAt: "2026-01-08", service: "吴思远", enabled: true, groupCapacity: 20 },
+  { id: "FLM002", scope: "project", project: "AI艺人孵化平台", wechat: "FLM002", city: "吉林", createdAt: "2026-02-14", service: "林小燕", enabled: true, groupCapacity: 20 },
+  { id: "FLM003", scope: "project", project: "AI知识付费平台", wechat: "FLM003", city: "上海", createdAt: "2026-03-02", service: "刘刚", enabled: true, groupCapacity: 20 },
+  { id: "FLM004", scope: "project", project: "AI营养补剂会员平台", wechat: "FLM004", city: "广州", createdAt: "2026-03-18", service: "陈明", enabled: true, groupCapacity: 20 },
+  { id: "FLP001", scope: "project", project: "AI短剧平台", wechat: "FLP001", city: "北京", createdAt: "2026-01-06", service: "吴思远", enabled: true, groupCapacity: 20 },
+  { id: "FLP002", scope: "project", project: "AI超级广告平台", wechat: "FLP002", city: "上海", createdAt: "2026-02-10", service: "林小燕", enabled: true, groupCapacity: 20 },
+  { id: "FLE001", scope: "project", project: "AI明星切片平台", wechat: "FLE001", city: "广州", createdAt: "2026-01-21", service: "刘刚", enabled: true, groupCapacity: 20 },
+  { id: "FLE002", scope: "project", project: "AI教育平台", wechat: "FLE002", city: "成都", createdAt: "2026-02-06", service: "陈明", enabled: true, groupCapacity: 20 },
 ];
 
 // ── 默认群类型规则：AI学习社群（系统主展示场景）
@@ -183,8 +186,8 @@ export const defaultGroupTypeRules: GroupTypeRule[] = projectGroupRules["AI学�
  * @param projectName 分配表单里选择的项目名
  */
 export function getGroupRulesForProject(projectName: string | null | undefined): GroupTypeRule[] {
-  if (!projectName) return defaultGroupTypeRules;
-  return projectGroupRules[projectName] ?? FALLBACK_RULES;
+  if (!projectName) return [];
+  return projectGroupRules[projectName] ?? [];
 }
 
 export function buildGroupCode(typeCode: string, city: string, sequence: number) {
@@ -201,10 +204,22 @@ export function buildGroupName(project: string, type: string, city: string, sequ
     .replace("{seq}", String(sequence).padStart(2, "0"));
 }
 
-export function pickWechatAccount(project: string, city: string, usedGroupCount: Record<string, number>) {
+export function pickWechatAccount(scope: "platform" | "project", project: string | undefined, city: string, usedGroupCount: Record<string, number>) {
   const candidates = wechatAccounts
-    .filter(account => account.project === project && account.enabled && (account.city === city || city === "全国"))
-    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+    .filter(account => {
+      const scopeMatch = scope === "platform"
+        ? account.scope === "platform"
+        : (
+            (account.scope === "project" && account.project === project) ||
+            account.scope === "platform"
+          );
+      return scopeMatch && account.enabled && (account.city === city || account.city === "全国" || city === "全国");
+    })
+    .sort((a, b) => {
+      const aProject = a.scope === "project" && a.project === project ? 0 : 1;
+      const bProject = b.scope === "project" && b.project === project ? 0 : 1;
+      return aProject - bProject || a.createdAt.localeCompare(b.createdAt);
+    });
   return candidates.find(account => (usedGroupCount[account.id] || 0) < account.groupCapacity) || null;
 }
 

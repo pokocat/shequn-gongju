@@ -1,8 +1,16 @@
 export type RoleGroup = "company" | "agent";
 export type PlatformRoleCode = "D1" | "D2" | "D3" | "D4" | "D5";
+export type BusinessIdentityCode = PlatformRoleCode | "LEADER" | "MEMBER";
+export type LeaderSourceRoleCode = Exclude<PlatformRoleCode, "D1">;
 export type ConfigPermission = "view" | "edit" | "publish" | "rollback";
 export type ApprovalMode = "platform_review" | "agent_first_review";
 export type ConfigStatus = "draft" | "published" | "scheduled";
+
+export type LeaderDevelopmentRule = {
+  sourceRoleCodes: LeaderSourceRoleCode[];
+  targetIdentityCode: "LEADER";
+  approvalMode: ApprovalMode;
+};
 
 export type PresetRoleRules = {
   permissions: string[];
@@ -51,9 +59,29 @@ export type PlatformModeConfig = {
 };
 
 export const memberLevelOptions = ["游客", "体验官", "PRO会员", "VIP", "黑金"] as const;
-export const agentLevelOptions = ["一级代理", "二级代理", "三级代理"] as const;
-
 export const platformRoleOptions: PlatformRoleCode[] = ["D1", "D2", "D3", "D4", "D5"];
+export const businessIdentityOptions: BusinessIdentityCode[] = [
+  ...platformRoleOptions,
+  "LEADER",
+  "MEMBER",
+];
+export const businessIdentityLabels: Record<BusinessIdentityCode, string> = {
+  D1: "D1 · 创始人",
+  D2: "D2 · 核心合伙人",
+  D3: "D3 · 事业合伙人",
+  D4: "D4 · 分公司负责人",
+  D5: "D5 · 分公司合伙人",
+  LEADER: "团长",
+  MEMBER: "会员",
+};
+export const leaderDevelopmentRule: LeaderDevelopmentRule = {
+  sourceRoleCodes: ["D2", "D3", "D4", "D5"],
+  targetIdentityCode: "LEADER",
+  approvalMode: "agent_first_review",
+};
+
+export const canDevelopLeader = (roleCode: PlatformRoleCode) =>
+  leaderDevelopmentRule.sourceRoleCodes.includes(roleCode as LeaderSourceRoleCode);
 
 export const platformRoles: PlatformRole[] = [
   {

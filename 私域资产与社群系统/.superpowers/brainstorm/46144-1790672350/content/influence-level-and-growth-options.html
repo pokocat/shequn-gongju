@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<style>
+  *{box-sizing:border-box} body{margin:0;background:#f6f1ea;color:#36261a;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif} .wrap{max-width:1160px;margin:0 auto;padding:34px 28px 56px} h1{margin:0;font-size:26px;letter-spacing:-.4px} .lead{margin:10px 0 30px;color:#896f59;line-height:1.6}.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}.option{position:relative;border:1px solid #eadfD4;border-radius:20px;background:#fffaf4;padding:18px;cursor:pointer;transition:.18s ease;box-shadow:0 8px 25px rgba(82,50,22,.06)}.option:hover{transform:translateY(-2px);border-color:#b898f0}.option.selected{border:2px solid #7c3aed;box-shadow:0 9px 26px rgba(124,58,237,.16)}.tag{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#efe6fb;color:#6830c4;font-weight:800;font-size:13px}.option h2{display:inline-block;margin:0 0 0 8px;font-size:17px;vertical-align:middle}.option p{margin:11px 0 15px;color:#856b54;font-size:13px;line-height:1.55}.phone{overflow:hidden;border:1px solid #efe4d8;border-radius:16px;background:#fffdf9;padding:15px 14px 12px}.title{display:flex;justify-content:space-between;align-items:center;font-size:17px;font-weight:800;margin-bottom:12px}.title small{font-size:12px;color:#a58b72;font-weight:600}.tabs{display:flex;padding:6px;background:#f6eef7;border-radius:12px;margin-bottom:12px}.tabs span{flex:1;text-align:center;padding:8px;color:#a38670;font-weight:700}.tabs span:first-child{background:#fff;border-radius:10px;color:#7131d4;box-shadow:0 2px 6px rgba(82,50,22,.07)}.note{font-size:12px;color:#aa8b6c;margin-bottom:12px}.table{border:1px solid #f0e6dc;border-radius:13px;overflow:hidden}.head,.row{display:grid;grid-template-columns:1.15fr repeat(4,1fr);align-items:center}.head{background:#f7eef7;color:#652ec8;font-size:11px;font-weight:800;min-height:43px}.head>span{padding:0 8px;white-space:nowrap;text-align:center}.head>span:first-child{text-align:left;font-size:15px}.row{min-height:55px;border-top:1px solid #f1eae3;font-size:15px;font-weight:800}.row>span{position:relative;text-align:center}.row>span:first-child{text-align:left;padding-left:12px;color:#9a7960;white-space:nowrap}.num{display:inline-flex;align-items:center;gap:3px;line-height:1}.increase{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:15px;border-radius:4px;background:#e94035;color:#fff;padding:0 4px;font-size:9px;font-weight:800;line-height:15px;vertical-align:2px}.plain-plus{color:#df3429;font-size:11px;font-weight:800;margin-left:3px}.legend{margin:12px 0 0;color:#a98b70;font-size:12px;line-height:1.45}.legend b{color:#dd3a30}.rule{margin-top:20px;border-radius:10px;background:#f8f2eb;padding:10px 12px;color:#735a45;font-size:12px;line-height:1.55}.check{position:absolute;top:14px;right:16px;width:23px;height:23px;border-radius:50%;border:1px solid #d9cabd;background:#fff;color:transparent;text-align:center;line-height:21px;font-weight:900}.selected .check{background:#7c3aed;border-color:#7c3aed;color:#fff}@media(max-width:760px){.wrap{padding:22px 15px}.options{grid-template-columns:1fr}.head,.row{grid-template-columns:1.08fr repeat(4,1fr)}.phone{padding:12px 9px}.head>span{padding:0 3px}.head>span:first-child{font-size:14px}.row{font-size:14px}.row>span:first-child{padding-left:8px}.option{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>影响力详情：关系层级与新增数字</h1>
+  <p class="lead">根据当前截图，两个方案都将关系层级压缩为两字名称，并把新增人数放在主数字同一行，避免遮挡下方辅助信息。点击选择你倾向的方案。</p>
+  <div class="options">
+    <article class="option selected" data-choice="inline-chip" onclick="selectOption(this)">
+      <span class="tag">A</span><h2>内联小标签（推荐）</h2><span class="check">✓</span>
+      <p>主数字右侧使用小型红色标签，和数字保持水平对齐；简洁清楚，不占用下方“潜在”信息的空间。</p>
+      <div class="phone">
+        <div class="title"><span>影响力详情</span><small>团队发展</small></div>
+        <div class="tabs"><span>团队发展</span><span>社群会员</span></div>
+        <div class="note">聚焦代理发展与直属团长，意向代理为待跟进线索</div>
+        <div class="table">
+          <div class="head"><span>关系层级</span><span>市代</span><span>区代</span><span>团长</span><span>意向</span></div>
+          <div class="row"><span>直推</span><span>2</span><span><i class="num">8 <b class="increase">+1</b></i></span><span><i class="num">18 <b class="increase">+2</b></i></span><span><i class="num">5 <b class="increase">+3</b></i></span></div>
+          <div class="row"><span>团队</span><span>2</span><span><i class="num">5 <b class="increase">+1</b></i></span><span><i class="num">32 <b class="increase">+5</b></i></span><span><i class="num">8 <b class="increase">+2</b></i></span></div>
+          <div class="row"><span>推荐</span><span>1</span><span><i class="num">4 <b class="increase">+1</b></i></span><span><i class="num">12 <b class="increase">+4</b></i></span><span><i class="num">3 <b class="increase">+1</b></i></span></div>
+        </div>
+        <div class="legend"><b>+N</b> 为本周新增人数</div>
+      </div>
+      <div class="rule">层级名称：我直接发展 → 直推；旗下发展 → 团队；推荐关系 → 推荐。</div>
+    </article>
+    <article class="option" data-choice="plain-plus" onclick="selectOption(this)">
+      <span class="tag">B</span><h2>纯色数字标记</h2><span class="check">✓</span>
+      <p>不使用底色，仅将“+N”设为红色小字。视觉最轻，但新增信息在复杂数据中辨识度稍低。</p>
+      <div class="phone">
+        <div class="title"><span>影响力详情</span><small>团队发展</small></div>
+        <div class="tabs"><span>团队发展</span><span>社群会员</span></div>
+        <div class="note">聚焦代理发展与直属团长，意向代理为待跟进线索</div>
+        <div class="table">
+          <div class="head"><span>关系层级</span><span>市代</span><span>区代</span><span>团长</span><span>意向</span></div>
+          <div class="row"><span>直推</span><span>2</span><span>8 <b class="plain-plus">+1</b></span><span>18 <b class="plain-plus">+2</b></span><span>5 <b class="plain-plus">+3</b></span></div>
+          <div class="row"><span>团队</span><span>2</span><span>5 <b class="plain-plus">+1</b></span><span>32 <b class="plain-plus">+5</b></span><span>8 <b class="plain-plus">+2</b></span></div>
+          <div class="row"><span>推荐</span><span>1</span><span>4 <b class="plain-plus">+1</b></span><span>12 <b class="plain-plus">+4</b></span><span>3 <b class="plain-plus">+1</b></span></div>
+        </div>
+        <div class="legend"><b>+N</b> 为本周新增人数</div>
+      </div>
+      <div class="rule">层级名称与方案 A 相同；优点是更克制，缺点是新增人数的扫读性较弱。</div>
+    </article>
+  </div>
+</div>
+<script>function selectOption(el){document.querySelectorAll('.option').forEach(function(x){x.classList.remove('selected')});el.classList.add('selected');if(window.parent){window.parent.postMessage({type:'choice',choice:el.dataset.choice},'*')}}</script>
+</body>
+</html>

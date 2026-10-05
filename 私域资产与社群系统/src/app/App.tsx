@@ -3,7 +3,6 @@ import { Monitor, Smartphone, Globe, Star } from "lucide-react";
 import PCLayout from "./components/PCLayout";
 import Overview from "./components/Overview";
 import UnifiedAccountManagement from "./components/UnifiedAccountManagement";
-import CommunityManagement from "./components/CommunityManagement";
 import CustomerService from "./components/CustomerService";
 import InfluenceRanking from "./components/InfluenceRanking";
 import MemberOperationsWorkbench from "./components/MemberOperationsWorkbench";
@@ -37,8 +36,6 @@ const moduleMap: Record<string, React.ComponentType> = {
   commtools:  UnifiedAccountManagement,
   // 微信账号管理：统一资产入口，个人/企业微信选中后加载旧版微信管理设计
   wechat:     UnifiedAccountManagement,
-  groupConfig: CommunityManagement,
-  community:  CommunityManagement,
   cs:         CustomerService,
   influence:  InfluenceRanking,
   channel:    ChannelFlow,
@@ -61,14 +58,22 @@ const moduleMap: Record<string, React.ComponentType> = {
 };
 
 type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
-type ProjectContextValue = { platform: string; project: string; setPlatform: (value: string) => void; setProject: (value: string) => void; projectsByPlatform: Record<string, string[]> };
-export const ProjectContext = createContext<ProjectContextValue>({ platform: "健康运营平台", project: "PRO会员", setPlatform: () => {}, setProject: () => {}, projectsByPlatform: {} });
+export type WorkspaceContext = "platform" | "project";
+type ProjectContextValue = { platform: string; project: string; workspaceContext: WorkspaceContext; setWorkspaceContext: (value: WorkspaceContext) => void; platformMode: () => void; projectMode: (platform: string, project: string) => void; setPlatform: (value: string) => void; setProject: (value: string) => void; projectsByPlatform: Record<string, string[]> };
+export const ProjectContext = createContext<ProjectContextValue>({ platform: "主理人公社", project: "V001 军师", workspaceContext: "project", setWorkspaceContext: () => {}, platformMode: () => {}, projectMode: () => {}, setPlatform: () => {}, setProject: () => {}, projectsByPlatform: {} });
 export const useProjectContext = () => useContext(ProjectContext);
 const projectsByPlatform: Record<string, string[]> = {
-  "健康运营平台": ["PRO会员", "体验官"],
-  "商业城市平台": ["一级代理", "二级代理", "城市运营中心"],
-  "健康课程平台": ["7日训练营", "进阶班认证", "付费会员俱乐部"],
-  "教育学习平台": ["健康学院", "亲子教育课"],
+  "主理人公社": [
+    "V001 军师",
+    "AI超级广告公司",
+    "AI艺人孵化",
+    "AI数字资产平台",
+    "AI大健康",
+    "AI知识付费",
+    "AI教育",
+    "AI明星艺人授权",
+    "AI企业礼品采购",
+  ],
 };
 
 export const ToolsContext = createContext<{
@@ -128,8 +133,24 @@ export default function App() {
   const [accounts, setAccounts] = useState<SystemAccount[]>(mockAccounts);
   const [invites, setInvites] = useState<InviteRecord[]>(mockInvites);
   const [approvals, setApprovals] = useState<Approval[]>(mockApprovals);
-  const [platform, setPlatform] = useState("健康运营平台");
-  const [project, setProject] = useState("PRO会员");
+  const [platform, setPlatform] = useState("主理人公社");
+  const [project, setProject] = useState("V001 军师");
+  const [workspaceContext, setWorkspaceContext] = useState<WorkspaceContext>(() => activeModule === "ecosystem" ? "platform" : "project");
+
+  useEffect(() => {
+    if (activeModule === "ecosystem") setWorkspaceContext("platform");
+  }, [activeModule]);
+
+  const platformMode = () => {
+    setWorkspaceContext("platform");
+    setProject("");
+  };
+
+  const projectMode = (nextPlatform: string, nextProject: string) => {
+    setPlatform(nextPlatform);
+    setProject(nextProject);
+    setWorkspaceContext("project");
+  };
 
   const ActiveComponent = moduleMap[activeModule] || Overview;
   const selectView = (nextView: ViewMode) => {
@@ -143,6 +164,10 @@ export default function App() {
   const selectModule = (nextModule: string) => {
     if (!(nextModule in moduleMap)) return;
     setActiveModule(nextModule);
+    if (nextModule === "ecosystem") {
+      setWorkspaceContext("platform");
+      setProject("");
+    }
     const url = new URL(window.location.href);
     if (nextModule === "overview") url.searchParams.delete("module");
     else url.searchParams.set("module", nextModule);
@@ -155,8 +180,13 @@ export default function App() {
       const nextView = params.get("view");
       const nextModule = params.get("module");
       if (nextView === "pc" || nextView === "mobile" || nextView === "zhuliren") setView(nextView);
-      if (nextModule && nextModule in moduleMap) setActiveModule(nextModule);
-      else if (!nextModule) setActiveModule("overview");
+      if (nextModule && nextModule in moduleMap) {
+        setActiveModule(nextModule);
+        if (nextModule === "ecosystem") {
+          setWorkspaceContext("platform");
+          setProject("");
+        }
+      } else if (!nextModule) setActiveModule("overview");
     };
     window.addEventListener("popstate", syncRouteState);
     return () => window.removeEventListener("popstate", syncRouteState);
@@ -193,7 +223,24 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <ProjectContext.Provider value={{ platform, project, setPlatform: value => { setPlatform(value); setProject(projectsByPlatform[value]?.[0] || ""); }, setProject, projectsByPlatform }}>
+      <ProjectContext.Provider value={{
+        platform,
+        project,
+        workspaceContext,
+        setWorkspaceContext,
+        platformMode,
+        projectMode,
+        setPlatform: value => {
+          setPlatform(value);
+          setProject(projectsByPlatform[value]?.[0] || "");
+          setWorkspaceContext("project");
+        },
+        setProject: value => {
+          setProject(value);
+          setWorkspaceContext("project");
+        },
+        projectsByPlatform
+      }}>
       <AppShell toolsValue={toolsValue} accountsValue={accountsValue} invitesValue={invitesValue} approvalsValue={approvalsValue} view={view} selectView={selectView} activeModule={activeModule} selectModule={selectModule} ActiveComponent={ActiveComponent} />
       </ProjectContext.Provider>
     </ThemeProvider>

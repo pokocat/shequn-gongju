@@ -42,8 +42,8 @@ export const roleKeyMeta: Record<IdentityRole["roleKey"], { label: string; defau
   super_admin:   { label: "超级管理员", defaultScope: "global",   summary: "全局数据、多生态管控、全权限" },
   eco_leader:    { label: "生态负责人",   defaultScope: "eco",     summary: "单个/多个生态的负责人" },
   eco_coo:       { label: "生态COO",      defaultScope: "eco",     summary: "生态运营与跨SaaS协调" },
-  saas_owner:    { label: "SaaS负责人",   defaultScope: "saas",    summary: "单个SaaS系统的负责人" },
-  saas_op:       { label: "SaaS运营",     defaultScope: "saas",    summary: "SaaS系统的运营支持" },
+  saas_owner:    { label: "SaaS 合作伙伴负责人", defaultScope: "saas",    summary: "单个 SaaS 合作伙伴的负责人" },
+  saas_op:       { label: "SaaS 合作伙伴运营", defaultScope: "saas",    summary: "SaaS 合作伙伴的运营支持" },
   platform_admin:{ label: "平台管理员",   defaultScope: "platform",summary: "单个平台的管理负责人" },
   platform_op:   { label: "平台运营",     defaultScope: "platform",summary: "平台的日常运营" },
   project_owner: { label: "项目负责人",   defaultScope: "project", summary: "具体项目的负责人" },
@@ -63,7 +63,7 @@ export function buildScopeTypeLabelMap(
   return {
     global:   { label: "全局", options: [{ id: "*", name: "全部范围" }] },
     eco:      { label: "生态", options: ecoItems.map(e => ({ id: `eco-${e.id}`, name: e.name })) },
-    saas:     { label: "SaaS", options: saasItems.map(s => ({ id: `saas-${s.id}`, name: s.name })) },
+    saas:     { label: "SaaS 合作伙伴", options: saasItems.map(s => ({ id: `saas-${s.id}`, name: s.name })) },
     platform: { label: "平台", options: platformItems.map(p => ({ id: `platform-${p.id}`, name: p.name })) },
     project:  { label: "项目", options: projectItems.map(p => ({ id: `project-${p.id}`, name: p.name })) },
     city:     { label: "城市", options: ["北京", "上海", "广州", "深圳", "成都", "杭州", "武汉", "南京", "西安", "重庆", "全国"].map(c => ({ id: c, name: c })) },
@@ -125,7 +125,7 @@ export const mockAccounts: SystemAccount[] = [
     uid: "acc_linquingyao", name: "林清瑶", email: "linqingyao@eco.com", phone: "13800000002", status: "active", bindingStatus: "in_use", createdAt: "2024-08-12 11:05",
     identities: [
       { roleKey: "eco_leader", scopeType: "eco", scopeIds: ["eco-1", "eco-2"], label: "生态负责人", permissionSummary: "健康医药美业+宠物生态负责人" },
-      { roleKey: "saas_owner", scopeType: "saas", scopeIds: ["saas-1"], label: "SaaS负责人", permissionSummary: "私域工具SaaS负责人" },
+      { roleKey: "saas_owner", scopeType: "saas", scopeIds: ["saas-1"], label: "SaaS 合作伙伴负责人", permissionSummary: "健康产业发展伙伴负责人" },
     ],
     assignedToolIds: ["t_002", "t_006", "t_012"],
     projectIds: ["p_shanghai_exp", "p_chengdu"],
@@ -141,7 +141,7 @@ export const mockAccounts: SystemAccount[] = [
   {
     uid: "acc_sunwanqing", name: "孙婉清", email: "sunwanqing@eco.com", phone: "13800000004", status: "active", bindingStatus: "idle", createdAt: "2024-08-13 14:18",
     identities: [
-      { roleKey: "saas_owner", scopeType: "saas", scopeIds: ["saas-2", "saas-4"], label: "SaaS负责人", permissionSummary: "课程平台+学习平台负责人" },
+      { roleKey: "saas_owner", scopeType: "saas", scopeIds: ["saas-2", "saas-4"], label: "SaaS 合作伙伴负责人", permissionSummary: "知识教育发展伙伴与教育学习发展伙伴负责人" },
     ],
     assignedToolIds: [],
     projectIds: ["p_course_train", "p_advanced_class", "p_member_club"],
@@ -149,7 +149,7 @@ export const mockAccounts: SystemAccount[] = [
   },
   {
     uid: "acc_zhoukairui", name: "周楷瑞", email: "zhoukairui@eco.com", phone: "13800000005", status: "active", bindingStatus: "pending_transfer", createdAt: "2024-08-15 16:40",
-    identities: [{ roleKey: "saas_op", scopeType: "saas", scopeIds: ["saas-1"], label: "SaaS运营", permissionSummary: "私域工具SaaS运营支持" }],
+    identities: [{ roleKey: "saas_op", scopeType: "saas", scopeIds: ["saas-1"], label: "SaaS 合作伙伴运营", permissionSummary: "健康产业发展伙伴运营支持" }],
     assignedToolIds: ["t_004", "t_008"],
     projectIds: ["p_chengdu"],
     operationLogs: logSeed.acc_zhoukairui,

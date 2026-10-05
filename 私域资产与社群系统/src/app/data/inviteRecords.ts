@@ -79,7 +79,7 @@ export const mockInvites: InviteRecord[] = [
     inviteeName: "韩雨辰",
     inviteePhone: "13900000102",
     inviteeEmail: "hanyuchen@pet.com",
-    suggestedIdentities: [{ roleKey: "saas_owner", scopeType: "saas", scopeIds: ["saas-3"], label: "SaaS负责人", permissionSummary: "宠物生态SaaS负责人" }],
+    suggestedIdentities: [{ roleKey: "saas_owner", scopeType: "saas", scopeIds: ["saas-3"], label: "SaaS 合作伙伴负责人", permissionSummary: "宠物产业发展伙伴负责人" }],
     suggestedProjectIds: ["p_chengdu"],
     inviteCode: "PT4L6N2V",
     inviteLink: "https://app.example.com/register?code=PT4L6N2V",

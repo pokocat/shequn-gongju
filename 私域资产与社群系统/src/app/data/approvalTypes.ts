@@ -6,7 +6,7 @@ import type { IdentityRole, BindingStatus } from "./accountTypes";
 // ─── 单据类型 ───────────────────────────────────────────────
 export type ApprovalType =
   | "invite_register"    // 邀请注册审核
-  | "saas_onboard"       // SaaS 入驻申请
+  | "saas_onboard"       // SaaS 合作伙伴入驻申请
   | "platform_onboard"   // 平台入驻申请
   | "subscription_open"  // 订阅开通/续费
   | "tool_handover"      // 通讯工具交接
@@ -118,7 +118,7 @@ export const FLOW_TEMPLATES: Record<ApprovalType, FlowTemplate> = {
   },
   saas_onboard: {
     type: "saas_onboard",
-    name: "SaaS 入驻",
+    name: "SaaS 合作伙伴入驻",
     icon: "Building2",
     nodes: [
       { nodeKey: "eco_leader_review", nodeName: "生态负责人审批", approverRole: "生态负责人" },
@@ -139,7 +139,7 @@ export const FLOW_TEMPLATES: Record<ApprovalType, FlowTemplate> = {
     name: "订阅开通",
     icon: "Package",
     nodes: [
-      { nodeKey: "saas_owner_review", nodeName: "SaaS/平台负责人审批", approverRole: "SaaS/平台负责人" },
+      { nodeKey: "saas_owner_review", nodeName: "SaaS 合作伙伴负责人审批", approverRole: "SaaS 合作伙伴负责人" },
       { nodeKey: "super_finance_review", nodeName: "超级生态财务终审", approverRole: "超级生态财务" },
     ],
   },
@@ -342,7 +342,7 @@ export const mockApprovals: Approval[] = [
       被邀请人: "韩雨辰",
       手机号: "13900000102",
       邮箱: "hanyuchen@pet.com",
-      建议身份: "SaaS负责人",
+      建议身份: "SaaS 合作伙伴负责人",
       建议项目: "p_chengdu",
       邀请码: "PT4L6N2V",
     },
@@ -358,8 +358,8 @@ export const mockApprovals: Approval[] = [
           roleKey: "saas_owner",
           scopeType: "saas",
           scopeIds: ["saas-3"],
-          label: "SaaS负责人",
-          permissionSummary: "宠物生态SaaS负责人",
+          label: "SaaS 合作伙伴负责人",
+          permissionSummary: "宠物生态 SaaS 合作伙伴负责人",
         },
       ],
       projectIds: ["p_chengdu"],
@@ -442,25 +442,25 @@ export const mockApprovals: Approval[] = [
     createdAt: "2026-08-25 18:05",
     urgent: false,
   },
-  // 3. SaaS 入驻 — in_progress（生态负责人已批，财务复核中）
+  // 3. SaaS 合作伙伴入驻 — in_progress（生态负责人已批，财务复核中）
   {
     id: "ap_003",
     type: "saas_onboard",
-    title: "SaaS 入驻：私域工具（宠物生态）",
+    title: "SaaS 合作伙伴入驻：宠物产业发展伙伴（宠物生态）",
     submitter: "林清瑶",
     submitterUid: "acc_linquingyao",
-    description: "在宠物生态下新建 SaaS 系统「私域工具」，生态负责人已批，待财务复核",
+    description: "在宠物生态下新建 SaaS 合作伙伴「宠物产业发展伙伴」，生态负责人已批，待财务复核",
     status: "in_progress",
     currentNodeIndex: 1,
     detail: {
-      SaaS名称: "私域工具",
+      SaaS合作伙伴名称: "宠物产业发展伙伴",
       所属生态: "宠物生态",
       描述: "私域账号资产+微信社群一体化",
       预估年费: "¥59,800",
     },
     payload: {
       type: "saas_onboard",
-      name: "私域工具",
+      name: "宠物产业发展伙伴",
       eco: "宠物生态",
       desc: "私域账号资产+微信社群一体化",
     },
@@ -499,26 +499,26 @@ export const mockApprovals: Approval[] = [
     title: "平台入驻：健康运营平台",
     submitter: "吴思远",
     submitterUid: "acc_wusiyuan",
-    description: "在私域工具 SaaS 下新建平台「健康运营平台」",
+    description: "在宠物产业发展伙伴 SaaS 合作伙伴下新建平台「健康运营平台」",
     status: "pending",
     currentNodeIndex: 0,
     detail: {
       平台名称: "健康运营平台",
-      所属SaaS: "私域工具",
+      所属SaaS合作伙伴: "宠物产业发展伙伴",
       所属生态: "健康医药美业生态",
       描述: "健康类目运营平台",
     },
     payload: {
       type: "platform_onboard",
       name: "健康运营平台",
-      saas: "私域工具",
+      saas: "宠物产业发展伙伴",
       eco: "健康医药美业生态",
       desc: "健康类目运营平台",
     },
     history: [
       {
         nodeKey: "saas_owner_review",
-        nodeName: "SaaS 负责人审批",
+        nodeName: "SaaS 合作伙伴负责人审批",
         actor: "吴思远",
         action: "submit",
         time: "2026-08-26 09:00",
@@ -554,14 +554,14 @@ export const mockApprovals: Approval[] = [
     history: [
       {
         nodeKey: "saas_owner_review",
-        nodeName: "SaaS/平台负责人审批",
+        nodeName: "SaaS 合作伙伴负责人审批",
         actor: "林清瑶",
         action: "submit",
         time: "2026-08-20 10:00",
       },
       {
         nodeKey: "saas_owner_review",
-        nodeName: "SaaS/平台负责人审批",
+        nodeName: "SaaS 合作伙伴负责人审批",
         actor: "林清瑶",
         action: "approve",
         time: "2026-08-20 11:00",

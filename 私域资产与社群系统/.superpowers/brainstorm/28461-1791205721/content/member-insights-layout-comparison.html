@@ -1,0 +1,49 @@
+<h2>会员资料栏 · 经营摘要与会员分层指标</h2>
+<p class="subtitle">对比“仅恢复可见”与“数据化摘要 + 可读分层”的两种布局。点击方案可记录你的偏好。</p>
+
+<style>
+  .compare { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:24px; }
+  .design { border:1px solid #dbe3ee; border-radius:14px; overflow:hidden; cursor:pointer; background:#fff; transition:.2s ease; }
+  .design:hover { border-color:#9dbb18; box-shadow:0 8px 24px rgba(35,52,72,.12); transform:translateY(-2px); }
+  .design.selected { outline:3px solid rgba(204,255,0,.45); border-color:#8aab00; }
+  .design-head { display:flex; gap:9px; align-items:center; padding:12px 14px; background:#172033; color:#fff; }
+  .letter { width:24px;height:24px;display:grid;place-items:center;border-radius:7px;background:#ccff00;color:#172033;font-weight:800;font-size:12px; }
+  .design-name { font-weight:800;font-size:14px; }.design-note{font-size:11px;color:#bfd0db;margin-top:2px;}
+  .side { padding:12px; background:#f6f8fb; }
+  .member { border:1px solid #dbe3ee; border-radius:10px; overflow:hidden; background:#fff; }
+  .profile-head { padding:11px 12px; border-bottom:1px solid #e4e9f0; display:flex;justify-content:space-between;align-items:center; }
+  .avatar {width:30px;height:30px;border-radius:50%;background:#1f2b42;color:#ccff00;display:grid;place-items:center;font-weight:800;font-size:12px;}
+  .identity{font-size:12px;font-weight:800;color:#182235}.sub{font-size:10px;color:#778398;margin-top:3px}.chip{font-size:9px;font-weight:800;padding:3px 6px;border-radius:999px;background:#ecf9d1;color:#577000;}
+  .base { display:grid;grid-template-columns:1fr 1fr;gap:0 12px;padding:10px 12px; }.base div {padding:5px 0;border-bottom:1px solid #eef1f5;font-size:10px}.base span{display:block;color:#8690a2;margin-bottom:3px}.base b{color:#445168;}
+  .block { border-top:1px solid #e4e9f0;padding:11px 12px; }.block-title {display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;color:#29354b;margin-bottom:9px}.hint{color:#8b96a7;font-size:9px;font-weight:500}.metrics {display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.metric {background:#f6f8fb;border:1px solid #e8edf3;border-radius:7px;padding:7px 6px}.metric span{display:block;font-size:9px;color:#8690a2;white-space:nowrap}.metric b{display:block;font-size:12px;color:#263246;margin-top:4px}.groups{display:flex;gap:5px;flex-wrap:wrap}.group{font-size:9px;padding:4px 6px;background:#f0fad7;border:1px solid #d8ec9d;border-radius:5px;color:#526800}.rfm {display:grid;grid-template-columns:1fr 1fr;gap:6px}.rfm-cell{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-bottom:1px solid #edf1f5;font-size:10px}.rfm-cell span{color:#7e899a}.rfm-cell b{color:#344158}.segment{margin-top:8px;padding:8px;border-radius:7px;background:#f3edff;border:1px solid #dfd0ff;font-size:10px;color:#6643ac}.segment b{display:block;font-size:11px;margin-bottom:2px}.tabs{display:flex;padding:0 12px;border-top:1px solid #e5eaf1}.tabs span{flex:1;text-align:center;font-size:10px;padding:9px 2px;color:#8490a1}.tabs span:first-child{color:#304000;border-bottom:2px solid #ccff00;font-weight:800}.caption{padding:13px 14px;border-top:1px solid #e6ebf1}.caption p{font-size:12px;line-height:1.6;color:#667387;margin:0}.caption strong{color:#263246}@media(max-width:760px){.compare{grid-template-columns:1fr}}
+</style>
+
+<div class="compare">
+  <div class="design" data-choice="a_direct_restore" onclick="toggleSelect(this)">
+    <div class="design-head"><div class="letter">A</div><div><div class="design-name">直接恢复版</div><div class="design-note">最小改动，先让已存在区块重见</div></div></div>
+    <div class="side"><div class="member">
+      <div class="profile-head"><div style="display:flex;gap:8px;align-items:center"><div class="avatar">盛</div><div><div class="identity">盛光年 <span class="chip">PRO会员</span></div><div class="sub">会员编号 100001</div></div></div><div class="sub">资料栏</div></div>
+      <div class="base"><div><span>姓名</span><b>盛光年</b></div><div><span>对应客服</span><b>FLM002</b></div><div><span>微信号</span><b>sgn_pro</b></div><div><span>手机号</span><b>138****2341</b></div></div>
+      <div class="block"><div class="block-title">已加入社群 <span class="hint">2 个</span></div><div class="groups"><span class="group">北京PRO会员群01</span><span class="group">主理人成长社群·北京</span></div></div>
+      <div class="block"><div class="block-title">经营摘要 <span class="hint">同步于 今天 10:42</span></div><div class="metrics"><div class="metric"><span>订单</span><b style="color:#e77800">3 单</b></div><div class="metric"><span>所在群</span><b style="color:#00a978">2 群</b></div><div class="metric"><span>影响力</span><b>9,820</b></div><div class="metric"><span>最近活跃</span><b style="color:#00a978">今天</b></div></div></div>
+      <div class="block"><div class="block-title">分层指标 <span class="hint">基于画像标签计算</span></div><div class="rfm"><div class="rfm-cell"><span>R 最近活跃</span><b>2 天内</b></div><div class="rfm-cell"><span>F 购买频次</span><b>近30天 3次</b></div><div class="rfm-cell"><span>M 累计消费</span><b>¥1,240</b></div><div class="rfm-cell"><span>RFM 分层</span><b style="color:#7445d8">冠军客户</b></div></div></div>
+      <div class="tabs"><span>概览</span><span>订单</span><span>官方任务</span><span>运营记录</span></div>
+    </div></div>
+    <div class="caption"><strong>适合：</strong>快速回到原有视觉。<br><strong>不足：</strong>指标仍可能是静态展示，与订单、社群、活跃数据不完全一致。</div>
+  </div>
+
+  <div class="design" data-choice="b_data_consistent" onclick="toggleSelect(this)">
+    <div class="design-head"><div class="letter">B</div><div><div class="design-name">经营优先版（推荐）</div><div class="design-note">摘要只显示可核验数据，分层说明数据状态</div></div></div>
+    <div class="side"><div class="member">
+      <div class="profile-head"><div style="display:flex;gap:8px;align-items:center"><div class="avatar">盛</div><div><div class="identity">盛光年 <span class="chip">PRO会员</span></div><div class="sub">会员编号 100001</div></div></div><div class="sub">资料栏</div></div>
+      <div class="base"><div><span>姓名</span><b>盛光年</b></div><div><span>对应客服</span><b>FLM002</b></div><div><span>微信号</span><b>sgn_pro</b></div><div><span>手机号</span><b>138****2341</b></div></div>
+      <div class="block"><div class="block-title">经营摘要 <span class="hint">数据同步于 今天 10:42</span></div><div class="metrics"><div class="metric"><span>已入社群</span><b style="color:#00a978">2 个</b></div><div class="metric"><span>影响力</span><b>9,820</b></div><div class="metric"><span>会员等级</span><b style="font-size:11px">PRO会员</b></div><div class="metric"><span>服务状态</span><b style="font-size:11px;color:#00a978">已入群</b></div></div></div>
+      <div class="block"><div class="block-title">会员分层 <span class="hint">待订单数据接入后计算 RFM</span></div><div class="segment"><b>当前经营标签：高潜力会员</b>已入群、影响力高，建议优先安排回访与活动邀约。</div><div class="rfm" style="margin-top:8px"><div class="rfm-cell"><span>R 最近活跃</span><b style="color:#8b96a7">待同步</b></div><div class="rfm-cell"><span>F 购买频次</span><b style="color:#8b96a7">待接入</b></div><div class="rfm-cell"><span>M 累计消费</span><b style="color:#8b96a7">待接入</b></div><div class="rfm-cell"><span>RFM 分层</span><b style="color:#8b96a7">暂不判定</b></div></div></div>
+      <div class="block"><div class="block-title">已加入社群 <span class="hint">2 个</span></div><div class="groups"><span class="group">北京PRO会员群01</span><span class="group">主理人成长社群·北京</span></div></div>
+      <div class="tabs"><span>概览</span><span>订单</span><span>官方任务</span><span>运营记录</span></div>
+    </div></div>
+    <div class="caption"><strong>适合：</strong>当前本地数据模型，信息可信、关系清楚。<br><strong>优势：</strong>社群数、影响力、等级、服务状态实时联动；RFM 未接数据时明确标示，后续可无缝升级。</div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:22px"><h3>推荐落地路径</h3><p class="subtitle">采用 B：先恢复可核验的经营摘要；会员分层展示“当前经营标签 + RFM 数据接入状态”。订单、活跃、消费等数据建模完成后，再把 R/F/M 和 RFM 结论切换为实际计算值，而不是暴露静态数字。</p></div>

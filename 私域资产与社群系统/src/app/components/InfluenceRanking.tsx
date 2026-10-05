@@ -3,8 +3,10 @@ import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, P
 import { getAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
 import { SCOPE_CONFIGS, dataScopeOptions, type DataScope, type ScopeOperationId, type ScopeRow, type ScopeTreeNode } from "./workbenchScopes";
-import { agentLevelOptions, memberLevelForRank, memberLevelOptions } from "../data/levelConfig";
+import { businessIdentityLabels, memberLevelForRank, memberLevelOptions, platformRoleOptions } from "../data/levelConfig";
 import { calculateMemberNetworkScope, getMemberNetworkViews, memberNetworkExample, type MemberNetworkRole } from "../data/memberNetworkScope";
+import { agentTrainingRecords, agentTrainingStageMeta, trainingTaskStatusMeta, trainingTasks } from "../data/agentTraining";
+import { getJoinedGroupsForMember } from "../data/memberProfileGroups";
 import { useProjectContext } from "../App";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const taskCategories = [
@@ -18,13 +20,13 @@ const taskCategories = [
   { label: "风险预警", count: 2 },
 ];
 
-const profileTabs = ["概览", "订单", "权益", "历史操作", "回访"];
+const profileTabs = ["概览", "订单", "官方账号任务", "运营记录", "回访"];
 const orderStatusTabs = ["所有订单", "待付款", "待发货", "待收货", "已完成", "退款/换货"];
 const operationTabs = [
-  { id: "issue", label: "问题登记", icon: MessageSquare, button: "登记并指派" },
-  { id: "push", label: "推送任务", icon: Send, button: "创建推送任务" },
+  { id: "issue", label: "服务处置", icon: MessageSquare, button: "登记并指派" },
+  { id: "push", label: "内容触达", icon: Send, button: "创建触达任务" },
   { id: "activity", label: "活动运营", icon: CalendarDays, button: "创建活动任务" },
-  { id: "moments", label: "朋友圈", icon: ClipboardCheck, button: "发布" },
+  { id: "moments", label: "朋友圈计划", icon: ClipboardCheck, button: "创建计划" },
 ] as const;
 
 const rankingData = [
@@ -216,12 +218,64 @@ const relationshipForRank = (rank: number) => [
   { personal: "已通过", enterprise: "已通过", group: "已入群", spend: "¥12,840", ai: "一致" },
   { personal: "已通过", enterprise: "待添加", group: "待入群", spend: "¥7,640", ai: "待确认" },
   { personal: "已申请", enterprise: "已通过", group: "已入群", spend: "¥3,200", ai: "一致" },
-  { personal: "添加失败", enterprise: "未添加", group: "已退出", spend: "¥1,680", ai: "冲突" },
+  { personal: "无法添加", enterprise: "未添加", group: "已退出", spend: "¥1,680", ai: "冲突" },
   { personal: "已通过", enterprise: "已通过", group: "已入群", spend: "¥890", ai: "一致" },
 ][rank - 1] || { personal: "未添加", enterprise: "未添加", group: "未分配群", spend: "¥0", ai: "待确认" };
 type RelationshipRecord = ReturnType<typeof relationshipForRank>;
-const relationshipStatusOptions = ["未添加", "已申请", "已通过", "添加失败"];
 const groupStatusOptions = ["未分配群", "待入群", "已入群", "已退出"];
+
+type ManualActionLog = { action: string; operator: string; at: string; status: string };
+type ManualServiceAction = { count: number; status: "未操作" | "已操作" | "已完成"; operator: string; at: string; logs: ManualActionLog[] };
+type RelationshipTaskType = "主动添加" | "引导添加" | "引导关注" | "邀请入群";
+type RelationshipTaskStatus = "未添加" | "未关注" | "已申请" | "已通过" | "已拒绝" | "已拉黑" | "无法添加" | "未分配群" | "待入群" | "已入群" | "已退出";
+type OfficialAccountTask = { id: string; label: string; taskType: RelationshipTaskType; objectiveStatus: RelationshipTaskStatus; aiStatus: "已同步" | "待核验" | "同步异常"; statusOptions: RelationshipTaskStatus[]; manual: ManualServiceAction };
+type MemberServiceData = {
+  accounts: OfficialAccountTask[];
+  actions: Record<string, ManualServiceAction>;
+  projects: Array<{ name: string; detail: string; status: string; source: string }>;
+  ai: { status: "已完成" | "更新中" | "待更新"; checked: number; passed: number; pending: number; abnormal: number; updatedAt: string; device: string };
+};
+const emptyManualAction = (): ManualServiceAction => ({ count: 0, status: "未操作", operator: "—", at: "—", logs: [] });
+const contactStatusOptions: RelationshipTaskStatus[] = ["未添加", "已申请", "已通过", "已拒绝", "已拉黑", "无法添加"];
+const followStatusOptions: RelationshipTaskStatus[] = ["未关注", "已通过", "已拒绝", "已拉黑", "无法添加"];
+const groupTaskStatusOptions: RelationshipTaskStatus[] = ["未分配群", "待入群", "已入群", "已退出", "无法添加"];
+const normalizeTaskStatus = (status: RelationshipTaskStatus, options: RelationshipTaskStatus[]) => options.includes(status) ? status : options[0];
+const memberServiceDataForRank = (rank: number): MemberServiceData => {
+  const taskDefinitions: Array<{ label: string; taskType: RelationshipTaskType; statusOptions: RelationshipTaskStatus[] }> = [
+    { label: "创始人个微", taskType: "主动添加", statusOptions: contactStatusOptions },
+    { label: "服务官个微", taskType: "主动添加", statusOptions: contactStatusOptions },
+    { label: "服务官企微", taskType: "引导添加", statusOptions: contactStatusOptions },
+    { label: "素材号个微", taskType: "引导添加", statusOptions: contactStatusOptions },
+    { label: "官方公众号", taskType: "引导关注", statusOptions: followStatusOptions },
+    { label: "官方小程序", taskType: "引导关注", statusOptions: followStatusOptions },
+    { label: "官方视频号", taskType: "引导关注", statusOptions: followStatusOptions },
+    { label: "会员服务群", taskType: "邀请入群", statusOptions: groupTaskStatusOptions },
+  ];
+  const statusSeeds: RelationshipTaskStatus[] = ["已通过", "未添加", "已申请", "未关注", "无法添加", "已通过", "未关注", "待入群"];
+  const accounts = taskDefinitions.map((definition, index) => ({
+    id: `official-${index + 1}`,
+    label: definition.label,
+    taskType: definition.taskType,
+    objectiveStatus: definition.taskType === "邀请入群"
+      ? normalizeTaskStatus(relationshipForRank(rank).group, definition.statusOptions)
+      : normalizeTaskStatus(statusSeeds[(rank + index) % statusSeeds.length] === "未关注" && definition.taskType !== "引导关注" ? "未添加" : statusSeeds[(rank + index) % statusSeeds.length], definition.statusOptions),
+    aiStatus: index === 3 && rank % 2 === 0 ? "待核验" as const : index === 6 && rank === 4 ? "同步异常" as const : "已同步" as const,
+    statusOptions: definition.statusOptions,
+    manual: emptyManualAction(),
+  }));
+  const checked = accounts.filter(account => account.aiStatus !== "待核验").length;
+  const passed = accounts.filter(account => account.objectiveStatus === "已通过" || account.objectiveStatus === "已入群").length;
+  return {
+    accounts,
+    actions: { personal: emptyManualAction(), enterprise: emptyManualAction(), group: emptyManualAction() },
+    projects: rank === 1
+      ? [{ name: "PRO会员年卡", detail: "年度会员服务与专属权益", status: "生效中", source: "会员小程序" }, { name: "主理人社群", detail: "社群活动、课程与资料权益", status: "生效中", source: "社群小程序" }]
+      : [{ name: "体验官计划", detail: "体验官内容与活动权益", status: "待使用", source: "主理人公社小程序" }],
+    ai: { status: "已完成", checked, passed, pending: accounts.filter(account => account.aiStatus === "待核验").length, abnormal: accounts.filter(account => account.aiStatus === "同步异常").length, updatedAt: "今天 10:42", device: "AI手机-01" },
+  };
+};
+
+const relationshipStatusOptions = ["未添加", "已申请", "已通过", "已拒绝", "已拉黑", "无法添加"];
 
 type InfluenceEntityKind = "community" | "leader" | "agent";
 type InfluenceRelationScope = "direct" | "development" | "recommendation";
@@ -288,9 +342,11 @@ export default function InfluenceRanking() {
   const [tagDraft, setTagDraft] = useState("");
  const [activeTagFilter, setActiveTagFilter] = useState("全部");
   const [memberLevelFilter, setMemberLevelFilter] = useState("全部级别");
-  const [agentLevelFilter, setAgentLevelFilter] = useState("全部代理级别");
+  const [agentLevelFilter, setAgentLevelFilter] = useState("全部身份");
   const [activeProfileTab, setActiveProfileTab] = useState(isMemberScope ? profileTabs[0] : scopeCfg!.profileTabs[0]);
   const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
+  const [isPersonalQrOpen, setIsPersonalQrOpen] = useState(false);
+  const [showProfileMore, setShowProfileMore] = useState(false);
  const [isTaskPanelCollapsed, setIsTaskPanelCollapsed] = useState(false);
   const [isRelationCollapsed, setIsRelationCollapsed] = useState(false);
   const [isOperationCollapsed, setIsOperationCollapsed] = useState(false);
@@ -299,7 +355,9 @@ export default function InfluenceRanking() {
   const [relationshipMember, setRelationshipMember] = useState<number | null>(null);
   const [relationshipDraft, setRelationshipDraft] = useState<RelationshipRecord | null>(null);
   const [relationshipOverrides, setRelationshipOverrides] = useState<Record<number, RelationshipRecord>>({});
+  const [memberServiceOverrides, setMemberServiceOverrides] = useState<Record<number, MemberServiceData>>({});
   const [pendingRelationshipChanges, setPendingRelationshipChanges] = useState<Record<string, string>>({});
+  const [activeLog, setActiveLog] = useState<{ name: string; label: string; key: string; rank: number } | null>(null);
   const [activeOrderStatus, setActiveOrderStatus] = useState(orderStatusTabs[0]);
   const [selectedOrderNo, setSelectedOrderNo] = useState<string | null>(null);
   const [orderSearchInput, setOrderSearchInput] = useState("");
@@ -338,7 +396,7 @@ export default function InfluenceRanking() {
     }),
     [influenceRole, influenceScope, networkViews],
   );
-  const selectedInfluence = influenceEntities.find(entity => entity.id === selectedInfluenceId)
+  const selectedInfluence = visibleInfluenceEntities.find(entity => entity.id === selectedInfluenceId)
     ?? visibleInfluenceEntities[0]
     ?? influenceEntities[0];
   const selectedInfluenceMeta = influenceKindMeta[selectedInfluence.kind];
@@ -348,11 +406,20 @@ export default function InfluenceRanking() {
     setOperatorNotice(entity.aggregateOnly ? `${entity.name}为只读聚合对象，已切换为查看模式` : `已选中${entity.name}，运营商表单已同步`);
   };
   useEffect(() => {
+    if (!isPersonalQrOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsPersonalQrOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [isPersonalQrOpen]);
+
+  useEffect(() => {
     setDataScope(project.includes("代理") ? "agent" : "members");
     setTableSearch("");
     setActiveTagFilter("全部");
     setMemberLevelFilter("全部级别");
-    setAgentLevelFilter("全部代理级别");
+    setAgentLevelFilter("全部身份");
     setSelectedRow(null);
     setSelectedTaskIndex(0);
     setIsTableCollapsed(false);
@@ -366,6 +433,44 @@ export default function InfluenceRanking() {
   };
 
   const selectedTags = memberTags[selectedUser.rank] ?? defaultMemberTags;
+  const memberServiceForUser = (rank: number) => memberServiceOverrides[rank] ?? memberServiceDataForRank(rank);
+  const selectedMemberService = memberServiceForUser(selectedUser.rank);
+  const selectedGroupTask = selectedMemberService.accounts.find(account => account.taskType === "邀请入群");
+  const selectedJoinedGroups = selectedGroupTask?.objectiveStatus === "已入群"
+    ? getJoinedGroupsForMember(selectedUser.rank)
+    : [];
+  const updateMemberService = (rank: number, update: (current: MemberServiceData) => MemberServiceData) => {
+    setMemberServiceOverrides(current => {
+      const existing = current[rank] ?? memberServiceDataForRank(rank);
+      return { ...current, [rank]: update(existing) };
+    });
+  };
+  const manualActionKeyForRelationship = (key: "personal" | "enterprise" | "group") => ({ personal: "official-1", enterprise: "official-3", group: "official-8" }[key]);
+  const recordManualAction = (rank: number, key: string, actionLabel = "人工记录") => {
+    const at = new Date().toLocaleString("zh-CN", { hour12: false });
+    updateMemberService(rank, current => {
+      const previous = current.actions[key] ?? current.accounts.find(account => account.id === key)?.manual ?? emptyManualAction();
+      const previousLogs = previous.logs ?? [];
+      const log: ManualActionLog = { action: actionLabel, operator: "当前服务人员", at, status: "已操作" };
+      const next = { count: previous.count + 1, status: "已操作" as const, operator: log.operator, at, logs: [...previousLogs, log] };
+      return {
+        ...current,
+        actions: { ...current.actions, [key]: next },
+        accounts: current.accounts.map(account => account.id === key ? { ...account, manual: next } : account),
+      };
+    });
+  };
+  const updateAccountStatus = (rank: number, accountId: string, value: RelationshipTaskStatus) => {
+    updateMemberService(rank, current => ({
+      ...current,
+      accounts: current.accounts.map(account => account.id === accountId ? { ...account, objectiveStatus: value } : account),
+    }));
+    showProfileNotice("关系状态已更新，等待 AI 同步核验");
+  };
+  const refreshMemberAiData = (rank: number) => {
+    updateMemberService(rank, current => ({ ...current, ai: { ...current.ai, status: "更新中" } }));
+    window.setTimeout(() => updateMemberService(rank, current => ({ ...current, ai: { ...current.ai, status: "已完成", updatedAt: "刚刚" } })), 900);
+  };
   const relationshipForUser = (rank: number) => relationshipOverrides[rank] ?? relationshipForRank(rank);
   const updateRelationshipStatus = (rank: number, key: "personal" | "enterprise" | "group", value: string) => {
     setPendingRelationshipChanges(current => ({ ...current, [`${rank}:${key}`]: value }));
@@ -383,7 +488,7 @@ export default function InfluenceRanking() {
     showProfileNotice("关系状态已确认");
   };
   const statusValue = (rank: number, key: "personal" | "enterprise" | "group") => pendingRelationshipChanges[`${rank}:${key}`] ?? relationshipForUser(rank)[key];
-  const statusLog = (name: string, label: string, value: string) => showProfileNotice(`${name} · ${label}操作日志：最近状态为${value}`);
+  const statusLog = (name: string, label: string, key: string, rank: number) => setActiveLog({ name, label, key, rank });
   const activeListsRecord = activeLists as Record<string, typeof taskSideList>;
   const visibleTaskList = activeListsRecord[activeTaskCategory] ?? (taskSource === "scope" ? activeListsRecord[scopeCfg!.taskCategories[0].label] : taskSideList);
   const openTask = (task: TaskEntry, index: number) => {
@@ -413,6 +518,20 @@ export default function InfluenceRanking() {
       showProfileNotice("已打开工单处理表单，可直接指派处理人");
       return;
     }
+    if (task.title.includes("入群")) {
+      setDataScope("members");
+      setSelectedUser(rankingData[1]);
+      setActiveOperation("push");
+      showProfileNotice("已定位待入群会员，可直接创建入群触达、分配服务老师或写入回访任务");
+      return;
+    }
+    if (task.title.includes("活动")) {
+      setDataScope("project");
+      setSelectedRow(SCOPE_CONFIGS.project.rows[0]);
+      setActiveOperation("activity");
+      showProfileNotice("已定位项目经营对象，可直接创建活动、下发任务或查看关联群与报名结果");
+      return;
+    }
     if (task.title.includes("群")) {
       setDataScope("community");
       setSelectedRow(SCOPE_CONFIGS.community.rows[0]);
@@ -430,9 +549,42 @@ export default function InfluenceRanking() {
   // 操作台 / 档案的当前对象名：会员视角用选中会员，其余视角用选中行
   const targetName = isMemberScope ? selectedUser.name : (selectedRow?.name ?? "");
   const filteredScopeRows = !scopeCfg ? [] : (activeTagFilter === "全部" ? scopeCfg.rows : scopeCfg.rows.filter(r => r.filter === activeTagFilter))
-    .filter(row => dataScope !== "agent" || agentLevelFilter === "全部代理级别" || row.cells[1] === agentLevelFilter)
+    .filter(row => dataScope !== "agent" || agentLevelFilter === "全部身份" || row.cells[1] === agentLevelFilter)
     .filter(row => !tableSearch || row.cells.join(" ").includes(tableSearch));
   const scopeTableMinWidth = scopeCfg ? scopeCfg.columns.reduce((sum, c) => sum + c.width, 0) + 132 : 900;
+  const selectedTrainingRecord = selectedRow?.agentId
+    ? agentTrainingRecords.find(record => record.agentId === selectedRow.agentId)
+    : undefined;
+  const selectedTrainingTasks = selectedTrainingRecord
+    ? trainingTasks.filter(task => task.agentId === selectedTrainingRecord.agentId)
+    : [];
+  const selectedAgentCells = selectedRow?.cells ?? [];
+  const selectedAgentProfileSub = isAgentScope
+    ? `${selectedAgentCells[1] ?? ""} · ${(selectedAgentCells[2] ?? "").split("-")[0] ?? ""}`
+    : scopeCfg?.profileSub;
+  const selectedAgentProfileFields = isAgentScope
+    ? [
+        ["代理编号", selectedRow?.agentId ? `A-${selectedRow.agentId.slice(-3)}` : "—"],
+        ["业务身份", selectedAgentCells[1] ?? "—"],
+        ["负责城市", selectedAgentCells[2] ?? "—"],
+        ["加入时间", "2026-02-20"],
+        ["下线会员", `${selectedAgentCells[3] ?? "0"} 人`],
+        ["本月招募", `${selectedAgentCells[4] ?? "0"} 人`],
+        ["累计佣金", selectedAgentCells[5] ?? "¥0"],
+        ["代理状态", selectedAgentCells[7] ?? "—"],
+      ] as Array<[string, string]>
+    : scopeCfg?.profileFields ?? [];
+  const selectedAgentSummary = isAgentScope
+    ? [
+        ["下线会员", `${selectedAgentCells[3] ?? "0"} 人`, "#2385c8"],
+        ["本月招募", `${selectedAgentCells[4] ?? "0"} 人`, "#00a978"],
+        ["累计佣金", selectedAgentCells[5] ?? "¥0", "#e77800"],
+        ["活跃度", selectedAgentCells[7] === "待安置" ? "待安置" : "正常", "#253800"],
+      ] as Array<[string, string, string]>
+    : scopeCfg?.summary ?? [];
+  const selectedAgentTags = isAgentScope
+    ? [{ label: selectedAgentCells[1] ?? "代理", background: "#fff0db", color: "#e77800" }]
+    : scopeCfg?.profileTags ?? [];
   // 切换数据视角：任务中心回落到基础任务，排行 Tab / 档案 Tab / 筛选按新视角重置
   const switchDataScope = (next: DataScope) => {
     if (next === dataScope) return;
@@ -441,7 +593,7 @@ export default function InfluenceRanking() {
     setActiveTaskCategory(taskCategories[0].label);
     setSelectedTaskIndex(0);
     setActiveTagFilter("全部");
-    setAgentLevelFilter("全部代理级别");
+    setAgentLevelFilter("全部身份");
     if (next === "members") {
       setActiveProfileTab(profileTabs[0]);
       setSelectedRow(null);
@@ -595,9 +747,9 @@ export default function InfluenceRanking() {
             <option>总排行</option>
           </select>
          {isMemberScope && <><select aria-label="会员级别筛选" value={memberLevelFilter} onChange={event => setMemberLevelFilter(event.target.value)} className="px-2 py-1 text-xs outline-none" style={{ background: "transparent", color: S.textSec, borderRight: `1px solid ${S.border}` }}><option>全部级别</option>{memberLevelOptions.map(level => <option key={level}>{level}</option>)}</select><select aria-label="会员标签筛选" value={activeTagFilter} onChange={event => setActiveTagFilter(event.target.value)} className="px-2 py-1 text-xs outline-none" style={{ background: "transparent", color: S.textSec }}><option value="全部">全部标签</option>{tagFilters.filter(label => label !== "全部").map(label => <option key={label} value={label}>{label}</option>)}</select></>}
-          {dataScope === "agent" && <select aria-label="代理级别筛选" value={agentLevelFilter} onChange={event => setAgentLevelFilter(event.target.value)} className="px-2 py-1 text-xs outline-none" style={{ background: "transparent", color: S.textSec }}><option>全部代理级别</option>{agentLevelOptions.map(level => <option key={level}>{level}</option>)}</select>}
+          {dataScope === "agent" && <select aria-label="身份筛选" value={agentLevelFilter} onChange={event => setAgentLevelFilter(event.target.value)} className="px-2 py-1 text-xs outline-none" style={{ background: "transparent", color: S.textSec }}><option>全部身份</option>{platformRoleOptions.map(code => <option key={code} value={businessIdentityLabels[code]}>{businessIdentityLabels[code]}</option>)}<option value={businessIdentityLabels.LEADER}>{businessIdentityLabels.LEADER}</option></select>}
           </div>
-          <button type="button" title="重置筛选" aria-label="重置筛选" onClick={() => { setTableSearch(""); setActiveTagFilter("全部"); setMemberLevelFilter("全部级别"); setAgentLevelFilter("全部代理级别"); showProfileNotice("筛选已重置"); }} className="w-7 h-7 flex items-center justify-center" style={{ background: S.bg, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><X size={13} /></button>
+          <button type="button" title="重置筛选" aria-label="重置筛选" onClick={() => { setTableSearch(""); setActiveTagFilter("全部"); setMemberLevelFilter("全部级别"); setAgentLevelFilter("全部身份"); showProfileNotice("筛选已重置"); }} className="w-7 h-7 flex items-center justify-center" style={{ background: S.bg, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><X size={13} /></button>
           {isMemberScope ? <span className="text-xs whitespace-nowrap" style={{ color: S.muted }}>{filteredRankingData.length} 位会员</span> : scopeCfg ? <><Tags size={13} style={{ color: "#6db100" }} />
             {scopeCfg.filterChips.map(label => {
               const isActive = activeTagFilter === label;
@@ -630,14 +782,14 @@ export default function InfluenceRanking() {
         {/* 排行榜表格：会员视角原样，其余视角按视角列定义渲染 */}
         {isMemberScope ? (
         <div className="overflow-x-auto" aria-label="会员排行横向滚动表格" style={{ scrollbarWidth: "thin" }}>
-          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 1020, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
-            {[["序号",44],["头像",44],["微信名",110],["会员级别",82],["城市",90],["个微好友",92],["企微好友",92],["入群状态",76],["累计消费",82],["影响会员数",82],["影响力",68],["评分",64],["操作",72]].map(([l,w], hi) => (
+          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 1120, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+            {[["序号",44],["头像",44],["微信名",110],["会员级别",82],["城市",90],["创始人个微",124],["服务官企微",124],["入群状态",108],["累计消费",82],["影响会员数",82],["影响力",68],["评分",64],["操作",72]].map(([l,w], hi) => (
               <div key={`h-${hi}-${l}-${w}`} className="flex-shrink-0" style={{ width: w as number }}>{l}</div>
             ))}
           </div>
           {filteredRankingData.map((u, idx) => (
             <div key={u.rank} className="flex items-center px-3 py-2.5 cursor-pointer text-xs transition-all font-mono" style={{
-              minWidth: 1020,
+              minWidth: 1120,
               background: selectedUser.rank === u.rank ? S.accentLight : idx % 2 === 0 ? "#ffffff" : "#fafaf8",
               borderBottom: `1px solid ${S.border}`,
               borderLeft: selectedUser.rank === u.rank ? `3px solid ${S.accent}` : "3px solid transparent",
@@ -651,8 +803,8 @@ export default function InfluenceRanking() {
               <div className="flex-shrink-0 font-bold" style={{ width: 110, color: S.text }}>{u.name}</div>
               <div className="flex-shrink-0" style={{ width: 82 }}><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: S.radiusSm }}>{memberLevelForRank(u.rank)}</span></div>
               <div className="flex-shrink-0" style={{ width: 90, color: S.muted }}>{u.city}</div>
-              {([ ["personal", "个微", 92], ["enterprise", "企微", 92] ] as const).map(([key, label, width]) => { const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); return <div key={key} className="flex-shrink-0 flex items-center gap-0.5" style={{ width }}><select aria-label={`${u.name} ${label}好友状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: "transparent", color: value === "添加失败" ? "#c2410c" : key === "personal" ? S.textSec : S.muted, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`${key}-${option}`} value={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} ${label}确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title={`查看${label}操作日志`} aria-label={`${u.name} ${label}操作日志`} onClick={() => statusLog(u.name, label, relationshipForUser(u.rank)[key])} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })}
-              <div className="flex-shrink-0" style={{ width: 76 }}>{(() => { const key = "group" as const; const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); return <div className="flex items-center gap-0.5"><select aria-label={`${u.name} 入群状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: value === "已入群" ? "#e8fbf4" : "#fff0db", color: value === "已入群" ? "#008565" : "#c2410c", border: 0, borderRadius: S.radiusSm }}>{groupStatusOptions.map(option => <option key={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} 入群确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title="查看入群操作日志" aria-label={`${u.name} 入群操作日志`} onClick={() => statusLog(u.name, "入群", relationshipForUser(u.rank).group)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })()}</div>
+              {([ ["personal", "创始人个微", 124], ["enterprise", "服务官企微", 124] ] as const).map(([key, label, width]) => { const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); const actionLabel = "添加"; const actionKey = manualActionKeyForRelationship(key); const action = memberServiceForUser(u.rank).actions[actionKey] ?? memberServiceForUser(u.rank).accounts.find(account => account.id === actionKey)?.manual ?? emptyManualAction(); return <div key={key} className="flex-shrink-0 flex items-center gap-0.5" style={{ width }}><button type="button" onClick={event => { event.stopPropagation(); recordManualAction(u.rank, actionKey, "添加动作"); }} className="relative px-1 py-0.5 text-[9px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>{actionLabel}{action.count > 0 && <span aria-label={`已点击${action.count}次`} className="absolute -right-1.5 -top-1.5 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center text-[8px] font-bold" style={{ background: "#dc2626", color: "#ffffff", border: "1px solid #ffffff", borderRadius: "999px", lineHeight: 1 }}>{action.count}</span>}</button><select aria-label={`${u.name} ${label}状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: "transparent", color: value === "无法添加" ? "#c2410c" : key === "personal" ? S.textSec : S.muted, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`${key}-${option}`} value={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} ${label}确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title={`查看${label}操作日志`} aria-label={`${u.name} ${label}操作日志`} onClick={() => statusLog(u.name, label, actionKey, u.rank)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })}
+              <div className="flex-shrink-0" style={{ width: 108 }}>{(() => { const key = "group" as const; const actionKey = manualActionKeyForRelationship(key); const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); const action = memberServiceForUser(u.rank).actions[actionKey] ?? memberServiceForUser(u.rank).accounts.find(account => account.id === actionKey)?.manual ?? emptyManualAction(); return <div className="flex items-center gap-0.5"><button type="button" onClick={event => { event.stopPropagation(); recordManualAction(u.rank, actionKey, "邀请入群"); }} className="relative px-1 py-0.5 text-[9px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>入群{action.count > 0 && <span aria-label={`已点击${action.count}次`} className="absolute -right-1.5 -top-1.5 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center text-[8px] font-bold" style={{ background: "#dc2626", color: "#ffffff", border: "1px solid #ffffff", borderRadius: "999px", lineHeight: 1 }}>{action.count}</span>}</button><select aria-label={`${u.name} 入群状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: value === "已入群" ? "#e8fbf4" : "#fff0db", color: value === "已入群" ? "#008565" : "#c2410c", border: 0, borderRadius: S.radiusSm }}>{groupStatusOptions.map(option => <option key={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} 入群确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title="查看入群操作日志" aria-label={`${u.name} 入群操作日志`} onClick={() => statusLog(u.name, "入群", actionKey, u.rank)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 82, color: "#c2410c" }}>{relationshipForUser(u.rank).spend}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 82, color: S.text }}>{u.totalUsers.toLocaleString()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 68, color: S.text }}>{u.influence.toLocaleString()}</div>
@@ -800,117 +952,108 @@ export default function InfluenceRanking() {
       {/* ── 右侧会员档案：资料、画像与权益在同一信息流中展示 ───── */}
       {!isProfileCollapsed ? <aside className="flex-shrink-0 overflow-auto transition-all duration-200" style={{ width: "clamp(292px, 22vw, 350px)", background: S.surface, borderLeft: `1px solid ${S.border}` }}>
         {isMemberScope ? <>
-        <div className="p-3.5" style={{ borderBottom: `1px solid ${S.border}` }}>
+        <div className="p-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
           <div className="flex items-center justify-between gap-3">
-            <div>
+            <div className="flex items-center gap-2">
+              <span className="block h-4 w-1" style={{ background: S.accent, borderRadius: "999px" }} />
               <div className="text-sm font-bold" style={{ color: S.text }}>个人资料</div>
             </div>
             <div className="flex items-center gap-1.5">
+              <button type="button" title="查看个微二维码" aria-label="查看个微二维码" onClick={() => setIsPersonalQrOpen(true)} className="w-7 h-7 flex items-center justify-center" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>
+                <QrCode size={15} />
+              </button>
               <button type="button" title="收起会员档案栏" aria-label="收起会员档案栏" onClick={() => setIsProfileCollapsed(true)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                 <PanelRightClose size={14} />
               </button>
             </div>
           </div>
-          <div className="flex items-start gap-2.5 mt-3">
-            <div className="flex flex-col items-center gap-1 flex-shrink-0"><img src={getAvatar(selectedUser.rank - 1)} alt={selectedUser.name} style={{ width: 44, height: 44, borderRadius: S.radiusSm, objectFit: "cover" }} /><span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{memberLevelForRank(selectedUser.rank)}</span></div>
+          <div className="flex items-start gap-2.5 mt-2">
+            <div className="flex flex-col items-center gap-1 flex-shrink-0">
+              <img src={getAvatar(selectedUser.rank - 1)} alt={selectedUser.name} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover", border: `1px solid ${S.border}` }} />
+              <span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{memberLevelForRank(selectedUser.rank)}</span>
+            </div>
             <div className="min-w-0 flex-1">
-              <div className="text-sm font-bold" style={{ color: S.text }}>{selectedUser.name}</div>
-              <div className="text-xs mt-0.5 font-mono truncate" style={{ color: S.muted }}>地区：{selectedUser.city}</div>
+              <div className="flex items-center justify-between gap-2">
+                <div className="text-sm font-bold truncate" style={{ color: S.text }}>{selectedUser.name}</div>
+                <span className="text-[9px] whitespace-nowrap" style={{ color: S.muted }}>已入会</span>
+              </div>
+              <div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>地区：{selectedUser.city}</div>
               <div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>微信备注：10000{selectedUser.rank}－{memberLevelForRank(selectedUser.rank)}－{selectedUser.city}</div>
               <div className="flex flex-wrap items-center gap-1 mt-1">
                 {selectedTags.filter(tag => tag.label !== memberLevelForRank(selectedUser.rank)).map(({ label, background, color }) => (
                   <span key={label} className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-bold" style={{ background, color, borderRadius: "999px" }}>
                     {label}
-                    {isEditingTags && (
-                      <button type="button" title={`移除标签：${label}`} aria-label={`移除标签：${label}`} onClick={() => removeTag(label)} className="inline-flex items-center justify-center" style={{ color, lineHeight: 1 }}>
-                        <X size={10} strokeWidth={2.5} />
-                      </button>
-                    )}
+                    {isEditingTags && <button type="button" title={`移除标签：${label}`} aria-label={`移除标签：${label}`} onClick={() => removeTag(label)} className="inline-flex items-center justify-center" style={{ color, lineHeight: 1 }}><X size={10} strokeWidth={2.5} /></button>}
                   </span>
                 ))}
-                <button
-                  title={isEditingTags ? "保存标签修改" : "编辑会员标签"}
-                  onClick={() => {
-                    setIsEditingTags(editing => !editing);
-                    setTagDraft("");
-                    if (isEditingTags) showProfileNotice("标签修改已保存");
-                  }}
-                  className="text-[10px] font-bold whitespace-nowrap"
-                  style={{ color: "#6db100" }}
-                >
+                <button title={isEditingTags ? "保存标签修改" : "编辑会员标签"} onClick={() => { setIsEditingTags(editing => !editing); setTagDraft(""); if (isEditingTags) showProfileNotice("标签修改已保存"); }} className="text-[10px] font-bold whitespace-nowrap" style={{ color: "#6db100" }}>
                   {isEditingTags ? "完成" : "编辑"}
                 </button>
               </div>
-              {isEditingTags && (
-                <form className="flex items-center gap-1.5 mt-1.5" onSubmit={event => { event.preventDefault(); addTag(); }}>
-                  <input value={tagDraft} onChange={event => setTagDraft(event.target.value)} className="min-w-0 flex-1 px-2 py-1 text-[10px] outline-none" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="新增标签" />
-                  <button type="submit" title="新增标签" aria-label="新增标签" className="w-5 h-5 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={11} strokeWidth={2.5} /></button>
-                </form>
-              )}
+              {isEditingTags && <form className="flex items-center gap-1.5 mt-1.5" onSubmit={event => { event.preventDefault(); addTag(); }}>
+                <input value={tagDraft} onChange={event => setTagDraft(event.target.value)} className="min-w-0 flex-1 px-2 py-1 text-[10px] outline-none" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="新增标签" />
+                <button type="submit" title="新增标签" aria-label="新增标签" className="w-5 h-5 flex items-center justify-center flex-shrink-0" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}><Plus size={11} strokeWidth={2.5} /></button>
+              </form>}
             </div>
-            <button title="查看会员二维码" aria-label="查看会员二维码" onClick={() => showProfileNotice(`已生成 ${selectedUser.name} 的会员二维码`)} className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.5)`, borderRadius: S.radiusSm }}>
-              <QrCode size={17} style={{ color: "#1e293b" }} />
-            </button>
           </div>
-          {profileNotice && <div role="status" className="mt-3 px-2.5 py-2 text-xs font-bold" style={{ background: S.accentLight, color: S.text, borderLeft: `2px solid ${S.accent}` }}>{profileNotice}</div>}
-
-          <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${S.border}` }}>
-            <div className="grid grid-cols-2 gap-x-5">
+          {profileNotice && <div role="status" className="mt-2 px-2 py-1.5 text-[10px] font-bold" style={{ background: S.accentLight, color: S.text, borderLeft: `2px solid ${S.accent}` }}>{profileNotice}</div>}
+          <div className="mt-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}>
+            <div className="grid grid-cols-2 gap-x-4">
               {[
-                ["姓名", selectedUser.name], ["微信号", selectedUser.wechat],
-                ["出生年月", "1988-04-24"], ["体验官升级时间", "2026-01-02"],
-                ["身份证", "330511********990"], ["尊享官升级时间", "2026-02-04"],
-                ["手机号", "138****2341"], ["对应客服微信号", "FLM002"],
-                ["肤质", "混合型偏油性肌肤"], ["会员编号", `10000${selectedUser.rank}`],
+                ["微信号", selectedUser.wechat], ["手机号", "138****2341"],
+                ["对应客服", "FLM002"], ["会员编号", `10000${selectedUser.rank}`],
               ].map(([label, value]) => (
-                <div key={label} className="flex items-center justify-between gap-2 py-1" style={{ borderBottom: `1px solid ${S.border}` }}>
-                  <span className="text-xs" style={{ color: S.muted }}>{label}</span>
-                  <span className="text-xs font-bold truncate text-right" style={{ color: S.textSec }}>{value}</span>
+                <div key={label} className="min-w-0 flex items-center justify-between gap-2 py-1" style={{ borderBottom: `1px solid ${S.border}` }}>
+                  <span className="text-[10px]" style={{ color: S.muted }}>{label}</span>
+                  <span className="text-[11px] font-bold truncate text-right" style={{ color: S.textSec }} title={value}>{value}</span>
                 </div>
               ))}
             </div>
-
+            <button type="button" onClick={() => setShowProfileMore(value => !value)} className="mt-2 text-[10px] font-bold" style={{ color: S.primary }}>
+              {showProfileMore ? "收起更多资料" : "更多资料"}
+            </button>
+            {showProfileMore && <div className="grid grid-cols-2 gap-x-4 mt-1.5">
+              {[["出生年月", "1988-04-24"], ["身份证", "330511********990"], ["肤质", "混合型偏油性肌肤"]].map(([label, value]) => (
+                <div key={label} className="min-w-0 flex items-center justify-between gap-2 py-1" style={{ borderBottom: `1px solid ${S.border}` }}>
+                  <span className="text-[10px]" style={{ color: S.muted }}>{label}</span>
+                  <span className="text-[10px] font-bold truncate text-right" style={{ color: S.textSec }} title={value}>{value}</span>
+                </div>
+              ))}
+            </div>}
+            <section className="mt-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: S.text }}>
+                  <Users size={13} style={{ color: S.accent }} />
+                  已加入社群
+                </div>
+                <span className="text-[10px]" style={{ color: S.muted }}>{selectedJoinedGroups.length} 个</span>
+              </div>
+              {selectedJoinedGroups.length > 0 ? (
+                <div className="mt-1.5 space-y-1">
+                  {selectedJoinedGroups.map(group => (
+                    <div key={group.name} className="flex min-w-0 items-center gap-2 px-2 py-1.5" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>
+                      <Users size={12} className="flex-shrink-0" style={{ color: "#5a6e00" }} />
+                      <span className="min-w-0 flex-1 truncate text-[11px] font-bold" style={{ color: S.textSec }} title={group.name}>{group.name}</span>
+                      <span className="flex-shrink-0 text-[9px]" style={{ color: S.muted }}>{group.type}</span>
+                      <span className="flex-shrink-0 px-1.5 py-0.5 text-[9px] font-bold" style={{ background: "#e8fbf4", color: "#008565", borderRadius: "999px" }}>{group.status}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="mt-2 px-2.5 py-2 text-[11px]" style={{ background: S.bg, color: S.muted, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusSm }}>
+                  暂未加入社群
+                </div>
+              )}
+            </section>
           </div>
         </div>
 
-        <div className="hidden px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-bold" style={{ color: S.text }}>经营摘要</span>
-            <span className="text-xs" style={{ color: S.muted }}>同步于 今天 10:42</span>
-          </div>
-          <div className="grid grid-cols-4 gap-2">
-            {[
-              ["订单", "3 单", "#ff8a00"], ["所在群", "2 群", "#00a978"],
-              ["影响力", selectedUser.influence.toLocaleString(), S.text], ["最近活跃", "今天", "#00a978"],
-            ].map(([label, value, color]) => (
-              <div key={label} className="min-w-0">
-                <div className="text-xs truncate" style={{ color: S.muted }}>{label}</div>
-                <div className="text-sm font-bold mt-1 truncate" style={{ color }}>{value}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <section className="hidden px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-bold" style={{ color: S.text }}>分层指标</span>
-            <span className="text-xs" style={{ color: S.muted }}>基于画像标签计算</span>
-          </div>
-          <div className="grid grid-cols-2 gap-x-6 mt-3">
-            {[["R 最近活跃", "2 天内", "#00a978"], ["F 购买频次", "近30天 3次", S.textSec], ["M 累计消费", "¥1,240", "#e77800"], ["RFM 分层", "冠军客户", "#7445d8"]].map(([label, value, color]) => (
-              <div key={label} className="flex items-center justify-between gap-2 py-1.5" style={{ borderBottom: `1px solid ${S.border}` }}>
-                <span className="text-xs" style={{ color: S.muted }}>{label}</span><span className="text-xs font-bold text-right" style={{ color }}>{value}</span>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <div className="flex items-center gap-0 px-3.5 pt-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
+        <div className="flex items-center gap-0 px-2.5 pt-1.5" style={{ borderBottom: `1px solid ${S.border}` }}>
           {profileTabs.map(tab => (
             <button
               key={tab}
               onClick={() => setActiveProfileTab(tab)}
-              className="flex-1 px-1 py-2 text-[11px] font-bold whitespace-nowrap transition-all"
+              className="flex-1 px-1 py-1.5 text-[10px] font-bold whitespace-nowrap transition-all"
               style={{
                 color: activeProfileTab === tab ? S.text : S.muted,
                 borderBottom: activeProfileTab === tab ? `2px solid ${S.accent}` : "2px solid transparent",
@@ -1019,7 +1162,7 @@ export default function InfluenceRanking() {
               <span className="text-xs font-bold" style={{ color: "#e77800" }}>{order.amount}</span>
             </button>
           )))}
-          {activeProfileTab === "历史操作" && activityFeed.slice(0, 3).map(activity => (
+          {activeProfileTab === "运营记录" && activityFeed.slice(0, 3).map(activity => (
             <div key={activity.id} className="flex items-center gap-2 py-2" style={{ borderBottom: `1px solid ${S.border}` }}>
               <Clock size={12} className="flex-shrink-0" style={{ color: "#6db100" }} />
               <div className="flex-1 min-w-0"><div className="text-xs font-bold" style={{ color: S.text }}>{activity.type}</div><div className="text-[11px] truncate" style={{ color: S.muted }}>{activity.content}</div></div>
@@ -1035,7 +1178,99 @@ export default function InfluenceRanking() {
               <span className="text-[11px] font-bold" style={{ color: status === "待安排" ? "#e77800" : "#00a978" }}>{status}</span>
             </div>
           ))}
-          {activeProfileTab === "权益" && <div className="space-y-2"><div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: S.accentLight, color: S.textSec, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>权益规则来自当前项目“客户与权益”配置；此处只查看当前客户的领取与使用情况。</div>{[["PRO 会员年卡", "有效至 2027-07-03", "已生效"], ["会员成长礼包", "电子权益 · 未使用", "待使用"], ["专属社群服务", "北京 PRO 会员群", "已生效"]].map(([name, detail, status]) => <div key={name} className="flex items-center gap-2 py-2" style={{ borderBottom: `1px solid ${S.border}` }}><div className="w-6 h-6 flex items-center justify-center text-[10px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: S.radiusSm }}>益</div><div className="min-w-0 flex-1"><div className="text-xs font-bold" style={{ color: S.text }}>{name}</div><div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>{detail}</div></div><span className="text-[10px] font-bold whitespace-nowrap" style={{ color: status === "待使用" ? "#e77800" : "#008565" }}>{status}</span></div>)}<div className="flex gap-2 pt-1"><button onClick={() => showProfileNotice(`已为 ${selectedUser.name} 提交补发权益申请`)} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>申请补发</button><button onClick={() => showProfileNotice(`已打开 ${selectedUser.name} 的权益调整记录`)} className="flex-1 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>调整记录</button></div></div>}
+          {activeProfileTab === "官方账号任务" && (
+            <div className="min-w-0">
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="min-w-0">
+                  <div className="text-[11px] font-bold" style={{ color: S.text }}>官方账号任务关系表</div>
+                  <div className="text-[9px] mt-0.5" style={{ color: S.muted }}>左侧为账号类型，右侧记录同步状态与人工服务动作</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => refreshMemberAiData(selectedUser.rank)}
+                  className="flex items-center gap-1 px-1.5 py-1 text-[9px] font-bold whitespace-nowrap"
+                  style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}
+                >
+                  <RefreshCw size={10} />
+                  更新 AI
+                </button>
+              </div>
+              <div className="overflow-x-auto" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                <div style={{ minWidth: 620 }}>
+                  <div
+                    className="grid items-center gap-2 px-2 py-1.5 text-[9px] font-bold"
+                    style={{ gridTemplateColumns: "minmax(106px, 1.25fr) 72px 58px minmax(78px, 1fr) 58px 80px 68px", background: "#f1f5f9", color: S.muted, borderBottom: `1px solid ${S.border}` }}
+                  >
+                    <span>账号类型 / 账号名</span>
+                    <span>任务类型</span>
+                    <span>AI同步</span>
+                    <span>关系状态</span>
+                    <span>人工记录</span>
+                    <span>最近操作</span>
+                    <span>动作</span>
+                  </div>
+                  {selectedMemberService.accounts.map(account => {
+                    const aiColor = account.aiStatus === "已同步" ? "#008565" : account.aiStatus === "待核验" ? "#d97706" : "#dc2626";
+                    return (
+                      <div
+                        key={account.id}
+                        className="grid items-center gap-2 px-2 py-2"
+                        style={{ gridTemplateColumns: "minmax(106px, 1.25fr) 72px 58px minmax(78px, 1fr) 58px 80px 68px", borderBottom: `1px solid ${S.border}` }}
+                      >
+                        <div className="min-w-0">
+                          <div className="text-[10px] font-bold truncate" style={{ color: S.text }} title={account.label}>{account.label}</div>
+                          <div className="text-[9px] mt-0.5 truncate" style={{ color: S.muted }}>外部账号关系</div>
+                        </div>
+                        <span className="text-[9px] font-bold truncate" style={{ color: S.textSec }} title={account.taskType}>{account.taskType}</span>
+                        <span className="text-[9px] font-bold truncate" style={{ color: aiColor }} title={account.aiStatus}>{account.aiStatus}</span>
+                        <select
+                          aria-label={`${account.label}关系状态`}
+                          value={account.objectiveStatus}
+                          onChange={event => updateAccountStatus(selectedUser.rank, account.id, event.target.value as RelationshipTaskStatus)}
+                          className="min-w-0 w-full px-1 py-1 text-[9px] outline-none"
+                          style={{ background: "#ffffff", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}
+                        >
+                          {account.statusOptions.map(option => <option key={`${account.id}-${option}`} value={option}>{option}</option>)}
+                        </select>
+                        <span className="text-[9px] font-bold truncate" style={{ color: account.manual.status === "未操作" ? S.muted : "#008565" }} title={`${account.manual.status}${account.manual.count > 0 ? ` · ${account.manual.count}次` : ""}`}>
+                          {account.manual.status}{account.manual.count > 0 ? ` · ${account.manual.count}次` : ""}
+                        </span>
+                        <span className="text-[9px] truncate" style={{ color: account.manual.at === "—" ? S.muted : S.textSec }} title={account.manual.at === "—" ? "未记录" : `${account.manual.operator} · ${account.manual.at}`}>
+                          {account.manual.at === "—" ? "未记录" : account.manual.at}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => recordManualAction(selectedUser.rank, account.id, account.taskType === "邀请入群" ? "邀请入群" : account.taskType.includes("关注") ? "关注动作" : "添加动作")}
+                            className="relative flex-1 px-1 py-1 text-[9px] font-bold truncate"
+                            style={{ background: S.accentLight, color: "#5a6e00", border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}
+                            title={account.taskType}
+                          >
+                            {account.taskType === "邀请入群" ? "入群" : account.taskType.includes("关注") ? "关注" : "添加"}
+                            {account.manual.count > 0 && <span aria-label={`已点击${account.manual.count}次`} className="absolute -right-1.5 -top-1.5 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center text-[8px] font-bold" style={{ background: "#dc2626", color: "#ffffff", border: "1px solid #ffffff", borderRadius: "999px", lineHeight: 1 }}>{account.manual.count}</span>}
+                          </button>
+                          <button
+                            type="button"
+                            title={`查看${account.label}操作日志`}
+                            aria-label={`查看${account.label}操作日志`}
+                            onClick={() => statusLog(selectedUser.name, account.label, account.id, selectedUser.rank)}
+                            className="w-5 h-5 flex items-center justify-center flex-shrink-0"
+                            style={{ color: S.muted }}
+                          >
+                            <History size={11} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-2 pt-2 text-[9px]" style={{ color: S.muted }}>
+                <span>关系状态可人工录入，最终结果以 AI / 外部系统同步为准</span>
+                <span className="whitespace-nowrap">最近同步：{selectedMemberService.ai.updatedAt}</span>
+              </div>
+            </div>
+          )}
         </section>
         </> : scopeCfg ? (
         /* ── 其余视角档案：与会员档案同构（头部/字段/摘要/指标/Tab 记录），仅内容不同 ── */
@@ -1057,9 +1292,9 @@ export default function InfluenceRanking() {
               <div className="w-11 h-11 flex items-center justify-center text-base font-bold flex-shrink-0" style={{ background: S.accentLight, border: "1px solid rgba(204,255,0,0.45)", color: "#5a6e00", borderRadius: S.radiusSm }}>{selectedRow?.initial}</div>
               <div className="min-w-0 flex-1">
                 <div className="text-sm font-bold" style={{ color: S.text }}>{targetName}</div>
-                <div className="text-xs mt-0.5 font-mono truncate" style={{ color: S.muted }}>{scopeCfg.profileSub}</div>
+                <div className="text-xs mt-0.5 font-mono truncate" style={{ color: S.muted }}>{selectedAgentProfileSub}</div>
                 <div className="flex flex-wrap items-center gap-1 mt-1">
-                  {scopeCfg.profileTags.map(tag => (
+                  {selectedAgentTags.map(tag => (
                     <span key={tag.label} className="inline-flex items-center px-1.5 py-0.5 text-[10px] font-bold" style={{ background: tag.background, color: tag.color, borderRadius: "999px" }}>{tag.label}</span>
                   ))}
                 </div>
@@ -1071,7 +1306,7 @@ export default function InfluenceRanking() {
             {profileNotice && <div role="status" className="mt-3 px-2.5 py-2 text-xs font-bold" style={{ background: S.accentLight, color: S.text, borderLeft: `2px solid ${S.accent}` }}>{profileNotice}</div>}
             <div className="mt-3 pt-3" style={{ borderTop: `1px solid ${S.border}` }}>
               <div className="grid grid-cols-2 gap-x-5">
-                {scopeCfg.profileFields.map(([label, value]) => (
+                {selectedAgentProfileFields.map(([label, value]) => (
                   <div key={label} className="flex items-center justify-between gap-2 py-1" style={{ borderBottom: `1px solid ${S.border}` }}>
                     <span className="text-xs" style={{ color: S.muted }}>{label}</span>
                     <span className="text-xs font-bold truncate text-right" style={{ color: S.textSec }}>{value}</span>
@@ -1087,7 +1322,7 @@ export default function InfluenceRanking() {
               <span className="text-xs" style={{ color: S.muted }}>同步于 今天 10:42</span>
             </div>
             <div className="grid grid-cols-4 gap-2">
-              {scopeCfg.summary.map(([label, value, color]) => (
+              {selectedAgentSummary.map(([label, value, color]) => (
                 <div key={label} className="min-w-0">
                   <div className="text-xs truncate" style={{ color: S.muted }}>{label}</div>
                   <div className="text-sm font-bold mt-1 truncate" style={{ color }}>{value}</div>
@@ -1110,6 +1345,26 @@ export default function InfluenceRanking() {
             </div>
           </section>
 
+          {isAgentScope && <section className="px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
+            {!selectedTrainingRecord ? (
+              <div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: "#f8fafc", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                当前代理暂无培训记录
+              </div>
+            ) : <>
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-sm font-bold" style={{ color: S.text }}>培训总览</span>
+                <span className="text-[10px]" style={{ color: selectedTrainingRecord.riskStatus === "high" ? "#c2410c" : selectedTrainingRecord.riskStatus === "attention" ? "#e77800" : "#008565" }}>{selectedTrainingRecord.riskStatus === "none" ? "进度正常" : selectedTrainingRecord.riskReason}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="px-2.5 py-2" style={{ background: S.accentLight, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>当前阶段</div><div className="text-sm font-bold mt-1" style={{ color: S.text }}>{selectedTrainingRecord.currentStage} · {agentTrainingStageMeta[selectedTrainingRecord.currentStage].label}</div></div>
+                <div className="px-2.5 py-2" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>阶段进度</div><div className="text-sm font-bold mt-1" style={{ color: "#2385c8" }}>{selectedTrainingRecord.stageProgress}%</div></div>
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 mt-2">
+                <div className="flex items-center justify-between py-1.5 text-[10px]" style={{ borderBottom: `1px solid ${S.border}` }}><span style={{ color: S.muted }}>课程完成</span><b style={{ color: S.textSec }}>{selectedTrainingRecord.courseProgress.completed}/{selectedTrainingRecord.courseProgress.total}</b></div>
+                <div className="flex items-center justify-between py-1.5 text-[10px]" style={{ borderBottom: `1px solid ${S.border}` }}><span style={{ color: S.muted }}>实训通过</span><b style={{ color: S.textSec }}>{selectedTrainingRecord.practicalProgress.passed}/{selectedTrainingRecord.practicalProgress.total}</b></div>
+              </div>
+            </>}
+          </section>}
           <div className="flex items-center gap-0 px-3.5 pt-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
             {scopeCfg.profileTabs.map(tab => (
               <button
@@ -1148,6 +1403,18 @@ export default function InfluenceRanking() {
                 </div>
                 <div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: "#fff8e8", color: "#9a5a00", border: "1px solid #f2d6a0", borderRadius: S.radiusSm }}>群满员或状态异常时，先创建承接新群；原群成员与运营记录仍保留在当前档案中。</div>
               </div>
+            ) : dataScope === "agent" && activeProfileTab === "培训记录" ? (
+              !selectedTrainingRecord ? (
+                <div className="px-3 py-5 text-center text-[11px]" style={{ color: S.muted }}>当前代理暂无培训记录</div>
+              ) : <div className="space-y-2">
+                <div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: S.accentLight, color: S.textSec, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>{agentTrainingStageMeta[selectedTrainingRecord.currentStage].description}</div>
+                {selectedTrainingTasks.map(task => {
+                  const statusMeta = trainingTaskStatusMeta[task.status];
+                  const statusColor = task.status === "passed" ? "#008565" : task.status === "overdue" ? "#c2410c" : task.status === "needs_revision" ? "#e77800" : "#2385c8";
+                  return <div key={task.id} className="py-2" style={{ borderBottom: `1px solid ${S.border}` }}><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="text-xs font-bold" style={{ color: S.text }}>{task.title}</div><div className="text-[10px] mt-0.5" style={{ color: S.muted }}>{task.stage} · 截止 {task.dueAt}</div></div><span className="text-[10px] font-bold whitespace-nowrap" style={{ color: statusColor }}>{statusMeta.label}</span></div><div className="flex items-center justify-between mt-1.5"><span className="text-[10px] truncate" style={{ color: S.muted }}>{task.nextAction}</span><button type="button" onClick={() => showProfileNotice(`已打开培训任务：${task.title}`)} className="text-[10px] font-bold" style={{ color: "#6db100" }}>处理</button></div></div>;
+                })}
+                {selectedTrainingTasks.length === 0 && <div className="px-3 py-5 text-center text-[11px]" style={{ color: S.muted }}>暂无培训任务</div>}
+              </div>
             ) : (
               <>
             {(scopeCfg.profileRecords[activeProfileTab] ?? []).map(record => (
@@ -1174,6 +1441,65 @@ export default function InfluenceRanking() {
         </div>
       )}
 
+      {isPersonalQrOpen && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4" style={{ background: "rgba(15,23,42,0.42)" }} onMouseDown={event => { if (event.target === event.currentTarget) setIsPersonalQrOpen(false); }}>
+          <section role="dialog" aria-modal="true" aria-labelledby="member-personal-qr-title" className="w-full max-w-[400px] overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg, boxShadow: "0 22px 68px rgba(15,23,42,0.28)" }}>
+            <div className="flex items-center justify-between gap-3 px-5 py-4" style={{ borderBottom: `1px solid ${S.border}` }}>
+              <div className="min-w-0"><div id="member-personal-qr-title" className="text-sm font-bold" style={{ color: S.text }}>个微二维码</div><div className="mt-1 text-[11px] truncate" style={{ color: S.muted }}>添加 {selectedUser.name} 的个人微信</div></div>
+              <button type="button" title="关闭个微二维码" aria-label="关闭个微二维码" onClick={() => setIsPersonalQrOpen(false)} className="w-7 h-7 flex items-center justify-center flex-shrink-0" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><X size={14} /></button>
+            </div>
+            <div className="p-5">
+              <div className="flex items-center gap-3 px-3 py-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}>
+                <img src={getAvatar(selectedUser.rank - 1)} alt={selectedUser.name} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover" }} />
+                <div className="min-w-0"><div className="text-xs font-bold truncate" style={{ color: S.text }}>{selectedUser.name}</div><div className="mt-0.5 text-[11px] truncate" style={{ color: S.muted }}>微信号：{selectedUser.wechat} · {selectedUser.city}</div></div>
+              </div>
+              <div className="mx-auto my-5 grid h-60 w-60 place-items-center" style={{ background: "#ffffff", border: `10px solid #ffffff`, outline: `1px solid ${S.borderMed}`, borderRadius: S.radius, color: S.text }}>
+                <QrCode size={176} strokeWidth={1.15} />
+              </div>
+              <div className="text-center text-xs font-bold" style={{ color: S.textSec }}>请使用微信扫一扫添加个微</div>
+              <div className="mt-1 text-center text-[10px] leading-relaxed" style={{ color: S.muted }}>二维码由会员微信管理同步，失效后请重新打开查看。</div>
+            </div>
+            <div className="px-5 py-4" style={{ borderTop: `1px solid ${S.border}` }}><button type="button" onClick={() => setIsPersonalQrOpen(false)} className="w-full py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>完成</button></div>
+          </section>
+        </div>
+      )}
+
+      {activeLog && (() => {
+        const service = memberServiceForUser(activeLog.rank);
+        const account = service.accounts.find(item => item.id === activeLog.key);
+        const action = service.actions[activeLog.key] ?? account?.manual ?? emptyManualAction();
+        const logs = action.logs ?? [];
+        const currentStatus = account?.objectiveStatus
+          ?? (activeLog.key === "personal" || activeLog.key === "enterprise" || activeLog.key === "group"
+            ? statusValue(activeLog.rank, activeLog.key)
+            : "未记录");
+        return <>
+          <button type="button" aria-label="关闭操作日志" onClick={() => setActiveLog(null)} className="fixed inset-0 z-[60]" style={{ background: "rgba(15,23,42,0.22)" }} />
+          <section role="dialog" aria-modal="true" aria-label={`${activeLog.name} ${activeLog.label}操作日志`} className="fixed left-1/2 top-1/2 z-[70] w-[min(460px,92vw)] -translate-x-1/2 -translate-y-1/2 overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radius, boxShadow: "0 16px 40px rgba(15,23,42,0.18)" }}>
+            <div className="flex items-center justify-between gap-3 px-4 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
+              <div className="min-w-0"><div className="text-sm font-bold truncate" style={{ color: S.text }}>{activeLog.label}操作日志</div><div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>{activeLog.name} · {service.ai.device}</div></div>
+              <button type="button" title="关闭" aria-label="关闭" onClick={() => setActiveLog(null)} className="w-7 h-7 flex items-center justify-center flex-shrink-0" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><X size={14} /></button>
+            </div>
+            <div className="p-4">
+              <div className="grid grid-cols-3 gap-2 mb-3">
+                <div className="px-2.5 py-2" style={{ background: S.accentLight, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>当前关系</div><div className="text-xs font-bold mt-1" style={{ color: S.text }}>{currentStatus}</div></div>
+                <div className="px-2.5 py-2" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>累计动作</div><div className="text-xs font-bold mt-1" style={{ color: S.text }}>{action.count} 次</div></div>
+                <div className="px-2.5 py-2" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>AI同步</div><div className="text-xs font-bold mt-1" style={{ color: service.ai.status === "已完成" ? "#008565" : "#d97706" }}>{service.ai.status}</div></div>
+              </div>
+              <div className="flex items-center justify-between mb-2"><span className="text-xs font-bold" style={{ color: S.text }}>完整人工记录</span><span className="text-[10px]" style={{ color: S.muted }}>当前状态：{action.status}</span></div>
+              <div className="max-h-64 overflow-auto" style={{ border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                {logs.length > 0 ? logs.map((log, index) => (
+                   <div key={`${log.at}-${index}`} className="px-3 py-2.5" style={{ borderBottom: index < logs.length - 1 ? `1px solid ${S.border}` : "none" }}>
+                    <div className="flex items-center justify-between gap-2"><span className="text-xs font-bold" style={{ color: S.text }}>{log.action}</span><span className="text-[10px]" style={{ color: S.muted }}>{log.at}</span></div>
+                    <div className="flex items-center justify-between gap-2 mt-1 text-[10px]" style={{ color: S.muted }}><span>操作人：{log.operator}</span><span>人工状态：{log.status}</span></div>
+                  </div>
+                )) : <div className="px-3 py-6 text-center text-[11px]" style={{ color: S.muted }}>暂无人工操作记录</div>}
+              </div>
+              <div className="mt-3 text-[10px] leading-relaxed" style={{ color: S.muted }}>关系状态由 AI / 外部系统同步确认，人工点击仅记录工作人员执行过的动作。</div>
+            </div>
+          </section>
+        </>;
+      })()}
       {relationshipMember !== null && relationshipDraft && (() => {
         const member = rankingData.find(item => item.rank === relationshipMember) ?? rankingData[0];
         const ai = relationshipForRank(relationshipMember);
@@ -1185,7 +1511,8 @@ export default function InfluenceRanking() {
             <div className="flex-1 overflow-auto p-4 space-y-3">
               <div className="grid grid-cols-2 gap-2"><div className="px-3 py-2" style={{ background: S.accentLight, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>累计消费</div><div className="text-base font-bold mt-1" style={{ color: "#c2410c" }}>{relationshipDraft.spend}</div></div><div className="px-3 py-2" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>会员级别</div><div className="text-xs font-bold mt-1" style={{ color: S.text }}>{memberLevelForRank(member.rank)}</div></div></div>
               <div className="px-3 py-2 text-[10px] leading-relaxed" style={{ background: hasConflict ? "#fff7ed" : "#e8fbf4", color: hasConflict ? "#9a3412" : "#008565", border: `1px solid ${hasConflict ? "#fed7aa" : "#b7ead7"}`, borderRadius: S.radiusSm }}><b>AI 对比：</b>{hasConflict ? "检测到人工状态与 AI 识别不一致，请确认后保存。" : "人工状态与 AI 识别一致。"}<span className="block mt-1">AI 识别：个微 {ai.personal} · 企微 {ai.enterprise} · 入群 {ai.group}</span></div>
-              <div className="grid grid-cols-3 gap-2">{([["个微好友", relationshipDraft.personal], ["企微好友", relationshipDraft.enterprise], ["入群状态", relationshipDraft.group]] as const).map(([label, value]) => <div key={label} className="px-2.5 py-2" style={{ background: "#f8fafc", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>{label}</div><div className="text-xs font-bold mt-1 truncate" style={{ color: value === "已入群" || value === "已通过" ? "#008565" : "#c2410c" }}>{value}</div></div>)}</div>
+              <div className="grid grid-cols-3 gap-2">{([['个微好友', 'personal'], ['企微好友', 'enterprise'], ['入群状态', 'group'] ] as const).map(([label, key]) => { const value = relationshipDraft[key]; const action = memberServiceForUser(member.rank).actions[key]; return <div key={label} className="px-2.5 py-2" style={{ background: '#f8fafc', border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>{label}</div><div className="text-xs font-bold mt-1 truncate" style={{ color: value === '已入群' || value === '已通过' ? '#008565' : '#c2410c' }}>{value}</div><button type="button" onClick={() => recordManualAction(member.rank, key)} className="mt-1 px-1.5 py-1 text-[9px] font-bold" style={{ background: S.accentLight, color: S.text, borderRadius: S.radiusSm }}>操作{action.count > 0 ? ` [${action.count}]` : ''}</button><div className="text-[9px] mt-1 truncate" style={{ color: S.muted }}>人工：{action.status} · {action.operator}</div><div className="text-[9px] truncate" style={{ color: S.muted }}>{action.at}</div></div>; })}</div>
+              <section className="px-3 py-2" style={{ background: '#f8fafc', border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="flex items-center justify-between gap-2 mb-1.5"><span className="text-[10px] font-bold" style={{ color: S.text }}>官方账号服务任务</span><button type="button" onClick={() => refreshMemberAiData(member.rank)} className="text-[9px] font-bold" style={{ color: '#6db100' }}>更新 AI</button></div>{memberServiceForUser(member.rank).accounts.map(account => <div key={account.id} className="flex items-center gap-2 py-1" style={{ borderTop: `1px solid ${S.border}` }}><span className="flex-1 min-w-0 text-[10px] truncate" style={{ color: S.textSec }}>{account.label}</span><span className="text-[9px] font-bold" style={{ color: account.aiStatus === '已关注' ? '#008565' : account.aiStatus === '未关注' ? '#c2410c' : '#e77800' }}>{account.aiStatus}</span><button type="button" onClick={() => recordManualAction(member.rank, account.id, account.taskType === '邀请入群' ? '邀请入群' : account.taskType.includes('关注') ? '关注动作' : '添加动作')} className="px-1 py-0.5 text-[9px] font-bold" style={{ background: S.accentLight, color: S.text, borderRadius: S.radiusSm }}>{account.taskType === '邀请入群' ? '入群' : account.taskType.includes('关注') ? '关注' : '添加'}{account.manual.count > 0 ? ` [${account.manual.count}]` : ''}</button></div>)}</section>
               <div className="px-3 py-2 text-[10px] leading-relaxed" style={{ background: "#f8fafc", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>保存后会记录人工处理人和时间；AI 识别结果保留用于后续复核，不会覆盖人工状态。</div>
             </div>
             <div className="flex items-center gap-2 px-4 py-3" style={{ borderTop: `1px solid ${S.border}` }}><button type="button" onClick={() => { setRelationshipDraft({ ...ai }); showProfileNotice("已恢复 AI 识别状态"); }} className="flex-1 py-2 text-xs font-bold" style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>采用 AI 结果</button><button type="button" onClick={() => { setRelationshipOverrides(current => ({ ...current, [relationshipMember]: relationshipDraft })); setRelationshipMember(null); setRelationshipDraft(null); showProfileNotice(`已保存 ${member.name} 的关系状态`); }} className="flex-1 py-2 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>保存人工状态</button></div>

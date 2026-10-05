@@ -2,8 +2,8 @@ import React, { useCallback, useEffect, useRef, useState, type ReactNode } from 
 import { createPortal } from "react-dom";
 import { getAvatar } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check, PencilLine } from "lucide-react";
-import { useCommunityData } from "../data/communityDataStore";
-import { defaultGroupTypeRules, getGroupRulesForProject, tierColorMap } from "../data/projectGroupRules";
+import { getCommunityScopeKey, saveScopeRules, useCommunityData } from "../data/communityDataStore";
+import { getGroupRulesForProject, tierColorMap, type GroupTypeRule } from "../data/projectGroupRules";
 import { initialProjects, projectStatusBadge } from "../data/communicationTools";
 import { S, useThemeSingleton } from "../theme";
 
@@ -614,70 +614,49 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
   const [groupCount, setGroupCount] = useState(20);
   const [selectedSlots, setSelectedSlots] = useState(() => Array.from({ length: 20 }, (_, index) => index < initialAssigned));
   const [qrNames, setQrNames] = useState(() => Array.from({ length: 20 }, (_, index) => index < initialAssigned ? (account.groupQrNames?.[index] || "已绑定二维码") : ""));
-  // ── 群类型模板体系 ──────────────────────────────────────────────────
-  // · 群类型规则库的「模板源」和「所属项目」是两个独立维度：
-  //   draft.project     = 账号归属的业务项目（决定生命周期/归属）
-  //   templateProject   = 当前加载的群类型规则模板（默认跟 draft.project 走，可手动切换为其他项目）
-  //   userTemplatedToggled = 用户是否手动改过 templateProject（用于避免覆盖用户选择）
-  // · browseTemplateOpen + browseTemplateProject = 预览区右上角的「浏览其他项目模板」只读面板
-  const [templateProject, setTemplateProject] = useState<string>(() => (draft.project || account.project || "AI学习社群"));
+  const { rulesByScope } = useCommunityData();
+  const [templateProject, setTemplateProject] = useState<string>(() => draft.project || "");
   const [userTemplatedToggled, setUserTemplatedToggled] = useState(false);
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [browseTemplateOpen, setBrowseTemplateOpen] = useState(false);
   const [browseTemplateProject, setBrowseTemplateProject] = useState<string | null>(null);
+  const currentScope: "platform" | "project" = draft.project ? "project" : "platform";
+  const currentScopeProject = draft.project || undefined;
+  const currentScopeKey = getCommunityScopeKey("主理人公社", currentScope, currentScopeProject);
+  const currentScopeRules = rulesByScope[currentScopeKey] ?? [];
+  const rulesForProject = templateProject ? getGroupRulesForProject(templateProject) : [];
+  const [groupTypeOptions, setGroupTypeOptions] = useState<GroupTypeRule[]>(() => currentScopeRules);
 
-  // 所属项目变化 → 如果用户还没手动改过 templateProject，自动跟着归属项目走
   React.useEffect(() => {
-    if (!draft.project) return;
-    if (!userTemplatedToggled) setTemplateProject(draft.project);
-  }, [draft.project]);
-
-  const rulesForProject = getGroupRulesForProject(templateProject);
-  const [groupTypeOptions, setGroupTypeOptions] = useState(() => rulesForProject.map(rule => ({
-    id: rule.id, tier: rule.tier, name: rule.name, code: rule.code, memberRoles: rule.memberRoles, allocationMode: rule.allocationMode,
-    capacity: rule.capacity, entryCondition: rule.entryCondition, cities: rule.cities,
-    retentionGoal: rule.retentionGoal, weeklyOps: rule.weeklyOps,
-  })));
-
-  // 模板源变化 → 重置群类型库为该项目的默认规则；保留自定义项 + 兼容性处理选中值
-  React.useEffect(() => {
-    const newBase = rulesForProject.map(rule => ({
-      id: rule.id, tier: rule.tier, name: rule.name, code: rule.code, memberRoles: rule.memberRoles, allocationMode: rule.allocationMode,
-      capacity: rule.capacity, entryCondition: rule.entryCondition, cities: rule.cities,
-      retentionGoal: rule.retentionGoal, weeklyOps: rule.weeklyOps,
-    }));
-    const knownCodes = new Set(newBase.map(r => r.code));
-    const keepCustoms = groupTypeOptions.filter(o => !knownCodes.has(o.code));
-    setGroupTypeOptions([...newBase, ...keepCustoms]);
+    setGroupTypeOptions(currentScopeRules);
     setDraft(current => {
-      const allNames = new Set([...newBase, ...keepCustoms].map(r => r.name));
-      if (current.groupType && !allNames.has(current.groupType)) return { ...current, groupType: "" };
-      return current;
+      const allNames = new Set(currentScopeRules.map(rule => rule.name));
+      return current.groupType && !allNames.has(current.groupType) ? { ...current, groupType: "" } : current;
     });
-  }, [templateProject]);
+  }, [currentScopeKey, rulesByScope]);
 
-  // 套用其他项目的群类型模板（用户主动点击）
+  React.useEffect(() => {
+    if (!userTemplatedToggled) setTemplateProject(draft.project || "");
+  }, [draft.project, userTemplatedToggled]);
+
   const applyTemplateFromProject = (projectName: string) => {
+    const nextRules = getGroupRulesForProject(projectName);
+    saveScopeRules("主理人公社", currentScope, currentScopeProject, nextRules);
+    setGroupTypeOptions(nextRules);
     setTemplateProject(projectName);
     setUserTemplatedToggled(true);
     setTemplatePickerOpen(false);
+    setDraft(current => ({ ...current, groupType: "" }));
   };
-  // 还原为当前归属项目的默认模板
   const resetTemplateToProject = () => {
-    const base = draft.project || account.project || "AI学习社群";
-    setTemplateProject(base);
+    setTemplateProject(draft.project || "");
     setUserTemplatedToggled(false);
     setTemplatePickerOpen(false);
   };
-  // 浏览其他项目模板（只读，不影响当前群类型库）
   const toggleBrowseTemplate = () => {
     setBrowseTemplateOpen(value => !value);
-    if (!browseTemplateOpen) {
-      // 打开时默认显示"和当前模板源一致"的第一个项目，让用户立刻有内容
-      setBrowseTemplateProject(projectOptions[0] || "AI学习社群");
-    } else {
-      setBrowseTemplateProject(null);
-    }
+    if (!browseTemplateOpen) setBrowseTemplateProject(projectOptions[0] || null);
+    else setBrowseTemplateProject(null);
   };
   const [newGroupType, setNewGroupType] = useState("");
   const [groupTypeOpen, setGroupTypeOpen] = useState(false);
@@ -706,7 +685,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
     setGtEditorOpen(true);
     setGroupTypeOpen(false);
   };
-  const openEditGroupRuleEditor = (option: GroupTypeOption) => {
+  const openEditGroupRuleEditor = (option: GroupTypeRule) => {
     setGtEditorEditingCode(option.code);
     setGtForm({
       name: option.name,
@@ -723,21 +702,21 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
     setGtEditorOpen(true);
     setGroupTypeOpen(false);
   };
+  const saveCurrentScopeRules = (rules: GroupTypeRule[]) => {
+    saveScopeRules("主理人公社", currentScope, currentScopeProject, rules);
+    setGroupTypeOptions(rules);
+  };
   const saveGtEditor = () => {
     const name = gtForm.name.trim();
     if (!name) return;
     if (gtEditorEditingCode) {
-      // 编辑模式：更新已有 option
-      setGroupTypeOptions(current => current.map(opt => opt.code === gtEditorEditingCode ? {
-        ...opt, ...gtForm, name
-      } as GroupTypeOption : opt));
+      saveCurrentScopeRules(groupTypeOptions.map(option => option.code === gtEditorEditingCode ? { ...option, ...gtForm, name } as GroupTypeRule : option));
     } else {
-      // 新建模式：生成 code，追加到当前模板下的自定义区
       const customIndex = groupTypeOptions.filter(o => o.code.startsWith("CUSTOM")).length + 1;
       const newCode = `CUSTOM${String(customIndex).padStart(2, "0")}`;
-      const newOption: GroupTypeOption = { id: `custom-${Date.now()}`, code: newCode, ...gtForm, name };
-      setGroupTypeOptions(current => [...current, newOption]);
-      set("groupType", name); // 新建后自动选中
+      const newOption: GroupTypeRule = { id: `custom-${Date.now()}`, code: newCode, ...gtForm, name, enabled: true };
+      saveCurrentScopeRules([...groupTypeOptions, newOption]);
+      set("groupType", name);
     }
     setGtEditorOpen(false);
   };
@@ -782,7 +761,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
   const beginEditRegion = (category: RegionCategory) => { setEditingRegionId(category.id); setEditingRegionName(category.name); };
   const saveRegionName = () => { const value = editingRegionName.trim(); if (!editingRegionId || !value) return; setRegionCategories(current => current.map(category => category.id === editingRegionId ? { ...category, name: value } : category)); setEditingRegionId(null); setEditingRegionName(""); };
   const applyRegionTemplate = (template: { id: string; provinces: string[] }) => { if (!activeRegionId || activeRegion.system) return; const available = template.provinces.filter(province => !claimedProvinceOwners[province]); setRegionCategories(current => current.map(category => category.id === activeRegionId ? { ...category, provinces: available } : category)); setRegionCitySelections(current => ({ ...current, [activeRegionId]: [] })); setRegionTemplateSelections(current => ({ ...current, [activeRegionId]: template.id })); setActiveProvince(available[0] || provinceOptions[0]); set("city", available.join(" / ")); setTemplateOpen(false); };
-  const addGroupType = () => { const value = newGroupType.trim(); if (!value) return; const option = { name: value, code: `CUSTOM${String(groupTypeOptions.length + 1).padStart(2, "0")}`, memberRoles: ["待配置角色"], allocationMode: "轮巡分配" as const }; setGroupTypeOptions(current => [...current, option]); set("groupType", value); setNewGroupType(""); };
+  const addGroupType = () => { const value = newGroupType.trim(); if (!value) return; const option: GroupTypeRule = { id: `custom-${Date.now()}`, name: value, code: `CUSTOM${String(groupTypeOptions.length + 1).padStart(2, "0")}`, tier: "培育", memberRoles: ["待配置角色"], allocationMode: "轮巡分配", capacity: 200, entryCondition: "", cities: ["全国"], nameTemplate: `{project}·{type}·{seq}群`, enabled: true }; saveCurrentScopeRules([...groupTypeOptions, option]); set("groupType", value); setNewGroupType(""); };
   const addAccountType = () => { const value = newAccountType.trim(); if (!value || accountTypeOptions.some(option => option.name === value)) return; setAccountTypeOptions(current => [...current, { id: `custom-${Date.now()}`, name: value, system: false }]); set("accountType", value); setNewAccountType(""); };
   const save = () => {
     if (!draft.project || !draft.opsManager || !draft.city || !draft.groupType) { setError("请补全所属项目、已启用员工、地区和群类型"); return; }
@@ -1067,10 +1046,10 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
       {/* 顶部分类统计条 */}
       <div className="px-2.5 py-1.5 text-[10px] border-b flex items-center justify-between"
         style={{ background: S.bg, color: S.muted, fontFamily: "monospace", borderColor: S.border }}>
-        <span>共 {groupTypeOptions.length} 条（{groupTypeOptions.filter(o => defaultGroupTypeRules.some(r => r.code === o.code)).length} 系统 + {groupTypeOptions.filter(o => !defaultGroupTypeRules.some(r => r.code === o.code)).length} 自定义）</span>
+        <span>共 {groupTypeOptions.length} 条（{groupTypeOptions.filter(o => !o.code.startsWith("CUSTOM")).length} 系统 + {groupTypeOptions.filter(o => o.code.startsWith("CUSTOM")).length} 自定义）</span>
       </div>
       {groupTypeOptions.map(option => {
-        const isSystem = defaultGroupTypeRules.some(rule => rule.code === option.code);
+        const isSystem = !option.code.startsWith("CUSTOM");
         const c = tierColorMap[(option.tier || "培育") as keyof typeof tierColorMap];
         return (
           <div key={option.code} className="group flex items-center" style={{ borderBottom: `1px solid ${S.border}` }}>
@@ -1098,7 +1077,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
                     <Edit3 size={11} style={{ color: S.muted }} />
                   </button>
                   <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-1.5 py-1"
-                    onClick={e => { e.stopPropagation(); setGroupTypeOptions(current => current.filter(item => item.code !== option.code)); if (draft.groupType === option.name) set("groupType", ""); }}>
+                    onClick={e => { e.stopPropagation(); saveCurrentScopeRules(groupTypeOptions.filter(item => item.code !== option.code)); if (draft.groupType === option.name) set("groupType", ""); }}>
                     <X size={11} style={{ color: S.muted }} />
                   </button>
                 </>
@@ -1267,7 +1246,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
               const isSelected = draft.groupType === option.name;
               const tier = (option as any).tier as keyof typeof tierColorMap | undefined;
               const palette = tier ? tierColorMap[tier] : null;
-              const isSystem = defaultGroupTypeRules.some(r => r.code === option.code) || rulesForProject.some(r => r.code === option.code);
+              const isSystem = !option.code.startsWith("CUSTOM");
               return (
                 <div key={option.code} className="group inline-flex items-center gap-0.5">
                   <button type="button" onClick={() => set("groupType", option.name)}
@@ -1300,7 +1279,7 @@ function WechatAllocationModal({ account, onClose, onSave }: { account: Personal
                       </button>
                       <button type="button" title={`删除${option.name}`} aria-label={`删除${option.name}`} className="px-1.5 py-1"
                         onClick={() => {
-                          setGroupTypeOptions(current => current.filter(item => item.code !== option.code));
+                          saveCurrentScopeRules(groupTypeOptions.filter(item => item.code !== option.code));
                           if (draft.groupType === option.name) set("groupType", "");
                         }}>
                         <X size={11} style={{ color: S.muted }} />
