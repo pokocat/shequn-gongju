@@ -1,0 +1,87 @@
+<style>
+  .scheme-grid{display:grid;grid-template-columns:repeat(3,minmax(280px,1fr));gap:22px;align-items:start}
+  .scheme-card{border:1px solid #e9e2f4;border-radius:22px;background:#fff;overflow:hidden;box-shadow:0 16px 40px rgba(67,40,105,.08);cursor:pointer;transition:.2s}
+  .scheme-card:hover{transform:translateY(-3px);box-shadow:0 20px 48px rgba(67,40,105,.14)}
+  .scheme-card.selected{outline:3px solid #7c3aed;outline-offset:3px}
+  .scheme-head{padding:18px 20px 14px;border-bottom:1px solid #eee8f5}
+  .scheme-kicker{font-size:12px;font-weight:800;color:#7c3aed;letter-spacing:.08em}
+  .scheme-head h3{margin:5px 0 4px;font-size:20px}
+  .scheme-head p{margin:0;color:#766d80;font-size:13px;line-height:1.55}
+  .phone{margin:18px auto 20px;width:258px;min-height:570px;border:8px solid #251b2d;border-radius:32px;background:#fff6e9;overflow:hidden;box-shadow:0 12px 30px rgba(39,27,45,.2)}
+  .status{display:flex;justify-content:space-between;padding:11px 16px 8px;font-size:10px;font-weight:800;color:#3b2a1d}
+  .rolebar{margin:0 10px 9px;padding:5px;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:#fff;border-radius:13px;font-size:9px;color:#927c68;text-align:center}
+  .rolebar b{padding:7px 2px;border-radius:9px;background:linear-gradient(135deg,#8b3ff0,#6d28d9);color:#fff}
+  .hero{margin:0 10px 9px;padding:15px;border-radius:0 0 17px 17px;background:linear-gradient(145deg,#49249a,#8d63dc);color:#fff}
+  .hero small{opacity:.78;font-size:8px}.hero h4{margin:5px 0 3px;font-size:18px}.hero p{margin:0;font-size:9px;opacity:.82}
+  .metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:12px}.metric{padding:9px;border-radius:11px;background:#fffaf4;color:#2e2118}.metric strong{display:block;font-size:16px}.metric span{font-size:8px;color:#9b816b}
+  .panel{margin:9px 10px;padding:11px;border-radius:15px;background:#fff;box-shadow:0 4px 14px rgba(111,80,43,.07)}
+  .panel-title{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:800;color:#2c2119}.panel-title span{font-size:8px;font-weight:500;color:#a28e7b}
+  .matrix{margin-top:8px;border:1px solid #eee5f4;border-radius:9px;overflow:hidden}.matrix-row{display:grid;grid-template-columns:1.25fr repeat(3,.75fr);font-size:7px;text-align:center;border-bottom:1px solid #eee}.matrix-row:last-child{border:0}.matrix-row>*{padding:6px 2px}.matrix-row.head{background:#f6effc;color:#6d28d9;font-weight:800}.matrix-row b:first-child{text-align:left;padding-left:7px;color:#765f4b}.plus{display:block;color:#dc2626;font-size:6px;margin-top:1px}
+  .quick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}.quick div{padding:9px 4px;border:1px solid #eee5f4;border-radius:9px;text-align:center}.quick strong{display:block;color:#6d28d9;font-size:13px}.quick span{font-size:7px;color:#806d5c}
+  .learn{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}.learn div{padding:9px;border-radius:9px;background:#faf6fd;font-size:8px;color:#5b456c}.learn strong{display:block;font-size:9px;color:#3b2550;margin-bottom:2px}
+  .tabs{display:flex;gap:5px;margin:0 10px 8px;overflow:hidden}.tabs span{flex:1;padding:7px 3px;border-radius:8px;background:#f2e5e2;text-align:center;font-size:8px;color:#806c5e}.tabs span.on{background:#fff;color:#6d28d9;box-shadow:0 2px 8px rgba(109,40,217,.15);font-weight:800}
+  .list{margin-top:8px}.person{display:flex;align-items:center;gap:7px;padding:7px 0;border-bottom:1px solid #eee}.avatar{width:24px;height:24px;border-radius:50%;background:#d6d0d8}.person b{display:block;font-size:8px}.person small{font-size:7px;color:#9b8d9f}.person em{margin-left:auto;color:#7c3aed;font-style:normal;font-size:8px}
+  .tree{margin-top:8px}.node{padding:7px 8px;border-left:3px solid #8b5cf6;background:#faf7fd;margin-bottom:5px;border-radius:0 8px 8px 0;font-size:8px}.node.indent{margin-left:15px;border-left-color:#f7b65c}.node.deep{margin-left:30px;border-left-color:#34a37a}
+  .recommend{display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:5px 8px;border-radius:999px;background:#efe7fb;color:#6d28d9;font-size:8px;font-weight:800}
+  .footer-note{padding:0 20px 20px;font-size:12px;line-height:1.6;color:#706679}.footer-note strong{color:#352640}
+  @media(max-width:980px){.scheme-grid{grid-template-columns:1fr}.phone{width:280px}}
+</style>
+
+<h2>代理 / 团长团队模块：三种收敛方案</h2>
+<p class="subtitle">三套方案都保留现有紫色影响力头部、收入环图、关系矩阵与下钻名单样式。点击卡片选择你更认可的方向。</p>
+
+<div class="scheme-grid">
+  <section class="scheme-card" data-choice="a-team-center" onclick="toggleSelect(this)">
+    <div class="scheme-head">
+      <div class="scheme-kicker">A · 推荐方案</div>
+      <h3>团队中心 · 单页总览</h3>
+      <p>一级 Tab 改为“团队中心”，取消全部网络/我的社群/发展网络/推荐网络四个二级 Tab。</p>
+    </div>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="rolebar"><b>团队中心</b><span>履约</span><span>经营</span><span>推广</span></div>
+      <div class="hero"><small>主理人公社 · 我的团队</small><h4>团队全景</h4><p>自己社群、直属团长、发展代理与推荐关系</p><div class="metrics"><div class="metric"><strong>326</strong><span>团队影响力</span></div><div class="metric"><strong>¥1,246</strong><span>预计经营利润</span></div></div></div>
+      <div class="panel"><div class="panel-title">团队发展数据 <span>点击数字查看名单 ›</span></div><div class="matrix"><div class="matrix-row head"><span>关系</span><span>成员</span><span>团长</span><span>代理</span></div><div class="matrix-row"><b>我直接发展</b><span>126<i class="plus">+18</i></span><span>8<i class="plus">+1</i></span><span>2</span></div><div class="matrix-row"><b>旗下发展</b><span>286<i class="plus">+32</i></span><span>5<i class="plus">+1</i></span><span>2</span></div><div class="matrix-row"><b>推荐关系</b><span>96<i class="plus">+12</i></span><span>4<i class="plus">+1</i></span><span>1</span></div></div></div>
+      <div class="panel"><div class="panel-title">团队管理 <span>查看完整成员 ›</span></div><div class="quick"><div><strong>8</strong><span>直属团长</span></div><div><strong>2</strong><span>发展代理</span></div><div><strong>12</strong><span>推荐关系</span></div></div><div class="learn"><div><strong>团队任务</strong>进度与待跟进</div><div><strong>培训学习</strong>课程与认证</div></div></div>
+    </div>
+    <div class="footer-note"><strong>特点：</strong>一个页面回答“团队有多大、由谁组成、发展怎样、下一步做什么”。名单和下一级关系通过点击数字进入独立详情页。</div>
+  </section>
+
+  <section class="scheme-card" data-choice="b-team-sections" onclick="toggleSelect(this)">
+    <div class="scheme-head">
+      <div class="scheme-kicker">B · 管理导向</div>
+      <h3>我的团队 · 三分区</h3>
+      <p>一级 Tab 改为“我的团队”，保留三个轻量分区：总览、成员、成长。</p>
+    </div>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="rolebar"><b>我的团队</b><span>履约</span><span>经营</span><span>推广</span></div>
+      <div class="tabs"><span class="on">总览</span><span>成员</span><span>成长</span></div>
+      <div class="hero"><small>团队数据总览</small><h4>326 人</h4><p>本周新增 42 · 活跃成员 184</p><div class="metrics"><div class="metric"><strong>8</strong><span>直属团长</span></div><div class="metric"><strong>2</strong><span>发展代理</span></div></div></div>
+      <div class="panel"><div class="panel-title">成员结构 <span>全部成员 ›</span></div><div class="list"><div class="person"><i class="avatar"></i><span><b>李晓雨 · 团长</b><small>3 个社群 · 126 人</small></span><em>查看 ›</em></div><div class="person"><i class="avatar"></i><span><b>王璐 · 代理</b><small>5 位团长 · 184 人</small></span><em>查看 ›</em></div><div class="person"><i class="avatar"></i><span><b>陈蕊 · 推荐关系</b><small>累计发展 25 人</small></span><em>查看 ›</em></div></div></div>
+      <div class="panel"><div class="panel-title">团队成长 <span>学习中心 ›</span></div><div class="learn"><div><strong>新人训练营</strong>6 人学习中</div><div><strong>团长认证</strong>3 人待完成</div></div></div>
+    </div>
+    <div class="footer-note"><strong>特点：</strong>管理路径最清楚，但仍有三个二级分区；适合后续团队任务、培训、认证内容较多的情况。</div>
+  </section>
+
+  <section class="scheme-card" data-choice="c-influence-simple" onclick="toggleSelect(this)">
+    <div class="scheme-head">
+      <div class="scheme-kicker">C · 最小改动</div>
+      <h3>影响力 · 单一全部网络</h3>
+      <p>一级名称缩短为“影响力”，仅删除四个范围 Tab，其他页面结构基本不变。</p>
+    </div>
+    <div class="phone">
+      <div class="status"><span>9:41</span><span>●●●</span></div>
+      <div class="rolebar"><b>影响力</b><span>履约</span><span>经营</span><span>推广</span></div>
+      <div class="hero"><small>主理人公社 · 我的影响力</small><h4>全部影响力</h4><p>统一汇总全部授权关系</p><div class="metrics"><div class="metric"><strong>326</strong><span>影响力人数</span></div><div class="metric"><strong>¥1,246</strong><span>预计收入</span></div></div></div>
+      <div class="panel"><div class="panel-title">影响力详情 <span>关系 × 发展</span></div><div class="matrix"><div class="matrix-row head"><span>关系</span><span>成员</span><span>团长</span><span>代理</span></div><div class="matrix-row"><b>直接发展</b><span>126<i class="plus">+18</i></span><span>8</span><span>2</span></div><div class="matrix-row"><b>旗下发展</b><span>286<i class="plus">+32</i></span><span>5</span><span>2</span></div><div class="matrix-row"><b>推荐关系</b><span>96<i class="plus">+12</i></span><span>4</span><span>1</span></div></div></div>
+      <div class="panel"><div class="panel-title">关系链路 <span>逐级查看 ›</span></div><div class="tree"><div class="node">我 · 当前身份</div><div class="node indent">直属代理 / 团长 · 查看成员 ›</div><div class="node deep">下一级推荐人 · 查看发展 ›</div></div><div class="recommend">沿用参考图的逐级下钻</div></div>
+    </div>
+    <div class="footer-note"><strong>特点：</strong>改动最小、视觉延续最好，但“影响力”仍偏数据概念，不能完整覆盖团队管理、培训和任务。</div>
+  </section>
+</div>
+
+<div class="section" style="margin-top:24px;padding:18px 20px;border-radius:16px;background:#f7f2fb">
+  <h3 style="margin-top:0">共同保留的下钻方式</h3>
+  <p style="margin-bottom:0;color:#706679">点击矩阵数字或团队成员 → 打开“成员名单” → 点击某位代理/团长/推荐人 → 查看其团队概览和下一级关系。沿用你提供参考图中的头像列表、人数统计、环图和逐级面包屑，但套用当前主理人公社的紫色与暖白视觉。</p>
+</div>

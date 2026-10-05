@@ -1,0 +1,320 @@
+/* ============================================================
+   声量算法 — Design Tokens
+   colors · type · spacing · radii · shadows · motion
+   ============================================================ */
+
+/* --- Webfonts ---
+   No external font links (some regions can't reach Google Fonts).
+   Headings + highlighted content use the system 宋体 (Songti / SimSun) via --font-display / --font-serif.
+   Body + general UI use the regular sans stack (locally-hosted 思源黑体 + system sans).
+*/
+@font-face {
+  font-family: "Source Han Sans SC";
+  src: url("fonts/SourceHanSansSC-VF.ttf.woff2") format("woff2-variations"),
+       url("fonts/SourceHanSansSC-VF.ttf.woff2") format("woff2");
+  font-weight: 200 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* ----------------------------------------------------------
+     1. PALETTE — Ink (cool neutrals) + Signal (brand blue) + Pulse (cyan accent)
+     ---------------------------------------------------------- */
+
+  /* Ink — cool blue‑black neutrals, dark‑first */
+  --ink-1000: #05070d;   /* deepest background */
+  --ink-900:  #0a0e1a;   /* primary surface bg (dark) */
+  --ink-850:  #0e1322;
+  --ink-800:  #11172a;   /* surface */
+  --ink-700:  #182036;   /* elevated surface */
+  --ink-600:  #1f2942;   /* border on dark */
+  --ink-500:  #2c3855;
+  --ink-400:  #495273;   /* divider */
+  --ink-300:  #6f7a98;   /* muted fg on dark */
+  --ink-200:  #a4adc6;   /* secondary fg on dark */
+  --ink-100:  #d4d9e6;
+  --ink-50:   #eef1f7;
+  --paper:    #ffffff;
+
+  /* Signal — primary brand blue. Used for CTAs, focus, links. */
+  --signal-50:  #ecf2ff;
+  --signal-100: #d8e4ff;
+  --signal-200: #b5caff;
+  --signal-300: #87a8ff;
+  --signal-400: #5687ff;
+  --signal-500: #2e6bff;   /* PRIMARY */
+  --signal-600: #1f55e0;
+  --signal-700: #1842b3;
+  --signal-800: #14358d;
+  --signal-900: #0f2868;
+
+  /* Pulse — cyan accent, used sparingly for "声量" waveform highlight + dataviz */
+  --pulse-50:  #e6fbff;
+  --pulse-100: #c1f5fc;
+  --pulse-200: #8eecf7;
+  --pulse-300: #4cdcef;
+  --pulse-400: #20c8df;   /* ACCENT */
+  --pulse-500: #06adc7;
+  --pulse-600: #088ba2;
+  --pulse-700: #0b6e80;
+  --pulse-800: #0d5563;
+
+  /* Teal — used in dataviz only, paired with signal */
+  --teal-400: #14d6b8;
+  --teal-500: #0aa68d;
+
+  /* Semantic — kept restrained (cool palette principle) */
+  --success-500: #16b07a;
+  --success-100: #d5f1e4;
+  --warning-500: #e0a92b;
+  --warning-100: #fbeec8;
+  --danger-500:  #ec5b6f;
+  --danger-100:  #fadbe1;
+  --info-500: var(--signal-500);
+
+  /* Dataviz sequence (use in order; cool→warm allowed only here) */
+  --dv-1: #2e6bff;
+  --dv-2: #20c8df;
+  --dv-3: #14d6b8;
+  --dv-4: #8e7dff;
+  --dv-5: #e0a92b;
+  --dv-6: #ec5b6f;
+
+  /* ----------------------------------------------------------
+     2. SEMANTIC SURFACE TOKENS — dark theme is the default
+     ---------------------------------------------------------- */
+  --bg-base:        var(--ink-900);
+  --bg-subtle:      var(--ink-850);
+  --bg-surface:     var(--ink-800);
+  --bg-elevated:    var(--ink-700);
+  --bg-overlay:     rgba(5, 7, 13, 0.72);
+
+  --fg-default:     var(--ink-50);
+  --fg-muted:       var(--ink-200);
+  --fg-subtle:      var(--ink-300);
+  --fg-disabled:    var(--ink-400);
+  --fg-on-signal:   #ffffff;
+
+  --border-subtle:  var(--ink-700);
+  --border-default: var(--ink-600);
+  --border-strong:  var(--ink-500);
+  --border-focus:   var(--signal-500);
+
+  --accent-fg:      var(--signal-400);
+  --accent-bg:      rgba(46, 107, 255, 0.12);
+
+  /* ----------------------------------------------------------
+     3. TYPOGRAPHY
+     ---------------------------------------------------------- */
+  /* Headings + highlighted content — system 宋体 */
+  --font-display: "Songti SC", "SimSun", "STSong", "Source Han Serif SC", serif;
+  --font-serif:   "Songti SC", "SimSun", "STSong", "Source Han Serif SC", serif;
+  /* Body + general UI — regular sans */
+  --font-body:    "Source Han Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono:    ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  --font-zh:      "Source Han Sans SC", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  /* Type scale — modular, 1.250 ratio at body 15 */
+  --fs-xs:    11px;   /* labels, captions, tags */
+  --fs-sm:    13px;   /* secondary UI */
+  --fs-base:  15px;   /* body */
+  --fs-md:    17px;   /* lead, card titles */
+  --fs-lg:    21px;   /* section titles */
+  --fs-xl:    28px;   /* h2 */
+  --fs-2xl:   36px;   /* h1 */
+  --fs-3xl:   48px;   /* hero */
+  --fs-4xl:   64px;   /* display */
+  --fs-5xl:   88px;   /* big numbers (dataviz hero) */
+
+  --lh-tight: 1.1;
+  --lh-snug:  1.25;
+  --lh-base:  1.5;
+  --lh-loose: 1.7;
+
+  --tracking-tight:  -0.02em;
+  --tracking-snug:   -0.01em;
+  --tracking-base:   0;
+  --tracking-wide:    0.04em;
+  --tracking-widest:  0.14em;
+
+  --fw-light: 300;
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-black: 900;
+
+  /* ----------------------------------------------------------
+     4. SPACING — 4‑pt grid
+     ---------------------------------------------------------- */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* ----------------------------------------------------------
+     5. RADII
+     ---------------------------------------------------------- */
+  --radius-xs: 3px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-pill: 999px;
+
+  /* ----------------------------------------------------------
+     6. SHADOWS / ELEVATION
+     Soft, low‑contrast on dark; signal glow for primary CTAs only.
+     ---------------------------------------------------------- */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-2: 0 4px 12px rgba(0,0,0,0.35), 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-3: 0 12px 32px rgba(0,0,0,0.45), 0 2px 6px rgba(0,0,0,0.4);
+  --shadow-4: 0 24px 64px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.4);
+
+  --glow-signal: 0 0 0 1px rgba(46,107,255,0.35), 0 8px 24px rgba(46,107,255,0.35);
+  --glow-pulse:  0 0 0 1px rgba(32,200,223,0.35), 0 8px 24px rgba(32,200,223,0.25);
+
+  /* Inner highlight — used on dark cards to fake a 1px top‑edge sheen */
+  --inner-sheen: inset 0 1px 0 rgba(255,255,255,0.04);
+
+  /* ----------------------------------------------------------
+     7. MOTION
+     ---------------------------------------------------------- */
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in:  cubic-bezier(0.7, 0, 0.84, 0);
+
+  --dur-instant: 80ms;
+  --dur-fast:    140ms;
+  --dur-base:    220ms;
+  --dur-slow:    360ms;
+  --dur-slower:  540ms;
+
+  /* ----------------------------------------------------------
+     8. LAYOUT
+     ---------------------------------------------------------- */
+  --container-narrow: 720px;
+  --container:        1120px;
+  --container-wide:   1440px;
+
+  --z-base:    1;
+  --z-sticky:  100;
+  --z-drawer:  200;
+  --z-modal:   300;
+  --z-toast:   400;
+  --z-tooltip: 500;
+}
+
+/* ============================================================
+   LIGHT THEME OVERRIDE — opt‑in via [data-theme="light"]
+   Dashboard ships dark; reports + marketing default light.
+   ============================================================ */
+[data-theme="light"] {
+  --bg-base:     #f7f8fb;
+  --bg-subtle:   #ffffff;
+  --bg-surface:  #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-overlay:  rgba(10, 14, 26, 0.55);
+
+  --fg-default: var(--ink-900);
+  --fg-muted:   var(--ink-500);
+  --fg-subtle:  var(--ink-400);
+  --fg-disabled: var(--ink-300);
+
+  --border-subtle:  #eef1f7;
+  --border-default: #e0e5ee;
+  --border-strong:  #c8cfdd;
+
+  --accent-bg: rgba(46,107,255,0.08);
+
+  --shadow-1: 0 1px 2px rgba(15,23,42,0.06);
+  --shadow-2: 0 6px 16px rgba(15,23,42,0.08), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-3: 0 16px 40px rgba(15,23,42,0.10), 0 2px 6px rgba(15,23,42,0.06);
+  --shadow-4: 0 32px 72px rgba(15,23,42,0.14), 0 4px 12px rgba(15,23,42,0.08);
+
+  --inner-sheen: inset 0 1px 0 rgba(255,255,255,1);
+}
+
+/* ============================================================
+   ELEMENT DEFAULTS — semantic mappings
+   ============================================================ */
+html, body {
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--fg-default);
+  background: var(--bg-base);
+  font-feature-settings: "ss01", "cv11";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, .h1 {
+  font-family: var(--font-display);
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tracking-tight);
+  font-weight: var(--fw-semibold);
+  color: var(--fg-default);
+}
+
+h2, .h2 {
+  font-family: var(--font-display);
+  font-size: var(--fs-xl);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tracking-snug);
+  font-weight: var(--fw-semibold);
+}
+
+h3, .h3 {
+  font-family: var(--font-display);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+  font-weight: var(--fw-semibold);
+}
+
+h4, .h4 {
+  font-family: var(--font-display);
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+}
+
+p, .p { font-size: var(--fs-base); line-height: var(--lh-base); }
+small, .small { font-size: var(--fs-sm); color: var(--fg-muted); }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--fg-subtle);
+}
+
+.numeric {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-snug);
+}
+
+code, .code, kbd {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 1px 6px;
+  border-radius: var(--radius-xs);
+}
+
+::selection { background: var(--signal-500); color: #fff; }

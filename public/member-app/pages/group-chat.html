@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>群会话同步</title>
+<link rel="stylesheet" href="../css/app.css?v=20260917">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>:root{ --brand:#7C3AED; }
+[data-nav]:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+.chat-screen .layer{ display:flex; flex-direction:column; height:var(--screen-h); }
+.chat-flow{ flex:1; overflow-y:auto; padding:2.293px 4.587px 12.04px; }
+.chat-time{ display:flex; justify-content:center; margin:10.32px 0 12.04px; }
+.chat-time span{ font-size:var(--fs-tiny); color:var(--ink-500); background:var(--sunk); border-radius:var(--r-pill); padding:2.293px 9.173px; }
+.chat-row{ display:flex; align-items:flex-start; gap:8.027px; margin-bottom:9.173px; }
+.chat-row--mine{ flex-direction:row-reverse; }
+.chat-ava{ flex:0 0 auto; }
+.chat-stack{ display:flex; flex-direction:column; gap:6.88px; max-width:76%; min-width:0; }
+.chat-bub{ max-width:76%; padding:9.173px 12.04px; box-sizing:border-box; border-radius:14.907px; background:var(--card-bg); border:0.573px solid var(--line); box-shadow:var(--sh-1); font-size:var(--fs-sec); color:var(--ink-800); line-height:1.65; }
+.chat-stack .chat-bub{ max-width:100%; }
+.chat-row:not(.chat-row--mine) .chat-bub{ border-top-left-radius:4.587px; }
+.chat-row--mine .chat-bub{ border-top-right-radius:4.587px; background:linear-gradient(135deg,#8B5CF6 0%,#7C3AED 100%); border-color:transparent; color:var(--on-signal); box-shadow:0 1.72px 6.88px rgba(124,58,237,0.22); }
+.chat-ai-bar{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; margin:2.293px 0 10.32px; padding:6.88px 10.32px; background:var(--sunk); border:0.573px solid var(--line-soft); border-radius:10.32px; }
+.chat-ai-bar .t-tiny{ color:var(--ink-600); }
+</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>群会话同步</h1>
+    <code>/pages/group-chat/index</code>
+    <span class="mp-tag">企业微信群</span>
+  </div>
+  <p class="mp-note">企业微信群同步记录（只读视图）：按微信会话样式展示群内消息，支持 AI 总结。消息内容已脱敏。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar chat-screen wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text" id="g-title">群会话</span><div class="subbar-slot wx-view"></div></div></div></div><div class="chat-flow wx-view"><div class="chat-sysline wx-view"><span class="mono wx-text"><span id="g-sys">已同步群消息</span> · <span id="g-sub"></span></span></div><div id="msg-list" class="wx-view"></div><div class="chat-readonly wx-view">以上为企微群同步记录 · 只读视图 · 群聊请在微信内进行</div></div><div class="gc-panel wx-view" id="gc-sum" role="dialog" aria-label="AI 总结面板"><div class="gr-sum-h wx-view">群聊 AI 总结</div><ul id="ai-list"></ul><div class="t-tiny mt-8 wx-view" style="color:var(--ink-500);">数据来源：同步群消息 · 已脱敏 · 每 30 分钟更新</div></div><div class="gc-panel wx-view" id="gc-ask" role="dialog" aria-label="AI 问答面板"><div class="gr-sum-h wx-view">问群 AI</div><div class="gc-q-list wx-view"><button class="gc-q-chip wx-view" type="button" data-q="hot">本周群内最热议的话题？</button><button class="gc-q-chip wx-view" type="button" data-q="todo">有哪些和我相关的待办？</button></div><div class="gc-answer wx-view" id="gc-answer" hidden><div class="gc-answer-h wx-view">AI 回答</div><span id="gc-answer-t" class="wx-text"></span></div><div class="gc-field wx-view"><div class="mk-field wx-view" id="gc-input" role="textbox" tabindex="0" aria-label="输入问题">问我任何群聊问题（演示）</div><button class="gc-send wx-view" type="button" id="gc-send">发送</button></div></div><div class="gc-dock wx-view"><button class="gc-btn gc-btn--pri wx-view" type="button" id="gc-btn-sum" aria-expanded="false">AI 总结 · <span class="mono wx-text" id="gc-sum-count"></span></button><button class="gc-btn wx-view" type="button" id="gc-btn-ask" aria-expanded="false">问群 AI</button></div></div></div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+(function () {
+  var SLUG = "group-chat";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+<script>
+(function () {
+  // 每个群的同步会话数据：白色气泡为群成员，紫色为「我」，昵称取名字第一字做头像
+  var SESSIONS = {
+    ca1: {
+      title: "CA1 · 主理人成长营 1 期",
+      sub: "86 位群成员 · 今日同步 36 条",
+      sys: "已同步最近 36 条消息 · 只读 · 已脱敏",
+      ai: ["热议：今晚直播连麦名单与接龙确认", "待办：《社群冷启动》作业今晚 23:59 截止，26 人已提交", "里程碑：3 位同学晒出首单 100+ 的战报"],
+      msgs: [
+        ["t", "09-02 20:10"],
+        ["赵一川", "本群公告：今晚 20:00 直播连麦名单已定，请提前 10 分钟进直播间。"],
+        ["林致远", "收到，今晚一定到。"],
+        ["苏见月", "连麦接龙 +1，我准备了选品复盘的问题。"],
+        ["me", "好的班班，作业我今晚交。"],
+        ["t", "09-03 10:20"],
+        ["赵一川", "作业提醒：《社群冷启动》第 3 节作业今晚 23:59 截止，已提交 26 人。"],
+        ["何知远", "复盘表格第 2 栏的数据口径有人能再讲下吗？"],
+        ["赵一川", "@何知远 按上周日结口径统计，直播里我也会再讲一遍。"],
+        ["me", "我提交啦，记得帮我看看复盘表格。"],
+        ["t", "今天 10:50"],
+        ["汪听澜", "晒单：首单 128 元，选的是清单里第 2 个品。"],
+        ["郑白鹭", "我也破百了！感谢大家的选品清单。"],
+        ["林致远", "今晚直播的提纲我先发进来，大家提前看看。"],
+        ["赵一川", "收到，直播前 10 分钟我再提醒一次连麦同学。"],
+        ["me", "提纲收到，晚上见！"]
+      ]
+    },
+    xuanke: {
+      title: "私域选品共学营",
+      sub: "74 位群成员 · 今日同步 52 条",
+      sys: "已同步最近 52 条消息 · 只读 · 已脱敏",
+      ai: ["热议：9 月选品清单 3 款爆款候选投票", "数据：昨日群内下单 47 单，清单第 2 款转化最高", "提示：补货节点请在今日 18:00 前反馈财务官"],
+      msgs: [
+        ["t", "昨天 09:30"],
+        ["运营组", "9 月选品清单已更新，3 个爆款候选开放投票，今晚 20:00 截止。"],
+        ["陈书言", "投了第 2 款，客单价合适，复购场景也好讲。"],
+        ["me", "我也投第 2 款，配图我这边可以出。"],
+        ["周未然", "第 3 款的毛利更高，有数据看下吗？"],
+        ["运营组", "数据表已发共享盘，投票结果明早公布。"],
+        ["t", "今天 09:45"],
+        ["运营组", "投票结果：第 2 款 41 票胜出，进入 9 月主推清单。"],
+        ["me", "好耶，配图我来出，今天下班前给到。"],
+        ["许南风", "我可以负责朋友圈话术，明天中午前交。"],
+        ["运营组", "收到，分工表我 30 分钟后发群。"],
+        ["林致远", "我这边客户刚好问过类似品，先拿样测试。"],
+        ["me", "收到，等你反馈。"]
+      ]
+    },
+    hudong: {
+      title: "CA1 · 作业互助小组",
+      sub: "39 位群成员 · 今日同步 21 条",
+      sys: "已同步最近 21 条消息 · 只读 · 已脱敏",
+      ai: ["进度：26/86 人已提交作业", "共性问题：复盘表格第 2 栏统计口径", "提醒：周三 20:00 直播讲评，挑选 3 份作业"],
+      msgs: [
+        ["t", "周三 09:10"],
+        ["林致远", "复盘表格第 2 栏口径看这里，我整理好了。"],
+        ["何知远", "感谢！按日结口径就清楚了。"],
+        ["me", "那我之前填的口径要改，多谢提醒。"],
+        ["苏见月", "作业里「下周动作」那栏有模板吗？"],
+        ["林致远", "有的，我发共享文档里了，直接套用。"],
+        ["t", "周三 14:02"],
+        ["赵一川", "今天提交的作业我都看过了，整体不错，3 份会进直播讲评。"],
+        ["me", "期待讲评，想看看自己的问题。"],
+        ["汪听澜", "提交的注意别漏掉附件里的数据表。"],
+        ["郑白鹭", "已提交，等今晚直播！"]
+      ]
+    },
+    baokuan: {
+      title: "选品天团 · 私域爆品共创群",
+      sub: "128 位群成员 · 今日同步 61 条",
+      sys: "已同步最近 61 条消息 · 只读 · 已脱敏",
+      ai: ["热议：滞销三款复盘结论与换品思路", "干货：《社群冷启动》第 3 节笔记接龙", "数据：昨日群内晒单 61 单、最高客单 328 元"],
+      msgs: [
+        ["t", "今天 09:47"],
+        ["陈书言", "滞销三款复盘结论来了：高客单 + 无场景感，换品思路发群里。"],
+        ["运营组", "建议换到带场景故事的中价位品，先测 3 款。"],
+        ["me", "这个方向好，我这边有两款候选可以对接。"],
+        ["苏见月", "晒单接龙：昨天下单 61 单，最高客单 328 元。"],
+        ["t", "今天 11:30"],
+        ["许南风", "《社群冷启动》第 3 节笔记我整理完了，跟帖接龙领。"],
+        ["me", "接龙 +1，正好今晚要复习。"],
+        ["林致远", "第 3 节最后那段「冷启动三问」很有用，建议背下来。"],
+        ["运营组", "下周共学就是第 3 节的实操，大家都提前看。"],
+        ["周未然", "已看完，明天直播见。"]
+      ]
+    },
+    neirong: {
+      title: "内容工厂 · 朋友圈文案互助群",
+      sub: "96 位群成员 · 今日同步 44 条",
+      sys: "已同步最近 44 条消息 · 只读 · 已脱敏",
+      ai: ["热议：周一早安文案 A/B 测试", "干货：3 步写出带场景故事的文案", "数据：A 版互动率高出 42%"],
+      msgs: [
+        ["t", "昨天 16:20"],
+        ["苏见月", "周一早安文案 A/B 版来了，大家帮我挑一版。"],
+        ["me", "A 版更接地气，先投 A。"],
+        ["陈书言", "A 版 +1，B 版太书面了。"],
+        ["苏见月", "好，那我按 A 版发，晚点汇报数据。"],
+        ["t", "今天 08:40"],
+        ["苏见月", "数据来了：A 版互动率高出 42%，评论区还带了 3 个询单。"],
+        ["运营组", "这套「场景故事三步法」已整理进课件，本周共学讲。"],
+        ["me", "太实用了，学习 +1。"],
+        ["许南风", "下周我也开始做 A/B 测试。"],
+        ["林致远", "记得固定变量只改文案，数据才干净。"]
+      ]
+    }
+  };
+
+  function $(s) { return document.querySelector(s); }
+
+  function render() {
+    var g = "ca1";
+    try {
+      var m = location.search.match(/[?&]g=([^&]+)/);
+      if (m && SESSIONS[m[1]]) g = m[1];
+    } catch (e2) { g = "ca1"; }
+    var s = SESSIONS[g];
+    document.title = s.title + " · 群会话同步";
+    $("#g-title").textContent = s.title;
+    $("#g-sys").textContent = s.sys;
+    $("#g-sub").textContent = s.sub;
+    var cnt = s.sub.match(/(\d+)\s*条/);
+    var cntEl = $("#gc-sum-count");
+    if (cntEl) cntEl.textContent = cnt ? cnt[1] + " 条" : "已生成";
+    var list = $("#ai-list");
+    list.innerHTML = "";
+    s.ai.forEach(function (line) {
+      var li = document.createElement("li");
+      li.textContent = line;
+      list.appendChild(li);
+    });
+    var box = $("#msg-list");
+    box.innerHTML = "";
+    s.msgs.forEach(function (m) {
+      if (m[0] === "t") {
+        var t = document.createElement("div");
+        t.className = "chat-time";
+        var span = document.createElement("span");
+        span.className = "mono wx-text";
+        span.textContent = m[1];
+        t.appendChild(span);
+        box.appendChild(t);
+        return;
+      }
+      var mine = m[0] === "me";
+      var row = document.createElement("div");
+      row.className = "chat-row" + (mine ? " chat-row--mine" : "");
+      var ava = document.createElement("div");
+      ava.className = "chat-ava";
+      var avaC = document.createElement("div");
+      avaC.className = "avatar" + (mine ? " avatar--ring" : "");
+      avaC.style.width = "36.4px";
+      avaC.style.height = "36.4px";
+      var ini = document.createElement("span");
+      ini.className = "avatar-ini wx-text";
+      ini.style.fontSize = "15.48px";
+      ini.textContent = mine ? "我" : m[0].charAt(0);
+      avaC.appendChild(ini);
+      ava.appendChild(avaC);
+      var stack = document.createElement("div");
+      stack.className = "chat-stack";
+      if (!mine) {
+        var nm = document.createElement("div");
+        nm.className = "chat-nm wx-text";
+        nm.textContent = m[0];
+        stack.appendChild(nm);
+      }
+      var bub = document.createElement("div");
+      bub.className = "chat-bub";
+      var tx = document.createElement("span");
+      tx.className = "wx-text";
+      tx.textContent = m[1];
+      bub.appendChild(tx);
+      stack.appendChild(bub);
+      row.appendChild(ava);
+      row.appendChild(stack);
+      box.appendChild(row);
+    });
+  }
+
+  function initJump() {
+    var flow = $(".chat-flow");
+    if (!flow) return;
+    var jump = document.createElement("button");
+    jump.type = "button";
+    jump.className = "chat-jump";
+    jump.textContent = "回到底部";
+    jump.setAttribute("aria-label", "回到最新消息");
+    $(".chat-screen").appendChild(jump);
+    function update() {
+      if (flow.scrollHeight - flow.scrollTop - flow.clientHeight < 18) {
+        jump.classList.remove("is-show");
+      } else {
+        jump.classList.add("is-show");
+      }
+    }
+    jump.addEventListener("click", function () {
+      flow.scrollTo({ top: flow.scrollHeight, behavior: "smooth" });
+      update();
+    });
+    flow.addEventListener("scroll", update);
+    flow.scrollTop = flow.scrollHeight;
+    update();
+  }
+
+  var sumPanel = $("#gc-sum");
+  var askPanel = $("#gc-ask");
+  var btnSum = $("#gc-btn-sum");
+  var btnAsk = $("#gc-btn-ask");
+  var flowEl = $(".chat-flow");
+
+  function closePanels() {
+    sumPanel.classList.remove("is-open");
+    askPanel.classList.remove("is-open");
+    btnSum.classList.remove("is-on");
+    btnAsk.classList.remove("is-on");
+    btnSum.setAttribute("aria-expanded", "false");
+    btnAsk.setAttribute("aria-expanded", "false");
+  }
+  function togglePanel(panel, btn) {
+    var willOpen = !panel.classList.contains("is-open");
+    closePanels();
+    if (willOpen) {
+      panel.classList.add("is-open");
+      btn.classList.add("is-on");
+      btn.setAttribute("aria-expanded", "true");
+      var jump = document.querySelector(".chat-jump");
+      if (jump) jump.classList.remove("is-show");
+    } else if (flowEl) {
+      flowEl.dispatchEvent(new Event("scroll")); // 收起后重新计算「回到底部」状态
+    }
+  }
+  btnSum.addEventListener("click", function () { togglePanel(sumPanel, btnSum); });
+  btnAsk.addEventListener("click", function () { togglePanel(askPanel, btnAsk); });
+  flowEl.addEventListener("click", function () { closePanels(); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape") closePanels();
+  });
+
+  var ANSWERS = {
+    hot: "根据最近同步的群消息，本周最热议的是「今晚直播连麦名单」，共有 9 位成员参与接龙；其次是《社群冷启动》第 3 节作业的提交提醒。",
+    todo: "与你相关的待办有 2 项：①《社群冷启动》作业今晚 23:59 截止（你已提交，等待批改）；② 周三 20:00 的直播讲评记得参加。"
+  };
+  document.querySelectorAll(".gc-q-chip").forEach(function (c) {
+    c.addEventListener("click", function () {
+      var key = c.getAttribute("data-q");
+      var t = $("#gc-answer-t");
+      t.textContent = ANSWERS[key] || "AI 正在整理回答…";
+      $("#gc-answer").hidden = false;
+    });
+  });
+  $("#gc-send").addEventListener("click", function () {
+    var inp = $("#gc-input");
+    var hasQ = inp.textContent.trim() && inp.textContent.indexOf("问我任何") < 0;
+    if (!hasQ) {
+      inp.textContent = "试试点击上面的预设问题（演示）";
+      inp.classList.add("is-focus");
+      setTimeout(function () { inp.classList.remove("is-focus"); }, 800);
+      return;
+    }
+    var t = $("#gc-answer-t");
+    t.textContent = "演示环境：已收到你的问题，正式版将由群聊 AI 基于同步记录回答。";
+    $("#gc-answer").hidden = false;
+  });
+
+  render();
+  initJump();
+})();
+</script>
+</body></html>

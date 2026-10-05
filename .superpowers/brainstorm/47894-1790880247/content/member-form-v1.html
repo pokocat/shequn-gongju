@@ -1,0 +1,40 @@
+<style>
+  .preview-wrap{max-width:1180px;margin:0 auto}
+  .sub{color:#6b7280;margin-top:6px}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 22px}
+  .pill{padding:7px 11px;border-radius:999px;font-size:12px;background:#f3f4f6;color:#4b5563}
+  .pill.required{background:#fff0ed;color:#c2412d}.pill.auto{background:#eef8e6;color:#47751d}.pill.detail{background:#eef2ff;color:#4357a7}
+  .board{display:grid;grid-template-columns:260px 1fr 270px;gap:16px;align-items:start}
+  .panel{background:#fff;border:1px solid #e8e8e3;border-radius:18px;padding:18px;box-shadow:0 10px 25px rgba(53,50,32,.06)}
+  .panel h3{margin:0 0 5px;font-size:16px}.panel p{margin:0;color:#737373;font-size:12px;line-height:1.5}
+  .context{background:#272522;color:#fff;border-radius:14px;padding:15px;margin-top:16px}.context small{color:#bab7ae}.context strong{display:block;margin-top:4px;font-size:15px}.context-row{display:flex;justify-content:space-between;border-top:1px solid #48453f;margin-top:12px;padding-top:10px;font-size:12px}.context-row span:last-child{color:#d4fa63}
+  .steps{margin-top:17px;display:grid;gap:10px}.step{display:flex;gap:10px;align-items:center;padding:10px;border-radius:12px;color:#777;font-size:13px}.step.active{background:#effbd5;color:#313d13;font-weight:700}.num{width:24px;height:24px;display:grid;place-items:center;border-radius:50%;background:#f1f1ed;font-size:12px}.active .num{background:#b7f34b}
+  .form-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.state{font-size:11px;padding:6px 9px;border-radius:999px;background:#f0f9e3;color:#47751d;white-space:nowrap}
+  .section{border-top:1px solid #eee;margin-top:17px;padding-top:16px}.section:first-of-type{border-top:0;padding-top:0}.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.section-title strong{font-size:13px}.section-title span{font-size:11px;color:#9a9a95}
+  .fields{display:grid;grid-template-columns:1fr 1fr;gap:11px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:11px;color:#777}.field label b{color:#e2553d;margin-left:3px}.input{height:34px;border:1px solid #deded8;border-radius:9px;padding:0 10px;display:flex;align-items:center;font-size:12px;color:#333;background:#fff}.input.muted{color:#777;background:#f7f7f4}.input.select:after{content:'⌄';margin-left:auto;color:#999}.hint{font-size:10px;color:#989890}
+  .checkboxes{display:flex;gap:7px;flex-wrap:wrap}.check{border:1px solid #d9d9d1;padding:7px 9px;border-radius:8px;font-size:11px;color:#666}.check.on{border-color:#9bdc3f;background:#f2fbdc;color:#42691e}.check.on:before{content:'✓ ';color:#72a929}
+  .footer{display:flex;justify-content:flex-end;gap:9px;border-top:1px solid #eee;margin-top:18px;padding-top:16px}.btn{border:0;border-radius:9px;padding:9px 15px;font-size:12px}.btn.ghost{background:#f3f3ef;color:#666}.btn.primary{background:#b7f34b;color:#28320e;font-weight:700}
+  .auto-list,.detail-list{display:grid;gap:9px;margin-top:16px}.auto-item,.detail-item{padding:11px;border-radius:11px;background:#f7f8f2}.auto-item strong,.detail-item strong{display:block;font-size:12px}.auto-item span,.detail-item span{display:block;color:#777;font-size:11px;line-height:1.45;margin-top:4px}.auto-item:before{content:'AUTO';float:right;font-size:9px;color:#6b982b;background:#e7f5c8;padding:3px 5px;border-radius:4px}.detail-item{background:#f1f3fb}.detail-item:before{content:'详情';float:right;font-size:9px;color:#5262a0;background:#e1e6fb;padding:3px 5px;border-radius:4px}.summary{margin-top:17px;padding:13px 15px;border-radius:12px;background:#fff8e8;color:#73571f;font-size:12px;line-height:1.6}
+  @media(max-width:900px){.board{grid-template-columns:1fr}.fields{grid-template-columns:1fr}}
+</style>
+<div class="preview-wrap">
+  <h2>主理人公社 · 会员数据表单</h2>
+  <p class="sub">推荐结构：运营人员只录入“业务决策需要”的信息，其余由系统带入或放入会员详情。</p>
+  <div class="legend"><span class="pill required">必填：创建会员关系所需</span><span class="pill auto">自动带入：来自项目 / 社群 / 关系数据</span><span class="pill detail">详情查看：不占用首屏表单</span></div>
+  <div class="board">
+    <div class="panel">
+      <h3>录入上下文</h3><p>先确定会员属于哪个业务场景，避免重复填写项目参数。</p>
+      <div class="context"><small>当前项目</small><strong>AI主理人公社</strong><div class="context-row"><span>项目状态</span><span>运营中</span></div><div class="context-row"><span>默认社群</span><span>主理人社群</span></div></div>
+      <div class="steps"><div class="step active"><span class="num">1</span>会员身份</div><div class="step"><span class="num">2</span>关系与入群</div><div class="step"><span class="num">3</span>运营标签</div><div class="step"><span class="num">4</span>确认提交</div></div>
+      <div class="summary">原则：项目、社群、推荐关系不让运营重复录入；表单只确认“这个人是谁、当前要进入什么关系、下一步怎么运营”。</div>
+    </div>
+    <div class="panel">
+      <div class="form-head"><div><h3>新增 / 编辑会员</h3><p>首屏控制在 3 个业务分区内</p></div><span class="state">草稿未提交</span></div>
+      <div class="section"><div class="section-title"><strong>一、会员身份</strong><span>仅保留识别会员所需字段</span></div><div class="fields"><div class="field"><label>会员姓名 / 微信名<b>*</b></label><div class="input">林晓 · Lin Xiao</div></div><div class="field"><label>微信号<b>*</b></label><div class="input">lin_xiao_88</div></div><div class="field"><label>会员等级<b>*</b></label><div class="input select">体验官</div></div><div class="field"><label>所在城市</label><div class="input select">杭州 · 西湖</div></div></div></div>
+      <div class="section"><div class="section-title"><strong>二、关系与入群</strong><span>决定谁可以服务与跟进</span></div><div class="fields"><div class="field"><label>会员关系状态<b>*</b></label><div class="input select">已通过</div></div><div class="field"><label>入群状态<b>*</b></label><div class="input select">已入群</div></div><div class="field full"><label>所属社群</label><div class="input muted">系统带入：AI主理人·杭州开放01群</div><span class="hint">由项目群规则与分配结果生成，不在会员表单中手填。</span></div></div></div>
+      <div class="section"><div class="section-title"><strong>三、运营标签</strong><span>用于筛选、触达和后续任务</span></div><div class="field"><label>会员标签</label><div class="checkboxes"><span class="check on">高潜会员</span><span class="check on">内容创作者</span><span class="check">待回访</span><span class="check">城市主理人候选</span></div></div></div>
+      <div class="footer"><button class="btn ghost">取消</button><button class="btn primary">保存会员</button></div>
+    </div>
+    <div class="panel"><h3>系统自动记录</h3><p>不要求运营人员填写，但保留在会员档案中。</p><div class="auto-list"><div class="auto-item"><strong>项目归属</strong><span>AI主理人公社</span></div><div class="auto-item"><strong>社群类型与群编号</strong><span>HOS01 · 主理人社群 · 杭州开放01群</span></div><div class="auto-item"><strong>推荐关系</strong><span>由邀请链路或关系网络写入 referrerId</span></div><div class="auto-item"><strong>个微 / 企微关系状态</strong><span>通过同步或运营动作更新，不在创建表单重复填写</span></div><div class="auto-item"><strong>创建时间与最近跟进</strong><span>系统时间、任务记录自动生成</span></div></div><div class="section"><div class="section-title"><strong>详情页再看</strong><span>不占首屏</span></div><div class="detail-list"><div class="detail-item"><strong>性别 / 职业</strong><span>只用于画像与搜索，不影响当前建档决策</span></div><div class="detail-item"><strong>消费、影响力、评分</strong><span>由订单、关系和运营数据计算</span></div><div class="detail-item"><strong>订单、权益、回访记录</strong><span>进入会员档案对应 Tab 查看</span></div></div></div></div>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0c12;color:#f0ecff;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1320px;margin:0 auto;padding:32px 22px 60px}.eyebrow{font-size:12px;letter-spacing:1.5px;color:#c084fc;font-weight:700}h1{margin:8px 0 8px;font-size:28px}.lead{color:#b0a9c7;font-size:14px;line-height:1.7;max-width:940px}.ref{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.ref span{font-size:11px;padding:3px 9px;border-radius:5px;background:#1a1530;border:1px solid #3a3058;color:#c9b8f0}.ref b{color:#f0b3ff}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:24px}.card{border:1px solid #2e2744;border-radius:16px;background:linear-gradient(180deg,#12121e,#0b0c12);overflow:hidden;cursor:pointer;transition:.18s}.card:hover{transform:translateY(-3px);border-color:#9d5cff}.card.sel{border-color:#f052e8;box-shadow:0 0 0 2px rgba(240,82,232,.22),0 14px 40px rgba(101,49,207,.28)}.c-head{padding:14px;border-bottom:1px solid #332b4d;display:flex;gap:10px;align-items:flex-start}.num{width:26px;height:26px;border-radius:50%;background:#7c3aed;display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto}.c-head h2{font-size:16px;margin:0 0 4px}.c-head p{margin:0;color:#a59eb8;font-size:12px;line-height:1.5}.phone{margin:14px auto 12px;width:272px;min-height:540px;padding:10px;border-radius:24px;border:1px solid #3a3258;background:#07080f}.bar{font-size:10px;font-weight:700;color:#cfc6e6;padding:2px 4px 8px}.swiper{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}.swiper::-webkit-scrollbar{display:none}.mcard{flex:0 0 80px;border-radius:10px;padding:8px 5px;font-size:9px;text-align:center;opacity:.5;transform:scale(.88);transition:.2s;background:#1a1530;border:1px solid #3a3058}.mcard.on{opacity:1;transform:scale(1);border-color:#9d5cff;box-shadow:0 4px 14px rgba(124,58,237,.35)}.mcard .lv{font-weight:800;font-size:10px}.mcard .p{color:#f57dec;font-weight:700;margin-top:2px}.mcard.cur::after{content:'当前';display:block;font-size:7px;color:#7cffb0;margin-top:2px}.dots{display:flex;justify-content:center;gap:3px;margin:2px 0 8px}.dots i{width:4px;height:4px;border-radius:50%;background:#3a3258}.dots i.on{width:14px;border-radius:2px;background:#9d5cff}.sec{background:#12121f;border:1px solid #2c2941;border-radius:9px;padding:8px;margin-bottom:6px}.sec-h{font-size:10px;font-weight:700;display:flex;justify-content:space-between;margin-bottom:6px}.sec-h span{color:#bd7dff;font-weight:600;font-size:9px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.t{background:#111225;border:1px solid #282742;border-radius:6px;padding:6px 2px;text-align:center;font-size:8px}.t .i{width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,#6633d2,#c74cf4);margin:0 auto 4px}.t.lk .i{background:#2a2740}.t.lk{opacity:.55}.t .st{display:block;font-size:7px;color:#64e4bc;margin-top:2px}.t.lk .st{color:#8e87a8}.row{background:#111225;border:1px solid #282742;border-radius:7px;padding:7px;font-size:9px;display:flex;gap:7px;align-items:center;margin-bottom:5px}.row .dot{width:22px;height:22px;border-radius:6px;background:#21163d;flex:0 0 auto}.row .r{flex:1}.row .n{font-weight:700}.row .d{color:#8e87a8;font-size:8px;margin-top:1px}.row .c{color:#bd7dff;font-size:8px;font-weight:600}.cmp{background:#111225;border:1px solid #282742;border-radius:7px;padding:7px;margin-bottom:5px;font-size:9px}.cmp .h{font-weight:700;margin-bottom:4px;display:flex;justify-content:space-between}.cmp .h .t2{color:#f57dec}.cmp li{color:#b6aed0;margin:2px 0 2px 14px;line-height:1.4}.cmp li.ok{color:#7cffb0;list-style:'✓ '}.cmp li.no{color:#8e87a8;list-style:'— '}.hero-mini{background:linear-gradient(135deg,#2a1660,#120e2e);border:1px solid #5b3ca1;border-radius:9px;padding:9px;margin-bottom:6px;color:#fff}.hero-mini b{font-size:12px}.hero-mini .sub{font-size:8px;color:#c9b8f0;margin-top:2px}.metrics{display:flex;gap:4px;margin-top:7px}.metrics span{flex:1;background:#0d0e1ecc;border:1px solid #2e2744;border-radius:5px;padding:4px;text-align:center}.metrics b{font-size:11px}.plan{background:#0c0e1e;border:1px solid #3c3154;border-radius:7px;padding:7px;display:flex;gap:7px;align-items:center;margin-bottom:5px}.plan .gem{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,#6D33D6,#E255E5);flex:0 0 auto}.plan .info{flex:1;font-size:9px}.plan .info b{font-size:10px}.plan .info .m{color:#a99fc7;font-size:8px}.plan .price{color:#f57dec;font-weight:800;font-size:12px}.ai{background:#21163d;border:1px solid #5b3ca1;border-radius:7px;padding:7px;margin-bottom:5px;font-size:9px}.ai b{color:#f0beff;font-size:10px}.ai p{color:#b5a8cc;margin:3px 0 0;line-height:1.4}.steps{display:flex;gap:4px;margin-bottom:6px}.step{flex:1;background:#111225;border:1px solid #282742;border-radius:7px;padding:6px 4px;text-align:center;font-size:8px}.step .n{width:16px;height:16px;border-radius:50%;background:linear-gradient(135deg,#6633d2,#c74cf4);margin:0 auto 3px;display:grid;place-items:center;font-size:9px;font-weight:800;color:#fff}.cta{display:flex;gap:5px;margin-top:8px}.btn{flex:1;text-align:center;padding:7px 0;border-radius:7px;font-size:10px;font-weight:800}.p{background:linear-gradient(90deg,#e83dd8,#315eff);color:#fff}.g{background:transparent;color:#efbaff;border:1px solid #5b3ca1}.meta{padding:0 14px 14px}.meta h3{font-size:13px;margin:10px 0 6px;color:#f4f0ff}.meta ul{margin:0;padding-left:16px;color:#b6aed0;font-size:12px;line-height:1.7}.meta .fit{margin-top:8px;padding:8px 9px;border-radius:8px;background:#141425;color:#d3cbe8;font-size:11px;line-height:1.55}.src{font-size:10px;color:#8e87a8;margin-top:2px}.src b{color:#c084fc}.pick{margin-top:10px;font-size:11px;color:#a59eb8;text-align:center}.rec{color:#f0b3ff;font-weight:700}@media(max-width:1020px){.grid{grid-template-columns:1fr}.card{max-width:450px;margin:0 auto;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">会员卡横滑 · 权益联动 · 三版本（无成长等级）</div>
+  <h1>去掉成长等级，从三张图里借内容</h1>
+  <p class="lead">成长等级模块删除，把空间还给权益和续费。三个版本都用"横滑会员卡→下方联动"，区别在下方联动区引用了哪张图的结构。</p>
+  <div class="ref">
+    <span>图1·注册入会：<b>大卡头部 / 表单式列表 / 渐变按钮</b></span>
+    <span>图2·全部权益：<b>3D皇冠标题 / 三指标 / 权益网格+状态 / 推荐横卡 / 使用三步</b></span>
+    <span>图3·续费提醒：<b>倒计时 / 方案卡(含原价) / AI建议 / 续费保留权益 / 续费福利横卡</b></span>
+  </div>
+
+  <div class="grid">
+    <!-- 版本1 -->
+    <article class="card" data-choice="v1" onclick="pick(this)">
+      <div class="c-head"><div class="num">1</div><div><h2>权益网格联动</h2><p>滑卡 → 换该等级权益网格。引用图2权益区为主。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益</div>
+        <div class="swiper">
+          <div class="mcard"><div class="lv">体验</div><div class="p">¥98</div></div>
+          <div class="mcard on cur"><div class="lv">PRO</div><div class="p">¥1980</div></div>
+          <div class="mcard"><div class="lv">精英</div><div class="p">¥5980</div></div>
+          <div class="mcard"><div class="lv">创始人</div><div class="p">¥19800</div></div>
+        </div>
+        <div class="dots"><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="sec"><div class="sec-h">PRO 年卡 · 全部权益 <span>12项可用</span></div><div class="grid4">
+          <div class="t"><div class="i"></div>课程无限<span class="st">可用</span></div>
+          <div class="t"><div class="i"></div>班级社群<span class="st">可用</span></div>
+          <div class="t"><div class="i"></div>经营诊断<span class="st">2/4</span></div>
+          <div class="t"><div class="i"></div>1v1陪跑<span class="st">1/1</span></div>
+          <div class="t"><div class="i"></div>闭门会<span class="st">可约</span></div>
+          <div class="t"><div class="i"></div>工具专业<span class="st">可用</span></div>
+          <div class="t lk"><div class="i"></div>城市分站<span class="st">升级</span></div>
+          <div class="t lk"><div class="i"></div>品牌联名<span class="st">升级</span></div>
+        </div></div>
+        <div class="sec"><div class="sec-h">本周推荐权益</div><div class="row"><div class="dot" style="background:linear-gradient(135deg,#6633d2,#c74cf4)"></div><div class="r"><div class="n">流量变现实战策略</div><div class="d">7大模型 · 3个真实案例</div></div></div></div>
+        <div class="steps"><div class="step"><div class="n">1</div>选择权益</div><div class="step"><div class="n">2</div>预约使用</div><div class="step"><div class="n">3</div>享受服务</div></div>
+        <div class="cta"><div class="btn p">续费 PRO</div><div class="btn g">升级精英</div></div>
+      </div>
+      <div class="meta">
+        <h3>引用来源</h3>
+        <ul><li><b style="color:#c084fc">图2</b>：权益网格+状态标签、本周推荐横卡、使用三步法、底部双按钮</li><li><b style="color:#c084fc">图3</b>：底部续费按钮文案</li></ul>
+        <div class="src">无成长等级，腾出来的空间放了"本周推荐"和"使用三步"。</div>
+        <div class="fit"><b>适合：</b>权益多、让会员快速浏览这档有什么。续费在底部不抢戏。</div>
+      </div>
+      <div class="pick">点击选择版本 1</div>
+    </article>
+
+    <!-- 版本2 -->
+    <article class="card sel" data-choice="v2" onclick="pick(this)">
+      <div class="c-head"><div class="num">2</div><div><h2>权益差异对比 <span class="rec">推荐</span></h2><p>滑卡 → 该档 vs 上下两级差异 + AI续费建议。引用图2+图3。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益</div>
+        <div class="swiper">
+          <div class="mcard"><div class="lv">体验</div><div class="p">¥98</div></div>
+          <div class="mcard on cur"><div class="lv">PRO</div><div class="p">¥1980</div></div>
+          <div class="mcard"><div class="lv">精英</div><div class="p">¥5980</div></div>
+          <div class="mcard"><div class="lv">创始人</div><div class="p">¥19800</div></div>
+        </div>
+        <div class="dots"><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="hero-mini"><b>PRO 年卡 · 续费方案</b><div class="sub">有效期至 2027-08-12 · 剩 344 天</div><div class="metrics"><span><b>12</b>权益</span><span><b>4</b>服务/月</span><span><b>¥2999</b>续费</span></div></div>
+        <div class="sec"><div class="sec-h">权益差异对比</div>
+          <div class="cmp"><div class="h">对比体验会员 <span class="t2">多 8 项</span></div><ul><li class="ok">专属课程全系列</li><li class="ok">经营诊断 4次/季</li><li class="ok">1v1陪跑 1次/月</li><li class="no">城市分站、品牌联名</li></ul></div>
+          <div class="cmp"><div class="h">对比精英会员 <span class="t2">少 5 项</span></div><ul><li class="no">城市分站运营权</li><li class="no">品牌联名资源</li><li class="no">1v1教练持续陪跑</li></ul></div>
+        </div>
+        <div class="ai"><b>✦ AI 续费建议</b><p>已使用 6 项权益、4 次服务。续费可继续使用，预计节省 ¥589。</p></div>
+        <div class="cta"><div class="btn p">立即续费</div><div class="btn g">查看升级方案</div></div>
+      </div>
+      <div class="meta">
+        <h3>引用来源</h3>
+        <ul><li><b style="color:#c084fc">图3</b>：续费方案卡（名称+有效期+价格）、AI续费建议、双按钮</li><li><b style="color:#c084fc">图2</b>：权益状态标签逻辑（用在对比里的✓/—）</li><li><b style="color:#c084fc">图1</b>：大渐变按钮样式</li></ul>
+        <div class="src">无成长等级，用"权益差异对比 + AI建议"填满，最强续费引导。</div>
+        <div class="fit"><b>适合：</b>促续费/升级。会员一眼看清"我这档值不值、升级能多什么"。</div>
+      </div>
+      <div class="pick">点击选择版本 2</div>
+    </article>
+
+    <!-- 版本3 -->
+    <article class="card" data-choice="v3" onclick="pick(this)">
+      <div class="c-head"><div class="num">3</div><div><h2>服务详情联动</h2><p>滑卡 → 该档专属服务列表（图1表单式）+ 续费福利横卡（图3）。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益</div>
+        <div class="swiper">
+          <div class="mcard"><div class="lv">体验</div><div class="p">¥98</div></div>
+          <div class="mcard on cur"><div class="lv">PRO</div><div class="p">¥1980</div></div>
+          <div class="mcard"><div class="lv">精英</div><div class="p">¥5980</div></div>
+          <div class="mcard"><div class="lv">创始人</div><div class="p">¥19800</div></div>
+        </div>
+        <div class="dots"><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="sec"><div class="sec-h">PRO 专属服务 <span>本月可用</span></div>
+          <div class="row"><div class="dot"></div><div class="r"><div class="n">经营诊断</div><div class="d">导师1对1分析经营数据</div></div><div class="c">余2/4 预约</div></div>
+          <div class="row"><div class="dot"></div><div class="r"><div class="n">1v1陪跑</div><div class="d">每月1次深度陪跑</div></div><div class="c">余1/1 预约</div></div>
+          <div class="row"><div class="dot"></div><div class="r"><div class="n">闭门会</div><div class="d">季度线下闭门会</div></div><div class="c">已用</div></div>
+        </div>
+        <div class="sec"><div class="sec-h">续费专属福利</div><div class="row"><div class="dot" style="background:linear-gradient(135deg,#6D33D6,#E255E5)"></div><div class="r"><div class="n">续费赠《AI商业诊断报告》</div><div class="d">价值 ¥299 · 限时赠送</div></div></div></div>
+        <div class="plan"><div class="gem">H</div><div class="info"><b>PRO 年度会员</b><div class="m">有效期至 2027-08-12</div></div><div class="price">¥2999</div></div>
+        <div class="cta"><div class="btn p">立即续费</div><div class="btn g">升级精英</div></div>
+      </div>
+      <div class="meta">
+        <h3>引用来源</h3>
+        <ul><li><b style="color:#c084fc">图1</b>：表单式服务列表（图标+标题+说明+右侧值/按钮）</li><li><b style="color:#c084fc">图3</b>：续费专属福利横卡、当前方案卡（含价格）、双按钮</li></ul>
+        <div class="src">无成长等级，重服务交付，权益网格折叠为次要。</div>
+        <div class="fit"><b>适合：</b>高客单价、重人工服务的会员体系。会员最关心"能用几次服务"。</div>
+      </div>
+      <div class="pick">点击选择版本 3</div>
+    </article>
+  </div>
+</div>
+<script>
+function pick(el){document.querySelectorAll('.card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');if(window.toggleSelect)toggleSelect(el)}
+</script>
+</body>
+</html>

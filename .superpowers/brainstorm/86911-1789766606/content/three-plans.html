@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0c12;color:#f0ecff;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1280px;margin:0 auto;padding:34px 22px 60px}.eyebrow{font-size:12px;letter-spacing:1.5px;color:#c084fc;font-weight:700}h1{margin:8px 0 8px;font-size:28px}.lead{color:#b0a9c7;font-size:14px;line-height:1.7;max-width:880px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:26px}.card{border:1px solid #2e2744;border-radius:16px;background:linear-gradient(180deg,#12121e,#0b0c12);overflow:hidden;cursor:pointer;transition:.18s}.card:hover{transform:translateY(-3px);border-color:#9d5cff;box-shadow:0 14px 40px rgba(101,49,207,.22)}.card.sel{border-color:#f052e8;box-shadow:0 0 0 2px rgba(240,82,232,.22),0 14px 40px rgba(101,49,207,.28)}.c-head{padding:14px 14px 12px;border-bottom:1px solid #332b4d;display:flex;gap:10px;align-items:flex-start}.num{width:26px;height:26px;border-radius:50%;background:#7c3aed;display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto}.c-head h2{font-size:16px;margin:0 0 4px}.c-head p{margin:0;color:#a59eb8;font-size:12px;line-height:1.5}.phone{margin:14px auto 12px;width:264px;min-height:500px;padding:10px;border-radius:24px;border:1px solid #3a3258;background:#07080f}.bar{font-size:10px;font-weight:700;color:#cfc6e6;padding:2px 4px 8px}.blk{border-radius:9px;padding:7px 9px;margin-bottom:6px;font-size:10px;line-height:1.35}.blk b{display:block;font-size:11px;margin-bottom:2px}.hero{background:linear-gradient(135deg,#2a1660,#120e2e);border:1px solid #5b3ca1;color:#fff}.hero .sub{font-size:9px;color:#c9b8f0;margin-top:3px}.metrics{display:flex;gap:4px;margin-top:7px}.metrics span{flex:1;background:#0d0e1ecc;border:1px solid #2e2744;border-radius:5px;padding:4px;text-align:center}.metrics b{font-size:11px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-top:6px}.t{background:#111225;border:1px solid #282742;border-radius:6px;padding:5px 2px;text-align:center;font-size:8px}.t .i{width:18px;height:18px;border-radius:5px;background:linear-gradient(135deg,#6633d2,#c74cf4);margin:0 auto 3px}.row{background:#111225;border:1px solid #282742;border-radius:7px;padding:7px;font-size:9px;display:flex;gap:7px;align-items:center;margin-bottom:5px}.row .dot{width:22px;height:22px;border-radius:6px;background:#21163d;flex:0 0 auto}.sec{background:#12121f;border:1px solid #2c2941;border-radius:9px;padding:8px;margin-bottom:6px}.sec-h{font-size:10px;font-weight:700;display:flex;justify-content:space-between;margin-bottom:5px}.sec-h span{color:#bd7dff;font-weight:600}.renew{background:linear-gradient(135deg,#1f1335,#0e1020);border:1px solid #5b3ca1;color:#ede7ff}.renew .price{color:#f57dec;font-weight:800;font-size:13px}.cd{display:flex;gap:3px;margin-top:6px}.cd span{padding:3px 4px;border-radius:4px;background:#27213b;font-size:10px;font-weight:800}.prog{height:6px;border-radius:3px;background:#23213a;overflow:hidden;margin-top:5px}.prog i{display:block;height:100%;width:80%;background:linear-gradient(90deg,#7c3aed,#e255e5)}.cta{display:flex;gap:5px;margin-top:8px}.btn{flex:1;text-align:center;padding:7px 0;border-radius:7px;font-size:10px;font-weight:800}.p{background:linear-gradient(90deg,#e83dd8,#315eff);color:#fff}.g{background:transparent;color:#efbaff;border:1px solid #5b3ca1}.tag{display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;background:rgba(255,255,255,.14);color:#f5c8ff;margin-left:4px}.meta{padding:0 14px 14px}.meta h3{font-size:13px;margin:10px 0 6px;color:#f4f0ff}.meta ul{margin:0;padding-left:16px;color:#b6aed0;font-size:12px;line-height:1.7}.meta .fit{margin-top:8px;padding:8px 9px;border-radius:8px;background:#141425;color:#d3cbe8;font-size:11px;line-height:1.55}.pick{margin-top:10px;font-size:11px;color:#a59eb8;text-align:center}.rec{color:#f0b3ff;font-weight:700}@media(max-width:980px){.grid{grid-template-columns:1fr}.card{max-width:430px;margin:0 auto;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">会员权益与续费 · 三方案对比</div>
+  <h1>先定信息架构，再做视觉</h1>
+  <p class="lead">三个方案都基于你给的三张图。区别在于：<b>以哪张图为主骨架、续费模块占多重、日常访问和临期访问哪个优先</b>。选一个后我再按那个结构重排 benefits.html，避免模块堆砌。</p>
+
+  <div class="grid">
+    <!-- 方案A -->
+    <article class="card" data-choice="A" onclick="pick(this)">
+      <div class="c-head"><div class="num">A</div><div><h2>权益主目录型</h2><p>以「全部权益」图为主骨架。日常访问优先，续费退到底栏。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益中心</div>
+        <div class="blk hero"><b>PRO 专属权益</b><div class="sub">连接资源 · 提升能力 · 持续成长</div><div class="metrics"><span><b>18</b>可用</span><span><b>6</b>已用</span><span><b>LV3</b>等级</span></div></div>
+        <div class="blk sec"><div class="sec-h">全部权益 <span>对比›</span></div><div class="grid4"><div class="t"><div class="i"></div>课程</div><div class="t"><div class="i"></div>社群</div><div class="t"><div class="i"></div>诊断</div><div class="t"><div class="i"></div>陪跑</div><div class="t"><div class="i"></div>闭门会</div><div class="t"><div class="i"></div>工具</div><div class="t"><div class="i"></div>案例</div><div class="t"><div class="i"></div>资源</div></div></div>
+        <div class="blk sec"><div class="sec-h">本月优先服务</div><div class="row"><div class="dot"></div><div>经营诊断 <span style="color:#bd7dff">余2/4</span></div></div><div class="row"><div class="dot"></div><div>1v1陪跑 <span style="color:#bd7dff">余1/1</span></div></div></div>
+        <div class="blk sec"><div class="sec-h">成长等级 LV3→LV4</div><div class="prog"><i></i></div></div>
+        <div class="cta"><div class="btn p">立即使用权益</div><div class="btn g">续费</div></div>
+      </div>
+      <div class="meta">
+        <h3>包含</h3>
+        <ul><li>权益网格（可用/锁定标签）</li><li>服务预约 + 活动合并在一个区</li><li>成长等级进度条</li></ul>
+        <h3>续费位置</h3>
+        <ul><li>底部常驻小按钮，不抢权益主体</li><li>临期时按钮变红/加倒计时</li></ul>
+        <div class="fit"><b>适合：</b>会员日常打开就要用权益的场景。页面信息密度高，续费是辅助。</div>
+      </div>
+      <div class="pick">点击选择方案 A</div>
+    </article>
+
+    <!-- 方案B -->
+    <article class="card sel" data-choice="B" onclick="pick(this)">
+      <div class="c-head"><div class="num">B</div><div><h2>三段式卡片流 <span class="rec">推荐</span></h2><p>图1头部 + 图2权益 + 图3续费，三段独立，边界最清。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益与续费</div>
+        <div class="blk hero"><b>会员权益中心</b><div class="sub">李云天 · 有效期至 2027-08-12 · 剩344天</div><div class="metrics"><span><b>8/12</b>已解锁</span><span><b>4</b>服务/月</span><span><b>2860</b>成长值</span></div></div>
+        <div class="blk sec"><div class="sec-h">① 权益与服务目录</div><div class="grid4"><div class="t"><div class="i"></div>课程</div><div class="t"><div class="i"></div>诊断</div><div class="t"><div class="i"></div>陪跑</div><div class="t"><div class="i"></div>闭门会</div></div><div class="row" style="margin-top:6px"><div class="dot"></div><div>经营诊断 余2/4 · 预约</div></div><div class="row"><div class="dot"></div><div>闭门会 本季1/1 · 已用</div></div></div>
+        <div class="blk sec"><div class="sec-h">② 成长等级</div><div class="prog"><i></i></div><div style="display:flex;gap:5px;margin-top:6px"><div class="btn g" style="flex:1">等级说明</div><div class="btn p" style="flex:1">去任务台</div></div></div>
+        <div class="blk renew"><b>③ 会员续费</b><div style="font-size:9px;color:#bfaedb;margin-top:2px">锁定全年权益，不影响成长记录</div><div class="row" style="margin-top:7px;background:#0c0e1e;border-color:#3c3154"><div class="dot" style="background:linear-gradient(135deg,#6D33D6,#E255E5)"></div><div>PRO 年度会员<br><span style="color:#a99fc7;font-size:8px">有效期至 2027-08-12</span></div><div class="price">¥2999<small style="font-size:8px">/年</small></div></div><div class="row" style="background:#21163d;border-color:#5b3ca1"><span style="color:#f0beff;font-weight:700">✦ AI 续费建议</span><span style="color:#b5a8cc;font-size:8px">已用6项权益、4次服务，续费可持续使用</span></div><div class="cta"><div class="btn p">立即续费</div><div class="btn g">查看升级方案</div></div></div>
+      </div>
+      <div class="meta">
+        <h3>包含</h3>
+        <ul><li>三段式：身份 → 权益服务 → 续费</li><li>每段有编号标题，一眼分清"我是谁/我有什么/怎么续费"</li><li>续费模块完整展示方案+价格+AI建议+保留权益</li></ul>
+        <h3>续费位置</h3>
+        <ul><li>独立成段，与权益并列，不抢也不弱</li><li>日常态正常显示，临期态自动置顶+倒计时</li></ul>
+        <div class="fit"><b>适合：</b>想要结构规整、告别"乱"的感觉。会员和续费在同一页但互不干扰。</div>
+      </div>
+      <div class="pick">点击选择方案 B</div>
+    </article>
+
+    <!-- 方案C -->
+    <article class="card" data-choice="C" onclick="pick(this)">
+      <div class="c-head"><div class="num">C</div><div><h2>临期续费主导型</h2><p>以「续费提醒」图为主骨架。续费是第一目标，权益作为价值证明。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员续费</div>
+        <div class="blk hero" style="background:linear-gradient(135deg,#2a1040,#0e1020)"><b>及时续费 · 不断成长</b><div class="sub">持续享受优质资源与专属服务</div><div style="font-size:9px;margin-top:6px">到期时间 <b style="color:#c59cff">2027-08-12</b></div><div class="cd"><span>12</span><span>天</span><span>04</span><span>时</span><span>38</span><span>分</span></div></div>
+        <div class="blk renew"><b>当前会员方案</b><div class="row" style="margin-top:7px;background:#0c0e1e;border-color:#3c3154"><div class="dot" style="background:linear-gradient(135deg,#6D33D6,#E255E5)"></div><div>PRO 年度会员<br><span style="color:#a99fc7;font-size:8px">有效期至 2027-08-12</span></div><div class="price">¥2999<small style="font-size:8px">/年</small></div></div></div>
+        <div class="blk sec"><div class="sec-h">续费后继续享受</div><div class="grid4"><div class="t"><div class="i"></div>资源库</div><div class="t"><div class="i"></div>课程</div><div class="t"><div class="i"></div>闭门会</div><div class="t"><div class="i"></div>AI诊断</div></div></div>
+        <div class="blk sec"><div class="sec-h">全部权益 <span style="color:#8e87a8">次要</span></div><div class="row"><div class="dot"></div><div>查看完整权益目录 ›</div></div></div>
+        <div class="cta"><div class="btn p">立即续费</div><div class="btn g">查看升级方案</div></div>
+      </div>
+      <div class="meta">
+        <h3>包含</h3>
+        <ul><li>倒计时 + 当前方案 + 价格为页面头部</li><li>续费后保留权益作为核心说服</li><li>全部权益、成长等级降为次要入口</li></ul>
+        <h3>续费位置</h3>
+        <ul><li>续费即页面本身，不只是一个模块</li><li>权益网格只展示"续费后保留"的核心4项</li></ul>
+        <div class="fit"><b>适合：</b>到期前 30 天的临期态，或作为独立续费页。不适合日常权益浏览。</div>
+      </div>
+      <div class="pick">点击选择方案 C</div>
+    </article>
+  </div>
+</div>
+<script>
+function pick(el){document.querySelectorAll('.card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');if(window.toggleSelect)toggleSelect(el)}
+</script>
+</body>
+</html>

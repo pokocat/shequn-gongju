@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>主理台</title>
+<link rel="stylesheet" href="../css/app.css?v=20260917">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.tk-layer{ padding-bottom: calc(22.933px + var(--sab)); }
+
+/* ===== 身份分段器（复用全局 topseg 组件 · 置顶吸住） ===== */
+.tk-topseg{
+  margin:96px 10.32px 0; /* 顶部避开状态栏(54px)+胶囊(至92px) */
+  position:sticky; top:96px; z-index:50;
+  background:#FFFCF6; /* 实色底：吸顶时遮住滚过的内容 */
+  box-shadow:0 2px 10px rgba(122,82,54,.08);
+}
+.tk-topseg .topseg-item{ cursor:pointer; transition:all .18s ease; }
+.tk-topseg .topseg-item:active{ transform:scale(.96); }
+.topseg-item--lock{ color:var(--ink-400); }
+.topseg-item--lock svg{ width:12.04px; height:12.04px; flex-shrink:0; }
+/* tab 页撑满机身：内容不足一屏时 tabbar 依然贴手机屏底 */
+.mp-page{ min-height:100%; display:flex; flex-direction:column; }
+.tabbar{ --sab:34px; } /* tabbar 移出 .mp-page 后补回安全区变量，高度与其他 tab 页一致 */
+.screen--tab{ flex:1 1 auto; display:flex; flex-direction:column; }
+.tk-layer{ flex:1 1 auto; }
+
+/* ===== hero 卡内周期分段 ===== */
+.tk-periods{ display:flex; gap:3.44px; padding:3.44px; border-radius:9.173px; background:var(--sunk-2); margin-bottom:11.467px; }
+.tk-per{
+  flex:1; text-align:center; padding:4.013px 0; border-radius:6.88px;
+  font-size:var(--fs-micro); font-weight:600; color:var(--ink-600);
+  cursor:pointer; transition:all .15s ease;
+}
+.tk-per--on{ background:#FFF; color:var(--signal-700); font-weight:700; box-shadow:0 1px 4px rgba(122,82,54,.12); }
+.tk-per:active{ transform:scale(.95); }
+
+/* ===== 工作台区（代理/团长视角内嵌） ===== */
+.stat3{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; padding:0 10.32px; margin-top:10.32px; }
+.stat3-cell{ text-align:center; padding:10.32px 4px; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line-soft); }
+.stat3-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); }
+.stat3-l{ display:block; margin-top:2.293px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 本周方向卡 */
+.dir-card{ margin:10.32px 10.32px 0; padding:13.76px; border-radius:var(--r-box); background:var(--grad-hero); border:0.573px solid var(--line-brand); box-shadow:0 3px 12px rgba(124,58,237,.10); }
+.dir-head{ display:flex; justify-content:space-between; align-items:center; }
+.dir-tag{ font-size:var(--fs-micro); font-weight:700; color:var(--signal-700); background:rgba(124,58,237,.1); padding:2.293px 6.88px; border-radius:5.733px; }
+.dir-t{ font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); margin-top:6.88px; }
+.dir-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:2.867px; line-height:1.5; }
+.dir-chips{ display:flex; gap:5.16px; margin-top:8.027px; flex-wrap:wrap; }
+.dir-chip{ font-size:var(--fs-micro); color:var(--ink-700); background:rgba(255,255,255,.55); padding:2.867px 8.027px; border-radius:5.733px; border:0.573px solid var(--line-soft); }
+/* 平台分发宫格 */
+.dist-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:8.027px; }
+.dist-tile{ text-align:center; padding:11.467px 4px; border-radius:var(--r-box); background:var(--sunk-2); border:0.573px solid var(--line-soft); position:relative; cursor:pointer; transition:transform .15s; }
+.dist-tile:active{ transform:scale(.95); }
+.dist-ico{ width:36.8px; height:36.8px; margin:0 auto; border-radius:10.32px; display:flex; align-items:center; justify-content:center; color:var(--signal-700); background:var(--signal-50); border:0.573px solid var(--line-brand); }
+.dist-ico svg{ width:19px; height:19px; }
+.dist-n{ display:block; margin-top:5.16px; font-size:var(--fs-micro); font-weight:700; color:var(--ink-800); }
+.dist-c{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--pulse-600); font-weight:600; }
+/* 入口行 */
+.entry-row{ display:flex; align-items:center; gap:10.32px; padding:10.32px 0; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.entry-row:last-child{ border-bottom:none; }
+.entry-ico{ width:34.4px; height:34.4px; border-radius:9.173px; display:flex; align-items:center; justify-content:center; color:var(--signal-700); background:var(--signal-50); border:0.573px solid var(--line-brand); flex-shrink:0; }
+.entry-ico svg{ width:18px; height:18px; }
+.entry-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.entry-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.entry-go{ color:var(--ink-400); font-size:var(--fs-meta); flex-shrink:0; }
+/* 团队排行 */
+.rank-row{ display:flex; align-items:center; gap:8.027px; padding:8.027px 0; border-bottom:0.573px solid var(--line-soft); }
+.rank-row:last-child{ border-bottom:none; }
+.rank-n{ width:20.64px; height:20.64px; border-radius:6.88px; display:flex; align-items:center; justify-content:center; font-size:var(--fs-micro); font-weight:800; color:var(--signal-700); background:var(--sunk-3); flex-shrink:0; }
+.rank-n--top{ background:linear-gradient(135deg,#F7B65C,#E88C4A); color:#FFF; }
+.rank-info{ flex:1; min-width:0; }
+.rank-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.rank-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.rank-v{ font-size:var(--fs-meta); font-weight:800; color:var(--pulse-600); }
+
+/* ===== 工作台子应用（方案C）：数据头条 + 子页签 + 底部动作栏 ===== */
+.substat{ display:flex; margin:10.32px 10.32px 0; padding:9.173px 0; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line-soft); }
+.substat-cell{ flex:1; text-align:center; min-width:0; }
+.substat-cell + .substat-cell{ border-left:0.573px solid var(--line-soft); }
+.substat-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.substat-l{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 子页签（轻量导航，与身份 topseg 形成层级差） */
+.subtab{ display:flex; gap:4.587px; padding:10.32px 10.32px 8.027px; }
+.subtab-pill{
+  flex:1; text-align:center; padding:6.307px 0; border-radius:7.45px;
+  font-size:14px; font-weight:600; line-height:1.2; color:var(--ink-600);
+  background:var(--sunk-2); border:0.573px solid var(--line-soft);
+  cursor:pointer; transition:all .15s ease;
+}
+.subtab-pill--on{ background:#FFF; color:var(--signal-700); font-size:15px; font-weight:700; border-color:var(--line-brand); box-shadow:0 1px 5px rgba(124,58,237,.10); }
+.subtab-pill:active{ transform:scale(.95); }
+/* 子页内容区 */
+.subbody{ min-height:200px; }
+/* 底部动作栏（常驻 tabbar 上方） */
+.actbar{
+  position:sticky; bottom:calc(51.6px + var(--sab)); z-index:60; display:flex; gap:6.88px;
+  padding:10.32px 10.32px 8.027px;
+  background:linear-gradient(180deg,rgba(255,247,236,0),rgba(255,247,236,.97) 45%);
+}
+.actbar-btn{ flex:1; text-align:center; padding:10.32px 0; border-radius:10.893px; font-size:var(--fs-sec); font-weight:800; cursor:pointer; }
+.actbar-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; box-shadow:0 4px 14px rgba(109,40,217,.3); }
+.actbar-btn--ghost{ background:rgba(255,255,255,.94); color:var(--signal-700); border:0.573px solid var(--line-signal); }
+.actbar-btn:active{ transform:scale(.97); }
+
+/* ===== 数据驾驶舱（照参考图排版：渐变头部 + 周期下划线tab + 日期行 + 表格明细） ===== */
+.rep-head{
+  margin:10.32px 10.32px 0; border-radius:var(--r-box);
+  background:linear-gradient(160deg,#5B21B6 0%,#7C3AED 48%,#A98BF5 100%);
+  padding:14.907px 14.907px 0; color:#FFF7EC;
+  box-shadow:0 6px 22px rgba(91,33,182,.28);
+}
+.rep-l{ font-size:var(--fs-micro); font-weight:600; color:rgba(255,247,236,.72); }
+.rep-num{ font-size:34.4px; font-weight:800; font-family:var(--font-mono); line-height:1.25; margin-top:1.147px; }
+.rep-sub{ display:flex; justify-content:space-between; align-items:center; margin-top:2.293px; }
+.rep-wd{ font-size:var(--fs-micro); color:rgba(255,247,236,.85); }
+.rep-wd b{ font-family:var(--font-mono); font-weight:800; }
+.rep-btn{ padding:5.16px 14.907px; border-radius:16.053px; background:rgba(255,247,236,.95); color:var(--signal-800); font-size:var(--fs-micro); font-weight:800; cursor:pointer; }
+.rep-btn:active{ transform:scale(.95); }
+/* 周期下划线 tab（嵌在渐变头部内，参考「日报/月报」样式） */
+.rep-tabs{ display:flex; margin-top:11.467px; }
+.rep-tab{ flex:1; text-align:center; padding:6.88px 0 8.6px; font-size:var(--fs-meta); font-weight:600; color:rgba(255,247,236,.62); cursor:pointer; position:relative; transition:color .15s; }
+.rep-tab--on{ color:#FFF7EC; font-weight:800; }
+.rep-tab--on::after{ content:''; position:absolute; left:50%; transform:translateX(-50%); bottom:0; width:24.08px; height:2.293px; border-radius:1.147px; background:#F7B65C; }
+/* 日期行 */
+.rep-date{ display:flex; align-items:center; gap:5.733px; margin:8.027px 10.32px 0; padding:7.45px 11.467px; border-radius:9.173px; background:#FFF; border:0.573px solid var(--line-soft); font-size:var(--fs-micro); color:var(--ink-700); font-weight:600; cursor:pointer; }
+.rep-date svg{ width:12.04px; height:12.04px; color:var(--ink-500); flex-shrink:0; }
+.rep-date .d-arrow{ margin-left:auto; color:var(--ink-400); }
+/* 三列收益分解（表格式，白卡内分列） */
+.rep-split{ display:grid; grid-template-columns:repeat(3,1fr); }
+.rep-split-cell{ text-align:center; padding:9.173px 2px; min-width:0; }
+.rep-split-cell + .rep-split-cell{ border-left:0.573px solid var(--line-soft); }
+.rep-split-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); }
+.rep-split-l{ display:block; margin-top:1.147px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 团队发展漏斗（白底格，可下钻） */
+.funnel-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
+.funnel-cell{ text-align:center; padding:10.32px 2px 8.6px; border-radius:10.32px; background:#FFF; border:0.573px solid var(--line-soft); cursor:pointer; transition:transform .15s; position:relative; }
+.funnel-cell:active{ transform:scale(.95); }
+.funnel-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--signal-800); font-family:var(--font-mono); }
+.funnel-l{ display:block; margin-top:1.72px; font-size:var(--fs-micro); font-weight:600; color:var(--ink-600); }
+.funnel-go{ position:absolute; top:5.16px; right:6.88px; color:var(--ink-400); font-size:9px; }
+/* 收益状态三格 */
+.status-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
+.status-cell{ text-align:center; padding:9.173px 2px; border-radius:10.32px; background:var(--sunk); border:0.573px solid var(--line-soft); }
+.status-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); }
+.status-l{ display:block; font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.status-v--ok{ color:var(--ok); }
+/* 类别明细表格（参考「类别|订单量|预估收益」表头+下钻行） */
+.rep-table-h{ display:grid; grid-template-columns:1.5fr 1fr 1.1fr 16px; gap:4px; padding:6.88px 9.173px; border-radius:8.027px; background:rgba(124,58,237,.09); font-size:var(--fs-micro); font-weight:700; color:var(--signal-800); }
+.rep-table-r{ display:grid; grid-template-columns:1.5fr 1fr 1.1fr 16px; gap:4px; padding:8.6px 9.173px; font-size:var(--fs-micro); color:var(--ink-800); border-bottom:0.573px solid var(--line-soft); align-items:center; }
+.rep-table-r:last-child{ border-bottom:none; }
+.rep-table-r .m{ font-family:var(--font-mono); font-weight:700; }
+.rep-table-r .r-go{ color:var(--ink-400); text-align:right; }
+/* 团长方向入口条 */
+.dir-strip{ margin:10.32px 10.32px 0; padding:10.32px 12.04px; border-radius:var(--r-box); background:var(--sunk); border:0.573px solid var(--line-soft); display:flex; align-items:center; gap:8.027px; cursor:pointer; }
+.dir-strip:active{ transform:scale(.98); }
+.dir-strip-ico{ width:30.16px; height:30.16px; border-radius:8.027px; background:linear-gradient(135deg,var(--signal-600),var(--signal-800)); color:#FFF; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.dir-strip-ico svg{ width:15px; height:15px; }
+.dir-strip-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.dir-strip-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+
+/* ===== 预计收入分析：环形图（参考我的影响力） ===== */
+.donut-wrap{ display:flex; align-items:center; gap:13.76px; }
+.donut{ flex-shrink:0; position:relative; width:126.5px; height:126.5px; }
+.donut svg{ transform:rotate(-90deg); }
+.donut-c{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.donut-cv{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); }
+.donut-cl{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.donut-legend{ flex:1; min-width:0; }
+.donut-li{ display:flex; align-items:center; gap:5.733px; padding:3.44px 0; font-size:var(--fs-micro); color:var(--ink-700); }
+.donut-dot{ width:8.027px; height:8.027px; border-radius:2.867px; flex-shrink:0; }
+.donut-li .dv{ margin-left:auto; font-family:var(--font-mono); font-weight:700; color:var(--ink-900); }
+
+/* ===== 影响力详情表格（参考我的影响力：3×3 + 彩点列头 + 红+N） ===== */
+.inf-table{ width:100%; border-collapse:collapse; }
+.inf-table th{ font-size:var(--fs-micro); font-weight:700; color:var(--ink-700); padding:5.16px 4px; text-align:center; border-bottom:0.573px solid var(--line-soft); }
+.inf-table th .th-dot{ display:inline-block; width:6.88px; height:6.88px; border-radius:50%; margin-right:3.44px; vertical-align:0.5px; }
+.inf-table td{ font-size:var(--fs-micro); color:var(--ink-800); padding:7.45px 4px; text-align:center; border-bottom:0.573px solid var(--line-soft); font-family:var(--font-mono); }
+.inf-table tr:last-child td{ border-bottom:none; }
+.inf-table td.row-h{ font-family:inherit; color:var(--ink-600); text-align:left; padding-left:2.293px; }
+.inf-add{ display:inline-block; margin-left:2.293px; color:#D93025; font-weight:800; font-size:9px; }
+.inf-note{ display:flex; align-items:center; gap:4.587px; margin-top:6.88px; font-size:var(--fs-micro); color:var(--ink-500); }
+.inf-plus{ width:12.04px; height:12.04px; border-radius:50%; background:rgba(217,48,37,.1); color:#D93025; font-weight:800; display:flex; align-items:center; justify-content:center; font-size:9px; flex-shrink:0; }
+/* 旗下团队行（团长，参考旗下运营商） */
+.team-row{ display:flex; align-items:center; gap:8.027px; padding:8.6px 0; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.team-row:last-child{ border-bottom:none; }
+.team-row-t{ flex:1; font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); }
+.team-row-v{ font-size:var(--fs-meta); font-weight:800; color:var(--signal-700); font-family:var(--font-mono); }
+.team-row-go{ color:var(--ink-400); font-size:var(--fs-meta); }
+
+/* ===== 团队页：影响力双指标卡（参考我的影响力：渐变底+白卡两列） ===== */
+.inf-hero{
+  margin:8.027px 10.32px 0; padding:12.04px; border-radius:var(--r-box);
+  background:linear-gradient(160deg,#5B21B6 0%,#7C3AED 48%,#A98BF5 100%);
+  box-shadow:0 5px 18px rgba(91,33,182,.24);
+}
+.inf-hero-card{
+  background:rgba(255,252,246,.96); border-radius:10.893px; padding:11.467px 0;
+  display:flex; align-items:stretch;
+}
+.inf-hero-cell{ flex:1; text-align:center; min-width:0; }
+.inf-hero-cell + .inf-hero-cell{ border-left:0.573px solid var(--line-soft); }
+.inf-hero-v{ display:block; font-size:var(--fs-h2); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); line-height:1.2; }
+.inf-hero-l{ display:block; margin-top:1.72px; font-size:var(--fs-micro); color:var(--ink-600); }
+.influence-scope-tabs{ margin:0 10.32px; padding:8.027px 0 6.88px; overflow-x:auto; scrollbar-width:none; }
+.influence-scope-tabs::-webkit-scrollbar{ display:none; }
+.influence-scope-tabs .subtab-pill{ flex:0 0 auto; min-width:72px; padding-left:8px; padding-right:8px; }
+.influence-metrics{ display:grid; grid-template-columns:repeat(2,1fr); gap:6.88px; margin-top:10.32px; }
+.influence-metrics--standalone{ margin:8.027px 10.32px 0; }
+.influence-metric{ position:relative; overflow:hidden; padding:10.32px; border-radius:10.32px; background:rgba(255,252,246,.96); color:var(--ink-900); border:0.573px solid var(--line-soft); }
+.influence-metric::after{ content:''; position:absolute; width:34px; height:34px; right:-12px; top:-12px; border-radius:50%; background:rgba(124,58,237,.08); }
+.influence-metric-v{ display:block; font-family:var(--font-mono); font-size:var(--fs-h2); font-weight:800; line-height:1.15; }
+.influence-metric-l{ display:block; margin-top:1.72px; font-size:var(--fs-tiny); color:var(--ink-600); }
+.team-functions{ margin:8.027px 10.32px 0; padding:8.027px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.influence-card-note{ flex:0 1 auto; min-width:0; font-size:var(--fs-tiny); color:var(--ink-500); text-align:right; line-height:1.35; }
+.team-growth-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6.88px; }
+.team-growth-item{ display:flex; align-items:center; gap:5.733px; min-height:50px; padding:8.027px; border-radius:9.173px; background:linear-gradient(145deg,#FFF 0%,var(--sunk) 100%); border:0.573px solid var(--line-soft); cursor:pointer; }
+.team-growth-item:active{ background:var(--signal-50); }
+.team-growth-icon{ width:26px; height:26px; flex:0 0 26px; display:flex; align-items:center; justify-content:center; border-radius:8.027px; background:rgba(124,58,237,.1); color:var(--signal-700); }
+.team-growth-icon svg{ width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+.team-growth-copy{ min-width:0; flex:1; }
+.team-growth-title{ display:block; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.team-growth-desc{ display:block; margin-top:1px; font-size:var(--fs-micro); color:var(--ink-500); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.team-growth-count{ flex:0 0 auto; font-family:var(--font-mono); font-size:var(--fs-meta); font-weight:800; color:var(--signal-700); }
+.team-growth-arrow{ flex:0 0 auto; color:var(--ink-400); font-size:var(--fs-meta); }
+.influence-detail-tabs{ display:flex; gap:4.587px; margin:0 0 6.88px; padding:3.44px; border-radius:9.173px; background:var(--sunk-2); }
+.influence-detail-tab{ flex:1; padding:6.88px 4px; border-radius:7.45px; font-size:var(--fs-meta); font-weight:600; color:var(--ink-600); text-align:center; cursor:pointer; }
+.influence-detail-tab.is-active{ background:#FFF; color:var(--signal-700); font-weight:800; box-shadow:0 1px 5px rgba(124,58,237,.10); }
+.influence-tab-note{ margin:0 0 6.88px; font-size:var(--fs-tiny); color:var(--ink-500); line-height:1.4; }
+.influence-card{ margin:8.027px 10.32px 0; }
+.influence-card-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:6.88px; margin-bottom:6.88px; }
+.influence-card-title{ font-size:var(--fs-sec); font-weight:800; color:var(--ink-900); }
+.influence-matrix{ width:100%; table-layout:fixed; border-collapse:separate; border-spacing:0; overflow:hidden; border:0.573px solid var(--line-soft); border-radius:9.173px; }
+.influence-matrix th{ padding:6.88px 1px; background:rgba(124,58,237,.08); border-bottom:0.573px solid var(--line-soft); font-size:var(--fs-micro); font-weight:800; color:var(--signal-800); line-height:1.25; text-align:center; word-break:break-all; }
+.influence-matrix th:first-child{ width:62px; padding-left:5.16px; text-align:left; word-break:normal; }
+.influence-matrix td{ padding:7.45px 1px; border-bottom:0.573px solid var(--line-soft); background:#FFF; font-family:var(--font-mono); font-size:var(--fs-tiny); font-weight:800; color:var(--ink-900); text-align:center; cursor:default; }
+.influence-matrix td[data-team-page]{ cursor:pointer; }
+.influence-matrix td:first-child{ padding-left:5.16px; font-family:inherit; font-weight:700; color:var(--ink-600); text-align:left; }
+.influence-matrix tr:last-child td{ border-bottom:none; }
+.influence-matrix td:not(:first-child){ position:relative; }
+.influence-matrix td:not(:first-child):active{ background:var(--signal-50); }
+.influence-dot{ display:inline-block; width:6px; height:6px; margin-right:2.293px; border-radius:50%; vertical-align:1px; }
+.influence-value{ display:inline-flex; align-items:baseline; gap:2px; line-height:1.1; white-space:nowrap; }
+.influence-add{ color:#D93025; font-family:var(--font-mono); font-size:8px; font-weight:800; line-height:1; }
+.influence-potential{ display:block; margin-top:3px; color:#9CA3AF; font-size:8px; line-height:1.2; white-space:nowrap; }
+.influence-team-grid{ display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5.733px; }
+.influence-team-cell{ position:relative; min-width:0; padding:8.027px 5.16px; border-radius:9.173px; background:var(--sunk); border:0.573px solid var(--line-soft); cursor:pointer; }
+.influence-team-v{ display:block; padding-right:11px; font-family:var(--font-mono); font-size:var(--fs-h4); font-weight:800; color:var(--signal-800); line-height:1.05; }
+.influence-team-l{ display:block; margin-top:3px; font-size:var(--fs-micro); font-weight:800; color:var(--ink-700); line-height:1.25; }
+.influence-team-s{ display:block; margin-top:2px; font-size:var(--fs-micro); color:var(--ink-500); line-height:1.2; }
+.influence-team-go{ position:absolute; top:7px; right:5px; color:var(--ink-400); }
+.influence-boundary{ display:flex; align-items:flex-start; justify-content:space-between; gap:6.88px; margin:8.027px 10.32px 0; padding:7.45px 9.173px; border-radius:9.173px; background:rgba(124,58,237,.06); border:0.573px solid rgba(124,58,237,.14); font-size:var(--fs-micro); color:var(--ink-600); line-height:1.45; }
+.influence-boundary b{ color:var(--signal-800); }
+.team-fullscreen{ position:absolute; inset:0; z-index:110; display:none; overflow-y:auto; background:var(--bg-base); }
+.team-fullscreen.is-open{ display:block; }
+.team-fullscreen-page{ min-height:100%; box-sizing:border-box; padding:var(--sat) 10.32px calc(20px + var(--sab)); font-family:var(--font-zh); font-size:var(--fs-body); line-height:1.5; color:var(--ink-800); }
+.team-fullscreen-head{ position:relative; display:flex; align-items:center; min-height:40px; box-sizing:border-box; padding:4.587px 0 10.32px; }
+.team-fullscreen-back{ width:25.227px; height:25.227px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:transparent; color:var(--ink-700); font-size:24px; line-height:25.227px; cursor:pointer; }
+.team-fullscreen-title{ position:absolute; left:50%; transform:translateX(-50%); max-width:calc(100% - 80px); overflow:hidden; font-size:var(--fs-h3); line-height:25.227px; font-weight:700; color:var(--ink-900); text-align:center; text-overflow:ellipsis; white-space:nowrap; }
+.team-fullscreen-spacer{ width:25.227px; height:25.227px; margin-left:auto; }
+.team-page-path{ margin-top:0; padding:6.88px 8.027px; border-radius:var(--r-ctl); background:rgba(124,58,237,.06); font-size:var(--fs-micro); color:var(--signal-800); line-height:1.4; }
+.team-page-summary{ display:grid; grid-template-columns:88px minmax(0,1fr); gap:8.027px; align-items:center; margin-top:8.027px; padding:9.173px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-page-summary .donut svg,.team-page-summary .donut{ width:80px; height:80px; }
+.team-page-summary .donut-cv{ font-size:var(--fs-h4); }
+.team-page-stats{ display:grid; gap:5.16px; }
+.team-page-stat{ display:flex; align-items:center; justify-content:space-between; gap:6.88px; font-size:var(--fs-micro); color:var(--ink-600); }
+.team-page-stat b{ font-family:var(--font-mono); color:var(--ink-900); }
+.team-page-tabs{ display:flex; gap:5.733px; margin-top:8.027px; overflow-x:auto; scrollbar-width:none; }
+.team-page-tabs::-webkit-scrollbar{ display:none; }
+.team-page-tab{ flex:0 0 auto; padding:6px 9.173px; border-radius:var(--r-chip); background:var(--sunk-2); color:var(--ink-600); font-size:var(--fs-tiny); font-weight:700; cursor:pointer; }
+.team-page-tab.is-active{ background:var(--signal-700); color:#FFF; }
+.team-page-search{ display:flex; gap:5.733px; margin-top:8.027px; }
+.team-page-search input{ min-width:0; flex:1; padding:8.027px 9.173px; border:0.573px solid var(--line-soft); border-radius:var(--r-ctl); outline:none; background:#FFF; color:var(--ink-900); font:inherit; font-size:var(--fs-tiny); }
+.team-page-search button{ min-height:34px; padding:0 11px; border:0; border-radius:var(--r-ctl); background:var(--signal-700); color:#FFF; font:inherit; font-size:var(--fs-tiny); font-weight:700; }
+.team-page-section-head{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; margin-top:10.32px; }
+.team-page-section-title{ font-size:var(--fs-sec); font-weight:800; color:var(--ink-900); }
+.team-page-section-note{ flex:0 1 auto; min-width:0; overflow:hidden; font-size:var(--fs-micro); color:var(--ink-500); text-align:right; text-overflow:ellipsis; white-space:nowrap; }
+.team-page-list{ margin-top:6.88px; overflow:hidden; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-member-row{ display:flex; align-items:center; gap:7.45px; padding:9.173px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.team-member-row:last-child{ border-bottom:none; }
+.team-member-avatar{ width:32px; height:32px; flex:0 0 32px; display:block; object-fit:cover; border-radius:50%; background:linear-gradient(145deg,#7C3AED,#A98BF5); color:#FFF; font-size:var(--fs-meta); font-weight:800; }
+.team-member-copy{ min-width:0; flex:1; }
+.team-member-name{ display:block; overflow:hidden; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); text-overflow:ellipsis; white-space:nowrap; }
+.team-member-meta{ display:block; overflow:hidden; margin-top:1px; font-size:var(--fs-micro); color:var(--ink-500); text-overflow:ellipsis; white-space:nowrap; }
+.team-member-value{ flex:0 0 auto; text-align:right; }
+.team-member-value b{ display:block; font-family:var(--font-mono); font-size:var(--fs-meta); color:var(--signal-800); }
+.team-member-value span{ display:block; margin-top:1px; font-size:var(--fs-micro); color:var(--ink-500); }
+.team-member-go{ color:var(--ink-400); }
+.team-member-profile{ margin-top:8.027px; padding:10.32px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-profile-top{ display:flex; align-items:center; gap:9.173px; }
+.team-profile-avatar{ width:46px; height:46px; display:flex; align-items:center; justify-content:center; border-radius:50%; background:linear-gradient(145deg,#7C3AED,#A98BF5); color:#FFF; font-size:17px; font-weight:800; }
+.team-profile-name{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.team-profile-id{ margin-top:2px; font-size:var(--fs-micro); color:var(--ink-500); }
+.team-profile-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6.88px; margin-top:10.32px; }
+.team-profile-cell{ min-width:0; padding:7.45px; border-radius:var(--r-ctl); background:var(--sunk); }
+.team-profile-cell b,.team-profile-cell span{ display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.team-profile-cell b{ font-family:var(--font-mono); color:var(--signal-800); font-size:var(--fs-meta); }
+.team-profile-cell span{ margin-top:2px; color:var(--ink-500); font-size:var(--fs-micro); }
+.team-page-date{ margin-top:10.32px; font-size:var(--fs-tiny); font-weight:800; color:var(--ink-600); }
+
+/* ===== 团队总览 / 查看推荐人（T62 / T63 设计） ===== */
+.team-hero{ margin-top:8.027px; padding:13.187px; border-radius:var(--r-box); background:linear-gradient(160deg,#6D28D9 0%,#7C3AED 48%,#A98BF5 100%); color:#FFF; border:0.573px solid rgba(109,40,217,.3); box-shadow:0 5px 18px rgba(91,33,182,.18); }
+.team-hero-label{ font-size:var(--fs-tiny); font-weight:700; opacity:.9; }
+.team-hero-total{ margin-top:3.44px; font-family:var(--font-mono); font-size:var(--fs-hero); font-weight:800; line-height:1.1; }
+.team-donut-card{ display:flex; align-items:center; gap:10.32px; margin-top:8.027px; padding:11px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-donut-card .donut,.team-donut-card .donut svg{ width:76px; height:76px; flex:0 0 76px; }
+.team-donut-card .donut-cv{ font-size:var(--fs-h4); }
+.team-level-legend{ min-width:0; flex:1; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:5px 8px; }
+.team-level-li{ display:flex; align-items:center; gap:5px; font-size:var(--fs-micro); color:var(--ink-600); }
+.team-level-dot{ width:8px; height:8px; flex:0 0 8px; border-radius:50%; }
+.team-level-name{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.team-level-count{ margin-left:auto; font-family:var(--font-mono); font-weight:800; color:var(--ink-900); }
+.team-recommend-row{ display:flex; align-items:center; justify-content:space-between; margin-top:8.027px; padding:10.32px 11px; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-recommend-label{ font-size:var(--fs-meta); color:var(--ink-700); }
+.team-recommend-label b{ font-family:var(--font-mono); color:var(--signal-700); font-size:var(--fs-h4); margin-left:2px; }
+.team-recommend-btn{ color:var(--signal-700); font-size:var(--fs-meta); font-weight:700; cursor:pointer; }
+.mbr-agent-id{ display:block; margin-top:3px; font-family:var(--font-mono); font-size:var(--fs-micro); color:var(--ink-500); }
+.team-page-list{ margin-top:6.88px; overflow:hidden; border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-soft); }
+.team-page-list .mbr-row{ min-height:58px; box-sizing:border-box; gap:8.027px; padding:10.32px 13.187px; }
+.team-page-list .mbr-copy{ min-width:0; }
+.team-page-list .mbr-name{ font-size:var(--fs-meta); line-height:1.35; }
+.team-page-list .mbr-agent-id{ margin-top:2px; font-size:var(--fs-micro); line-height:1.25; }
+.team-page-list .mbr-agent-balance{ margin-top:2px; font-size:var(--fs-micro); line-height:1.25; }
+.team-tree-row--nested{ padding-left:38px !important; }
+.team-tree-row--nested:before{ left:20px; }
+.team-level-legend{ gap:6px 8px; }
+.team-level-li{ min-width:0; line-height:1.35; }
+.team-recommend-row{ gap:8px; padding-left:13.187px; padding-right:13.187px; }
+.mbr-agent-balance{ display:block; margin-top:2px; font-size:10px; color:var(--ink-400); }
+.team-tree-row{ position:relative; }
+.team-tree-row--nested{ padding-left:38px !important; }
+.team-tree-row--nested:before{ content:''; position:absolute; left:20px; top:0; bottom:0; border-left:1px solid var(--line-soft); }
+.team-avatar-wrap{ position:relative; width:36px; height:36px; flex:0 0 36px; }
+.team-avatar-wrap .mbr-avatar{ width:36px; height:36px; }
+.team-avatar-level{ position:absolute; right:-7px; bottom:-3px; padding:1px 4px; border:2px solid #FFF; border-radius:7px; background:var(--signal-700); color:#FFF; font-family:var(--font-mono); font-size:8px; font-weight:800; line-height:1.2; white-space:nowrap; }
+.team-tree-row[data-team-expand]{ cursor:pointer; }
+.mbr-go[data-team-view-profile]{ cursor:pointer; padding:4px; margin:-4px; }
+.mbr-ref-count{ display:block; margin-top:2px; font-size:10px; color:var(--ink-500); }
+.mbr-ref-count b{ color:var(--signal-700); font-family:var(--font-mono); }
+
+/* ===== 新增成员列表页（参考图设计） ===== */
+.mbr-summary .influence-metric-v{ font-size:var(--fs-h2); }
+.mbr-date-bar{ display:flex; align-items:center; justify-content:space-between; margin-top:10.32px; padding:6.88px 9.173px; border-radius:8.027px; background:var(--sunk-2); font-size:var(--fs-micro); color:var(--ink-600); font-weight:700; }
+.mbr-date-bar span:last-child{ color:var(--signal-700); font-weight:800; }
+.mbr-empty{ padding:32px 0; text-align:center; color:var(--ink-400); font-size:var(--fs-meta); }
+.mbr-row{ display:flex; align-items:center; gap:8.027px; padding:10.32px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.mbr-row:last-child{ border-bottom:none; }
+.mbr-row:active{ background:var(--sunk); }
+.mbr-avatar{ width:36px; height:36px; flex:0 0 36px; border-radius:50%; object-fit:cover; display:block; background:var(--sunk-2); }
+.mbr-copy{ min-width:0; flex:1; }
+.mbr-name-line{ display:flex; align-items:center; gap:5.16px; flex-wrap:wrap; }
+.mbr-name{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
+.mbr-level{ flex:0 0 auto; padding:1px 5px; border-radius:4px; color:#FFF; font-size:9px; font-weight:800; line-height:1.4; font-family:var(--font-mono); }
+.mbr-copy-btn{ flex:0 0 auto; padding:2px 8px; border:0.573px solid var(--line-soft); border-radius:10px; background:#FFF; color:var(--ink-500); font-size:10px; font-weight:600; cursor:pointer; }
+.mbr-copy-btn:active{ background:var(--signal-50); color:var(--signal-700); }
+.mbr-action{ display:block; margin-top:3px; font-size:var(--fs-micro); color:var(--ink-500); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mbr-sub{ display:block; margin-top:2px; font-size:10px; color:var(--ink-400); }
+.mbr-go{ flex:0 0 auto; color:var(--ink-400); font-size:var(--fs-h4); }
+
+/* ===== 成员详情页（参考图设计） ===== */
+.mbr-profile-card{ margin-top:8.027px; padding:12.04px; border-radius:11.467px; background:#FFF; border:0.573px solid var(--line-soft); }
+.mbr-profile-top{ display:flex; align-items:center; gap:10.32px; }
+.mbr-profile-avatar{ width:52px; height:52px; flex:0 0 52px; border-radius:50%; object-fit:cover; display:block; background:var(--sunk-2); }
+.mbr-profile-head{ min-width:0; flex:1; }
+.mbr-profile-name-line{ display:flex; align-items:center; gap:6.88px; flex-wrap:wrap; }
+.mbr-profile-name{ font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.mbr-profile-rel{ margin-top:3px; font-size:var(--fs-micro); color:var(--ink-500); }
+.mbr-contact-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6.88px; margin-top:11.467px; }
+.mbr-contact-cell{ display:flex; align-items:center; gap:5.16px; min-width:0; padding:6.88px 8.027px; border-radius:8.027px; background:var(--sunk); }
+.mbr-contact-ico{ flex:0 0 auto; font-size:10px; font-weight:700; color:var(--signal-700); background:rgba(124,58,237,.1); padding:1px 6px; border-radius:8px; }
+.mbr-contact-v{ min-width:0; flex:1; font-family:var(--font-mono); font-size:var(--fs-tiny); font-weight:700; color:var(--ink-900); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mbr-contact-cell .mbr-copy-btn{ padding:1px 6px; font-size:9px; }
+.mbr-skin-tags{ margin-top:9.173px; padding:6.88px 8.027px; border-radius:8.027px; background:rgba(247,182,92,.1); color:#A9772E; font-size:var(--fs-micro); font-weight:600; }
+.mbr-sub-head{ margin-top:11.467px; padding:6.88px 9.173px; background:var(--sunk-2); border-radius:8.027px 8.027px 0 0; font-size:var(--fs-micro); font-weight:800; color:var(--ink-700); }
+.mbr-sub-row{ display:flex; align-items:center; gap:8.027px; padding:10.32px; border-bottom:0.573px solid var(--line-soft); cursor:pointer; }
+.mbr-sub-row:last-child{ border-bottom:none; }
+.mbr-sub-row:active{ background:var(--sunk); }
+.mbr-sub-avatar{ width:34px; height:34px; flex:0 0 34px; border-radius:50%; object-fit:cover; display:block; background:var(--sunk-2); }
+.mbr-sub-copy{ min-width:0; flex:1; }
+.mbr-sub-name{ display:flex; align-items:center; gap:5.16px; font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); }
+.mbr-sub-count{ display:block; margin-top:2px; font-size:10px; color:var(--ink-400); }
+.mbr-view-btn{ flex:0 0 auto; padding:5px 11px; border:0.573px solid var(--signal-700); border-radius:14px; color:var(--signal-700); font-size:var(--fs-micro); font-weight:700; background:#FFF; cursor:pointer; }
+.mbr-view-btn:active{ background:var(--signal-50); }
+@media (max-width:390px){
+  .team-growth-item{ padding:7px 6px; }
+  .team-growth-icon{ width:24px; height:24px; flex-basis:24px; }
+  .team-growth-count{ font-size:var(--fs-tiny); }
+  .influence-matrix th:first-child{ width:56px; }
+  .influence-matrix th{ font-size:8px; }
+  .influence-matrix td{ font-size:9px; }
+  .influence-team-cell{ padding-left:4px; padding-right:4px; }
+}
+
+/* ===== 审核子页（管流程事：证据/审批/订单） ===== */
+.audit-todo{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; }
+.audit-todo-cell{ text-align:center; padding:10.32px 2px; border-radius:10.32px; background:var(--sunk); border:0.573px solid var(--line-soft); cursor:pointer; transition:transform .15s; }
+.audit-todo-cell:active{ transform:scale(.95); }
+.audit-todo-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--signal-800); font-family:var(--font-mono); }
+.audit-todo-l{ display:block; margin-top:1.72px; font-size:var(--fs-micro); font-weight:600; color:var(--ink-600); }
+.audit-row{ display:flex; align-items:center; gap:8.027px; padding:9.173px 0; border-bottom:0.573px solid var(--line-soft); }
+.audit-row:last-child{ border-bottom:none; }
+.audit-dot{ width:8.027px; height:8.027px; border-radius:50%; flex-shrink:0; }
+.audit-dot--amber{ background:#F7B65C; }
+.audit-dot--purple{ background:#A98BF5; }
+.audit-dot--green{ background:#34D399; }
+.audit-dot--red{ background:#F87171; }
+.audit-t{ flex:1; min-width:0; font-size:var(--fs-meta); font-weight:600; color:var(--ink-900); }
+.audit-d{ font-size:var(--fs-micro); color:var(--ink-500); margin-top:1.147px; }
+.audit-st{ font-size:var(--fs-micro); font-weight:700; flex-shrink:0; padding:2.293px 6.88px; border-radius:5.16px; }
+.audit-st--amber{ background:rgba(247,182,92,.14); color:#B45309; }
+.audit-st--purple{ background:rgba(124,58,237,.1); color:var(--signal-700); }
+.audit-st--green{ background:rgba(52,211,153,.14); color:#047857; }
+.audit-st--red{ background:rgba(248,113,113,.14); color:#B91C1C; }
+
+/* ===== AI 军师悬浮球 ===== */
+.ai-fab{
+  position:absolute; right:14.907px; bottom:calc(103.253px + var(--sab));
+  width:47.013px; height:47.013px; border-radius:50%; z-index:95;
+  background:linear-gradient(135deg,#8B5CF6,#5B21B6);
+  box-shadow:0 6px 18px rgba(91,33,182,.4), inset 0 1px 0 rgba(255,255,255,.25);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  color:#FFF; cursor:pointer; transition:transform .15s;
+}
+.ai-fab:active{ transform:scale(.92); }
+.ai-fab svg{ width:19px; height:19px; }
+.ai-fab-t{ font-size:6.4px; font-weight:700; margin-top:1px; letter-spacing:.5px; }
+
+/* ===== 身份解锁弹层（居中弹窗） ===== */
+.unlock-mask{
+  position:fixed; inset:0; z-index:120; background:rgba(51,33,15,.42);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.unlock-mask.is-open{ opacity:1; pointer-events:auto; }
+.unlock-sheet{
+  width:315.6px; border-radius:16.053px; background:#FFF7EC; padding:17.2px 16.053px;
+  transform:scale(.8); transition:transform .2s;
+  box-shadow:0 20px 50px rgba(51,33,15,.25);
+}
+.unlock-mask.is-open .unlock-sheet{ transform:scale(1); }
+.unlock-h{ font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); text-align:center; }
+.unlock-d{ font-size:var(--fs-micro); color:var(--ink-600); text-align:center; margin-top:4.013px; }
+.unlock-list{ margin:12.04px 0; }
+.unlock-li{
+  display:flex; align-items:center; gap:8.027px; padding:6.88px 9.173px;
+  border-radius:8.027px; background:var(--sunk-2); margin-bottom:5.16px;
+  font-size:var(--fs-meta); color:var(--ink-800);
+}
+.unlock-li svg{ width:13.76px; height:13.76px; color:var(--ink-500); flex-shrink:0; }
+.unlock-btns{ display:flex; gap:6.88px; margin-top:12.04px; }
+.unlock-btn{ flex:1; text-align:center; padding:8.6px 0; border-radius:9.173px; font-size:var(--fs-meta); font-weight:700; cursor:pointer; }
+.unlock-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; }
+.unlock-btn--ghost{ background:var(--sunk-2); color:var(--ink-700); }
+
+.tk-hero{ padding: 16.053px; }
+.tk-count{ gap: 6.88px; align-items: baseline; }
+.tk-num{ font-size: var(--fs-display); font-weight: 700; line-height: 1.1; }
+.tk-total{ font-size: var(--fs-h3); color: var(--ink-600); }
+.tk-award{ font-size: var(--fs-meta); font-weight: 700; color: var(--pulse-600); }
+
+.tk-row{
+  display: flex; align-items: flex-start; gap: 12.613px;
+  padding: 12.613px 0; border-top: 0.573px solid var(--line-soft);
+  transition: opacity 180ms ease;
+}
+.tk-row:first-child{ border-top: none; }
+.tk-row:active{ opacity: 0.6; }
+.tk-row--done{ opacity: 0.55; }
+
+.tk-check{
+  width: 21.787px; height: 21.787px; flex: 0 0 21.787px; border-radius: 50%;
+  margin-top: 2.293px; box-sizing: border-box;
+  border: 1.72px solid var(--ink-400);
+  display: flex; align-items: center; justify-content: center;
+}
+.tk-check--urgent{ border-color: var(--danger); }
+.tk-check--done{ border-color: var(--ok-fill); background: var(--ok-fill); }
+.tk-arrow{ flex:0 0 auto; margin-top:4.587px; }
+
+.tk-title{ display: block; font-size: var(--fs-h4); font-weight: 700; color: var(--ink-900); line-height: 1.4; }
+.tk-title--done{ color: var(--ink-600); text-decoration: line-through; }
+.tk-meta{ gap: 9.173px; margin-top: 6.88px; }
+.tk-clock{ gap: 4.587px; }
+.tk-pt{ font-size: var(--fs-meta); font-weight: 600; color: var(--pulse-600); }
+.tk-pt--muted{ color: var(--ink-500); }
+
+.tk-meta .tag:not([class*="tag--"]){
+  background: var(--sunk-3); color: var(--signal-800); border-color: var(--line-signal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tk-row{ transition: none; }
+  .role-pill{ transition: none; }
+}</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>主理台</h1>
+    <code>/pages/tasks/index</code>
+
+  </div>
+  <p class="mp-note">按角色区分视角：会员看成长任务；代理/团长为工作台子应用（数据驾驶舱 + 分发 + 任务 + 资产），团队发展与收益数据优先。原型阶段用顶部切换器演示三种身份。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--tab wx-view"><div class="ambience wx-view"></div><div class="layer tk-layer wx-view"><div class="topseg tk-topseg" id="roleSw"></div><div id="tkHeroZone"></div><div id="tkWork"></div><div id="tkSections"></div><div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div></div><div class="team-fullscreen" id="teamFullscreen"></div></div>
+      <div class="tabbar wx-view"><div class="tab wx-view mp-nav" data-nav="notifications"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M22%2017a2%202%200%200%201-2%202H6.828a2%202%200%200%200-1.414.586l-2.202%202.202A.71.71%200%200%201%202%2021.286V5a2%202%200%200%201%202-2h16a2%202%200%200%201%202%202z%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div><span class="tab-badge wx-text">3</span></div><span class="tab-label wx-text">消息</span></div><div class="tab wx-view mp-nav" data-nav="group"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">微信群</span></div><div class="tab tab--on tab--center wx-view mp-nav" data-nav="tasks"><div class="tab-knob-box wx-view"><div class="tab-knob wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222.235%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div></div><span class="tab-label wx-text">主理台</span></div><div class="tab wx-view mp-nav" data-nav="index"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2218%22%20height%3D%2218%22%20x%3D%223%22%20y%3D%223%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M3%209h18%22%20%2F%3E%3Cpath%20d%3D%22M3%2015h18%22%20%2F%3E%3Cpath%20d%3D%22M9%203v18%22%20%2F%3E%3Cpath%20d%3D%22M15%203v18%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">发现</span></div><div class="tab wx-view mp-nav" data-nav="mine"><div class="tab-ico-box wx-view"><div class="tab-ico wx-view" style="background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236D28D9%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M19%2021v-2a4%204%200%200%200-4-4H9a4%204%200%200%200-4%204v2%22%20%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);"></div></div><span class="tab-label wx-text">我的</span></div></div>
+
+      <div class="unlock-mask" id="unlockMask"><div class="unlock-sheet"><div class="unlock-h" id="unlockH"></div><div class="unlock-d" id="unlockD"></div><div class="unlock-list" id="unlockList"></div><div class="unlock-btns"><div class="unlock-btn unlock-btn--ghost" id="unlockClose">知道了</div><div class="unlock-btn unlock-btn--pri" id="unlockGo">演示解锁</div></div></div></div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "tasks";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") { if (history.length > 1) history.back(); else location.href = "tasks.html" + location.search; return; }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+<script src="./team-member-utils.js"></script>
+<script>
+// ===== 主理台（身份解锁制 + 周期目标 + 推广闭环入口） =====
+// 图标模板（与全站 SVG 线条风格一致）
+var ICO_CLOCK = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%206v6l4%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_CHECK = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_ARROW = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_LOCK = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23A9906F%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20x%3D%223%22%20y%3D%2211%22%20width%3D%2218%22%20height%3D%2211%22%20rx%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M7%2011V7a5%205%200%200%201%2010%200v4%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+var ICO_GEM = 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23FFF7EC%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E")';
+
+// 工作台区：平台图标与分发数据（代理/团长视角）
+var SVGW = function(d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.8 1.8) scale(0.85)">' + d + '</g></svg>'; };
+var PLATS = {
+  '朋友圈': SVGW('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'),
+  '视频号': SVGW('<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>'),
+  '公众号': SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'),
+  '知乎':   SVGW('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M9.5 8.5h5"/><path d="M12 8.5V14"/>'),
+  '小红书': SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h3"/>'),
+  '微信贴图': SVGW('<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/>')
+};
+var DIST = [
+  { n:'朋友圈', c:'12 条' }, { n:'视频号', c:'3 条' }, { n:'公众号', c:'2 篇' },
+  { n:'知乎', c:'1 篇' }, { n:'小红书', c:'8 篇' }, { n:'微信贴图', c:'2 组' }
+];
+var ENTRY_ICOS = {
+  matrix: SVGW('<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/>'),
+  training: SVGW('<path d="M22 10L12 5 2 10l10 5 10-5z"/><path d="M6 12v5c0 1.7 2.7 3 6 3s6-1.3 6-3v-5"/>'),
+  invite: SVGW('<circle cx="9" cy="7" r="4"/><path d="M16 11h5"/><path d="M18.5 8.5v5"/><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>'),
+  earnings: SVGW('<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>')
+};
+
+var UNLOCKED = { member: true, agent: true, leader: true };
+var UNLOCK_RULES = {};
+var PERIODS = ['今日', '本周', '本月', '总'];
+var PERIOD = '本周';
+var TPERIOD = '本周';
+
+var ROLES = {
+  member: {
+    name: '会员',
+    hero: {
+      '今日': { done: 1, total: 2, award: '+60 积分' },
+      '本周': { done: 2, total: 5, award: '+180 积分' },
+      '本月': { done: 9, total: 22, award: '+960 积分' },
+      '总': { done: 46, total: 120, award: '累计 +5,240 积分' }
+    },
+    sections: [{ title: '任务清单', sub: '系统派生 · 共 5 项', type: 'growth', tasks: [
+      { t: '提交《社群冷启动》课后作业', tag: '作业', tagCls: 'tag--amber', time: '9 月 3 日 18:00 截止', pt: '+60 积分', urgent: true },
+      { t: '邀请 1 位主理人进群', tag: '邀请', tagCls: 'tag--purple', time: '本周内', pt: '+120 积分' },
+      { t: '评价服务老师赵一川', tag: '评价', tagCls: 'tag--purple', time: '无截止', pt: '+20 积分' }
+    ] }]
+  },
+  agent: {
+    name: '代理',
+    hero: {
+      '今日': { done: 2, total: 6, award: '待发货 3 单' },
+      '本周': { done: 8, total: 15, award: '预计利润 ¥1,246' },
+      '本月': { done: 26, total: 42, award: '库存价值 ¥8,620' },
+      '总': { done: 126, total: 180, award: '累计经营利润 ¥18,932' }
+    },
+    sections: [{ title: '本周待办', sub: '经营与履约 · 共 3 项', type: 'growth', tasks: [
+      { t: '初审 2 位团长申请', tag: '初审', tagCls: 'tag--amber', time: '今日内处理', pt: '2 人待审', ptMuted: true, urgent: true },
+      { t: '为 3 笔路由订单完成发货', tag: '发货', tagCls: 'tag--purple', time: '今日 18:00 前', pt: '库存已占用', ptMuted: true },
+      { t: '跟进低库存 SKU 补货', tag: '补货', tagCls: 'tag--green', time: '本周内', pt: '2 个预警', ptMuted: true }
+    ] }]
+  },
+  leader: {
+    name: '团长',
+    hero: {
+      '今日': { done: 2, total: 5, award: '预计佣金 ¥86' },
+      '本周': { done: 8, total: 14, award: '预计佣金 ¥1,120' },
+      '本月': { done: 25, total: 40, award: '本月佣金 ¥2,680' },
+      '总': { done: 116, total: 180, award: '累计佣金 ¥18,932' }
+    },
+    sections: [{ title: '本周推广任务', sub: '来自上级代理 · 共 3 项', type: 'growth', tasks: [
+      { t: '发布《社群成长清单》内容', tag: '内容', tagCls: 'tag--amber', time: '今日 20:00 前', pt: '待发布', ptMuted: true, urgent: true },
+      { t: '私聊跟进 6 位意向成员', tag: '跟进', tagCls: 'tag--purple', time: '本周内', pt: '已完成 3 人', ptMuted: true },
+      { t: '完成《社群成交服务》课程', tag: '培训', tagCls: 'tag--green', time: '9 月 30 日前', pt: '4 / 6 课时', ptMuted: true }
+    ] }]
+  }
+};
+var ROLE = 'member';
+
+function esc(s){ return String(s); }
+
+function rowHtml(task, type){
+  var done = !!task.done;
+  var main = '<span class="tk-title' + (done ? ' tk-title--done' : '') + ' wx-text">' + esc(task.t) + '</span>' +
+    '<div class="f f-wrap tk-meta wx-view"><span class="tag ' + (task.tagCls || '') + ' wx-text">' + esc(task.tag) + '</span>';
+  if (type === 'ops') main += '<span class="t-meta wx-text">' + esc(task.status) + '</span>';
+  else if (task.pt) main += '<span class="tk-pt' + (task.ptMuted ? ' tk-pt--muted' : '') + ' wx-text">' + esc(task.pt) + '</span>';
+  main += '<div class="f tk-clock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:' + ICO_CLOCK + ';background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-meta mono wx-text">' + esc(task.time) + '</span></div></div>';
+  var side = type === 'ops'
+    ? '<div class="tk-arrow wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:' + ICO_ARROW + ';background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div>'
+    : '<div class="tk-check' + (done ? ' tk-check--done' : (task.urgent ? ' tk-check--urgent' : '')) + ' wx-view">' + (done ? '<div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:' + ICO_CHECK + ';background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div>' : '') + '</div>';
+  return '<div class="tk-row' + (done ? ' tk-row--done' : '') + ' wx-view">' + side + '<div class="f-1 wx-view">' + main + '</div></div>';
+}
+
+function renderPills(){
+  var html = '';
+  ['member', 'agent', 'leader'].forEach(function(key){
+    var on = key === ROLE;
+    var wk = ROLES[key].hero['本周'];
+    html += '<div class="topseg-item' + (on ? ' topseg-item--on' : '') + '" data-role="' + key + '" role="button">' + ROLES[key].name + '<span class="seg-badge">' + (wk.total - wk.done) + '</span></div>';
+  });
+  document.getElementById('roleSw').innerHTML = html;
+}
+
+function renderHero(targetId){
+  var h = ROLES[ROLE].hero[TPERIOD];
+  var pct = Math.round(h.done / h.total * 100);
+  var perHtml = PERIODS.map(function(p){ return '<div class="tk-per' + (p === TPERIOD ? ' tk-per--on' : '') + '" data-period="' + p + '" role="button">' + p + '</div>'; }).join('');
+  var html = '<div class="card card--hero tk-hero wx-view"><div class="tk-periods">' + perHtml + '</div><div class="f-between wx-view"><div class="f tk-count wx-view"><span class="title-grad tk-num mono wx-text">' + h.done + '</span><span class="tk-total mono wx-text">/ ' + h.total + '</span><span class="t-meta wx-text">已完成</span></div><span class="tk-award wx-text">' + esc(h.award) + '</span></div><div class="prog-track mt-14 wx-view"><div class="prog-fill wx-view" style="width:' + pct + '%;"></div></div></div>';
+  var el = document.getElementById(targetId);
+  if (targetId === 'tkHeroZone') el.innerHTML = html;
+  else el.insertAdjacentHTML('beforeend', html);
+  return html;
+}
+
+var ROLE_TABS = {
+  agent: [{ key: 'influence', label: '团队' }, { key: 'process', label: '履约' }, { key: 'money', label: '经营' }, { key: 'marketing', label: '推广' }],
+  leader: [{ key: 'influence', label: '团队' }, { key: 'marketing', label: '推广' }, { key: 'process', label: '订单' }, { key: 'money', label: '佣金' }]
+};
+var SUBTAB = 'influence';
+var INFLUENCE_TAB = 'team';
+var NETWORK_SCOPE = 'all';
+
+var DASHBOARD = {
+  agent: {
+    money: { title: '预计经营利润', total: '1,246', labels: ['销售回款', '进货成本', '待结算团长佣金'], values: ['4,860', '2,980', '634'], status: [['8,620', '库存价值'], ['1,240', '库存占用'], ['2', '低库存 SKU']], categories: [['引流收入', '186 笔', '¥186'], ['会员招募', '9 笔', '¥486'], ['会员升级', '6 笔', '¥324'], ['社群消费', '12 笔', '¥250']], donut: { total: '¥1,246', items: [['引流收入', '#34A37A', 186], ['会员招募', '#7C3AED', 486], ['会员升级', '#A98BF5', 324], ['社群消费', '#F7B65C', 250]] } },
+    people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
+    team: { hero: ['8 位', '286 人'], funnel: [['待初审', '2'], ['复审中', '1'], ['已通过', '8']], donut: { total: '286', items: [['活跃成员', '#7C3AED', 184], ['新增会员', '#F7B65C', 46], ['待跟进', '#E88C4A', 56]] }, rows: [['王敏', '杭州妈妈成长群', '86'], ['李芳', '职场成长社群', '64'], ['周舟', '亲子阅读群', '52']] },
+    network: { hero: ['2 个', '5 位'], funnel: [['发展代理', '2'], ['发展团长', '5'], ['聚合社群', '6']], donut: { total: '6', items: [['代理社群', '#7C3AED', 3], ['团长社群', '#A98BF5', 2], ['推荐社群', '#F7B65C', 1]] }, rows: [['华东发展代理', '发展关系 · 2 位团长', '3 个群'], ['王敏团长', '下属代理发展的团长', '86 人'], ['李芳团长', '下属代理发展的团长', '64 人']] },
+    recommend: { hero: ['12 人', '4 位'], funnel: [['我推荐的人', '12'], ['已发展团长', '4'], ['可查看社群', '6']], donut: { total: '4', items: [['推荐成员', '#7C3AED', 12], ['发展团长', '#A98BF5', 4], ['聚合社群', '#F7B65C', 6]] }, rows: [['陈晨', '推荐关系 · 发展 2 位团长', '2 位'], ['赵宁', '推荐关系 · 发展 1 位团长', '1 位'], ['孙悦', '推荐关系 · 发展 1 位团长', '1 位']] },
+    process: { todo: [['2', '团长初审'], ['3', '待发货'], ['2', '库存预警']], list: [['王敏提交团长申请', '资料已齐全，等待代理初审', '待初审', 'amber'], ['订单 #2026092108', '王敏成交 · 库存已占用', '待发货', 'purple'], ['轻享装 SKU', '可用库存 6 件，建议补货', '低库存', 'red'], ['订单 #2026092076', '已交物流揽收', '运输中', 'green']], orders: [['待发货订单', '3 笔 · 已占库存'], ['物流与售后', '2 项待跟进']] },
+    marketing: { tag: '本周推广方向 · 由代理下发', title: '社群秋季复购活动', desc: '向名下团长下发内容、活动和培训任务，追踪素材领取、完成率与订单转化。', chips: ['8 位团长已领取', '完成率 64%', '素材包 6 件'], tools: [{ ico: 'invite', t: '招募团长', d: '生成招募海报与申请链接', nav: 'invite-poster' }, { ico: 'training', t: '团长赋能', d: '内容、活动与培训任务', nav: 'training' }] }
+  },
+  leader: {
+    money: { title: '本周预计佣金', total: '1,890', labels: ['已结算佣金', '预计佣金', '待结算佣金'], values: ['1,120', '1,120', '260'], status: [['1,120', '已结算'], ['1,890', '预计佣金'], ['260', '待结算']], categories: [['会员招募佣金', '12 笔', '¥860'], ['会员升级佣金', '9 笔', '¥640'], ['社群消费佣金', '6 笔', '¥390']], donut: { total: '¥1,890', items: [['招募佣金', '#7C3AED', 860], ['升级佣金', '#A98BF5', 640], ['消费佣金', '#F7B65C', 390]] } },
+    people: { hero: ['3 个', '126 人'], funnel: [['活跃成员', '84'], ['新增会员', '18'], ['待跟进', '12']], donut: { total: '126', items: [['高活跃', '#7C3AED', 84], ['已留存', '#F7B65C', 30], ['待服务', '#E88C4A', 12]] }, rows: [['杭州妈妈成长群', '活跃度 82%', '46'], ['职场成长社群', '活跃度 76%', '42'], ['亲子阅读群', '活跃度 68%', '38']] },
+    recommend: { hero: ['8 人', '3 位'], funnel: [['我推荐的人', '8'], ['已发展团长', '3'], ['可查看社群', '3']], donut: { total: '3', items: [['推荐成员', '#7C3AED', 8], ['发展团长', '#A98BF5', 3], ['聚合社群', '#F7B65C', 3]] }, rows: [['林晓', '推荐关系 · 发展 2 位团长', '2 位'], ['周宁', '推荐关系 · 发展 1 位团长', '1 位'], ['孙悦', '推荐关系 · 已加入社群', '1 个群']] },
+    process: { todo: [['1', '审核中'], ['3', '代理待发货'], ['1', '售后跟进']], list: [['团长入驻申请', '代理初审已通过，等待平台复审', '复审中', 'purple'], ['订单 #2026092108', '已路由至上级代理库存', '待发货', 'amber'], ['订单 #2026092076', '代理已发货，物流运输中', '运输中', 'green'], ['订单 #2026092061', '会员申请退款，等待处理', '售后中', 'red']], orders: [['我推广的订单', '18 笔 · 本周'], ['发货与售后', '4 项待跟进']] },
+    marketing: { tag: '本周推广任务 · 来自上级代理', title: '社群秋季复购活动', desc: '领取推广素材、完成内容发布和成员跟进；成交订单将自动路由至上级代理库存发货。', chips: ['素材包 6 件', '分享链接已生成', '完成 8 / 14 项'], tools: [{ ico: 'matrix', t: '推广素材与链接', d: '文案、海报、分享链接', nav: 'matrix' }, { ico: 'training', t: '成长培训', d: '标准话术与社群服务课程', nav: 'training' }] }
+  }
+};
+
+function donutSvg(items){
+  var C = 339.29, off = 0, segs = '', total = 0;
+  items.forEach(function(it){ total += it[2]; });
+  items.forEach(function(it){ var len = total ? C * it[2] / total : 0; segs += '<circle cx="63" cy="63" r="54" fill="none" stroke="' + it[1] + '" stroke-width="18" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '"/>'; off += len; });
+  return '<svg viewBox="0 0 126 126" width="126" height="126">' + segs + '</svg>';
+}
+
+function renderWorkbench(){
+  var el = document.getElementById('tkWork');
+  if (ROLE === 'member') { el.innerHTML = ''; return; }
+  var tabs = ROLE_TABS[ROLE];
+  var actions = '';
+  if (SUBTAB === 'process') {
+    actions = ROLE === 'agent'
+      ? '<div class="actbar-btn actbar-btn--pri" data-gosub="process" role="button">经营社群</div>'
+      : '<div class="actbar-btn actbar-btn--pri mp-nav" data-nav="training" role="button">成长培训</div>';
+  } else if (SUBTAB === 'marketing') {
+    actions = ROLE === 'agent'
+      ? '<div class="actbar-btn actbar-btn--pri" data-nav="invite-poster" role="button">招募团长</div>'
+      : '<div class="actbar-btn actbar-btn--pri" data-gosub="marketing" role="button">去推广</div>';
+  }
+  el.innerHTML = '<div class="subtab" id="subTab">' + tabs.map(function(t){ return '<div class="subtab-pill' + (t.key === SUBTAB ? ' subtab-pill--on' : '') + '" data-sub="' + t.key + '" role="button">' + t.label + '</div>'; }).join('') + '</div><div class="subbody" id="subBody"></div>' + (actions ? '<div class="actbar" id="actBar">' + actions + '</div>' : '');
+  renderSubBody();
+}
+
+function renderInfluenceBody(D){
+  var isAgent = ROLE === 'agent';
+  NETWORK_SCOPE = 'all';
+  var shared = {
+    agent: {
+      influence: '326', income: '¥1,246', incomeNote: '预计经营利润',
+      tabs: {
+        team: { label: '团队发展', note: '聚焦代理发展与直属团长，意向代理为待跟进线索', headers: ['市级代理', '区县代理', '直属团长', '意向代理'], colors: ['#34A37A', '#5B8DEF', '#F7B65C', '#E88C4A'], rows: [['直推', [[2, 0], [8, 1], [18, 2], [5, 3]]], ['团队', [[2, 0], [5, 1], [32, 5], [8, 2]]], ['推荐', [[1, 0], [4, 1], [12, 4], [3, 1]]]] },
+        community: { label: '社群会员', note: '聚焦会员漏斗：引流学员含潜在游客标注，红色数字为本周新增', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['直推', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['团队', [[8, 0], [96, 12, 86], [86, 8], [62, 6], [42, 4]]], ['推荐', [[4, 0], [32, 4, 28], [28, 3], [20, 2], [16, 2]]]] }
+      },
+      teams: [['8', '直属团长', '可经营'], ['2', '发展代理', '只读聚合'], ['12', '推荐关系', '只读聚合']]
+    },
+    leader: {
+      influence: '182', income: '¥1,890', incomeNote: '本周预计佣金',
+      tabs: {
+        community: { label: '社群会员', note: '查看本人社群与授权推荐关系带来的会员增长，引流学员含潜在游客', headers: ['社群数', '引流学员', '年卡会员', '高级会员', '旗舰会员'], colors: ['#34A37A', '#9CA3AF', '#7C3AED', '#A98BF5', '#F7B65C'], rows: [['直推', [[3, 0], [42, 6, 38], [38, 4], [28, 3], [18, 2]]], ['推荐', [[2, 0], [14, 2, 12], [12, 1], [8, 1], [4, 0]]], ['发展', [[1, 0], [6, 1, 5], [5, 0], [4, 0], [3, 0]]]] },
+        referral: { label: '推荐关系', note: '仅展示授权范围内的聚合结果，不代表团队经营权限', headers: ['推荐团长', '其社群数', '社群成员', '本周新增'], colors: ['#F7B65C', '#34A37A', '#7C3AED', '#D93025'], rows: [['推荐', [[3, 1], [5, 0], [38, 0], [6, 6]]], ['发展', [[2, 0], [3, 0], [18, 0], [3, 3]]], ['会员', [[0, 0], [1, 0], [12, 0], [2, 2]]]] }
+      },
+      teams: [['3', '直属社群', '可运营'], ['3', '推荐团长', '只读聚合'], ['8', '推荐会员', '只读聚合']]
+    }
+  };
+  var current = shared[ROLE];
+  var growth = isAgent
+    ? [['<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5A2.5 2.5 0 0 1 13 8v11H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5h-6.5A2.5 2.5 0 0 0 11 8v11h6.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>', '团队成长', '团长赋能课程', '6', 'training'], ['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '直属成员与发展关系', '10', '我的团队']]
+    : [['<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h6.5A2.5 2.5 0 0 1 13 8v11H6.5A2.5 2.5 0 0 0 4 21.5z"/><path d="M20 5.5h-6.5A2.5 2.5 0 0 0 11 8v11h6.5a2.5 2.5 0 0 1 2.5 2.5z"/></svg>', '团队成长', '成长课程', '6', 'training'], ['<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M6 20v-1.5A4.5 4.5 0 0 1 10.5 14h3A4.5 4.5 0 0 1 18 18.5V20"/><path d="M4 20h16"/></svg>', '我的团队', '推荐成员与社群关系', '8', '我的团队']];
+  var growthItemsHtml = growth.map(function(item){ var action = item[4] === 'training' ? ' data-nav="training"' : ' data-team-page="overview" data-team-title="我的团队"'; return '<div class="team-growth-item"' + action + ' role="button"><span class="team-growth-icon">' + item[0] + '</span><span class="team-growth-copy"><span class="team-growth-title">' + esc(item[1]) + '</span><span class="team-growth-desc">' + esc(item[2]) + '</span></span><span class="team-growth-count">' + item[3] + '</span><span class="team-growth-arrow">›</span></div>'; }).join('');
+  var growthHtml = '<div class="team-functions"><div class="team-growth-grid">' + growthItemsHtml + '</div></div>';
+  var metricsHtml = '<div class="influence-metrics influence-metrics--standalone"><div class="influence-metric"><span class="influence-metric-v">' + esc(current.influence) + '</span><span class="influence-metric-l">影响力人数</span></div><div class="influence-metric"><span class="influence-metric-v">' + esc(current.income) + '</span><span class="influence-metric-l">' + esc(current.incomeNote) + '</span></div></div>';
+  var incomeHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">预计收入分析</span><span class="influence-card-note">' + (isAgent ? '经营收益口径' : '佣金收益口径') + '</span></div><div class="donut-wrap"><div class="donut">' + donutSvg(D.money.donut.items) + '<div class="donut-c"><span class="donut-cv">' + esc(current.income) + '</span><span class="donut-cl">预计收入</span></div></div><div class="donut-legend">' + D.money.donut.items.map(function(it){ return '<div class="donut-li"><span class="donut-dot" style="background:' + it[1] + '"></span>' + esc(it[0]) + '<span class="dv">¥' + it[2] + '</span></div>'; }).join('') + '</div></div></div>';
+  var tabKeys = Object.keys(current.tabs);
+  var tabKey = current.tabs[INFLUENCE_TAB] ? INFLUENCE_TAB : tabKeys[0];
+  INFLUENCE_TAB = tabKey;
+  var tabData = current.tabs[tabKey];
+  var tabHtml = '<div class="influence-detail-tabs" role="tablist">' + tabKeys.map(function(key){ return '<div class="influence-detail-tab' + (key === tabKey ? ' is-active' : '') + '" data-influence-tab="' + key + '" role="tab">' + current.tabs[key].label + '</div>'; }).join('') + '</div>';
+  var rowsHtml = tabData.rows.map(function(row){ return '<tr><td>' + esc(row[0]) + '</td>' + row[1].map(function(cell, index){ var metric = tabData.headers[index]; var title = row[0] + ' · ' + metric + '明细'; return '<td data-team-page="metric" data-team-title="' + esc(title) + '" data-team-scope="' + esc(row[0]) + '" data-team-metric="' + esc(metric) + '" data-team-count="' + esc(cell[0]) + '" data-team-weekly-add="' + esc(cell[1] || 0) + '" data-team-potential="' + esc(cell[2] || 0) + '"><span class="influence-value">' + cell[0] + (cell[1] ? '<span class="influence-add">+' + cell[1] + '</span>' : '') + '</span>' + (cell[2] ? '<span class="influence-potential">潜在 ' + cell[2] + '</span>' : '') + '</td>'; }).join('') + '</tr>'; }).join('');
+  var headersHtml = tabData.headers.map(function(header, index){ return '<th><span class="influence-dot" style="background:' + tabData.colors[index] + '"></span>' + esc(header) + '</th>'; }).join('');
+  var matrixHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">影响力详情</span><span class="influence-card-note">' + esc(tabData.label) + '</span></div>' + tabHtml + '<div class="influence-tab-note" data-influence-note>' + esc(tabData.note) + '</div><table class="influence-matrix"><thead><tr><th>关系层级</th>' + headersHtml + '</tr></thead><tbody data-influence-rows>' + rowsHtml + '</tbody></table><div class="inf-note"><span class="inf-plus">+</span><span>红色 +N 为本周新增人数，点击表格数字查看授权范围内的来源明细</span></div></div>';
+  var teamTitle = isAgent ? '旗下运营网络' : '我的社群与推荐';
+  var teamHtml = '<div class="card card-pad influence-card wx-view"><div class="influence-card-head"><span class="influence-card-title">' + teamTitle + '</span><span class="influence-card-note">点击查看成员与下一级关系</span></div><div class="influence-team-grid">' + current.teams.map(function(item){ return '<div class="influence-team-cell" data-team-page="relation" data-team-title="' + esc(item[1]) + '" data-team-scope="' + esc(item[2]) + '" role="button"><span class="influence-team-go">›</span><span class="influence-team-v">' + item[0] + '</span><span class="influence-team-l">' + esc(item[1]) + '</span><span class="influence-team-s">' + esc(item[2]) + '</span></div>'; }).join('') + '</div></div>';
+  var boundaryHtml = '<div class="influence-boundary"><span><b>' + (isAgent ? '代理权限' : '团长权限') + '</b> · ' + (isAgent ? '直属团队可经营，发展与推荐关系仅查看授权聚合' : '直属社群可运营，推荐关系仅查看授权聚合') + '</span></div>';
+  return growthHtml + metricsHtml + incomeHtml + matrixHtml + teamHtml + boundaryHtml;
+}
+
+var TEAM_PAGE_STACK = [];
+var TEAM_TREE_EXPANDED = {};
+var TEAM_PAGE_ROWS = {
+  agent: [['王敏', '直属团长 · 杭州妈妈成长群', '86', '累计成员'], ['李芳', '直属团长 · 职场成长社群', '64', '累计成员'], ['周舟', '直属团长 · 亲子阅读群', '52', '累计成员']],
+  leader: [['林晓', '推荐团长 · 已发展 2 个社群', '38', '累计成员'], ['周宁', '推荐团长 · 已发展 1 个社群', '26', '累计成员'], ['孙悦', '推荐会员 · 已加入社群', '12', '累计推荐']]
+};
+
+// 成员数据池、映射表及工具函数（esc/levelBadge/getMemberPool/memberRowHtml 等）
+// 已提取到同目录 team-member-utils.js，通过外部 script 引入
+
+
+function teamItems(){ return ROLE === 'agent' ? [['社群成员', '#7C3AED', 286], ['团长', '#F7B65C', 8], ['代理', '#34A37A', 2]] : [['社群成员', '#7C3AED', 168], ['团长', '#F7B65C', 5], ['推荐', '#34A37A', 9]]; }
+function teamRows(page){
+  var keyword = (page.keyword || '').trim();
+  return TEAM_PAGE_ROWS[ROLE].filter(function(row){ return !keyword || row[0].indexOf(keyword) > -1 || row[1].indexOf(keyword) > -1; }).map(function(row, index){
+    var name = page.type === 'next' ? row[0] + '团队' : row[0];
+    var meta = page.type === 'next' ? '下一级关系 · ' + (index + 1) + ' 个社群' : row[1];
+    var value = page.type === 'next' ? Math.max(3, Number(row[2]) - 18) : row[2];
+    return '<div class="team-member-row" data-team-member="' + esc(name) + '" role="button"><img class="team-member-avatar" src="' + avatarFor(name) + '" alt=""><span class="team-member-copy"><span class="team-member-name">' + levelBadge(page.type === 'next' ? 'LEADER' : (ROLE === 'agent' ? 'LEADER' : 'MEMBER')) + esc(name) + '</span><span class="team-member-meta">' + esc(meta) + '</span></span><span class="team-member-value"><b>' + value + '</b><span>' + esc(row[3]) + '</span></span><span class="team-member-go">›</span></div>';
+  }).join('');
+}
+function teamHeader(page){ return '<div class="team-fullscreen-head"><span class="team-fullscreen-back" data-team-full-back role="button">‹</span><span class="team-fullscreen-title">' + esc(page.title) + '</span><span class="team-fullscreen-spacer"></span></div>'; }
+function teamSummary(total, items){ return '<div class="team-page-summary"><div class="donut">' + donutSvg(items) + '<div class="donut-c"><span class="donut-cv">' + total + '</span><span class="donut-cl">团队人数</span></div></div><div class="team-page-stats">' + items.map(function(item){ return '<div class="team-page-stat"><span><span class="influence-dot" style="background:' + item[1] + '"></span>' + esc(item[0]) + '</span><b>' + item[2] + '</b></div>'; }).join('') + '</div></div>'; }
+function teamTreeChildren(nodes, parentId){
+  return nodes.filter(function(node){ return node.parentId === parentId; });
+}
+function flattenTeamTree(nodes, parentId, depth){
+  var result = [];
+  teamTreeChildren(nodes, parentId).forEach(function(node){
+    result.push({ node: node, depth: depth });
+    if (TEAM_TREE_EXPANDED[node.id]) result = result.concat(flattenTeamTree(nodes, node.id, depth + 1));
+  });
+  return result;
+}
+function teamTreeRowHtml(item, nodes){
+  var m = item.node;
+  var hasChildren = teamTreeChildren(nodes, m.id).length > 0;
+  var expanded = !!TEAM_TREE_EXPANDED[m.id];
+  var nestedClass = item.depth > 0 ? ' team-tree-row--nested' : '';
+  var expandAttr = hasChildren ? ' data-team-expand="' + esc(m.id) + '"' : '';
+  var shortLevel = m.level === 'LEADER' ? '团长' : esc(m.level);
+  return '<div class="mbr-row mbr-row--agent team-tree-row' + nestedClass + '" data-team-member="' + esc(m.name) + '"' + expandAttr + ' role="button" aria-expanded="' + (hasChildren ? String(expanded) : 'false') + '">' +
+    '<span class="team-avatar-wrap"><img class="mbr-avatar" src="' + m.avatar + '" alt=""><span class="team-avatar-level">' + shortLevel + '</span></span>' +
+    '<span class="mbr-copy">' +
+      '<span class="mbr-name-line"><span class="mbr-name">' + esc(m.name) + '</span></span>' +
+      '<span class="mbr-agent-id">' + esc(m.id) + '</span>' +
+      '<span class="mbr-agent-balance">余额：¥' + esc(m.balance) + '</span>' +
+    '</span>' +
+    '<span class="mbr-go" data-team-view-profile="' + esc(m.name) + '" role="button" aria-label="查看' + esc(m.name) + '详情">›</span>' +
+  '</div>';
+}
+function renderTeamPage(){
+  var el = document.getElementById('teamFullscreen');
+  if (!el || !TEAM_PAGE_STACK.length) return;
+  var page = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+  var items = teamItems();
+  var path = TEAM_PAGE_STACK.map(function(item){ return item.title; }).join('  ›  ');
+  var body = teamHeader(page) + '<div class="team-page-path">' + esc(path) + '</div>';
+  if (page.type === 'overview') {
+    // 团队总览页（参考 T62 我的下线代理设计）
+    var TEAM_LEVELS = [
+      { code: 'D1', name: 'D1 · 创始人', color: '#7C3AED', count: 18 },
+      { code: 'D2', name: 'D2 · 核心合伙人', color: '#F7B65C', count: 62 },
+      { code: 'D3', name: 'D3 · 事业合伙人', color: '#5B8DEF', count: 96 },
+      { code: 'D4', name: 'D4 · 分公司负责人', color: '#34A37A', count: 124 },
+      { code: 'D5', name: 'D5 · 分公司合伙人', color: '#4C9B8A', count: 80 },
+      { code: 'LEADER', name: '团长', color: '#9CA3AF', count: 88 }
+    ];
+    var TEAM_TOTAL = 468;
+    var TEAM_AGENT_LIST = [
+      { name: '王敏', id: 'jiangjie0076', level: 'D2', balance: '4353.00', avatar: avatarFor('王敏'), parentId: null },
+      { name: '李芳', id: 'mingxing0815', level: 'D3', balance: '2180.50', avatar: avatarFor('李芳'), parentId: null },
+      { name: '周舟', id: 'weixing-2024', level: 'D4', balance: '1560.00', avatar: avatarFor('周舟'), parentId: null },
+      { name: '屋顶小仙女', id: 'xinxing-888', level: 'D5', balance: '880.00', avatar: avatarFor('屋顶小仙女'), parentId: null },
+      { name: '周末', id: 'xiaoxing-007', level: 'LEADER', balance: '320.00', avatar: avatarFor('周末'), parentId: 'jiangjie0076' },
+      { name: '金小叼', id: 'juxing-666', level: 'D2', balance: '8920.00', avatar: avatarFor('金小叼'), parentId: 'jiangjie0076' },
+      { name: '蜂乐玛主理官大发', id: 'mx-bx-2024', level: 'D3', balance: '3450.00', avatar: avatarFor('蜂乐玛主理官大发'), parentId: 'juxing-666' },
+      { name: '大神很忙表示一点也不…', id: 'wx-no1', level: 'LEADER', balance: '1260.00', avatar: avatarFor('大神很忙表示一点也不…'), parentId: 'mingxing0815' }
+    ];
+    var teamLv = page.levelTab || '全部';
+    var teamMembers = (teamLv === '全部' ? TEAM_AGENT_LIST : TEAM_AGENT_LIST.filter(function(m){ return m.level === teamLv || TEAM_LEVELS.some(function(level){ return level.name === teamLv && level.code === m.level; }); })).map(function(member){
+      var hasVisibleParent = TEAM_AGENT_LIST.some(function(parent){ return parent.id === member.parentId && teamLv === '全部' ? true : parent.id === member.parentId && parent.level === member.level; });
+      return hasVisibleParent ? member : Object.assign({}, member, { parentId: null });
+    });
+    var teamDonutItems = TEAM_LEVELS.map(function(l){ return [l.name, l.color, l.count]; });
+    body += '<div class="team-hero"><div class="team-hero-label">我的团队总人数</div><div class="team-hero-total">' + TEAM_TOTAL + '</div></div>';
+    body += '<div class="team-donut-card"><div class="donut">' + donutSvg(teamDonutItems) + '<div class="donut-c"><span class="donut-cv">' + TEAM_TOTAL + '</span><span class="donut-cl">总人数</span></div></div><div class="team-level-legend">' + TEAM_LEVELS.map(function(l){ return '<div class="team-level-li"><span class="team-level-dot" style="background:' + l.color + '"></span><span class="team-level-name">' + l.name + '</span><span class="team-level-count">' + l.count + '</span></div>'; }).join('') + '</div></div>';
+    body += '<div class="team-recommend-row"><span class="team-recommend-label">推荐代理 <b>' + (ROLE === 'agent' ? '196' : '88') + '</b></span><span class="team-recommend-btn" data-team-referral role="button">查看推荐 ›</span></div>';
+    body += '<div class="team-page-tabs">' + ['全部'].concat(TEAM_LEVELS.map(function(l){ return l.name; })).map(function(t){ return '<span class="team-page-tab' + (teamLv === t ? ' is-active' : '') + '" data-team-level-tab="' + t + '">' + t + '</span>'; }).join('') + '</div>';
+    var teamTreeRows = flattenTeamTree(teamMembers, null, 0);
+    body += '<div class="team-page-list">' + (teamTreeRows.length ? teamTreeRows.map(function(item){ return teamTreeRowHtml(item, teamMembers); }).join('') : '<div class="mbr-empty">暂无该等级成员</div>') + '</div>';
+  } else if (page.type === 'referral') {
+    // 查看推荐人页（参考 T63 设计）
+    var REF_LEVELS = [
+      { code: 'D1', name: 'D1 · 创始人', color: '#7C3AED', count: 18 },
+      { code: 'D2', name: 'D2 · 核心合伙人', color: '#F7B65C', count: 32 },
+      { code: 'D3', name: 'D3 · 事业合伙人', color: '#5B8DEF', count: 68 },
+      { code: 'D4', name: 'D4 · 分公司负责人', color: '#34A37A', count: 62 },
+      { code: 'D5', name: 'D5 · 分公司合伙人', color: '#4C9B8A', count: 43 },
+      { code: 'LEADER', name: '团长', color: '#9CA3AF', count: 33 },
+      { code: 'MEMBER', name: '会员', color: '#D1D5DB', count: 22 }
+    ];
+    var REF_TOTAL = 278;
+    var REF_LIST = [
+      { name: '我是核心合伙人E', id: 'jiangjie0076', identity: 'D2', refCount: 25, avatar: avatarFor('王敏') },
+      { name: '推荐达人01', id: 'tuijian-001', identity: 'D3', refCount: 18, avatar: avatarFor('李芳') },
+      { name: '裂变小能手', id: 'liebian-888', identity: 'D4', refCount: 14, avatar: avatarFor('周舟') },
+      { name: '社群推广大使', id: 'sqtg-2024', identity: 'D5', refCount: 12, avatar: avatarFor('屋顶小仙女') },
+      { name: '好友收割机', id: 'hy-sgj', identity: 'LEADER', refCount: 9, avatar: avatarFor('周末') },
+      { name: '口碑传播者', id: 'kbcb-zhe', identity: 'MEMBER', refCount: 6, avatar: avatarFor('金小叼') }
+    ];
+    var refDonutItems = REF_LEVELS.map(function(l){ return [l.name, l.color, l.count]; });
+    body += '<div class="team-hero"><div class="team-hero-label">我 推荐的人数</div><div class="team-hero-total">' + REF_TOTAL + '</div></div>';
+    body += '<div class="team-donut-card"><div class="donut">' + donutSvg(refDonutItems) + '<div class="donut-c"><span class="donut-cv">' + REF_TOTAL + '</span><span class="donut-cl">推荐人数</span></div></div><div class="team-level-legend">' + REF_LEVELS.map(function(l){ return '<div class="team-level-li"><span class="team-level-dot" style="background:' + l.color + '"></span><span class="team-level-name">' + l.name + '</span><span class="team-level-count">' + l.count + '</span></div>'; }).join('') + '</div></div>';
+    body += '<div class="team-page-list">' + REF_LIST.map(function(m){
+      return '<div class="mbr-row mbr-row--referral" data-team-member="' + esc(m.name) + '" role="button">' +
+        '<img class="mbr-avatar" src="' + m.avatar + '" alt="">' +
+        '<span class="mbr-copy">' +
+          '<span class="mbr-name-line">' + levelBadge(m.identity) + '<span class="mbr-name">' + esc(m.name) + '</span></span>' +
+          '<span class="mbr-agent-id">' + esc(m.id) + '</span>' +
+          '<span class="mbr-ref-count">已累计推荐 <b>' + m.refCount + '</b> 人</span>' +
+        '</span>' +
+        '<span class="mbr-go">›</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  } else if (page.type === 'relation' || page.type === 'next') {
+    body += teamSummary(page.type === 'next' ? '68' : (ROLE === 'agent' ? '326' : '182'), items);
+    body += '<div class="team-page-tabs"><span class="team-page-tab is-active">全部</span><span class="team-page-tab">直属</span><span class="team-page-tab">本周新增</span></div>';
+    body += '<div class="team-page-section-head"><span class="team-page-section-title">' + (page.type === 'next' ? '下一级关系' : '成员名单') + '</span><span class="team-page-section-note">点击查看成员详情</span></div><div class="team-page-list">' + teamRows(page) + '</div>';
+  } else if (page.type === 'metric') {
+    // 新增成员列表页（参考图设计：搜索 + 关系Tab + 日期分组 + 成员行）
+    var pool = getMemberPool(page.metric);
+    var scope = page.scope || '全部';
+    var relTabs = getRelationTabs(pool.label);
+    var members = filterMembersByKeyword(pool.members, page.keyword);
+    members = filterMembersByScope(members, scope);
+    body += '<div class="team-page-summary mbr-summary"><div><span class="influence-metric-v">' + esc(page.count) + '</span><span class="influence-metric-l">' + esc(page.metric) + '</span></div><div class="team-page-stats"><div class="team-page-stat"><span>本周新增</span><b style="color:#D93025;">+' + esc(page.weeklyAdd || 0) + '</b></div>' + (Number(page.potential) > 0 ? '<div class="team-page-stat"><span>潜在</span><b>' + esc(page.potential) + '</b></div>' : '') + '<div class="team-page-stat"><span>关系范围</span><b>' + esc(scope) + '</b></div></div></div>';
+    body += '<div class="team-page-search"><input data-team-search value="' + esc(page.keyword || '') + '" placeholder="请输入微信名"><button data-team-search-submit>查询</button></div>';
+    body += '<div class="team-page-tabs">' + relTabs.map(function(t){ return '<span class="team-page-tab' + ((page.relTab || '全部') === t ? ' is-active' : '') + '" data-team-rel-tab="' + t + '">' + t + '</span>'; }).join('') + '</div>';
+    body += '<div class="mbr-date-bar"><span>10月1日（今日）</span><span>' + esc(pool.label) + '：' + members.length + '个</span></div>';
+    body += '<div class="team-page-list">' + (members.length ? members.map(function(m, i){ return memberRowHtml(m, pool.actions[i % pool.actions.length]); }).join('') : '<div class="mbr-empty">暂无匹配成员</div>') + '</div>';
+  } else if (page.type === 'member') {
+    // 成员详情页（参考图设计：信息卡 + 联系网格 + 下级用户列表）
+    var name = page.member;
+    var pool = getMemberPool(page.metric || '');
+    var member = pool.members.filter(function(m){ return m.name === name; })[0] || pool.members[0];
+    var relType = (page.scope && page.scope !== '全部') ? page.scope + (ROLE === 'agent' ? '成员' : '会员') : (ROLE === 'agent' ? '直属团长' : '直属体验');
+    var subMembers = pool.members.filter(function(m){ return m.name !== name; }).slice(0, 5);
+    body += '<div class="mbr-profile-card">' +
+      '<div class="mbr-profile-top">' +
+        '<img class="mbr-profile-avatar" src="' + avatarFor(member.name) + '" alt="">' +
+        '<div class="mbr-profile-head">' +
+          '<div class="mbr-profile-name-line">' + levelBadge(member.level) + '<span class="mbr-profile-name">' + esc(member.name) + '</span><span class="mbr-copy-btn" data-copy="' + esc(member.name) + '" role="button">复制</span></div>' +
+          '<div class="mbr-profile-rel">关系类型：' + esc(relType) + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="mbr-contact-grid">' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">手机</span><span class="mbr-contact-v">' + esc(member.phone) + '</span><span class="mbr-copy-btn" data-copy="' + esc(member.phone) + '" role="button">复制</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">微信</span><span class="mbr-contact-v">' + esc(member.wechat) + '</span><span class="mbr-copy-btn" data-copy="' + esc(member.wechat) + '" role="button">复制</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">地区</span><span class="mbr-contact-v">' + esc(member.region) + '</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">推荐</span><span class="mbr-contact-v">' + esc(member.name) + '</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">注册</span><span class="mbr-contact-v">' + esc(member.date) + '</span></div>' +
+        '<div class="mbr-contact-cell"><span class="mbr-contact-ico">消费</span><span class="mbr-contact-v">' + esc(member.amount) + '</span></div>' +
+      '</div>' +
+      '<div class="mbr-skin-tags">' + esc(member.skin) + '</div>' +
+    '</div>';
+    body += '<div class="mbr-sub-head">下级用户：' + member.subCount + '人</div>';
+    body += '<div class="team-page-list">' + subMembers.map(function(sm){
+      return '<div class="mbr-sub-row" data-team-member="' + esc(sm.name) + '" role="button">' +
+        '<img class="mbr-sub-avatar" src="' + avatarFor(sm.name) + '" alt="">' +
+        '<span class="mbr-sub-copy">' +
+          '<span class="mbr-sub-name">' + levelBadge(sm.level) + esc(sm.name) + '</span>' +
+          '<span class="mbr-sub-count">下级用户：' + sm.subCount + '人</span>' +
+        '</span>' +
+        '<span class="mbr-view-btn" data-team-view-profile="' + esc(sm.name) + '" role="button">查看资料</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+  el.innerHTML = '<div class="team-fullscreen-page">' + body + '</div>';
+  el.classList.add('is-open');
+}
+function openTeamPage(page){ TEAM_PAGE_STACK = [page]; renderTeamPage(); }
+function pushTeamPage(page){ TEAM_PAGE_STACK.push(page); renderTeamPage(); }
+function closeTeamFullscreen(){ TEAM_PAGE_STACK = []; var el = document.getElementById('teamFullscreen'); if (el) { el.classList.remove('is-open'); el.innerHTML = ''; } }
+function backTeamPage(){ if (TEAM_PAGE_STACK.length > 1) { TEAM_PAGE_STACK.pop(); renderTeamPage(); } else closeTeamFullscreen(); }
+
+function renderSubBody(){
+  var el = document.getElementById('subBody');
+  if (!el) return;
+  var D = DASHBOARD[ROLE];
+  var h = '';
+  if (SUBTAB === 'influence') {
+    el.innerHTML = renderInfluenceBody(D);
+    return;
+  }
+  if (SUBTAB === 'network' || SUBTAB === 'recommend') {
+    var N = D[SUBTAB];
+    var networkTitle = SUBTAB === 'network' ? '发展网络' : (ROLE === 'agent' ? '推荐网络' : '我的推荐');
+    var networkNote = SUBTAB === 'network' ? '发展关系 · 只读聚合，不替代直属经营数据' : '推荐关系 · 只读聚合，不展示无关链条数据';
+    h += '<div class="inf-hero"><div class="inf-hero-card"><div class="inf-hero-cell"><span class="inf-hero-v">' + N.hero[0] + '</span><span class="inf-hero-l">' + networkTitle + '</span></div><div class="inf-hero-cell"><span class="inf-hero-v">' + N.hero[1] + '</span><span class="inf-hero-l">只读覆盖</span></div></div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">可见范围</span><span class="t-tiny wx-text">' + networkNote + '</span></div><div class="funnel-grid">' + N.funnel.map(function(f){ return '<div class="funnel-cell" data-funnel="' + esc(f[0]) + '" role="button"><span class="funnel-go">›</span><span class="funnel-v">' + esc(f[1]) + '</span><span class="funnel-l">' + esc(f[0]) + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + networkTitle + '明细</span><span class="t-tiny wx-text">关系标签</span></div>' + N.rows.map(function(r){ return '<div class="team-row"><span class="team-row-t">' + esc(r[0]) + '<small style="display:block;font-size:10px;color:#A9906F;margin-top:2px;">' + esc(r[1]) + '</small></span><span class="team-row-v">' + esc(r[2]) + '</span><span class="team-row-go">›</span></div>'; }).join('') + '</div>';
+  } else if (SUBTAB === 'people' || SUBTAB === 'team') {
+    var teamMode = SUBTAB === 'team';
+    var P = teamMode ? D.team : D.people;
+    h += '<div class="inf-hero"><div class="inf-hero-card"><div class="inf-hero-cell"><span class="inf-hero-v">' + P.hero[0] + '</span><span class="inf-hero-l">' + (teamMode ? '名下团长' : '我的社群') + '</span></div><div class="inf-hero-cell"><span class="inf-hero-v">' + P.hero[1] + '</span><span class="inf-hero-l">覆盖成员</span></div></div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长状态（人）' : '社群成员概览') + '</span><span class="t-tiny wx-text">本周</span></div><div class="funnel-grid">' + P.funnel.map(function(f){ return '<div class="funnel-cell" data-funnel="' + esc(f[0]) + '" role="button"><span class="funnel-go">›</span><span class="funnel-v">' + esc(f[1]) + '</span><span class="funnel-l">' + esc(f[0]) + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长状态（人）' : '成员状态（人）') + '</span><span class="t-tiny wx-text">点击查看明细</span></div><div class="donut-wrap"><div class="donut">' + donutSvg(P.donut.items) + '<div class="donut-c"><span class="donut-cv">' + P.donut.total + '</span><span class="donut-cl">' + (teamMode ? '团长总数' : '覆盖成员') + '</span></div></div><div class="donut-legend">' + P.donut.items.map(function(it){ return '<div class="donut-li"><span class="donut-dot" style="background:' + it[1] + '"></span>' + esc(it[0]) + '<span class="dv">' + it[2] + '</span></div>'; }).join('') + '</div></div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (teamMode ? '团长档案与活跃度' : '我的社群') + '</span><span class="t-tiny wx-text">下钻详情</span></div>' + P.rows.map(function(r){ return '<div class="team-row' + (teamMode ? ' mp-nav' : '') + '"' + (teamMode ? ' data-nav="agent-info"' : '') + ' role="button"><span class="team-row-t">' + esc(r[0]) + '<small style="display:block;font-size:10px;color:#A9906F;margin-top:2px;">' + esc(r[1]) + '</small></span><span class="team-row-v">' + esc(r[2]) + '</span><span class="team-row-go">›</span></div>'; }).join('') + '</div>';
+    if (ROLE === 'agent' && teamMode) h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">团长申请</span><span class="t-tiny wx-text">待处理 3 项</span></div><div class="team-row" data-gosub="process" role="button"><span class="team-row-t">待初审团长申请</span><span class="team-row-v">2</span><span class="team-row-go">›</span></div><div class="team-row" data-gosub="process" role="button"><span class="team-row-t">平台复审中</span><span class="team-row-v">1</span><span class="team-row-go">›</span></div></div>';
+  } else if (SUBTAB === 'money') {
+    var M = D.money;
+    var repTabs = PERIODS.map(function(p){ return '<div class="rep-tab' + (p === PERIOD ? ' rep-tab--on' : '') + '" data-period="' + p + '" role="button">' + p + '</div>'; }).join('');
+    h += '<div class="rep-head"><span class="rep-l">' + M.title + '（元）</span><div class="rep-num">¥' + M.total + '</div><div class="rep-sub"><span class="rep-wd">' + (ROLE === 'agent' ? '销售回款与库存经营' : '预计佣金 <b>¥' + M.status[1][0] + '</b>') + '</span>' + '<div class="rep-btn" data-gosub="process" role="button">' + (ROLE === 'agent' ? '查看订单' : '查看结算') + '</div>' + '</div><div class="rep-tabs">' + repTabs + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '经营构成（元）' : '佣金构成（元）') + '</span><span class="t-tiny wx-text">' + PERIOD + '</span></div><div class="rep-split">' + M.values.map(function(v, i){ return '<div class="rep-split-cell"><span class="rep-split-v">¥' + v + '</span><span class="rep-split-l">' + M.labels[i] + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '经营状态' : '佣金状态') + '</span><span class="t-tiny wx-text">本周</span></div><div class="status-grid">' + M.status.map(function(s, i){ return '<div class="status-cell"><span class="status-v' + (i === 0 ? ' status-v--ok' : '') + '">' + (ROLE === 'agent' && i < 2 ? '¥' : '¥') + s[0] + '</span><span class="status-l">' + s[1] + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '按团长成交贡献' : '订单佣金明细') + '</span><span class="t-tiny wx-text">本周</span></div><div class="rep-table-h"><span>类别</span><span>订单量</span><span>' + (ROLE === 'agent' ? '预计利润' : '预计佣金') + '</span><span></span></div>' + M.categories.map(function(c){ return '<div class="rep-table-r" data-funnel="' + esc(c[0]) + '" role="button"><span>' + esc(c[0]) + '</span><span class="m">' + esc(c[1]) + '</span><span class="m">' + esc(c[2]) + '</span><span class="r-go">›</span></div>'; }).join('') + '</div>';
+  } else if (SUBTAB === 'process') {
+    var R = D.process;
+    h += '<div class="audit-todo" style="padding:0 10.32px;">' + R.todo.map(function(t){ return '<div class="audit-todo-cell" data-funnel="' + esc(t[1]) + '" role="button"><span class="audit-todo-v">' + t[0] + '</span><span class="audit-todo-l">' + esc(t[1]) + '</span></div>'; }).join('') + '</div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '审核与履约事项' : '我的订单与服务事项') + '</span><span class="t-tiny wx-text">点击处理</span></div>' + R.list.map(function(r){ return '<div class="audit-row" data-funnel="' + esc(r[0]) + '" role="button"><span class="audit-dot audit-dot--' + r[3] + '"></span><div class="f-1"><div class="audit-t">' + esc(r[0]) + '</div><div class="audit-d">' + esc(r[1]) + '</div></div><span class="audit-st audit-st--' + r[3] + '">' + esc(r[2]) + '</span></div>'; }).join('') + '</div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '库存与订单履约' : '我推广的订单') + '</span><span class="t-tiny wx-text mp-nav" data-nav="orders" style="cursor:pointer;">全部 ›</span></div>' + R.orders.map(function(o){ return '<div class="team-row mp-nav" data-nav="orders" role="button"><span class="team-row-t">' + esc(o[0]) + '</span><span class="team-row-v">' + esc(o[1]) + '</span><span class="team-row-go">›</span></div>'; }).join('') + '</div>';
+  } else if (SUBTAB === 'marketing') {
+    var K = D.marketing;
+    h += '<div class="dir-card"><div class="dir-head"><span class="dir-tag">' + K.tag + '</span></div><div class="dir-t">' + K.title + '</div><div class="dir-d">' + K.desc + '</div><div class="dir-chips">' + K.chips.map(function(c){ return '<span class="dir-chip">' + esc(c) + '</span>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + (ROLE === 'agent' ? '给团长下发任务' : '推广执行') + '</span><span class="t-tiny wx-text">点击平台 · AI 军师帮你写</span></div><div class="dist-grid">' + DIST.map(function(p){ return '<div class="dist-tile mp-nav" data-nav="ai"><div class="dist-ico">' + PLATS[p.n] + '</div><span class="dist-n">' + esc(p.n) + '</span><span class="dist-c">' + esc(p.c) + '</span></div>'; }).join('') + '</div></div>';
+    h += '<div class="card card-pad gap wx-view" style="margin-top:10.32px;">' + K.tools.map(function(e){ return '<div class="entry-row mp-nav" data-nav="' + e.nav + '"><div class="entry-ico">' + ENTRY_ICOS[e.ico] + '</div><div class="f-1"><div class="entry-t">' + esc(e.t) + '</div><div class="entry-d">' + esc(e.d) + '</div></div><span class="entry-go">›</span></div>'; }).join('') + '</div>';
+    el.innerHTML = h;
+    renderHero('subBody');
+    renderSections('subBody');
+    return;
+  }
+  el.innerHTML = h;
+}
+
+function renderSections(targetId){
+  var html = '';
+  ROLES[ROLE].sections.forEach(function(sec){
+    html += '<div class="card card-pad gap wx-view">' +
+      '<div class="f-between mb-8 wx-view"><span class="col-h wx-text">' + esc(sec.title) + '</span>' +
+      '<span class="t-tiny wx-text">' + esc(sec.sub) + '</span></div>';
+    sec.tasks.forEach(function(task){ html += rowHtml(task, sec.type); });
+    html += '</div>';
+  });
+  var el = document.getElementById(targetId);
+  if (targetId === 'tkSections') el.innerHTML = html;
+  else el.insertAdjacentHTML('beforeend', html);
+}
+
+function renderAll(){
+  renderPills();
+  if (ROLE === 'member') {
+    document.getElementById('tkWork').innerHTML = '';
+    renderHero('tkHeroZone');
+    renderSections('tkSections');
+  } else {
+    document.getElementById('tkHeroZone').innerHTML = '';
+    document.getElementById('tkSections').innerHTML = '';
+    renderWorkbench();
+  }
+}
+
+// 身份切换（校验解锁）
+function switchRole(r){
+  if (!ROLES[r]) return;
+  if (!UNLOCKED[r]) { openUnlock(r); return; }
+  if (ROLE === r) return;
+  closeTeamFullscreen();
+  ROLE = r;
+  SUBTAB = 'influence';
+  INFLUENCE_TAB = r === 'agent' ? 'team' : 'community';
+  NETWORK_SCOPE = 'all';
+  renderAll();
+}
+
+// 解锁弹层
+var PENDING_ROLE = null;
+function openUnlock(r){
+  PENDING_ROLE = r;
+  var rule = UNLOCK_RULES[r];
+  if (!rule) return;
+  document.getElementById('unlockH').textContent = rule.title;
+  document.getElementById('unlockD').textContent = rule.desc;
+  var list = '';
+  rule.conds.forEach(function(c){
+    list += '<div class="unlock-li"><svg viewBox="0 0 24 24" style="background-image:' + ICO_LOCK + ';background-size:100% 100%;"></svg>' + esc(c) + '</div>';
+  });
+  document.getElementById('unlockList').innerHTML = list;
+  document.getElementById('unlockMask').classList.add('is-open');
+  // 视口小于机身时，让弹层对齐可视区中心
+  requestAnimationFrame(function(){
+    var sb = document.querySelector('.unlock-sheet').getBoundingClientRect();
+    var delta = (sb.top + sb.height / 2) - (window.innerHeight / 2);
+    if (Math.abs(delta) > 4) window.scrollBy(0, delta);
+  });
+}
+document.getElementById('unlockClose').addEventListener('click', function(){
+  document.getElementById('unlockMask').classList.remove('is-open');
+});
+document.getElementById('unlockGo').addEventListener('click', function(){
+  if (PENDING_ROLE) { UNLOCKED[PENDING_ROLE] = true; switchRole(PENDING_ROLE); PENDING_ROLE = null; }
+  document.getElementById('unlockMask').classList.remove('is-open');
+});
+
+// AI 军师悬浮球 → ai.html
+document.getElementById('aiFab').addEventListener('click', function(){
+  location.href = 'ai.html' + location.search;
+});
+
+// 事件委托：身份分段器 + 子页签 + 去分发 + 周期分段（全局）
+document.getElementById('roleSw').addEventListener('click', function(e){
+  var p = e.target.closest ? e.target.closest('.topseg-item') : null;
+  if (p) switchRole(p.getAttribute('data-role'));
+});
+document.getElementById('tkWork').addEventListener('click', function(e){
+  var influenceTab = e.target.closest ? e.target.closest('[data-influence-tab]') : null;
+  if (influenceTab) {
+    INFLUENCE_TAB = influenceTab.getAttribute('data-influence-tab');
+    renderSubBody();
+    return;
+  }
+  var teamPage = e.target.closest ? e.target.closest('[data-team-page]') : null;
+  if (teamPage) {
+    openTeamPage({
+      type: teamPage.getAttribute('data-team-page'),
+      title: teamPage.getAttribute('data-team-title') || '我的团队',
+      scope: teamPage.getAttribute('data-team-scope') || '全部',
+      metric: teamPage.getAttribute('data-team-metric') || '',
+      count: teamPage.getAttribute('data-team-count') || '',
+      weeklyAdd: teamPage.getAttribute('data-team-weekly-add') || 0,
+      potential: teamPage.getAttribute('data-team-potential') || 0,
+      keyword: '',
+      filter: '本周'
+    });
+    return;
+  }
+  var pill = e.target.closest ? e.target.closest('#subTab .subtab-pill[data-sub]') : null;
+  if (pill) {
+    SUBTAB = pill.getAttribute('data-sub');
+    renderWorkbench();
+    return;
+  }
+  // 页内跳子页签（如团队页代理审核入口 → 审核子页）
+  var gosub = e.target.closest ? e.target.closest('[data-gosub]') : null;
+  if (gosub) {
+    SUBTAB = gosub.getAttribute('data-gosub');
+    document.querySelectorAll('#subTab .subtab-pill[data-sub]').forEach(function(p){
+      p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
+    });
+    renderSubBody();
+    var f = document.querySelector('.mp-frame');
+    if (f) f.scrollTo({ top: 0 });
+    window.scrollTo(0, 0);
+    return;
+  }
+  // 漏斗格下钻 → 打开新增成员列表页
+  var fcell = e.target.closest ? e.target.closest('[data-funnel]') : null;
+  if (fcell) {
+    var fLabel = fcell.getAttribute('data-funnel');
+    var fPool = getMemberPool(fLabel);
+    var fCount = fcell.querySelector('.funnel-v');
+    openTeamPage({
+      type: 'metric',
+      title: fPool.label,
+      scope: '全部',
+      metric: fLabel,
+      count: fCount ? fCount.textContent : fPool.members.length,
+      weeklyAdd: Math.max(1, Math.floor(fPool.members.length / 2)),
+      potential: 0,
+      keyword: '',
+      relTab: '全部'
+    });
+    return;
+  }
+  var act = e.target.closest ? e.target.closest('[data-act="dist"]') : null;
+  if (act) {
+    SUBTAB = 'marketing';
+    document.querySelectorAll('#subTab .subtab-pill[data-sub]').forEach(function(p){
+      p.classList.toggle('subtab-pill--on', p.getAttribute('data-sub') === SUBTAB);
+    });
+    renderSubBody();
+    // 平滑回顶，兜底瞬时滚顶（兼容 smooth 不生效的环境）；外层 window 同步回顶
+    try { document.querySelector('.mp-frame').scrollTo({ top: 0, behavior: 'smooth' }); } catch (err) {}
+    window.scrollTo(0, 0);
+    setTimeout(function(){
+      var f = document.querySelector('.mp-frame');
+      if (f && f.scrollTop > 4) f.scrollTop = 0;
+    }, 500);
+  }
+});
+
+document.getElementById('teamFullscreen').addEventListener('click', function(e){
+  var back = e.target.closest ? e.target.closest('[data-team-full-back]') : null;
+  if (back) {
+    backTeamPage();
+    return;
+  }
+  // 复制按钮
+  var copyBtn = e.target.closest ? e.target.closest('[data-copy]') : null;
+  if (copyBtn) {
+    e.stopPropagation();
+    var text = copyBtn.getAttribute('data-copy');
+    try {
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); document.body.removeChild(ta);
+    } catch (err) {}
+    var tip = document.createElement('div');
+    tip.textContent = '已复制';
+    tip.style.cssText = 'position:fixed;top:40%;left:50%;transform:translateX(-50%);background:rgba(51,33,15,.82);color:#fff;font-size:12px;padding:8px 16px;border-radius:20px;z-index:99999;white-space:nowrap;';
+    document.body.appendChild(tip);
+    setTimeout(function(){ tip.remove(); }, 1200);
+    return;
+  }
+  // 查看资料按钮 → 进入该成员详情
+  var viewBtn = e.target.closest ? e.target.closest('[data-team-view-profile]') : null;
+  if (viewBtn) {
+    e.stopPropagation();
+    var vName = viewBtn.getAttribute('data-team-view-profile');
+    var curPage = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    pushTeamPage({ type: 'member', title: vName, member: vName, metric: curPage.metric || '', scope: curPage.scope || '全部' });
+    return;
+  }
+  var expandRow = e.target.closest ? e.target.closest('[data-team-expand]') : null;
+  if (expandRow) {
+    TEAM_TREE_EXPANDED[expandRow.getAttribute('data-team-expand')] = !TEAM_TREE_EXPANDED[expandRow.getAttribute('data-team-expand')];
+    renderTeamPage();
+    return;
+  }
+  var member = e.target.closest ? e.target.closest('[data-team-member]') : null;
+  if (member) {
+    var memberName = member.getAttribute('data-team-member');
+    var currentPage = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    pushTeamPage({ type: 'member', title: memberName, member: memberName, metric: currentPage.metric || '', scope: currentPage.scope || '全部' });
+    return;
+  }
+  var nextLevel = e.target.closest ? e.target.closest('[data-team-next-level]') : null;
+  if (nextLevel) {
+    var parentName = nextLevel.getAttribute('data-team-next-level');
+    pushTeamPage({ type: 'next', title: parentName + '的下一级关系', parent: parentName, keyword: '' });
+    return;
+  }
+  var searchSubmit = e.target.closest ? e.target.closest('[data-team-search-submit]') : null;
+  if (searchSubmit) {
+    var input = document.querySelector('#teamFullscreen [data-team-search]');
+    var pg = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    pg.keyword = input ? input.value : '';
+    renderTeamPage();
+    return;
+  }
+  // 关系类型 Tab 切换
+  var relTab = e.target.closest ? e.target.closest('[data-team-rel-tab]') : null;
+  if (relTab) {
+    var p = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    p.relTab = relTab.getAttribute('data-team-rel-tab');
+    renderTeamPage();
+    return;
+  }
+  // 团队等级 Tab 切换（总览页）
+  var levelTab = e.target.closest ? e.target.closest('[data-team-level-tab]') : null;
+  if (levelTab) {
+    var lp = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    lp.levelTab = levelTab.getAttribute('data-team-level-tab');
+    renderTeamPage();
+    return;
+  }
+  // 查看推荐 → 打开推荐人页
+  var refBtn = e.target.closest ? e.target.closest('[data-team-referral]') : null;
+  if (refBtn) {
+    pushTeamPage({ type: 'referral', title: '查看推荐人' });
+    return;
+  }
+  var filter = e.target.closest ? e.target.closest('[data-team-filter]') : null;
+  if (filter) {
+    var page = TEAM_PAGE_STACK[TEAM_PAGE_STACK.length - 1];
+    page.filter = filter.getAttribute('data-team-filter');
+    renderTeamPage();
+  }
+});
+
+// 周期切换（两处独立）：.rep-tab=收益报表周期 PERIOD；.tk-per=任务进度周期 TPERIOD
+document.addEventListener('click', function(e){
+  var isRep = e.target.closest ? e.target.closest('.rep-tab') : null;
+  if (isRep) {
+    PERIOD = isRep.getAttribute('data-period');
+    renderSubBody();
+    return;
+  }
+  var c = e.target.closest ? e.target.closest('.tk-per') : null;
+  if (!c) return;
+  TPERIOD = c.getAttribute('data-period');
+  if (ROLE === 'member') renderHero('tkHeroZone');
+  else renderSubBody();
+});
+
+renderAll();
+</script>
+</body></html>

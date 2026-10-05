@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>会话聊天 · 财务官</title>
+<link rel="stylesheet" href="../css/app.css?v=20260917">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>:root{ --brand:#7C3AED; }
+[data-nav]:focus-visible{ outline:2px solid var(--brand); outline-offset:2px; }
+.chat-screen .layer{ display:flex; flex-direction:column; height:var(--screen-h); }
+.chat-flow{ flex:1; overflow-y:auto; padding:2.293px 0 12.04px; }
+.chat-time{ display:flex; justify-content:center; margin:10.32px 0 12.04px; }
+.chat-time span{ font-size:var(--fs-tiny); color:var(--ink-500); background:var(--sunk); border-radius:var(--r-pill); padding:2.293px 9.173px; }
+.chat-new{ display:flex; justify-content:center; margin:0 0 12.04px; }
+.chat-new span{ font-size:var(--fs-tiny); font-weight:700; color:var(--on-signal); background:var(--danger); border-radius:var(--r-pill); padding:2.293px 9.173px; }
+.chat-row{ display:flex; align-items:flex-start; gap:8.027px; margin-bottom:12.04px; }
+.chat-row--mine{ flex-direction:row-reverse; }
+.chat-ava{ flex:0 0 auto; }
+.chat-stack{ display:flex; flex-direction:column; gap:8.027px; max-width:76%; min-width:0; }
+.chat-bub{ max-width:76%; padding:9.173px 12.04px; box-sizing:border-box; border-radius:14.907px; background:var(--card-bg); border:0.573px solid var(--line); box-shadow:var(--sh-1); font-size:var(--fs-sec); color:var(--ink-800); line-height:1.65; }
+.chat-stack .chat-bub{ max-width:100%; }
+.chat-row:not(.chat-row--mine) .chat-bub{ border-top-left-radius:4.587px; }
+.chat-row--mine .chat-bub{ border-top-right-radius:4.587px; background:linear-gradient(135deg,#8B5CF6 0%,#7C3AED 100%); border-color:transparent; color:var(--on-signal); box-shadow:0 1.72px 6.88px rgba(124,58,237,0.22); }
+.chat-card{ background:#FFFEFA; border:0.573px solid var(--line); border-radius:11.467px; overflow:hidden; box-shadow:var(--sh-1); }
+.chat-card-h{ display:flex; align-items:center; gap:6.88px; padding:9.173px 11.467px; background:var(--sunk); border-bottom:0.573px solid var(--line-soft); }
+.chat-card-ico{ flex:0 0 auto; width:25.227px; height:25.227px; border-radius:7.453px; background:var(--sunk-3); border:0.573px solid var(--line-brand); display:flex; align-items:center; justify-content:center; }
+.chat-card-t{ font-size:var(--fs-sec); font-weight:700; color:var(--ink-900); line-height:1.3; }
+.chat-card-b{ padding:8.027px 11.467px; }
+.chat-kv{ display:flex; justify-content:space-between; align-items:baseline; gap:12.04px; padding:3.44px 0; }
+.chat-kv-l{ flex:0 0 auto; font-size:var(--fs-tiny); color:var(--ink-600); }
+.chat-kv-v{ font-size:var(--fs-tiny); color:var(--ink-900); font-weight:600; text-align:right; }
+.chat-card-f{ display:flex; gap:8.027px; padding:2.293px 11.467px 10.32px; }
+.chat-cta{ flex:1; height:29.813px; display:flex; align-items:center; justify-content:center; border-radius:var(--r-pill); font-size:var(--fs-meta); font-weight:700; }
+.chat-cta--pri{ background:var(--brand); color:var(--on-signal); }
+.chat-cta--ghost{ background:var(--sunk-2); color:var(--brand); }
+.chat-dock{ position:sticky; bottom:0; z-index:6; display:flex; align-items:center; gap:8.027px; margin:0 calc(-1 * var(--gutter)); padding:8.027px var(--gutter) calc(8.027px + var(--sab)); background:linear-gradient(180deg, rgba(255,247,236,0), rgba(255,247,236,0.94) 34%, var(--bg-base-end)); }
+.chat-tool{ flex:0 0 auto; width:34.4px; height:34.4px; display:flex; align-items:center; justify-content:center; }
+.chat-field{ flex:1; min-width:0; height:37.547px; display:flex; align-items:center; padding:0 14.907px; box-sizing:border-box; border-radius:var(--r-pill); background:var(--card-bg); border:0.573px solid var(--line); font-size:var(--fs-sec); color:var(--ink-500); }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>会话聊天</h1>
+    <code>/pages/chat/index</code>
+    <span class="mp-tag">财务官</span>
+  </div>
+  <p class="mp-note">消息首页「财务官」会话进入的微信式聊天页：角色推送用气泡 + 富卡片呈现，底部输入栏为静态展示。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar chat-screen wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">财务官 · Ava Lin</span><div class="subbar-slot wx-view"></div></div></div></div><div class="chat-flow wx-view"><div class="chat-time wx-view"><span class="mono wx-text">08-26 14:20</span></div><div class="chat-row wx-view"><div class="chat-ava wx-view"><div class="avatar wx-view" style="width:36.4px;height:36.4px;"><img class="avatar-img wx-image" src="../assets/avatars/caiwu.jpg" alt=""/></div></div><div class="chat-bub wx-view"><span class="wx-text">8 月分佣明细已生成，共 3 笔，预计今天下午到账。</span></div></div><div class="chat-row chat-row--mine wx-view"><div class="chat-ava wx-view"><div class="avatar avatar--ring wx-view" style="width:36.4px;height:36.4px;"><span class="avatar-ini wx-text" style="font-size:15.48px;">我</span></div></div><div class="chat-bub wx-view"><span class="wx-text">好的，到账了辛苦提醒我一下。</span></div></div><div class="chat-row wx-view"><div class="chat-ava wx-view"><div class="avatar wx-view" style="width:36.4px;height:36.4px;"><img class="avatar-img wx-image" src="../assets/avatars/caiwu.jpg" alt=""/></div></div><div class="chat-bub wx-view"><span class="wx-text">没问题，到账后系统也会自动推送给你。</span></div></div><div class="chat-row chat-row--mine wx-view"><div class="chat-ava wx-view"><div class="avatar avatar--ring wx-view" style="width:36.4px;height:36.4px;"><span class="avatar-ini wx-text" style="font-size:15.48px;">我</span></div></div><div class="chat-bub wx-view"><span class="wx-text">想问下提现手续费有变化吗？</span></div></div><div class="chat-row wx-view"><div class="chat-ava wx-view"><div class="avatar wx-view" style="width:36.4px;height:36.4px;"><img class="avatar-img wx-image" src="../assets/avatars/caiwu.jpg" alt=""/></div></div><div class="chat-bub wx-view"><span class="wx-text">目前维持原标准，如有调整我会第一时间同步。</span></div></div><div class="chat-time wx-view"><span class="mono wx-text">09-01 09:00</span></div><div class="chat-row wx-view"><div class="chat-ava wx-view"><div class="avatar wx-view" style="width:36.4px;height:36.4px;"><img class="avatar-img wx-image" src="../assets/avatars/caiwu.jpg" alt=""/></div></div><div class="chat-bub wx-view"><span class="wx-text">8 月分佣结算单已生成，明细在「收益」页可以下载</span></div></div><div class="chat-row chat-row--mine wx-view"><div class="chat-ava wx-view"><div class="avatar avatar--ring wx-view" style="width:36.4px;height:36.4px;"><span class="avatar-ini wx-text" style="font-size:15.48px;">我</span></div></div><div class="chat-bub wx-view"><span class="wx-text">收到，我核对下</span></div></div><div class="chat-time wx-view"><span class="mono wx-text">今天 08:30</span></div><div class="chat-new wx-view"><span class="wx-text">以下是新消息</span></div><div class="chat-row wx-view"><div class="chat-ava wx-view"><div class="avatar wx-view" style="width:36.4px;height:36.4px;"><img class="avatar-img wx-image" src="../assets/avatars/caiwu.jpg" alt=""/></div></div><div class="chat-stack wx-view"><div class="chat-card wx-view"><div class="chat-card-h wx-view"><div class="chat-card-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:14.907px;height:14.907px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M21%2012V7H5a2%202%200%200%201%200-4h14v4%22%2F%3E%3Cpath%20d%3D%22M3%205v14a2%202%200%200%200%202%202h16v-5%22%2F%3E%3Cpath%20d%3D%22M18%2012a2%202%200%200%200%200%204h4v-4Z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="chat-card-t wx-text">昨日收益已到账</span></div><div class="chat-card-b wx-view"><div class="chat-kv wx-view"><span class="chat-kv-l wx-text">到账金额</span><span class="chat-kv-v mono wx-text">¥1,284.50</span></div><div class="chat-kv wx-view"><span class="chat-kv-l wx-text">结算方式</span><span class="chat-kv-v mono wx-text">微信支付 · 分佣</span></div><div class="chat-kv wx-view"><span class="chat-kv-l wx-text">到账时间</span><span class="chat-kv-v mono wx-text">今日 08:26</span></div></div><div class="chat-card-f wx-view"><div class="chat-cta chat-cta--pri wx-view"><span class="wx-text">核对明细</span></div><div class="chat-cta chat-cta--ghost wx-view"><span class="wx-text">去提现</span></div></div></div><div class="chat-bub wx-view"><span class="wx-text">昨日收益已到账，请核对并确认。如有出入，请在 48 小时内提出异议。</span></div></div></div></div><div class="chat-dock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M12%202a3%203%200%200%200-3%203v7a3%203%200%200%200%206%200V5a3%203%200%200%200-3-3Z%22%2F%3E%3Cpath%20d%3D%22M19%2010v2a7%207%200%200%201-14%200v-2%22%2F%3E%3Cpath%20d%3D%22M12%2019v3%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><div class="chat-field wx-view"><span class="wx-text">发送消息…</span></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%3Cpath%20d%3D%22M9%209h.01%22%2F%3E%3Cpath%20d%3D%22M15%209h.01%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%3Cpath%20d%3D%22M8%2012h8%22%2F%3E%3Cpath%20d%3D%22M12%208v8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "chat--财务官";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+<script src="../js/chat-interactions.js"></script>
+</body></html>

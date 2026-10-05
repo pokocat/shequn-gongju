@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head><meta charset="UTF-8"><title>VIP 徽章参考 · 选一个喜欢的风格</title>
+<style>
+body{margin:0;padding:40px;font-family:-apple-system,sans-serif;background:#1a1a16;color:#fff;}
+h1{font-size:22px;margin-bottom:8px;}
+p{color:#aaa;margin-bottom:32px;}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
+.card{background:#252520;border-radius:12px;padding:16px;border:2px solid transparent;transition:.2s;cursor:pointer;}
+.card:hover{border-color:#F59E0B;transform:translateY(-2px);}
+.card.selected{border-color:#10B981;box-shadow:0 0 0 4px rgba(16,185,129,.25);}
+.card img{width:100%;border-radius:8px;display:block;}
+.card h3{margin:12px 0 4px;font-size:14px;}
+.card .tag{display:inline-block;background:#333;color:#ccc;font-size:11px;padding:2px 8px;border-radius:10px;margin-right:4px;}
+</style>
+</head>
+<body>
+<h1>🎮 VIP 游戏徽章参考</h1>
+<p>点击你喜欢的风格（可多选），我照着那个做</p>
+<div class="gallery">
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <img src="ref1.png" alt="Ref 1">
+    <h3>参考 A · 盾牌+宝石</h3>
+    <span class="tag">金属质感</span><span class="tag">宝石内核</span><span class="tag">护盾造型</span>
+  </div>
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <img src="ref2.jpg" alt="Ref 2">
+    <h3>参考 B · 圆形奖章</h3>
+    <span class="tag">多层金属环</span><span class="tag">古典奖章</span>
+  </div>
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <img src="ref3.png" alt="Ref 3">
+    <h3>参考 C · 王冠+宝石</h3>
+    <span class="tag">王冠造型</span><span class="tag">高端奢华</span>
+  </div>
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <img src="ref4.png" alt="Ref 4">
+    <h3>参考 D · 赛博科技风</h3>
+    <span class="tag">霓虹发光</span><span class="tag">棱角分明</span>
+  </div>
+  <div class="card" onclick="this.classList.toggle('selected')">
+    <img src="ref5.png" alt="Ref 5">
+    <h3>参考 E · 水晶钻石</h3>
+    <span class="tag">3D 水晶</span><span class="tag">钻石切面</span>
+  </div>
+</div>
+</body>
+</html>

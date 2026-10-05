@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>团长档案</title>
+<link rel="stylesheet" href="../css/app.css?v=20260917">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>
+.ag-layer{ padding-bottom: 132px; }
+/* 代理头部（渐变底 + 信息） */
+.ag-head{
+  margin:10.32px 10.32px 0; padding:14.907px; border-radius:var(--r-box);
+  background:linear-gradient(160deg,#5B21B6 0%,#7C3AED 48%,#A98BF5 100%);
+  box-shadow:0 6px 22px rgba(91,33,182,.28); color:#FFF7EC;
+}
+.ag-top{ display:flex; align-items:center; gap:11.467px; }
+.ag-ava{
+  width:54.053px; height:54.053px; border-radius:50%; flex-shrink:0;
+  background:rgba(255,252,246,.95); color:var(--signal-800);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22.933px; font-weight:800;
+  box-shadow:0 0 0 2.293px rgba(255,247,236,.35);
+}
+.ag-info{ flex:1; min-width:0; }
+.ag-name{ font-size:var(--fs-h3); font-weight:800; display:flex; align-items:center; gap:5.16px; }
+.ag-lv{ font-size:var(--fs-micro); font-weight:800; padding:1.72px 6.88px; border-radius:5.733px; background:rgba(255,247,236,.22); border:0.573px solid rgba(255,247,236,.4); }
+.ag-d{ font-size:var(--fs-micro); color:rgba(255,247,236,.8); margin-top:2.293px; }
+/* 业绩三格（白卡） */
+.ag-stats{ margin:10.32px 10.32px 0; background:rgba(255,252,246,.96); border-radius:10.893px; display:flex; }
+.ag-stat{ flex:1; text-align:center; padding:12.04px 2px; min-width:0; }
+.ag-stat + .ag-stat{ border-left:0.573px solid var(--line-soft); }
+.ag-stat-v{ display:block; font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); font-family:var(--font-mono); }
+.ag-stat-l{ display:block; margin-top:2.293px; font-size:var(--fs-micro); color:var(--ink-600); }
+/* 信息行 */
+.ag-row{ display:flex; align-items:center; gap:8.027px; padding:8.6px 0; border-bottom:0.573px solid var(--line-soft); }
+.ag-row:last-child{ border-bottom:none; }
+.ag-row-l{ width:74.533px; flex-shrink:0; font-size:var(--fs-micro); color:var(--ink-500); }
+.ag-row-v{ flex:1; font-size:var(--fs-meta); color:var(--ink-900); font-weight:600; }
+/* 动态行 */
+.ag-act{ display:flex; align-items:center; gap:8.027px; padding:8.6px 0; border-bottom:0.573px solid var(--line-soft); }
+.ag-act:last-child{ border-bottom:none; }
+.ag-act-t{ flex:1; min-width:0; font-size:var(--fs-meta); color:var(--ink-800); }
+.ag-act-t{ font-weight:600; }
+.ag-act-d{ font-size:var(--fs-micro); color:var(--ink-500); margin-top:1.147px; font-weight:400; }
+.ag-act-st{ font-size:var(--fs-micro); font-weight:700; padding:2.293px 6.88px; border-radius:5.16px; flex-shrink:0; background:rgba(52,211,153,.14); color:#047857; }
+.ag-act-st--purple{ background:rgba(124,58,237,.1); color:var(--signal-700); }
+/* 底部动作 */
+.ag-actions{ position:sticky; bottom:0; z-index:20; display:flex; gap:6.88px; padding:10.32px 10.32px 0; background:linear-gradient(180deg,rgba(255,247,236,0),rgba(255,247,236,.96) 45%); }
+.ag-btn{ flex:1; text-align:center; padding:11.467px 0; border-radius:11.467px; font-size:var(--fs-sec); font-weight:800; cursor:pointer; }
+.ag-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; box-shadow:0 4px 14px rgba(109,40,217,.3); }
+.ag-btn--ghost{ background:rgba(255,255,255,.94); color:var(--signal-700); border:0.573px solid var(--line-signal); }
+.ag-btn:active{ transform:scale(.97); }
+</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>团长档案</h1>
+    <code>/pages/leader-profile/index</code>
+  </div>
+  <p class="mp-note">代理查看直属团长档案：入驻审核、社群经营、培训进度、成交贡献与近期推广动态。发展网络中的团长仅展示只读聚合数据。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer ag-layer wx-view">
+        <div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">团长档案</span><div class="subbar-slot wx-view"></div></div></div></div>
+        <div class="ag-head">
+          <div class="ag-top">
+            <div class="ag-ava">林</div>
+            <div class="ag-info">
+              <div class="ag-name">林晓 <span class="ag-lv">团长 · 已通过</span></div>
+              <div class="ag-d">138****5678 · 2026 年 9 月入驻 · 所属代理：李云天</div>
+            </div>
+          </div>
+          <div class="ag-stats">
+            <div class="ag-stat"><span class="ag-stat-v">46</span><span class="ag-stat-l">覆盖成员</span></div>
+            <div class="ag-stat"><span class="ag-stat-v">12</span><span class="ag-stat-l">本期成交</span></div>
+            <div class="ag-stat"><span class="ag-stat-v">¥486</span><span class="ag-stat-l">预计佣金</span></div>
+          </div>
+        </div>
+        <div class="card card-pad gap wx-view" style="margin-top:10.32px;">
+          <div class="f-between mb-8 wx-view"><span class="col-h wx-text">基本信息</span></div>
+          <div class="ag-row"><span class="ag-row-l">微信昵称</span><span class="ag-row-v">林晓 · 晓晓妈妈</span></div>
+          <div class="ag-row"><span class="ag-row-l">所属代理</span><span class="ag-row-v">李云天（我）</span></div>
+          <div class="ag-row"><span class="ag-row-l">所属社群</span><span class="ag-row-v">杭州妈妈成长群 · 46 人</span></div>
+          <div class="ag-row"><span class="ag-row-l">培训进度</span><span class="ag-row-v">4 / 6 必修课 · 待完成成交服务课</span></div>
+          <div class="ag-row"><span class="ag-row-l">社群活跃</span><span class="ag-row-v">82% · 本期新增会员 8 人</span></div>
+        </div>
+        <div class="card card-pad gap wx-view" style="margin-top:10.32px;">
+          <div class="f-between mb-8 wx-view"><span class="col-h wx-text">最近动态</span><span class="t-tiny wx-text">近 7 天</span></div>
+          <div class="ag-act"><div class="f-1"><div class="ag-act-t">完成秋季复购活动内容发布</div><div class="ag-act-d">9 月 20 日 21:36</div></div><span class="ag-act-st">已完成</span></div>
+          <div class="ag-act"><div class="f-1"><div class="ag-act-t">提交本周社群推广汇报</div><div class="ag-act-d">9 月 19 日 18:02</div></div><span class="ag-act-st ag-act-st--purple">待查看</span></div>
+          <div class="ag-act"><div class="f-1"><div class="ag-act-t">私聊跟进 6 位意向成员</div><div class="ag-act-d">9 月 18 日 10:14</div></div><span class="ag-act-st">已完成</span></div>
+          <div class="ag-act"><div class="f-1"><div class="ag-act-t">成交订单已路由至代理库存</div><div class="ag-act-d">9 月 16 日 20:47</div></div><span class="ag-act-st">已发货</span></div>
+        </div>
+        <div class="ag-actions">
+          <div class="ag-btn ag-btn--ghost mp-nav" data-nav="chat--专属顾问" role="button">联系 TA</div>
+          <div class="ag-btn ag-btn--pri mp-nav" data-nav="orders" role="button">查看订单</div>
+        </div>
+      </div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转
+(function () {
+  var SLUG = "leader-profile";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") { if (history.length > 1) history.back(); else location.href = "tasks.html" + location.search; return; }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+</body></html>

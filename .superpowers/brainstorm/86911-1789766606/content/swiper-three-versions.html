@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0b0c12;color:#f0ecff;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif}.wrap{max-width:1300px;margin:0 auto;padding:32px 22px 60px}.eyebrow{font-size:12px;letter-spacing:1.5px;color:#c084fc;font-weight:700}h1{margin:8px 0 8px;font-size:28px}.lead{color:#b0a9c7;font-size:14px;line-height:1.7;max-width:920px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:26px}.card{border:1px solid #2e2744;border-radius:16px;background:linear-gradient(180deg,#12121e,#0b0c12);overflow:hidden;cursor:pointer;transition:.18s}.card:hover{transform:translateY(-3px);border-color:#9d5cff}.card.sel{border-color:#f052e8;box-shadow:0 0 0 2px rgba(240,82,232,.22),0 14px 40px rgba(101,49,207,.28)}.c-head{padding:14px;border-bottom:1px solid #332b4d;display:flex;gap:10px;align-items:flex-start}.num{width:26px;height:26px;border-radius:50%;background:#7c3aed;display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto}.c-head h2{font-size:16px;margin:0 0 4px}.c-head p{margin:0;color:#a59eb8;font-size:12px;line-height:1.5}.phone{margin:14px auto 12px;width:270px;min-height:520px;padding:10px;border-radius:24px;border:1px solid #3a3258;background:#07080f}.bar{font-size:10px;font-weight:700;color:#cfc6e6;padding:2px 4px 8px}.swiper{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none}.swiper::-webkit-scrollbar{display:none}.mcard{flex:0 0 78px;border-radius:9px;padding:7px 5px;font-size:9px;text-align:center;opacity:.5;transform:scale(.88);transition:.2s;background:#1a1530;border:1px solid #3a3058}.mcard.on{opacity:1;transform:scale(1);border-color:#9d5cff;box-shadow:0 4px 14px rgba(124,58,237,.35)}.mcard .lv{font-weight:800;font-size:10px}.mcard .p{color:#f57dec;font-weight:700;margin-top:2px}.mcard.cur::after{content:'当前';display:block;font-size:7px;color:#7cffb0;margin-top:2px}.dots{display:flex;justify-content:center;gap:3px;margin:2px 0 8px}.dots i{width:4px;height:4px;border-radius:50%;background:#3a3258}.dots i.on{width:14px;border-radius:2px;background:#9d5cff}.sec{background:#12121f;border:1px solid #2c2941;border-radius:9px;padding:8px;margin-bottom:6px}.sec-h{font-size:10px;font-weight:700;display:flex;justify-content:space-between;margin-bottom:6px}.sec-h span{color:#bd7dff;font-weight:600;font-size:9px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.t{background:#111225;border:1px solid #282742;border-radius:6px;padding:6px 2px;text-align:center;font-size:8px}.t .i{width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,#6633d2,#c74cf4);margin:0 auto 4px}.t.lk .i{background:#2a2740}.t.lk{opacity:.55}.t .st{display:block;font-size:7px;color:#64e4bc;margin-top:2px}.t.lk .st{color:#8e87a8}.row{background:#111225;border:1px solid #282742;border-radius:7px;padding:7px;font-size:9px;display:flex;gap:7px;align-items:center;margin-bottom:5px}.row .dot{width:22px;height:22px;border-radius:6px;background:#21163d;flex:0 0 auto}.row .r{flex:1}.row .n{font-weight:700}.row .d{color:#8e87a8;font-size:8px;margin-top:1px}.row .c{color:#bd7dff;font-size:8px;font-weight:600}.cmp{background:#111225;border:1px solid #282742;border-radius:7px;padding:7px;margin-bottom:5px;font-size:9px}.cmp .h{font-weight:700;margin-bottom:4px;display:flex;justify-content:space-between}.cmp .h .t2{color:#f57dec}.cmp li{color:#b6aed0;margin:2px 0 2px 14px;line-height:1.4}.cmp li.ok{color:#7cffb0;list-style:'✓ '}.cmp li.no{color:#8e87a8;list-style:'— '}.cta{display:flex;gap:5px;margin-top:8px}.btn{flex:1;text-align:center;padding:7px 0;border-radius:7px;font-size:10px;font-weight:800}.p{background:linear-gradient(90deg,#e83dd8,#315eff);color:#fff}.g{background:transparent;color:#efbaff;border:1px solid #5b3ca1}.meta{padding:0 14px 14px}.meta h3{font-size:13px;margin:10px 0 6px;color:#f4f0ff}.meta ul{margin:0;padding-left:16px;color:#b6aed0;font-size:12px;line-height:1.7}.meta .fit{margin-top:8px;padding:8px 9px;border-radius:8px;background:#141425;color:#d3cbe8;font-size:11px;line-height:1.55}.pick{margin-top:10px;font-size:11px;color:#a59eb8;text-align:center}.rec{color:#f0b3ff;font-weight:700}@media(max-width:1020px){.grid{grid-template-columns:1fr}.card{max-width:440px;margin:0 auto;width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">会员卡横滑 · 权益联动 · 三版本</div>
+  <h1>滑到哪张卡，下方就显示哪档权益</h1>
+  <p class="lead">核心交互：顶部横向滑动不同等级的会员卡（当前等级默认居中高亮），下方权益区随卡片切换。三个版本的差异在 <b>下方权益区怎么跟卡联动</b>——是直接换权益网格、还是对比差异、还是列服务详情。</p>
+
+  <div class="grid">
+    <!-- 版本1 -->
+    <article class="card" data-choice="v1" onclick="pick(this)">
+      <div class="c-head"><div class="num">1</div><div><h2>权益网格联动</h2><p>滑卡 → 下方直接换成该等级的权益网格。最直观。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益</div>
+        <div class="swiper">
+          <div class="mcard"><div class="lv">体验</div><div class="p">¥98</div></div>
+          <div class="mcard on cur"><div class="lv">PRO</div><div class="p">¥1980</div></div>
+          <div class="mcard"><div class="lv">精英</div><div class="p">¥5980</div></div>
+          <div class="mcard"><div class="lv">创始人</div><div class="p">¥19800</div></div>
+        </div>
+        <div class="dots"><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="sec"><div class="sec-h">PRO 年卡 · 全部权益 <span>12项</span></div><div class="grid4">
+          <div class="t"><div class="i"></div>课程无限<span class="st">可用</span></div>
+          <div class="t"><div class="i"></div>班级社群<span class="st">可用</span></div>
+          <div class="t"><div class="i"></div>经营诊断<span class="st">2/4</span></div>
+          <div class="t"><div class="i"></div>1v1陪跑<span class="st">1/1</span></div>
+          <div class="t"><div class="i"></div>闭门会<span class="st">可约</span></div>
+          <div class="t"><div class="i"></div>工具专业<span class="st">可用</span></div>
+          <div class="t lk"><div class="i"></div>城市分站<span class="st">升级</span></div>
+          <div class="t lk"><div class="i"></div>品牌联名<span class="st">升级</span></div>
+        </div></div>
+        <div class="sec"><div class="sec-h">成长等级 LV3→LV4</div><div style="height:6px;border-radius:3px;background:#23213a;overflow:hidden"><i style="display:block;height:100%;width:80%;background:linear-gradient(90deg,#7c3aed,#e255e5)"></i></div></div>
+        <div class="cta"><div class="btn p">续费 PRO</div><div class="btn g">升级精英</div></div>
+      </div>
+      <div class="meta">
+        <h3>联动逻辑</h3>
+        <ul><li>滑动会员卡 → 下方权益网格整体替换为该等级数据</li><li>锁定项显示"升级解锁"，不展示具体价格</li><li>底部按钮随等级变化：当前档=续费，非当前档=升级/降级</li></ul>
+        <h3>优点 / 注意</h3>
+        <ul><li>✓ 最直接，会员一眼看到自己这档有什么</li><li>△ 等级间差异要靠自己对比，不突出"升级能多什么"</li></ul>
+        <div class="fit"><b>适合：</b>权益数量多、想让会员快速浏览自己权益的场景。</div>
+      </div>
+      <div class="pick">点击选择版本 1</div>
+    </article>
+
+    <!-- 版本2 -->
+    <article class="card sel" data-choice="v2" onclick="pick(this)">
+      <div class="c-head"><div class="num">2</div><div><h2>权益差异对比 <span class="rec">推荐</span></h2><p>滑卡 → 显示该等级权益 + 与相邻等级的差异。突出升级价值。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益</div>
+        <div class="swiper">
+          <div class="mcard"><div class="lv">体验</div><div class="p">¥98</div></div>
+          <div class="mcard on cur"><div class="lv">PRO</div><div class="p">¥1980</div></div>
+          <div class="mcard"><div class="lv">精英</div><div class="p">¥5980</div></div>
+          <div class="mcard"><div class="lv">创始人</div><div class="p">¥19800</div></div>
+        </div>
+        <div class="dots"><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="sec"><div class="sec-h">PRO 年卡 · 已享权益 <span>12项</span></div>
+          <div class="cmp"><div class="h">对比体验会员 <span class="t2">多 8 项</span></div><ul><li class="ok">专属课程全系列</li><li class="ok">经营诊断 4次/季</li><li class="ok">1v1陪跑 1次/月</li><li class="no">城市分站、品牌联名</li></ul></div>
+          <div class="cmp"><div class="h">对比精英会员 <span class="t2">少 5 项</span></div><ul><li class="no">城市分站运营权</li><li class="no">品牌联名资源</li><li class="no">1v1教练 持续陪跑</li><li class="ok">课程、诊断、闭门会</li></ul></div>
+        </div>
+        <div class="cta"><div class="btn p">续费 PRO</div><div class="btn g">升级精英 +¥4000</div></div>
+      </div>
+      <div class="meta">
+        <h3>联动逻辑</h3>
+        <ul><li>滑动会员卡 → 下方显示"该等级 vs 上一级"和"该等级 vs 下一级"两组对比</li><li>升级路径清晰：差什么、补多少钱一目了然</li><li>不堆完整权益网格，只讲差异</li></ul>
+        <h3>优点 / 注意</h3>
+        <ul><li>✓ 最强升级引导，续费/升级转化最高</li><li>△ 单档权益全貌要进详情看，首页信息密度低一些</li></ul>
+        <div class="fit"><b>适合：</b>想促进续费和升级的场景。权益详情可进二级页。</div>
+      </div>
+      <div class="pick">点击选择版本 2</div>
+    </article>
+
+    <!-- 版本3 -->
+    <article class="card" data-choice="v3" onclick="pick(this)">
+      <div class="c-head"><div class="num">3</div><div><h2>服务详情联动</h2><p>滑卡 → 下方列出该等级可用的专属服务及次数。重服务交付。</p></div></div>
+      <div class="phone">
+        <div class="bar">9:41 · 会员权益</div>
+        <div class="swiper">
+          <div class="mcard"><div class="lv">体验</div><div class="p">¥98</div></div>
+          <div class="mcard on cur"><div class="lv">PRO</div><div class="p">¥1980</div></div>
+          <div class="mcard"><div class="lv">精英</div><div class="p">¥5980</div></div>
+          <div class="mcard"><div class="lv">创始人</div><div class="p">¥19800</div></div>
+        </div>
+        <div class="dots"><i></i><i class="on"></i><i></i><i></i></div>
+        <div class="sec"><div class="sec-h">PRO 专属服务 <span>本月可用</span></div>
+          <div class="row"><div class="dot"></div><div class="r"><div class="n">经营诊断</div><div class="d">导师1对1分析经营数据</div></div><div class="c">余2/4 预约</div></div>
+          <div class="row"><div class="dot"></div><div class="r"><div class="n">1v1陪跑</div><div class="d">每月1次深度陪跑</div></div><div class="c">余1/1 预约</div></div>
+          <div class="row"><div class="dot"></div><div class="r"><div class="n">闭门会</div><div class="d">季度线下闭门会</div></div><div class="c">本季已用</div></div>
+        </div>
+        <div class="sec"><div class="sec-h">其他权益 <span>8项 ›</span></div><div class="grid4">
+          <div class="t"><div class="i"></div>课程</div>
+          <div class="t"><div class="i"></div>社群</div>
+          <div class="t"><div class="i"></div>工具</div>
+          <div class="t"><div class="i"></div>资源</div>
+        </div></div>
+        <div class="cta"><div class="btn p">续费 PRO</div><div class="btn g">升级精英</div></div>
+      </div>
+      <div class="meta">
+        <h3>联动逻辑</h3>
+        <ul><li>滑动会员卡 → 下方优先展示该等级的专属服务预约列表（带剩余次数+预约按钮）</li><li>普通权益（课程/工具等）折叠成次要网格</li><li>突出"服务交付"而非"权益清单"</li></ul>
+        <h3>优点 / 注意</h3>
+        <ul><li>✓ 服务型会员最合适，会员最关心"能用几次服务"</li><li>△ 权益清单被弱化，适合权益不多但服务重的档位</li></ul>
+        <div class="fit"><b>适合：</b>高客单价、重人工服务的会员体系。</div>
+      </div>
+      <div class="pick">点击选择版本 3</div>
+    </article>
+  </div>
+</div>
+<script>
+function pick(el){document.querySelectorAll('.card').forEach(c=>c.classList.remove('sel'));el.classList.add('sel');if(window.toggleSelect)toggleSelect(el)}
+</script>
+</body>
+</html>
