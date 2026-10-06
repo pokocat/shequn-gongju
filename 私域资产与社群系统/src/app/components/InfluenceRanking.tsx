@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState, useRef } from "react";
 import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch, Users, Store, ShieldCheck, Check, History } from "lucide-react";
 import { getAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
@@ -7,6 +7,8 @@ import { businessIdentityLabels, memberLevelForRank, memberLevelOptions, platfor
 import { calculateMemberNetworkScope, getMemberNetworkViews, memberNetworkExample, type MemberNetworkRole } from "../data/memberNetworkScope";
 import { agentTrainingRecords, agentTrainingStageMeta, trainingTaskStatusMeta, trainingTasks } from "../data/agentTraining";
 import { getJoinedGroupsForMember } from "../data/memberProfileGroups";
+import { getCanonicalProjectName, resolveProjectId, getProjectServiceAccounts } from "../data/projectGroupRules";
+import { calculateScopeMetrics, type MetricResult } from "../data/workbenchMetrics";
 import { useProjectContext } from "../App";
 // ─── 模拟数据 ─────────────────────────────────────────────────
 const taskCategories = [
@@ -30,11 +32,11 @@ const operationTabs = [
 ] as const;
 
 const rankingData = [
-  { rank: 1,  avatar: "盛", name: "盛光年", wechat: "THEv424",  gender: "男", city: "北京-朝阳", job: "工人-工地", inGroup: "是", pendingCount: 80, publishCount: 80, completedCount: 91, totalUsers: 8023, influence: 3510, score: 4858, referrer: "盛光年" },
-  { rank: 2,  avatar: "皮", name: "皮卡丘", wechat: "imp11",    gender: "男", city: "北京-海淀", job: "工人-工地", inGroup: "是", pendingCount: 71, publishCount: 91, completedCount: 54, totalUsers: 6544, influence: 2877, score: 3918, referrer: "皮卡丘" },
-  { rank: 3,  avatar: "文", name: "文泽",   wechat: "FLM001",  gender: "男", city: "北京-朝阳", job: "工人-工地", inGroup: "是", pendingCount: 47, publishCount: 21, completedCount: 84, totalUsers: 5231, influence: 2104, score: 2976, referrer: "皮卡丘" },
-  { rank: 4,  avatar: "梓", name: "梓几",   wechat: "afs612",  gender: "男", city: "北京-西城", job: "工人-工地", inGroup: "是", pendingCount: 37, publishCount: 44, completedCount: 27, totalUsers: 4102, influence: 1754, score: 2341, referrer: "文泽" },
-  { rank: 5,  avatar: "海", name: "海槽",   wechat: "125gfs",  gender: "男", city: "北京-东城", job: "工人-工地", inGroup: "是", pendingCount: 29, publishCount: 38, completedCount: 63, totalUsers: 3788, influence: 1432, score: 2109, referrer: "皮卡丘" },
+  { rank: 1,  avatar: "盛", name: "盛光年", wechat: "THEv424",  gender: "男", city: "北京-朝阳", job: "工人-工地", inGroup: "是", pendingCount: 80, publishCount: 80, completedCount: 91, affectedMemberCount: 8023, influence: 3510, score: 4858, referrer: "盛光年" },
+  { rank: 2,  avatar: "皮", name: "皮卡丘", wechat: "imp11",    gender: "男", city: "北京-海淀", job: "工人-工地", inGroup: "是", pendingCount: 71, publishCount: 91, completedCount: 54, affectedMemberCount: 6544, influence: 2877, score: 3918, referrer: "皮卡丘" },
+  { rank: 3,  avatar: "文", name: "文泽",   wechat: "FLM001",  gender: "男", city: "北京-朝阳", job: "工人-工地", inGroup: "是", pendingCount: 47, publishCount: 21, completedCount: 84, affectedMemberCount: 5231, influence: 2104, score: 2976, referrer: "皮卡丘" },
+  { rank: 4,  avatar: "梓", name: "梓几",   wechat: "afs612",  gender: "男", city: "北京-西城", job: "工人-工地", inGroup: "是", pendingCount: 37, publishCount: 44, completedCount: 27, affectedMemberCount: 4102, influence: 1754, score: 2341, referrer: "文泽" },
+  { rank: 5,  avatar: "海", name: "海槽",   wechat: "125gfs",  gender: "男", city: "北京-东城", job: "工人-工地", inGroup: "是", pendingCount: 29, publishCount: 38, completedCount: 63, affectedMemberCount: 3788, influence: 1432, score: 2109, referrer: "皮卡丘" },
 ];
 
 type MemberTag = { label: string; background: string; color: string };
@@ -75,7 +77,24 @@ const initialMemberTags: Record<number, MemberTag[]> = {
   ],
 };
 
-type TaskEntry = { title: string; time: string; status: string; unread: number; source: string; action: string };
+type TaskEntry = {
+  id?: string;
+  title: string;
+  time: string;
+  status: string;
+  unread: number;
+  source: string;
+  action: string;
+  objectType?: DataScope;
+  objectId?: string;
+  taskType?: string;
+  owner?: string;
+  priority?: "普通" | "重要" | "紧急";
+  dueAt?: string;
+  updatedAt?: string;
+  result?: string;
+  logs?: Array<{ status: string; at: string; result?: string }>;
+};
 const taskSideList: TaskEntry[] = [
   { title: "盛光年 · 个微好友申请待确认", time: "2026-07-05 14:30", status: "待处理", unread: 1, source: "企微 SCRM", action: "确认关系" },
   { title: "ORD-202607-01842 · 待收货回访", time: "2026-07-05 13:00", status: "待处理", unread: 0, source: "商城订单", action: "发起回访" },
@@ -229,10 +248,27 @@ type ManualServiceAction = { count: number; status: "未操作" | "已操作" | 
 type RelationshipTaskType = "主动添加" | "引导添加" | "引导关注" | "邀请入群";
 type RelationshipTaskStatus = "未添加" | "未关注" | "已申请" | "已通过" | "已拒绝" | "已拉黑" | "无法添加" | "未分配群" | "待入群" | "已入群" | "已退出";
 type OfficialAccountTask = { id: string; label: string; taskType: RelationshipTaskType; objectiveStatus: RelationshipTaskStatus; aiStatus: "已同步" | "待核验" | "同步异常"; statusOptions: RelationshipTaskStatus[]; manual: ManualServiceAction };
+type MemberProjectData = {
+  name: string;
+  projectId: string;
+  identityLevel: string;
+  authorization: string;
+  account: string;
+  loginStatus: string;
+  bindingStatus: string;
+  authorizationStatus: string;
+  servicePersonnel: string;
+  taskStatus: string;
+  spend: string;
+  orders: string;
+  operationStage: string;
+  nextAction: string;
+};
+
 type MemberServiceData = {
   accounts: OfficialAccountTask[];
   actions: Record<string, ManualServiceAction>;
-  projects: Array<{ name: string; detail: string; status: string; source: string }>;
+  projects: MemberProjectData[];
   ai: { status: "已完成" | "更新中" | "待更新"; checked: number; passed: number; pending: number; abnormal: number; updatedAt: string; device: string };
 };
 const emptyManualAction = (): ManualServiceAction => ({ count: 0, status: "未操作", operator: "—", at: "—", logs: [] });
@@ -265,12 +301,39 @@ const memberServiceDataForRank = (rank: number): MemberServiceData => {
   }));
   const checked = accounts.filter(account => account.aiStatus !== "待核验").length;
   const passed = accounts.filter(account => account.objectiveStatus === "已通过" || account.objectiveStatus === "已入群").length;
+  const projectNames = ["V001 军师", "AI超级广告公司", "AI艺人孵化", "AI数字资产平台", "AI大健康", "AI知识付费", "AI教育", "AI明星艺人授权", "AI企业礼品采购"];
+  const memberCity = rankingData[rank - 1]?.city.split("-")[0] ?? "全国";
+  const projects = projectNames.map((projectName, index) => {
+    const name = getCanonicalProjectName(projectName) ?? projectName;
+    const projectId = resolveProjectId(name) ?? "—";
+    const serviceAccounts = getProjectServiceAccounts(name, memberCity);
+    const servicePersonnel = serviceAccounts.length > 0 ? Array.from(new Set(serviceAccounts.map(account => account.service))).join("、") : "待分配";
+    const account = serviceAccounts.length > 0 ? serviceAccounts.map(item => item.wechat).join("、") : "未配置";
+    const isAuthorized = (rank + index) % 4 !== 0;
+    const isBound = (rank + index) % 3 !== 0;
+    const isLoggedIn = isBound && (rank + index) % 5 !== 0;
+    const taskStatus = isAuthorized && isBound ? (index % 3 === 0 ? "进行中" : "已完成") : "待处理";
+    return {
+      name,
+      projectId,
+      identityLevel: index < 2 ? "核心项目会员" : index < 5 ? "项目体验官" : "项目潜客",
+      authorization: isAuthorized ? "已授权" : "未授权",
+      account,
+      loginStatus: isLoggedIn ? "已登录" : "未登录",
+      bindingStatus: isBound ? "已绑定" : "未绑定",
+      authorizationStatus: isAuthorized ? "有效" : "待授权",
+      servicePersonnel,
+      taskStatus,
+      spend: index === 0 ? relationshipForRank(rank).spend : `¥${(rank * 680 + index * 320).toLocaleString()}`,
+      orders: `${Math.max(0, 4 - index + (rank % 2))} 笔`,
+      operationStage: index < 2 ? "转化期" : index < 5 ? "培育期" : "触达期",
+      nextAction: !isAuthorized ? "发起授权" : !isBound ? "绑定项目账号" : !isLoggedIn ? "完成登录" : taskStatus === "已完成" ? "安排复购" : "跟进任务",
+    };
+  });
   return {
     accounts,
     actions: { personal: emptyManualAction(), enterprise: emptyManualAction(), group: emptyManualAction() },
-    projects: rank === 1
-      ? [{ name: "PRO会员年卡", detail: "年度会员服务与专属权益", status: "生效中", source: "会员小程序" }, { name: "主理人社群", detail: "社群活动、课程与资料权益", status: "生效中", source: "社群小程序" }]
-      : [{ name: "体验官计划", detail: "体验官内容与活动权益", status: "待使用", source: "主理人公社小程序" }],
+    projects,
     ai: { status: "已完成", checked, passed, pending: accounts.filter(account => account.aiStatus === "待核验").length, abnormal: accounts.filter(account => account.aiStatus === "同步异常").length, updatedAt: "今天 10:42", device: "AI手机-01" },
   };
 };
@@ -337,6 +400,11 @@ export default function InfluenceRanking() {
   const [selectedTaskIndex, setSelectedTaskIndex] = useState(0);
   const [activeTaskContext, setActiveTaskContext] = useState("全部待办");
   const [profileNotice, setProfileNotice] = useState("");
+  const [dynamicTasks, setDynamicTasks] = useState<TaskEntry[]>([]);
+  const [taskDraft, setTaskDraft] = useState<TaskEntry | null>(null);
+  const [scopeRowsOverrides, setScopeRowsOverrides] = useState<Partial<Record<DataScope, ScopeRow[]>>>({});
+  const [projectConfigs, setProjectConfigs] = useState<Record<string, { owner: string; serviceStaff: string; projectAccount: string; agentRule: string; memberEntry: string; community: string; note: string }>>({});
+  const [projectConfigDraft, setProjectConfigDraft] = useState({ owner: "", serviceStaff: "", projectAccount: "", agentRule: "按项目规则自动分配", memberEntry: "会员中心", community: "", note: "" });
   const [memberTags, setMemberTags] = useState<Record<number, MemberTag[]>>(initialMemberTags);
   const [isEditingTags, setIsEditingTags] = useState(false);
   const [tagDraft, setTagDraft] = useState("");
@@ -347,6 +415,9 @@ export default function InfluenceRanking() {
   const [isProfileCollapsed, setIsProfileCollapsed] = useState(false);
   const [isPersonalQrOpen, setIsPersonalQrOpen] = useState(false);
   const [showProfileMore, setShowProfileMore] = useState(false);
+  const [profileFocus, setProfileFocus] = useState<"projects" | "groups" | null>(null);
+  const profileProjectsRef = useRef<HTMLElement | null>(null);
+  const profileGroupsRef = useRef<HTMLElement | null>(null);
  const [isTaskPanelCollapsed, setIsTaskPanelCollapsed] = useState(false);
   const [isRelationCollapsed, setIsRelationCollapsed] = useState(false);
   const [isOperationCollapsed, setIsOperationCollapsed] = useState(false);
@@ -432,6 +503,105 @@ export default function InfluenceRanking() {
     window.setTimeout(() => setProfileNotice(""), 2200);
   };
 
+  useEffect(() => {
+    if (!profileFocus) return;
+    const target = profileFocus === "projects" ? profileProjectsRef.current : profileGroupsRef.current;
+    if (!target) return;
+    window.requestAnimationFrame(() => target.scrollIntoView({ behavior: "smooth", block: "start" }));
+    setProfileFocus(null);
+  }, [profileFocus, selectedUser.rank]);
+
+  const focusMemberProfile = (rank: number, focus: "projects" | "groups") => {
+    const user = rankingData.find(item => item.rank === rank) ?? rankingData[0];
+    setSelectedUser(user);
+    setActiveProfileTab("概览");
+    setShowProfileMore(true);
+    setProfileFocus(focus);
+    showProfileNotice(`已定位 ${user.name} 的${focus === "projects" ? "项目授权与消费" : "社群归属"}详情`);
+  };
+
+  const createScopeTask = (row: ScopeRow, action: string) => {
+    const objectId = row.data?.projectName ?? row.data?.communityName ?? row.agentId ?? `${dataScope}-${row.rank}`;
+    const now = new Date().toLocaleString("zh-CN", { hour12: false });
+    const duplicate = dynamicTasks.find(task => task.objectId === objectId && task.action === action && ["待处理", "进行中"].includes(task.status));
+    if (duplicate) {
+      setTaskDraft(duplicate);
+      showProfileNotice("该对象已有相同未完成任务，已打开原任务");
+      return duplicate;
+    }
+    const task: TaskEntry = {
+      id: `task-${Date.now()}`,
+      title: `${row.name} · ${action}`,
+      time: now,
+      updatedAt: now,
+      dueAt: new Date(Date.now() + 2 * 86400000).toLocaleDateString("zh-CN"),
+      status: "待处理",
+      unread: 1,
+      source: `${scopeCfg?.noun ?? "经营"}工作台`,
+      action,
+      taskType: dataScope === "project" && action.includes("启动") ? "项目启动" : "经营动作",
+      owner: "当前服务人员",
+      priority: action.includes("启动") || action.includes("复购") ? "重要" : "普通",
+      objectType: dataScope,
+      objectId,
+      logs: [{ status: "待处理", at: now }],
+    };
+    setDynamicTasks(current => [task, ...current]);
+    setTaskDraft(task);
+    setTaskSource("basic");
+    setActiveTaskCategory("全部待办");
+    return task;
+  };
+
+  const handleScopeNextAction = (row: ScopeRow, action: string) => {
+    setSelectedRow(row);
+    setIsOperationCollapsed(false);
+    const operation: ScopeOperationId = dataScope === "project" && action.includes("启动配置")
+      ? "issue"
+      : action.includes("活动") || action.includes("培训")
+        ? "activity"
+        : action.includes("触达") || action.includes("复购") || action.includes("报名") || action.includes("招募")
+          ? "push"
+          : "issue";
+    setActiveOperation(operation);
+    if (dataScope === "project" && action.includes("启动配置")) {
+      const existing = projectConfigs[row.name];
+      setProjectConfigDraft(existing ?? { owner: "", serviceStaff: "", projectAccount: "", agentRule: "按项目规则自动分配", memberEntry: "会员中心", community: "", note: "" });
+    }
+    createScopeTask(row, action);
+    showProfileNotice(`已为 ${row.name} 建立任务：${action}`);
+  };
+
+  const saveProjectConfig = () => {
+    if (!selectedRow || !projectConfigDraft.owner || !projectConfigDraft.serviceStaff || !projectConfigDraft.projectAccount || !projectConfigDraft.community) {
+      showProfileNotice("请先填写负责人、服务人员、项目账号和关联社群");
+      return;
+    }
+    const projectName = selectedRow.data?.projectName ?? selectedRow.name;
+    setProjectConfigs(current => ({ ...current, [projectName]: { ...projectConfigDraft } }));
+    setScopeRowsOverrides(current => ({
+      ...current,
+      project: (current.project ?? SCOPE_CONFIGS.project.rows).map(row => {
+        const rowProjectName = row.data?.projectName ?? row.name;
+        if (rowProjectName !== projectName) return row;
+        const nextData = {
+          ...(row.data ?? {}),
+          projectStage: "运营中",
+          nextAction: "持续跟进项目授权、绑定与消费转化",
+        };
+        return { ...row, filter: "运营中", data: nextData };
+      }),
+    }));
+    setSelectedRow(current => current ? { ...current, filter: "运营中", data: { ...(current.data ?? {}), projectStage: "运营中", nextAction: "持续跟进项目授权、绑定与消费转化" } } : current);
+    const startTask = dynamicTasks.find(task => task.objectId === projectName && task.action.includes("启动配置") && task.status !== "已完成");
+    if (startTask?.id) updateDynamicTask(startTask.id, "已完成", "启动配置已保存，项目进入运营中");
+    showProfileNotice(`${selectedRow.name} 启动配置已保存，项目已进入运营中`);
+  };
+
+  const selectedScopeMetrics: MetricResult[] = selectedRow && (dataScope === "community" || dataScope === "project")
+    ? calculateScopeMetrics(dataScope, selectedRow.data ?? {})
+    : [];
+
   const selectedTags = memberTags[selectedUser.rank] ?? defaultMemberTags;
   const memberServiceForUser = (rank: number) => memberServiceOverrides[rank] ?? memberServiceDataForRank(rank);
   const selectedMemberService = memberServiceForUser(selectedUser.rank);
@@ -490,7 +660,27 @@ export default function InfluenceRanking() {
   const statusValue = (rank: number, key: "personal" | "enterprise" | "group") => pendingRelationshipChanges[`${rank}:${key}`] ?? relationshipForUser(rank)[key];
   const statusLog = (name: string, label: string, key: string, rank: number) => setActiveLog({ name, label, key, rank });
   const activeListsRecord = activeLists as Record<string, typeof taskSideList>;
-  const visibleTaskList = activeListsRecord[activeTaskCategory] ?? (taskSource === "scope" ? activeListsRecord[scopeCfg!.taskCategories[0].label] : taskSideList);
+  const taskCategoryList = taskSource === "scope"
+    ? dynamicTasks.filter(task => task.objectType === dataScope)
+    : dynamicTasks.filter(task => !task.objectType);
+  const staticTaskList = activeListsRecord[activeTaskCategory] ?? (taskSource === "scope" ? [] : taskSideList);
+  const visibleTaskList = [...taskCategoryList, ...staticTaskList].filter(task => {
+    if (activeTaskCategory === "全部待办") return ["待处理", "进行中", "已暂停"].includes(task.status);
+    if (activeTaskCategory === "今日执行") return task.status !== "已完成" && task.status !== "已取消";
+    return taskSource === "scope" ? task.objectType === dataScope : true;
+  });
+  const updateDynamicTask = (taskId: string, status: string, result?: string) => {
+    const now = new Date().toLocaleString("zh-CN", { hour12: false });
+    setDynamicTasks(current => current.map(task => task.id === taskId ? { ...task, status, result: result ?? task.result, updatedAt: now, unread: 0, logs: [...(task.logs ?? []), { status, at: now, result: result ?? task.result }] } : task));
+    setTaskDraft(current => current?.id === taskId ? { ...current, status, result: result ?? current.result, updatedAt: now, unread: 0, logs: [...(current.logs ?? []), { status, at: now, result: result ?? current.result }] } : current);
+    showProfileNotice(`任务已更新为${status}`);
+  };
+  const updateTaskDetails = (taskId: string, details: Pick<TaskEntry, "owner" | "priority" | "dueAt" | "result">) => {
+    const now = new Date().toLocaleString("zh-CN", { hour12: false });
+    setDynamicTasks(current => current.map(task => task.id === taskId ? { ...task, ...details, updatedAt: now, unread: 0, logs: [...(task.logs ?? []), { status: task.status, at: now, result: details.result }] } : task));
+    setTaskDraft(current => current?.id === taskId ? { ...current, ...details, updatedAt: now, unread: 0, logs: [...(current.logs ?? []), { status: current.status, at: now, result: details.result }] } : current);
+    showProfileNotice("任务详情已保存");
+  };
   const openTask = (task: TaskEntry, index: number) => {
     setSelectedTaskIndex(index);
     setActiveTaskContext(task.title);
@@ -505,7 +695,7 @@ export default function InfluenceRanking() {
     }
     if (task.title.includes("ORD-")) {
       setDataScope("members");
-      setSelectedUser(rankingData[0]);
+      setSelectedUser(rankingData[0]); setActiveProfileTab(profileTabs[0]); setShowProfileMore(false); setProfileFocus(null);
       setActiveProfileTab("订单");
       setSelectedOrderNo(memberOrders[0].no);
       showProfileNotice("已定位订单履约记录，可直接确认收货、售后或发起回访");
@@ -548,9 +738,19 @@ export default function InfluenceRanking() {
   };
   // 操作台 / 档案的当前对象名：会员视角用选中会员，其余视角用选中行
   const targetName = isMemberScope ? selectedUser.name : (selectedRow?.name ?? "");
-  const filteredScopeRows = !scopeCfg ? [] : (activeTagFilter === "全部" ? scopeCfg.rows : scopeCfg.rows.filter(r => r.filter === activeTagFilter))
-    .filter(row => dataScope !== "agent" || agentLevelFilter === "全部身份" || row.cells[1] === agentLevelFilter)
-    .filter(row => !tableSearch || row.cells.join(" ").includes(tableSearch));
+  const getScopeCellValue = (row: ScopeRow, columnIndex: number, key?: string) =>
+    key && row.data?.[key] !== undefined ? row.data[key] : row.cells?.[columnIndex] ?? "—";
+  const getScopeSearchText = (row: ScopeRow) =>
+    [...(row.cells ?? []), ...Object.values(row.data ?? {})].join(" ");
+  const scopeRows = scopeCfg ? (scopeRowsOverrides[dataScope] ?? scopeCfg.rows) : [];
+  const filteredScopeRows = !scopeCfg ? [] : (activeTagFilter === "全部" ? scopeRows : scopeRows.filter(r => r.filter === activeTagFilter))
+    .filter(row => {
+      if (dataScope !== "agent" || agentLevelFilter === "全部身份") return true;
+      const rowIdentity = getScopeCellValue(row, 1, "agentLevel").replace(/\s*[·•]\s*/g, " ");
+      const filterIdentity = agentLevelFilter.replace(/\s*[·•]\s*/g, " ");
+      return rowIdentity === filterIdentity || (agentLevelFilter === "团长" && rowIdentity.includes("团长"));
+    })
+    .filter(row => !tableSearch || getScopeSearchText(row).includes(tableSearch));
   const scopeTableMinWidth = scopeCfg ? scopeCfg.columns.reduce((sum, c) => sum + c.width, 0) + 132 : 900;
   const selectedTrainingRecord = selectedRow?.agentId
     ? agentTrainingRecords.find(record => record.agentId === selectedRow.agentId)
@@ -558,32 +758,33 @@ export default function InfluenceRanking() {
   const selectedTrainingTasks = selectedTrainingRecord
     ? trainingTasks.filter(task => task.agentId === selectedTrainingRecord.agentId)
     : [];
-  const selectedAgentCells = selectedRow?.cells ?? [];
+  const selectedAgentData = selectedRow?.data ?? {};
   const selectedAgentProfileSub = isAgentScope
-    ? `${selectedAgentCells[1] ?? ""} · ${(selectedAgentCells[2] ?? "").split("-")[0] ?? ""}`
+    ? `${selectedAgentData.agentLevel ?? ""} · ${(selectedAgentData.region ?? "").split("-")[0] ?? ""}`
     : scopeCfg?.profileSub;
   const selectedAgentProfileFields = isAgentScope
     ? [
         ["代理编号", selectedRow?.agentId ? `A-${selectedRow.agentId.slice(-3)}` : "—"],
-        ["业务身份", selectedAgentCells[1] ?? "—"],
-        ["负责城市", selectedAgentCells[2] ?? "—"],
+        ["业务身份", selectedAgentData.agentLevel ?? "—"],
+        ["负责城市", selectedAgentData.region ?? "—"],
         ["加入时间", "2026-02-20"],
-        ["下线会员", `${selectedAgentCells[3] ?? "0"} 人`],
-        ["本月招募", `${selectedAgentCells[4] ?? "0"} 人`],
-        ["累计佣金", selectedAgentCells[5] ?? "¥0"],
-        ["代理状态", selectedAgentCells[7] ?? "—"],
+        ["下线会员", `${selectedAgentData.downlineMembers ?? "0"} 人`],
+        ["下线会员授权", `${selectedAgentData.authorizedMembers ?? "0"} 人`],
+        ["累计佣金", selectedAgentData.commission ?? "¥0"],
+        ["代理状态", selectedAgentData.operationStage ?? "—"],
       ] as Array<[string, string]>
     : scopeCfg?.profileFields ?? [];
   const selectedAgentSummary = isAgentScope
     ? [
-        ["下线会员", `${selectedAgentCells[3] ?? "0"} 人`, "#2385c8"],
-        ["本月招募", `${selectedAgentCells[4] ?? "0"} 人`, "#00a978"],
-        ["累计佣金", selectedAgentCells[5] ?? "¥0", "#e77800"],
-        ["活跃度", selectedAgentCells[7] === "待安置" ? "待安置" : "正常", "#253800"],
+        ["下线会员", `${selectedAgentData.downlineMembers ?? "0"} 人`, "#2385c8"],
+        ["下线会员授权", `${selectedAgentData.authorizedMembers ?? "0"} 人`, "#00a978"],
+        ["累计佣金", selectedAgentData.commission ?? "¥0", "#e77800"],
+        ["代理留存", selectedAgentData.retentionRate ?? "—", "#253800"],
+        ["运营阶段", selectedAgentData.operationStage ?? "—", "#6b4eff"],
       ] as Array<[string, string, string]>
     : scopeCfg?.summary ?? [];
   const selectedAgentTags = isAgentScope
-    ? [{ label: selectedAgentCells[1] ?? "代理", background: "#fff0db", color: "#e77800" }]
+    ? [{ label: selectedAgentData.agentLevel ?? "代理", background: "#fff0db", color: "#e77800" }]
     : scopeCfg?.profileTags ?? [];
   // 切换数据视角：任务中心回落到基础任务，排行 Tab / 档案 Tab / 筛选按新视角重置
   const switchDataScope = (next: DataScope) => {
@@ -704,6 +905,23 @@ export default function InfluenceRanking() {
               </div>
             </div>
           ))}
+          {taskDraft && !isTaskPanelCollapsed && (
+            <div className="mx-3 mb-3 p-2 space-y-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <div className="text-[11px] font-bold truncate" style={{ color: S.text }}>{taskDraft.title}</div>
+              <div className="grid grid-cols-2 gap-1">
+                <input aria-label="任务负责人" value={taskDraft.owner ?? ""} onChange={event => setTaskDraft(current => current ? { ...current, owner: event.target.value } : current)} className="min-w-0 px-1.5 py-1 text-[10px] outline-none" placeholder="负责人" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} />
+                <select aria-label="任务优先级" value={taskDraft.priority ?? "普通"} onChange={event => setTaskDraft(current => current ? { ...current, priority: event.target.value as TaskEntry["priority"] } : current)} className="min-w-0 px-1.5 py-1 text-[10px] outline-none" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><option>普通</option><option>重要</option><option>紧急</option></select>
+                <input aria-label="任务截止时间" value={taskDraft.dueAt ?? ""} onChange={event => setTaskDraft(current => current ? { ...current, dueAt: event.target.value } : current)} className="min-w-0 px-1.5 py-1 text-[10px] outline-none" placeholder="截止时间" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} />
+                <span className="flex items-center px-1.5 text-[10px]" style={{ color: S.muted }}>更新：{taskDraft.updatedAt?.split(" ")[1] ?? "—"}</span>
+              </div>
+              <textarea aria-label="任务执行结果" value={taskDraft.result ?? ""} onChange={event => setTaskDraft(current => current ? { ...current, result: event.target.value } : current)} className="w-full min-h-[44px] px-1.5 py-1 text-[10px] outline-none resize-y" placeholder="填写执行结果、数据变化或后续安排" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} />
+              {taskDraft.id && <div className="flex gap-1">
+                {(["进行中", "已完成", "已暂停", "已取消"] as const).map(status => <button key={status} type="button" onClick={() => updateDynamicTask(taskDraft.id!, status, taskDraft.result)} className="flex-1 px-1 py-1 text-[9px] font-bold whitespace-nowrap" style={{ background: taskDraft.status === status ? S.accent : S.surface, color: taskDraft.status === status ? S.onAccent : S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>{status}</button>)}
+              </div>}
+              {taskDraft.id && <button type="button" onClick={() => updateTaskDetails(taskDraft.id!, { owner: taskDraft.owner, priority: taskDraft.priority, dueAt: taskDraft.dueAt, result: taskDraft.result })} className="w-full px-2 py-1.5 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>保存任务详情</button>}
+              {(taskDraft.logs ?? []).length > 0 && <div className="space-y-1 pt-1" style={{ borderTop: `1px solid ${S.border}` }}><div className="text-[10px] font-bold" style={{ color: S.muted }}>操作日志</div>{taskDraft.logs?.slice().reverse().map((log, index) => <div key={`${log.at}-${index}`} className="flex items-start justify-between gap-2 text-[9px]" style={{ color: S.textSec }}><span>{log.status}{log.result ? ` · ${log.result}` : ""}</span><span className="whitespace-nowrap" style={{ color: S.muted }}>{log.at}</span></div>)}</div>}
+            </div>
+          )}
         </div>
         </>}
       </div>
@@ -777,19 +995,20 @@ export default function InfluenceRanking() {
           <div className="mx-4 mt-3 h-9 flex items-center justify-end px-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
             <button type="button" title="展开数据列表" aria-label="展开数据列表" onClick={() => setIsTableCollapsed(false)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelTopOpen size={14} /></button>
           </div>
-        ) : <div className="relative mx-4 mt-3 min-w-[420px] min-h-[180px] h-[300px] max-w-full overflow-auto" style={{ resize: "both", background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+        ) : <div className="relative mx-4 mt-3 min-w-0 min-h-[180px] h-[300px] max-w-full overflow-y-auto overflow-x-hidden" style={{ resize: "both", background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
         <button type="button" title="收起数据列表" aria-label="收起数据列表" onClick={() => setIsTableCollapsed(true)} className="absolute top-2 right-2 z-20 w-7 h-7 flex items-center justify-center" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelTopClose size={14} /></button>
+        {!isMemberScope && <div className="sticky left-0 z-10 flex items-center justify-between gap-2 px-3 py-1.5 text-[10px] font-bold" style={{ width: "100%", background: S.surface, color: S.muted, borderBottom: `1px solid ${S.border}` }}><span>{scopeCfg?.columns.length ?? 0} 项运营字段</span><span style={{ color: S.textSec }}>表格可横向滚动，向右查看完整指标 →</span></div>}
         {/* 排行榜表格：会员视角原样，其余视角按视角列定义渲染 */}
         {isMemberScope ? (
         <div className="overflow-x-auto" aria-label="会员排行横向滚动表格" style={{ scrollbarWidth: "thin" }}>
-          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 1120, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
-            {[["序号",44],["头像",44],["微信名",110],["会员级别",82],["城市",90],["创始人个微",124],["服务官企微",124],["入群状态",108],["累计消费",82],["影响会员数",82],["影响力",68],["评分",64],["操作",72]].map(([l,w], hi) => (
+          <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: 1644, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+            {[['序号',44],['会员',160],['平台身份',110],['会员等级',82],['平台账号',190],['项目身份',210],['所属社群',180],['入群状态',108],['最近活跃',90],['累计消费',82],['影响会员数',82],['影响力',68],['评分',64],['运营阶段',82],['操作',92]].map(([l,w], hi) => (
               <div key={`h-${hi}-${l}-${w}`} className="flex-shrink-0" style={{ width: w as number }}>{l}</div>
             ))}
           </div>
           {filteredRankingData.map((u, idx) => (
             <div key={u.rank} className="flex items-center px-3 py-2.5 cursor-pointer text-xs transition-all font-mono" style={{
-              minWidth: 1120,
+              minWidth: 1644,
               background: selectedUser.rank === u.rank ? S.accentLight : idx % 2 === 0 ? "#ffffff" : "#fafaf8",
               borderBottom: `1px solid ${S.border}`,
               borderLeft: selectedUser.rank === u.rank ? `3px solid ${S.accent}` : "3px solid transparent",
@@ -797,19 +1016,25 @@ export default function InfluenceRanking() {
               <div className="flex-shrink-0" style={{ width: 44 }}>
                 <div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: u.rank <= 3 ? "#1e293b" : "rgba(15,23,42,0.06)", color: u.rank <= 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{u.rank}</div>
               </div>
-              <div className="flex-shrink-0" style={{ width: 44 }}>
-                <img src={getAvatar(u.rank - 1)} alt={u.name} style={{ width: 28, height: 28, borderRadius: S.radiusSm, objectFit: "cover" }} />
+              <div className="flex-shrink-0" style={{ width: 160 }}>
+                <div className="flex items-center gap-2">
+                  <img src={getAvatar(u.rank - 1)} alt={u.name} style={{ width: 28, height: 28, borderRadius: S.radiusSm, objectFit: "cover" }} />
+                  <div className="min-w-0"><div className="font-bold truncate" style={{ color: S.text }}>{u.name}</div><div className="text-[10px] truncate" style={{ color: S.muted }}>{u.wechat} · {u.city}</div></div>
+                </div>
               </div>
-              <div className="flex-shrink-0 font-bold" style={{ width: 110, color: S.text }}>{u.name}</div>
+              <div className="flex-shrink-0" style={{ width: 110, color: S.textSec }}>{businessIdentityLabels[(["D1", "D2", "D3", "D4", "D5"] as const)[(u.rank - 1) % 5]]}</div>
               <div className="flex-shrink-0" style={{ width: 82 }}><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: S.radiusSm }}>{memberLevelForRank(u.rank)}</span></div>
-              <div className="flex-shrink-0" style={{ width: 90, color: S.muted }}>{u.city}</div>
-              {([ ["personal", "创始人个微", 124], ["enterprise", "服务官企微", 124] ] as const).map(([key, label, width]) => { const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); const actionLabel = "添加"; const actionKey = manualActionKeyForRelationship(key); const action = memberServiceForUser(u.rank).actions[actionKey] ?? memberServiceForUser(u.rank).accounts.find(account => account.id === actionKey)?.manual ?? emptyManualAction(); return <div key={key} className="flex-shrink-0 flex items-center gap-0.5" style={{ width }}><button type="button" onClick={event => { event.stopPropagation(); recordManualAction(u.rank, actionKey, "添加动作"); }} className="relative px-1 py-0.5 text-[9px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>{actionLabel}{action.count > 0 && <span aria-label={`已点击${action.count}次`} className="absolute -right-1.5 -top-1.5 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center text-[8px] font-bold" style={{ background: "#dc2626", color: "#ffffff", border: "1px solid #ffffff", borderRadius: "999px", lineHeight: 1 }}>{action.count}</span>}</button><select aria-label={`${u.name} ${label}状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: "transparent", color: value === "无法添加" ? "#c2410c" : key === "personal" ? S.textSec : S.muted, border: 0, borderRadius: S.radiusSm }}>{relationshipStatusOptions.map(option => <option key={`${key}-${option}`} value={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} ${label}确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title={`查看${label}操作日志`} aria-label={`${u.name} ${label}操作日志`} onClick={() => statusLog(u.name, label, actionKey, u.rank)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })}
-              <div className="flex-shrink-0" style={{ width: 108 }}>{(() => { const key = "group" as const; const actionKey = manualActionKeyForRelationship(key); const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); const action = memberServiceForUser(u.rank).actions[actionKey] ?? memberServiceForUser(u.rank).accounts.find(account => account.id === actionKey)?.manual ?? emptyManualAction(); return <div className="flex items-center gap-0.5"><button type="button" onClick={event => { event.stopPropagation(); recordManualAction(u.rank, actionKey, "邀请入群"); }} className="relative px-1 py-0.5 text-[9px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>入群{action.count > 0 && <span aria-label={`已点击${action.count}次`} className="absolute -right-1.5 -top-1.5 min-w-3.5 h-3.5 px-0.5 flex items-center justify-center text-[8px] font-bold" style={{ background: "#dc2626", color: "#ffffff", border: "1px solid #ffffff", borderRadius: "999px", lineHeight: 1 }}>{action.count}</span>}</button><select aria-label={`${u.name} 入群状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: value === "已入群" ? "#e8fbf4" : "#fff0db", color: value === "已入群" ? "#008565" : "#c2410c", border: 0, borderRadius: S.radiusSm }}>{groupStatusOptions.map(option => <option key={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" aria-label={`${u.name} 入群确认状态修改`} onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title="查看入群操作日志" aria-label={`${u.name} 入群操作日志`} onClick={() => statusLog(u.name, "入群", actionKey, u.rank)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })()}</div>
+              <div className="flex-shrink-0 flex flex-col gap-1" style={{ width: 190 }}>{([ ["personal", "创始人个微"], ["enterprise", "服务官企微"] ] as const).map(([key, label]) => { const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); const actionKey = manualActionKeyForRelationship(key); const action = memberServiceForUser(u.rank).actions[actionKey] ?? memberServiceForUser(u.rank).accounts.find(account => account.id === actionKey)?.manual ?? emptyManualAction(); return <div key={key} className="flex items-center gap-0.5"><button type="button" onClick={event => { event.stopPropagation(); recordManualAction(u.rank, actionKey, "添加动作"); }} className="relative px-1 py-0.5 text-[9px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>添加{action.count > 0 && <span className="absolute -right-1.5 -top-1.5 min-w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold" style={{ background: "#dc2626", color: "#ffffff", borderRadius: "999px" }}>{action.count}</span>}</button><select aria-label={`${u.name} ${label}状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: "transparent", color: value === "无法添加" ? "#c2410c" : S.textSec, border: 0 }}>{relationshipStatusOptions.map(option => <option key={`${key}-${option}`} value={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title={`查看${label}操作日志`} onClick={() => statusLog(u.name, label, actionKey, u.rank)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })}</div>
+              <div className="flex-shrink-0" style={{ width: 210 }}>{(() => { const projects = memberServiceForUser(u.rank).projects.filter(project => project.authorization !== "未授权"); const visibleProjects = projects.slice(0, 3); return <>{visibleProjects.map(project => <div key={project.projectId} className="truncate" title={`${project.name} · ${project.identityLevel}`} style={{ color: S.textSec }}>{project.name} · {project.identityLevel}</div>)}{projects.length > visibleProjects.length && <button type="button" onClick={event => { event.stopPropagation(); focusMemberProfile(u.rank, "projects"); }} className="text-left text-[10px] font-bold" style={{ color: S.primary }}>+{projects.length - visibleProjects.length} 个项目</button>}</>})()}</div>
+              <div className="flex-shrink-0 flex flex-col gap-1" style={{ width: 180 }}>{(() => { const groups = getJoinedGroupsForMember(u.rank); const visibleGroups = groups.slice(0, 2); return groups.length > 0 ? <>{visibleGroups.map(group => <div key={group.name} className="truncate" style={{ color: S.textSec }}>{group.name}</div>)}{groups.length > visibleGroups.length && <button type="button" onClick={event => { event.stopPropagation(); focusMemberProfile(u.rank, "groups"); }} className="text-left text-[10px] font-bold" style={{ color: S.primary }}>+{groups.length - visibleGroups.length} 个社群</button>}</> : <span style={{ color: S.muted }}>暂无社群</span>; })()}</div>
+              <div className="flex-shrink-0" style={{ width: 108 }}>{(() => { const key = "group" as const; const actionKey = manualActionKeyForRelationship(key); const pendingKey = `${u.rank}:${key}`; const value = statusValue(u.rank, key); const action = memberServiceForUser(u.rank).actions[actionKey] ?? memberServiceForUser(u.rank).accounts.find(account => account.id === actionKey)?.manual ?? emptyManualAction(); return <div className="flex items-center gap-0.5"><button type="button" onClick={event => { event.stopPropagation(); recordManualAction(u.rank, actionKey, "邀请入群"); }} className="relative px-1 py-0.5 text-[9px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>入群{action.count > 0 && <span className="absolute -right-1.5 -top-1.5 min-w-3.5 h-3.5 flex items-center justify-center text-[8px] font-bold" style={{ background: "#dc2626", color: "#ffffff", borderRadius: "999px" }}>{action.count}</span>}</button><select aria-label={`${u.name} 入群状态`} value={value} onChange={event => updateRelationshipStatus(u.rank, key, event.target.value)} className="min-w-0 flex-1 px-1 py-1 text-[10px] outline-none font-bold" style={{ background: "transparent", color: value === "已入群" ? "#008565" : "#c2410c", border: 0 }}>{groupStatusOptions.map(option => <option key={option}>{option}</option>)}</select>{pendingRelationshipChanges[pendingKey] && <button type="button" title="确认状态修改" onClick={() => confirmRelationshipStatus(u.rank, key)} className="w-4 h-4 flex items-center justify-center" style={{ color: "#008565" }}><Check size={11} /></button>}<button type="button" title="查看入群操作日志" onClick={() => statusLog(u.name, "入群", actionKey, u.rank)} className="w-4 h-4 flex items-center justify-center" style={{ color: S.muted }}><History size={11} /></button></div>; })()}</div>
+              <div className="flex-shrink-0" style={{ width: 90, color: S.muted }}>{u.rank === 1 ? "今天 10:42" : u.rank === 2 ? "昨天 18:20" : `${u.rank + 1}天前`}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 82, color: "#c2410c" }}>{relationshipForUser(u.rank).spend}</div>
-              <div className="flex-shrink-0 font-bold" style={{ width: 82, color: S.text }}>{u.totalUsers.toLocaleString()}</div>
+              <div className="flex-shrink-0 font-bold" style={{ width: 82, color: S.text }}>{u.affectedMemberCount.toLocaleString()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 68, color: S.text }}>{u.influence.toLocaleString()}</div>
               <div className="flex-shrink-0 font-bold" style={{ width: 64, color: S.text }}>{u.score.toLocaleString()}</div>
-              <div className="flex-shrink-0" style={{ width: 72 }}><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={event => { event.stopPropagation(); setRelationshipMember(u.rank); setRelationshipDraft({ ...relationshipForUser(u.rank) }); }}>处理关系</button></div>
+              <div className="flex-shrink-0" style={{ width: 82, color: S.textSec }}>{memberServiceForUser(u.rank).projects[0]?.operationStage ?? "触达期"}</div>
+              <div className="flex-shrink-0" style={{ width: 92 }}><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={event => { event.stopPropagation(); setRelationshipMember(u.rank); setRelationshipDraft({ ...relationshipForUser(u.rank) }); }}>处理关系</button></div>
             </div>
           ))}
           {filteredRankingData.length === 0 && (
@@ -819,28 +1044,32 @@ export default function InfluenceRanking() {
         ) : scopeCfg ? (
         <div className="overflow-x-auto" aria-label={`${scopeCfg.noun}排行横向滚动表格`} style={{ scrollbarWidth: "thin" }}>
           <div className="flex items-center px-3 py-2 text-xs font-bold font-mono" style={{ minWidth: scopeTableMinWidth, background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569", borderRadius: `${S.radius} ${S.radius} 0 0` }}>
-            <div className="flex-shrink-0" style={{ width: 44 }}>排名</div>
-            <div className="flex-shrink-0" style={{ width: 44 }}>头像</div>
+            <div className="flex-shrink-0" style={{ width: 44, position: "sticky", left: 0, zIndex: 3, background: "#f1f5f9" }}>排名</div>
+            <div className="flex-shrink-0" style={{ width: 44, position: "sticky", left: 44, zIndex: 3, background: "#f1f5f9" }}>头像</div>
             {scopeCfg.columns.map(c => <div key={`h-${c.label}`} className="flex-shrink-0" style={{ width: c.width }}>{c.label}</div>)}
           </div>
-          {filteredScopeRows.map((row, idx) => (
+          {filteredScopeRows.map((row, idx) => {
+            const rowBackground = selectedRow?.rank === row.rank ? S.accentLight : idx % 2 === 0 ? "#ffffff" : "#fafaf8";
+            return (
             <div key={row.rank} className="flex items-center px-3 py-2.5 cursor-pointer text-xs transition-all font-mono" style={{
               minWidth: scopeTableMinWidth,
-              background: selectedRow?.rank === row.rank ? S.accentLight : idx % 2 === 0 ? "#ffffff" : "#fafaf8",
+              background: rowBackground,
               borderBottom: `1px solid ${S.border}`,
               borderLeft: selectedRow?.rank === row.rank ? `3px solid ${S.accent}` : "3px solid transparent",
             }} onClick={() => setSelectedRow(row)}>
-              <div className="flex-shrink-0" style={{ width: 44 }}>
+              <div className="flex-shrink-0" style={{ width: 44, position: "sticky", left: 0, zIndex: 2, background: rowBackground }}>
                 <div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: row.rank <= 3 ? "#1e293b" : "rgba(15,23,42,0.06)", color: row.rank <= 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{row.rank}</div>
               </div>
-              <div className="flex-shrink-0" style={{ width: 44 }}>
+              <div className="flex-shrink-0" style={{ width: 44, position: "sticky", left: 44, zIndex: 2, background: rowBackground }}>
                 <div className="w-7 h-7 flex items-center justify-center text-xs font-bold" style={{ background: S.accentLight, border: "1px solid rgba(204,255,0,0.45)", color: "#5a6e00", borderRadius: S.radiusSm }}>{row.initial}</div>
               </div>
               {scopeCfg.columns.map((c, ci) => (
-                <div key={`${row.rank}-${c.label}`} className="flex-shrink-0" style={{ width: c.width, color: c.tone === "muted" ? S.muted : c.tone === "name" || c.tone === "bold" ? S.text : S.textSec, fontWeight: c.tone === "name" || c.tone === "bold" ? 700 : 400 }}>{row.cells[ci]}</div>
+                <div key={`${row.rank}-${c.label}`} className="flex-shrink-0" style={{ width: c.width, color: c.tone === "muted" ? S.muted : c.tone === "name" || c.tone === "bold" ? S.text : S.textSec, fontWeight: c.tone === "name" || c.tone === "bold" ? 700 : 400 }}>
+                  {c.key === "nextAction" ? <button type="button" className="text-left font-bold underline-offset-2 hover:underline" style={{ color: S.primary }} onClick={event => { event.stopPropagation(); handleScopeNextAction(row, getScopeCellValue(row, ci, c.key)); }}>{getScopeCellValue(row, ci, c.key)}</button> : getScopeCellValue(row, ci, c.key)}
+                </div>
               ))}
             </div>
-          ))}
+          )})}
           {filteredScopeRows.length === 0 && (
             <div className="px-3 py-8 text-center text-xs" style={{ color: S.muted }}>暂无匹配该筛选的{scopeCfg.noun}</div>
           )}
@@ -851,7 +1080,7 @@ export default function InfluenceRanking() {
         {/* 底部：关系链 + 朋友圈操作 */}
         <div className="flex flex-wrap xl:flex-nowrap items-stretch gap-3 mx-4 mt-3 flex-shrink-0 pb-5">
           {/* 关系链 */}
-          {isRelationCollapsed ? <div className="w-9 flex-shrink-0 flex items-start justify-center pt-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><button type="button" title="展开关系链" aria-label="展开关系链" onClick={() => setIsRelationCollapsed(false)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelLeftOpen size={14} /></button></div> : <div className="p-3 flex-none w-full xl:w-[34%]" style={{ minWidth: 280, maxWidth: "58%", minHeight: 220, resize: "horizontal", overflow: "auto", background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+          {isRelationCollapsed ? <div className="w-9 flex-shrink-0 flex items-start justify-center pt-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><button type="button" title="展开关系链" aria-label="展开关系链" onClick={() => setIsRelationCollapsed(false)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelLeftOpen size={14} /></button></div> : <div className="p-3 flex-none w-full xl:w-[34%] min-w-0" style={{ minWidth: 0, maxWidth: "58%", minHeight: 220, resize: "horizontal", overflow: "auto", background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="flex items-center gap-2">
               <TrendingUp size={14} style={{ color: S.text }} />
               <span className="text-sm font-bold whitespace-nowrap" style={{ color: S.text }}>关系链</span>
@@ -862,7 +1091,7 @@ export default function InfluenceRanking() {
           </div>}
 
           {/* 统一运营操作台 */}
-          <div className="flex-1 min-w-[360px] p-4 flex flex-col gap-3 overflow-auto" style={{
+          <div className="flex-1 min-w-0 p-4 flex flex-col gap-3 overflow-auto" style={{
             background: S.surface,
             border: `1px solid ${S.border}`,
             borderRadius: S.radius,
@@ -892,7 +1121,19 @@ export default function InfluenceRanking() {
               })}
             </div>
 
-            {activeOperation === "issue" && (dataScope === "community" ? <>
+            {activeOperation === "issue" && dataScope === "project" ? (
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  {([["项目负责人", "owner"], ["服务人员", "serviceStaff"], ["项目账号", "projectAccount"], ["关联社群", "community"]] as const).map(([label, key]) => <label key={key} className="block"><span className="block mb-1 text-xs font-mono" style={{ color: S.muted }}>{label}</span><input value={projectConfigDraft[key]} onChange={event => setProjectConfigDraft(current => ({ ...current, [key]: event.target.value }))} className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" placeholder={`填写${label}`} style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} /></label>)}
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <label className="block"><span className="block mb-1 text-xs font-mono" style={{ color: S.muted }}>代理规则</span><select value={projectConfigDraft.agentRule} onChange={event => setProjectConfigDraft(current => ({ ...current, agentRule: event.target.value }))} className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>按项目规则自动分配</option><option>负责人手动分配</option><option>按城市分配</option></select></label>
+                  <label className="block"><span className="block mb-1 text-xs font-mono" style={{ color: S.muted }}>会员入口</span><select value={projectConfigDraft.memberEntry} onChange={event => setProjectConfigDraft(current => ({ ...current, memberEntry: event.target.value }))} className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>会员中心</option><option>项目小程序</option><option>企微服务号</option></select></label>
+                </div>
+                <textarea value={projectConfigDraft.note} onChange={event => setProjectConfigDraft(current => ({ ...current, note: event.target.value }))} className="w-full min-h-[64px] px-2.5 py-2 text-xs outline-none resize-y font-mono" placeholder="填写启动备注、首批动作和验收标准" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} />
+                <button type="button" onClick={saveProjectConfig} className="w-full py-2 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}><ClipboardCheck size={11} className="inline mr-1" />保存启动配置</button>
+              </div>
+            ) : activeOperation === "issue" && (dataScope === "community" ? <>
               <div className="grid grid-cols-2 gap-2"><div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>公告范围</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="当前社群" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>当前社群</option><option>同项目社群</option><option>指定标签社群</option></select></div><div><label className="block text-xs mb-1 font-mono" style={{ color: S.muted }}>发布时间</label><select className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" defaultValue="立即发布" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }}><option>立即发布</option><option>今天 18:00</option><option>明天 09:00</option></select></div></div>
               <input className="w-full px-2.5 py-1.5 text-xs outline-none font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder={`输入 ${targetName} 的公告标题...`} />
               <textarea className="w-full min-h-[72px] px-2.5 py-2 text-xs outline-none resize-y font-mono" style={{ background: "#f1f5f9", border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm }} placeholder="填写群公告内容、成员动作和截止时间..." />
@@ -1020,7 +1261,7 @@ export default function InfluenceRanking() {
                 </div>
               ))}
             </div>}
-            <section className="mt-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}>
+            <section ref={profileGroupsRef} className="mt-2 pt-2" style={{ borderTop: `1px solid ${S.border}` }}>
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: S.text }}>
                   <Users size={13} style={{ color: S.accent }} />
@@ -1067,7 +1308,44 @@ export default function InfluenceRanking() {
         <section className="px-3.5 py-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
           {activeProfileTab === "概览" && (
             <div>
-              <div className="grid grid-cols-3 gap-1 pb-2" style={{ borderBottom: `1px solid ${S.border}` }}>
+              <div className="flex items-center justify-between gap-2 pt-1 pb-2">
+                <div>
+                  <div className="text-xs font-bold" style={{ color: S.text }}>项目资料</div>
+                  <div className="text-[9px] mt-0.5" style={{ color: S.muted }}>九个主理人公社标准项目</div>
+                </div>
+                <span className="text-[9px]" style={{ color: S.muted }}>{selectedMemberService.projects.length} 个项目</span>
+              </div>
+              <div ref={profileProjectsRef} className="space-y-2 pb-2" style={{ borderBottom: `1px solid ${S.border}` }}>
+                {selectedMemberService.projects.map(project => (
+                  <article key={project.projectId} className="p-2" style={{ background: "#f8fafc", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <div className="text-[11px] font-bold truncate" style={{ color: S.text }} title={project.name}>{project.name}</div>
+                        <div className="text-[9px] mt-0.5 truncate" style={{ color: S.muted }}>{project.projectId} · {project.identityLevel}</div>
+                      </div>
+                      <span className="px-1.5 py-0.5 text-[9px] font-bold whitespace-nowrap" style={{ background: project.authorization === "已授权" ? "#e8fbf4" : "#fff0db", color: project.authorization === "已授权" ? "#008565" : "#c2410c", borderRadius: "999px" }}>{project.authorization}</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-x-3 mt-1.5">
+                      {[
+                        ["授权", project.authorizationStatus], ["账号", project.account], ["登录", project.loginStatus], ["绑定", project.bindingStatus],
+                        ["服务人员", project.servicePersonnel], ["任务", project.taskStatus], ["消费", project.spend], ["订单", project.orders],
+                        ["运营阶段", project.operationStage], ["下一步", project.nextAction],
+                      ].map(([label, value]) => (
+                        <div key={`${project.projectId}-${label}`} className="min-w-0 flex items-center justify-between gap-1 py-0.5" style={{ borderBottom: `1px solid ${S.border}` }}>
+                          <span className="text-[9px]" style={{ color: S.muted }}>{label}</span>
+                          <span className="text-[9px] font-bold truncate text-right" style={{ color: value === "未授权" || value === "未绑定" || value === "未登录" || value === "待授权" ? "#c2410c" : S.textSec }} title={value}>{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                    {(project.authorization !== "已授权" || project.bindingStatus !== "已绑定" || project.loginStatus !== "已登录") && <div className="flex gap-1.5 mt-2">
+                      {project.authorization !== "已授权" && <button type="button" onClick={() => showProfileNotice(`已为 ${project.name} 创建授权引导`)} className="flex-1 px-1.5 py-1 text-[9px] font-bold" style={{ background: S.accentLight, color: S.text, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm }}>去授权</button>}
+                      {project.bindingStatus !== "已绑定" && <button type="button" onClick={() => showProfileNotice(`已为 ${project.name} 创建账号绑定任务`)} className="flex-1 px-1.5 py-1 text-[9px] font-bold" style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>去绑定</button>}
+                      {project.loginStatus !== "已登录" && project.bindingStatus === "已绑定" && <button type="button" onClick={() => showProfileNotice(`已为 ${project.name} 创建登录引导`)} className="flex-1 px-1.5 py-1 text-[9px] font-bold" style={{ background: "#f1f5f9", color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>去登录</button>}
+                    </div>}
+                  </article>
+                ))}
+              </div>
+              <div className="grid grid-cols-3 gap-1 pb-2 pt-2" style={{ borderBottom: `1px solid ${S.border}` }}>
                 {orderStatusTabs.map(status => (
                   <button
                     key={status}
@@ -1334,12 +1612,13 @@ export default function InfluenceRanking() {
           <section className="px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
             <div className="flex items-center justify-between mb-3">
               <span className="text-sm font-bold" style={{ color: S.text }}>分层指标</span>
-              <span className="text-xs" style={{ color: S.muted }}>基于运营数据计算</span>
+              <span className="text-xs" style={{ color: S.muted }}>基于运营数据计算 · 待配置、暂无数据与真实 0% 分开显示</span>
             </div>
             <div className="grid grid-cols-2 gap-x-6 mt-3">
-              {scopeCfg.metrics.map(([label, value, color]) => (
-                <div key={label} className="flex items-center justify-between gap-2 py-1.5" style={{ borderBottom: `1px solid ${S.border}` }}>
-                  <span className="text-xs" style={{ color: S.muted }}>{label}</span><span className="text-xs font-bold text-right" style={{ color }}>{value}</span>
+              {selectedScopeMetrics.map(metric => (
+                <div key={metric.label} className="flex items-center justify-between gap-2 py-1.5" style={{ borderBottom: `1px solid ${S.border}` }}>
+                  <span className="text-xs" style={{ color: S.muted }}>{metric.label}</span>
+                  <span className="text-xs font-bold text-right" style={{ color: metric.state === "pending" || metric.state === "no-data" ? S.muted : metric.color }}>{metric.value}</span>
                 </div>
               ))}
             </div>

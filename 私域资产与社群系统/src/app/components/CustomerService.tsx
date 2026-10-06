@@ -1,4 +1,4 @@
-import { useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { getAvatar } from "./Avatar";
 import {
   Search,
@@ -2351,8 +2351,8 @@ export default function CustomerService() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const [selectedStaff, setSelectedStaff] = useState<EmployeeRow | null>(null);
   const [configStaff, setConfigStaff] = useState<EmployeeRow | null>(null);
-  const setDetailStaff = setConfigStaff;
   const [employeeRows, setEmployeeRows] = useState(employeeStaff);
   const [statusFilter, setStatusFilter] = useState("全部状态");
   const [roleFilter, setRoleFilter] = useState("全部岗位");
@@ -2431,6 +2431,23 @@ export default function CustomerService() {
   const roleFilters = unifiedRoleOptions;
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const detailStaff = selectedStaff
+    ? employeeRows.find((staff) => staff.no === selectedStaff.no) || null
+    : null;
+  useEffect(() => {
+    if (
+      selectedStaff &&
+      !employeeRows.some(
+        (staff) =>
+          staff.no === selectedStaff.no && !archivedStaff.includes(staff.no),
+      )
+    ) {
+      setSelectedStaff(null);
+    }
+  }, [archivedStaff, employeeRows, selectedStaff]);
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
   const tabs = [{ key: "employees", label: "员工台账", icon: Users }] as const;
   const auditLogs = [
     {
@@ -3152,7 +3169,7 @@ export default function CustomerService() {
                               borderRadius: 4,
                               color: S.textSec,
                             }}
-                            onClick={() => setDetailStaff(member)}
+                            onClick={() => setSelectedStaff(member)}
                           >
                             <span>
                               {member.name} · {member.role}
@@ -3259,13 +3276,20 @@ export default function CustomerService() {
             </div>
           </div>
           <div
-            className="flex-1 overflow-hidden flex flex-col"
-            style={{
-              background: S.surface,
-              border: `1px solid ${S.border}`,
-              borderRadius: S.radius,
-            }}
+            className={
+              detailStaff
+                ? "flex-1 min-h-0 grid gap-3 lg:grid-cols-[minmax(0,1fr)_320px]"
+                : "flex-1 min-h-0"
+            }
           >
+            <div
+              className="min-w-0 flex-1 overflow-hidden flex flex-col"
+              style={{
+                background: S.surface,
+                border: `1px solid ${S.border}`,
+                borderRadius: S.radius,
+              }}
+            >
             <div className="flex-1 overflow-auto">
               <div style={{ minWidth: 1080, width: "max-content" }}>
                 <div
@@ -3303,8 +3327,19 @@ export default function CustomerService() {
                   return (
                     <div
                       key={staff.no}
-                      className="flex items-center px-4 py-3 text-xs"
-                      style={{ borderBottom: `1px solid ${S.border}` }}
+                      className="flex items-center px-4 py-3 text-xs cursor-pointer"
+                      style={{
+                        borderBottom: `1px solid ${S.border}`,
+                        background:
+                          selectedStaff?.no === staff.no
+                            ? S.accentLight
+                            : "transparent",
+                        borderLeft:
+                          selectedStaff?.no === staff.no
+                            ? `3px solid ${S.accent}`
+                            : "3px solid transparent",
+                      }}
+                      onClick={() => setSelectedStaff(staff)}
                     >
                       <div
                         className="flex-shrink-0"
@@ -3410,13 +3445,17 @@ export default function CustomerService() {
                         style={{ width: 170 }}
                       >
                         <button
+                          type="button"
                           className="px-2.5 py-1.5 text-xs font-bold"
                           style={{
                             background: "#1e293b",
                             color: S.accent,
                             borderRadius: S.radiusSm,
                           }}
-                          onClick={() => setDetailStaff(staff)}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            setSelectedStaff(staff);
+                          }}
                         >
                           查看
                         </button>
@@ -3429,15 +3468,16 @@ export default function CustomerService() {
                             border: `1px solid ${S.borderMed}`,
                             borderRadius: S.radiusSm,
                           }}
-                          onClick={() =>
+                          onClick={(event) => {
+                            event.stopPropagation();
                             setStatusOverrides((current) => {
                               if (status === "停用") {
                                 const { [staff.no]: _, ...rest } = current;
                                 return rest;
                               }
                               return { ...current, [staff.no]: "停用" };
-                            })
-                          }
+                            });
+                          }}
                         >
                           {status === "停用" ? "启用" : "停用"}
                         </button>
@@ -3451,7 +3491,8 @@ export default function CustomerService() {
                             border: `1px solid ${S.border}`,
                             borderRadius: S.radiusSm,
                           }}
-                          onClick={() => {
+                          onClick={(event) => {
+                            event.stopPropagation();
                             if (
                               staff.wechatCount ||
                               getManagedGroupCount(staff)
@@ -3527,6 +3568,123 @@ export default function CustomerService() {
                 每页 {PAGE_SIZE} 条
               </div>
             </div>
+          </div>
+          {detailStaff && (
+              <>
+                <button
+                  type="button"
+                  aria-label="关闭员工详情"
+                  className="fixed inset-0 z-30 bg-black/20 lg:hidden"
+                  onClick={() => setSelectedStaff(null)}
+                />
+                <aside
+                  aria-label="员工详情"
+                  className="fixed inset-y-0 right-0 z-40 flex w-[min(360px,calc(100vw-24px))] flex-col overflow-y-auto p-4 shadow-xl lg:static lg:z-auto lg:w-auto lg:max-w-none lg:rounded-lg lg:shadow-none"
+                  style={{
+                    background: S.surface,
+                    border: `1px solid ${S.borderMed}`,
+                    borderRadius: S.radius,
+                  }}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                      <img
+                        src={getAvatar(detailStaff.id - 1)}
+                        alt={detailStaff.name}
+                        className="h-11 w-11 shrink-0 object-cover"
+                        style={{ borderRadius: S.radiusSm }}
+                      />
+                      <div className="min-w-0">
+                        <div className="truncate text-sm font-semibold" style={{ color: S.text }}>
+                          {detailStaff.name}
+                        </div>
+                        <div className="mt-1 text-[10px]" style={{ color: S.muted }}>
+                          {detailStaff.no} · {detailStaff.gender}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="关闭员工详情"
+                      onClick={() => setSelectedStaff(null)}
+                      className="shrink-0 p-1"
+                    >
+                      <X size={15} style={{ color: S.muted }} />
+                    </button>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold" style={{ color: S.textSec }}>
+                      {detailStaff.role || "待配置"}
+                    </span>
+                    <span
+                      className="px-2 py-1 text-[10px] font-bold"
+                      style={{
+                        background: getEmployeeStatus(detailStaff) === "启用" ? "#f0fff4" : "#fffbeb",
+                        color: getEmployeeStatus(detailStaff) === "启用" ? "#276749" : "#b45309",
+                        borderRadius: S.radiusSm,
+                      }}
+                    >
+                      {getEmployeeStatus(detailStaff)}
+                    </span>
+                  </div>
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    {[
+                      ["账号资产", `${detailStaff.wechatCount || 0} 个微信`],
+                      ["关联群", `${getManagedGroupCount(detailStaff)} 个`],
+                      ["登录账号", detailStaff.account || "未配置"],
+                      ["登录密码", detailStaff.password ? "已配置" : "未配置"],
+                    ].map(([label, value]) => (
+                      <div
+                        key={label}
+                        className="p-2.5"
+                        style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}
+                      >
+                        <div className="text-sm font-semibold" style={{ color: S.text }}>{value}</div>
+                        <div className="mt-1 text-[10px]" style={{ color: S.muted }}>{label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 space-y-2">
+                    {[
+                      ["服务区域", detailStaff.area2 || detailStaff.area || "待配置"],
+                      ["服务项目", detailStaff.projects?.map(projectLabel).join("、") || "待配置"],
+                      ["主服务官", detailStaff.serviceOfficer || "未设置"],
+                      ["关联微信", detailStaff.wechats?.join("、") || "暂无"],
+                      ["联系电话", detailStaff.phone || "未配置"],
+                    ].map(([label, value]) => (
+                      <div key={label} className="flex items-start justify-between gap-3 text-xs">
+                        <span className="shrink-0" style={{ color: S.muted }}>{label}</span>
+                        <span className="text-right" style={{ color: S.textSec }}>{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div
+                    className="mt-4 p-3 text-[10px] leading-relaxed"
+                    style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radiusSm, color: S.textSec }}
+                  >
+                    权限摘要：{detailStaff.permissionFeatures?.join("、") || detailStaff.roles?.join("、") || "待配置"}
+                  </div>
+                  <div className="mt-auto flex gap-2 pt-4">
+                    <button
+                      type="button"
+                      className="flex-1 py-2 text-xs font-semibold"
+                      style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}
+                      onClick={() => setConfigStaff(detailStaff)}
+                    >
+                      编辑配置
+                    </button>
+                    <button
+                      type="button"
+                      className="flex-1 py-2 text-xs font-semibold"
+                      style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }}
+                      onClick={() => setNotice(`${detailStaff.name} 的资源交接入口已保留，待选择具体账号或群`)}
+                    >
+                      资源交接
+                    </button>
+                  </div>
+                </aside>
+              </>
+            )}
           </div>
         </>
       )}
