@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext, useContext, type ReactNode } from "react";
-import { Monitor, Smartphone, Globe, Star } from "lucide-react";
+import { Monitor, Globe, Star } from "lucide-react";
 import PCLayout from "./components/PCLayout";
 import Overview from "./components/Overview";
 import UnifiedAccountManagement from "./components/UnifiedAccountManagement";
@@ -20,7 +20,6 @@ import ReportCenter from "./components/ReportCenter";
 import MiniProgramCenter from "./components/MiniProgramCenter";
 import MemberBenefits from "./components/MemberBenefits";
 import Commission from "./components/Commission";
-import MobileApp from "./components/MobileApp";
 import ZhuLiRenApp from "./components/ZhuLiRenApp";
 import LandingPage from "./components/LandingPage";
 import { CommunicationTool, initialTools } from "./data/communicationTools";
@@ -57,7 +56,7 @@ const moduleMap: Record<string, React.ComponentType> = {
   capabilities: BusinessCapabilityCenter,
 };
 
-type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
+type ViewMode = "landing" | "pc" | "zhuliren";
 export type WorkspaceContext = "platform" | "project";
 type ProjectContextValue = { platform: string; project: string; workspaceContext: WorkspaceContext; setWorkspaceContext: (value: WorkspaceContext) => void; platformMode: () => void; projectMode: (platform: string, project: string) => void; setPlatform: (value: string) => void; setProject: (value: string) => void; projectsByPlatform: Record<string, string[]> };
 export const ProjectContext = createContext<ProjectContextValue>({ platform: "主理人公社", project: "V001 军师", workspaceContext: "project", setWorkspaceContext: () => {}, platformMode: () => {}, projectMode: () => {}, setPlatform: () => {}, setProject: () => {}, projectsByPlatform: {} });
@@ -123,7 +122,7 @@ function ApprovalsProvider({ children, value }: { children: ReactNode; value: { 
 export default function App() {
   const [view, setView] = useState<ViewMode>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view");
-    return requestedView === "pc" || requestedView === "mobile" || requestedView === "zhuliren" ? requestedView : "landing";
+    return requestedView === "pc" || requestedView === "zhuliren" ? requestedView : "landing";
   });
   const [activeModule, setActiveModule] = useState(() => {
     const requestedModule = new URLSearchParams(window.location.search).get("module");
@@ -179,7 +178,7 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       const nextView = params.get("view");
       const nextModule = params.get("module");
-      if (nextView === "pc" || nextView === "mobile" || nextView === "zhuliren") setView(nextView);
+      if (nextView === "pc" || nextView === "zhuliren") setView(nextView);
       if (nextModule && nextModule in moduleMap) {
         setActiveModule(nextModule);
         if (nextModule === "ecosystem") {
@@ -207,9 +206,6 @@ export default function App() {
             </button>
             <button onClick={() => selectView("pc")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
               <Monitor size={12} /> PC 后台
-            </button>
-            <button onClick={() => selectView("mobile")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
-              <Smartphone size={12} /> 会员小程序
             </button>
             <button onClick={() => selectView("zhuliren")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
               <Star size={12} /> 主理人公社
@@ -267,14 +263,13 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
       <div className="size-full relative" style={{ background: S.bg }}>
         {/* PC 视图：视图切换胶囊移入 PCLayout Header（见 HeaderThemeControls），这里不渲染避免遮挡
             Mobile/Landing/Zhuliren 视图：仍然右上角悬浮 */}
-        {view !== "zhuliren" && view !== "pc" && (
+        {view !== "pc" && (
           <div className="fixed top-3 right-3 z-50 flex gap-2 items-start">
             {/* 视图切换 */}
             <div className="flex gap-0 p-1 rounded-xl" style={{ background: S.glass, backdropFilter: "blur(10px)", border: `1px solid ${S.glassBorder}`, boxShadow: S.shadow }}>
               {([
                 { id: "landing", label: "WEB", icon: Globe },
                 { id: "pc", label: "PC", icon: Monitor },
-                { id: "mobile", label: "APP", icon: Smartphone },
                 { id: "zhuliren", label: "主理人", icon: Star },
               ] as const).map(v => (
                 <button key={v.id} onClick={() => selectView(v.id)} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] transition-all font-bold"
@@ -297,14 +292,8 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
           <PCLayout view={view} selectView={selectView} activeModule={activeModule} onModuleChange={selectModule}>
             {activeModule === "overview" ? <Overview onNavigate={selectModule} /> : <ActiveComponent />}
           </PCLayout>
-        ) : view === "mobile" ? (
-          <MobileApp />
         ) : (
-          <ZhuLiRenApp
-            onOpenWeb={() => selectView("landing")}
-            onOpenPc={() => selectView("pc")}
-            onOpenMobile={() => selectView("mobile")}
-          />
+          <ZhuLiRenApp />
         )}
       </div>
       </ApprovalsProvider>
