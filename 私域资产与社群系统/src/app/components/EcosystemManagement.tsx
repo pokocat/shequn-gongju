@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ChevronRight, Globe, Layers, Zap, TrendingUp, Plus, Settings, ArrowRight, Package, LayoutDashboard, CheckCircle, X, Save, ShieldCheck, MessageSquare, Eye, EyeOff, Clock, Building2, Users, UsersRound, Workflow, SlidersHorizontal, AlertTriangle, Radio, Phone, UserPlus, Filter, Share2, ThumbsUp, ThumbsDown, Search, Download, ChevronDown, ChevronUp, Square, CheckSquare, History, MapPin, ArrowLeftRight, XCircle, Check, RotateCcw, Info, FileSpreadsheet } from "lucide-react";
+import { ChevronRight, Globe, Layers, Zap, TrendingUp, Plus, Settings, ArrowRight, Package, LayoutDashboard, CheckCircle, X, Save, ShieldCheck, MessageSquare, Eye, EyeOff, Clock, Building2, Users, UsersRound, Workflow, SlidersHorizontal, AlertTriangle, Radio, Phone, UserPlus, Filter, Share2, ThumbsUp, ThumbsDown, Search, Download, ChevronDown, ChevronUp, Square, CheckSquare, History, MapPin, ArrowLeftRight, XCircle, Check, RotateCcw, Info, FileSpreadsheet, MoreHorizontal, Pencil, UserCheck, Activity } from "lucide-react";
 import { getGroupRulesForProject, type GroupTypeRule } from "../data/projectGroupRules";
 import { getCommunityScopeKey, registerScopeRules, saveScopeRules, useCommunityData } from "../data/communityDataStore";
 import { useTools, useAccounts, useInvites, useApprovals, useProjectContext } from "../App";
@@ -16,6 +16,60 @@ import { S, useThemeSingleton } from "../theme";
 import { memberLevelOptions } from "../data/levelConfig";
 // ─── 四层架构定义（工厂函数，counts 动态联动） ────────────────
 type TierCounts = { eco: number; saas: number; platforms: number; projects: number; users: number; groups: number };
+
+export function getEcosystemContext(activeTier: string, activePlatformName: string | null) {
+  const labels: Record<string, string> = {
+    overview: "我的生态",
+    super: "超级生态",
+    eco: "生态",
+    saas: "SaaS 合作伙伴",
+    platform: "平台",
+  };
+  const tierLabel = labels[activeTier] ?? labels.overview;
+  const path = activeTier === "super" ? ["行业生态", "超级生态"] : activeTier === "overview" ? ["我的生态"] : ["行业生态", tierLabel];
+  if (activeTier === "platform" && activePlatformName) path.push(activePlatformName);
+  return {
+    label: activeTier === "platform" && activePlatformName ? `平台 · ${activePlatformName}` : tierLabel,
+    path,
+  };
+}
+
+export function getPlatformOwnerLabel(platform: { partner?: string; saas?: string }) {
+  return platform.partner || platform.saas || "直属超级生态";
+}
+
+export function getPlatformsForEco<T extends { eco: string }>(platformList: T[], ecoName: string) {
+  return platformList.filter(platform => platform.eco === ecoName);
+}
+
+export function getPlatformsForSaas<T extends { eco: string; saas?: string; partner?: string }>(platformList: T[], saasName: string, ecoName?: string) {
+  return platformList.filter(platform =>
+    (!ecoName || platform.eco === ecoName) &&
+    (platform.saas === saasName || platform.partner === saasName)
+  );
+}
+
+export function getDirectPlatforms<T extends { eco: string; saas?: string; partner?: string }>(platformList: T[], ecoName: string) {
+  return getPlatformsForEco(platformList, ecoName).filter(platform => !platform.saas && !platform.partner);
+}
+
+export function buildPlatformCreateDefaults(eco: string, saas = "") {
+  return { eco, saas };
+}
+
+function getIdentityAccounts(
+  accounts: SystemAccount[],
+  roleKeys: IdentityRole["roleKey"][],
+  scopeType: IdentityRole["scopeType"],
+  scopeId: string,
+) {
+  return accounts.filter(account => account.identities.some(identity => roleKeys.includes(identity.roleKey) && identity.scopeType === scopeType && identity.scopeIds.includes(scopeId)));
+}
+
+function getIdentityRoleLabel(roleKeys: IdentityRole["roleKey"][]) {
+  return roleKeys.map(roleKey => roleKeyMeta[roleKey].label).join(" / ");
+}
+
 function buildTiers(c: TierCounts) {
   return [
     {
@@ -24,7 +78,7 @@ function buildTiers(c: TierCounts) {
       label: "超级生态",
       icon: Zap,
       desc: "最顶层的生态体系，统一管理所有下属生态、SaaS 合作伙伴、平台和资源。拥有全局数据视角和最高权限。",
-      role: "平台创始人 / 超级管理员",
+      role: "平台创始人 / 超级生态管理员",
       count: 1,
       metrics: [
         { label: "下属生态数", value: String(c.eco) },
@@ -57,10 +111,10 @@ function buildTiers(c: TierCounts) {
       role: "SaaS 合作伙伴负责人 / SaaS 合作伙伴运营",
       count: c.saas,
       metrics: [
-        { label: "招募平台数", value: String(c.platforms) },
-        { label: "服务项目数", value: String(c.projects) },
-        { label: "权益会员",   value: c.users.toLocaleString() },
-        { label: "活跃群组",   value: String(c.groups) },
+        { label: "旗下平台", value: String(c.platforms) },
+        { label: "下辖项目", value: String(c.projects) },
+        { label: "平台用户", value: c.users.toLocaleString() },
+        { label: "运营群组", value: String(c.groups) },
       ],
     },
     {
@@ -91,6 +145,7 @@ const ecosystems = [
   { id: 2, name: "宠物生态",        desc: "宠物食品、用品、医疗、洗护、寄养等宠物全产业链私域生态",                       platforms: 1, projects: 3,  members: 900,  revenue: "¥2万/月",  status: "成长中", company: { name: "宠趣（上海）宠物产业有限公司", creditCode: "91310115MA1K9PQ34X", legalPerson: "周明", contactName: "刘倩", contactPhone: "13900000011", region: "上海市/浦东新区", bankName: "中国工商银行上海分行", bankAccount: "6222 0210 9876 5432" } as CompanyInfo },
   { id: 3, name: "知识付费生态",    desc: "在线课程、训练营、会员社群、咨询陪跑等知识付费闭环",                           platforms: 1, projects: 3,  members: 1500, revenue: "¥16万/月", status: "成长中", company: { name: "知学（北京）教育科技有限公司", creditCode: "91110108MA01ABCD56", legalPerson: "孙婉清", contactName: "李梦华", contactPhone: "13800000009", region: "北京市/海淀区", bankName: "中国建设银行北京分行", bankAccount: "6217 0010 0011 2233" } as CompanyInfo },
   { id: 4, name: "教育生态",        desc: "在线教育、实体培训、教研、家校互通等教育场景生态",                             platforms: 2, projects: 8,  members: 2050, revenue: "¥15万/月", status: "孵化中", company: { name: "育才（成都）教育服务有限公司", creditCode: "91510104MA6XYZ7890", legalPerson: "郑雨桐", contactName: "赵文轩", contactPhone: "13800000003", region: "四川省/成都市", bankName: "中国农业银行成都分行", bankAccount: "6228 4807 0055 6677" } as CompanyInfo },
+  { id: 5, name: "OPC超级生态", desc: "主理人项目、数字内容与产业服务的综合运营生态", platforms: 1, projects: 9, members: 0, revenue: "待接入", status: "主力生态" },
 ];
 
 // ─── SaaS 合作伙伴列表 ───────────────────────────────────────
@@ -156,71 +211,113 @@ const statusCfg: Record<string, { bg: string; color: string }> = {
 
 // ─── 架构流程图 ───────────────────────────────────────────────
 function ArchitectureDiagram({ tiers, activeTier, onSelect }: { tiers: ReturnType<typeof buildTiers>; activeTier: string; onSelect: (id: string) => void }) {
+  const objectTiers = tiers.filter(tier => tier.id !== "super");
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 overflow-hidden" style={{ border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-      {tiers.map((t, idx) => {
-        const Icon = t.icon;
-        const isActive = activeTier === t.id;
-        return (
-          <button
-            key={t.id}
-            type="button"
-            className="min-w-0 flex flex-col items-start gap-3 p-4 sm:p-5 transition-all relative text-left"
-            style={{
-              background: isActive ? S.accentLight : S.surface,
-              borderRight: idx % 2 === 1 ? "none" : `1px solid ${S.border}`,
-              borderBottom: idx < 2 ? `1px solid ${S.border}` : "none",
-              borderRadius: 0,
-              borderLeft: isActive ? `3px solid ${S.accent}` : "3px solid transparent",
-            }}
-            onClick={() => onSelect(t.id)}
-          >
-            <div className="flex items-center gap-2 w-full">
-              <div className="w-6 h-6 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: isActive ? "#1e293b" : "rgba(15,23,42,0.06)", color: isActive ? S.accent : S.textSec, borderRadius: S.radiusSm }}>
-                {t.level}
-              </div>
-              {idx < 3 && <ArrowRight size={14} className="ml-auto" style={{ color: S.muted }} />}
-            </div>
-
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <Icon size={18} style={{ color: isActive ? "#1e293b" : S.muted }} />
-                <span className="text-sm font-bold" style={{ color: S.text }}>{t.label}</span>
-              </div>
-              <p className="text-xs leading-relaxed font-mono line-clamp-3" style={{ color: S.muted }}>{t.desc}</p>
-            </div>
-
-            <div className="flex items-center gap-1.5">
-              <span className="px-2 py-0.5 text-xs font-bold" style={{ background: isActive ? "#1e293b" : "rgba(15,23,42,0.06)", color: isActive ? S.accent : S.textSec, borderRadius: S.radiusSm }}>
-                {t.count} 个
+    <div id="ecosystem-tier-navigation" className="min-w-0 max-w-full overflow-x-auto" style={{ scrollbarWidth: "thin" }}>
+      <div className="grid min-h-[52px] grid-cols-2 overflow-hidden sm:grid-cols-4" style={{ border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+        <button type="button" aria-current="page" className="col-span-2 flex min-w-0 items-center gap-2.5 px-3 py-2.5 text-left sm:col-span-1" style={{ background: "#1e293b", color: S.accent, borderRight: `1px solid ${S.border}` }} onClick={() => onSelect("super")}>
+          <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center text-[11px] font-bold" style={{ background: "rgba(204,255,0,0.16)", color: S.accent, borderRadius: S.radiusSm }}><Zap size={13} /></span>
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-xs font-bold">超级生态</span>
+            <span className="mt-0.5 block truncate text-[10px] font-mono" style={{ color: "rgba(204,255,0,0.76)" }}>全局生态入口</span>
+          </span>
+          {activeTier === "super" && <Check size={14} className="flex-shrink-0" />}
+        </button>
+        {objectTiers.map((tier, index) => {
+          const isActive = activeTier === tier.id;
+          const Icon = tier.icon;
+          return (
+            <button key={tier.id} type="button" aria-pressed={isActive} className="flex min-w-0 items-center gap-2.5 px-3 py-2.5 text-left transition-colors" style={{ background: isActive ? "#1e293b" : S.surface, color: isActive ? S.accent : S.text, borderRight: index < objectTiers.length - 1 ? `1px solid ${S.border}` : "none" }} onClick={() => onSelect(tier.id)}>
+              <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center text-[11px] font-bold" style={{ background: isActive ? "rgba(204,255,0,0.16)" : "#f1f5f9", color: isActive ? S.accent : S.textSec, borderRadius: S.radiusSm }}><Icon size={13} /></span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-bold">{tier.label}</span>
+                <span className="mt-0.5 block truncate text-[10px] font-mono" style={{ color: isActive ? "rgba(204,255,0,0.76)" : S.muted }}>{tier.count} 个对象</span>
               </span>
-              <span className="text-xs font-mono" style={{ color: S.muted }}>当前</span>
-            </div>
-          </button>
-        );
-      })}
+              {isActive && <Check size={14} className="flex-shrink-0" />}
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }
 
 // ─── 超级生态视图 ─────────────────────────────────────────────
+type CreateResourceKind = "ecosystem" | "saas" | "platform" | "project";
+
+function getCreateResourceKinds(role: string): CreateResourceKind[] {
+  if (role === "超级生态管理员") return ["ecosystem", "saas", "platform"];
+  if (["生态负责人", "生态COO"].includes(role)) return ["saas", "platform"];
+  if (["SaaS 合作伙伴负责人", "SaaS 合作伙伴运营"].includes(role)) return ["platform"];
+  if (["平台管理员", "平台运营", "项目负责人", "区域运营"].includes(role)) return ["project"];
+  return [];
+}
+
+const createResourceLabels: Record<CreateResourceKind, string> = {
+  ecosystem: "新建生态",
+  saas: "新建 SaaS 合作伙伴",
+  platform: "新建平台",
+  project: "新建项目",
+};
+
+function CreateResourceMenu({
+  role,
+  onSelect,
+}: {
+  role: string;
+  onSelect: (kind: CreateResourceKind) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const kinds = getCreateResourceKinds(role);
+  if (kinds.length === 0) return null;
+  return <div className="relative">
+    <button type="button" aria-haspopup="menu" aria-expanded={open} className="flex items-center gap-1 border px-2.5 py-1.5 text-xs font-bold" style={{ background: S.accentLight, color: S.textSec, borderColor: S.borderMed, borderRadius: S.radiusSm }} onClick={() => setOpen(value => !value)}><Plus size={12} />新建<ChevronDown size={12} /></button>
+    {open && <div role="menu" className="absolute right-0 top-full z-20 mt-1 min-w-[180px] overflow-hidden rounded border p-1 shadow-lg" style={{ background: S.surface, borderColor: S.border }}>
+      {kinds.map(kind => <button key={kind} type="button" role="menuitem" className="flex w-full items-center px-2.5 py-2 text-left text-xs font-bold" style={{ color: S.text }} onClick={() => { setOpen(false); onSelect(kind); }}>{createResourceLabels[kind]}</button>)}
+    </div>}
+  </div>;
+}
+
 type EcoItem = {
   id: number; name: string; desc: string; platforms: number; projects: number;
   members: number; revenue: string; status: string; company?: CompanyInfo;
 };
 type SaasItem = typeof saasPlatforms[number];
 type PlatformItem = typeof platforms[number];
-type ProjectItem = ProjectRecord;
+type WorkbenchPanel = "overview" | "accounts" | "billing" | "platforms" | "projects" | "reports" | "ecoSettings" | "projectOverview" | "projectChannels" | "projectApps" | "projectCustomers" | "projectOrders" | "projectTeam" | "projectReports";
+
+export function getIdentityConfigTarget(role: string) {
+  if (role === "超级生态管理员" || role === "生态负责人" || role === "生态COO") {
+    return { nodeType: "eco" as const, panel: "ecoSettings" as WorkbenchPanel };
+  }
+  if (role === "SaaS 合作伙伴负责人" || role === "SaaS 合作伙伴运营") {
+    return { nodeType: "saas" as const, panel: "overview" as WorkbenchPanel };
+  }
+  if (role === "平台管理员" || role === "平台运营") {
+    return { nodeType: "platform" as const, panel: "overview" as WorkbenchPanel };
+  }
+  if (role === "项目负责人" || role === "区域运营" || role === "客服" || role === "老师") {
+    return { nodeType: "project" as const, panel: "projectOverview" as WorkbenchPanel };
+  }
+  return { nodeType: "eco" as const, panel: "overview" as WorkbenchPanel };
+}
+
 function SuperView({
-  ecoList, setEcoList, saasList, setSaasList,
+  ecoList, setEcoList, saasList, setSaasList, platformList, setPlatformList,
   accounts, setAccounts, subs, setSubs, bills, setBills,
+  projectList, setProjectList,
+  role,
   onOpenPlatforms, onOpenProjects, onOpenReports,
 }: {
   ecoList: EcoItem[]; setEcoList: React.Dispatch<React.SetStateAction<EcoItem[]>>;
   saasList: SaasItem[]; setSaasList: React.Dispatch<React.SetStateAction<SaasItem[]>>;
+  platformList: PlatformItem[]; setPlatformList: React.Dispatch<React.SetStateAction<PlatformItem[]>>;
   accounts: SystemAccount[]; setAccounts: React.Dispatch<React.SetStateAction<SystemAccount[]>>;
   subs: Subscription[]; setSubs: React.Dispatch<React.SetStateAction<Subscription[]>>;
   bills: BillRecord[]; setBills: React.Dispatch<React.SetStateAction<BillRecord[]>>;
+  projectList: ProjectRecord[];
+  setProjectList: React.Dispatch<React.SetStateAction<ProjectRecord[]>>;
+  role: string;
   onOpenPlatforms: (ecoName: string) => void;
   onOpenProjects: (ecoName: string) => void;
   onOpenReports: () => void;
@@ -230,159 +327,331 @@ function SuperView({
     const digits = acc.replace(/\s+/g, "");
     return digits.length >= 4 ? `尾号 ${digits.slice(-4)}` : acc;
   };
-  const total = { ecosystems: ecoList.length, saas: saasList.length, platforms: 0, projects: 0, users: 0, revenue: "¥84万", groups: 0 };
-  const [selected, setSelected] = useState<number | null>(null);
+  const total = { ecosystems: ecoList.length, saas: saasList.length, platforms: platformList.length, projects: platformList.reduce((n, p) => n + p.projects, 0), users: platformList.reduce((n, p) => n + p.users, 0), revenue: "¥84万", groups: platformList.reduce((n, p) => n + p.groups, 0) };
+  const [selected, setSelected] = useState<number | null>(() => ecoList[0]?.id ?? null);
+  const [expanded, setExpanded] = useState<number | null>(() => ecoList[0]?.id ?? null);
+  const [expandedSaas, setExpandedSaas] = useState<Set<number>>(() => new Set());
+  const [expandedPlatforms, setExpandedPlatforms] = useState<Set<number>>(() => new Set());
+  const [selectedNode, setSelectedNode] = useState<{ type: "eco" | "saas" | "platform" | "project" | "direct"; id: number }>(() => ({ type: "eco", id: ecoList[0]?.id ?? 0 }));
+  const [editingAccountUid, setEditingAccountUid] = useState<string | null>(null);
+  const [accountDraft, setAccountDraft] = useState({ name: "", email: "", phone: "" });
   const [createEcoOpen, setCreateEcoOpen] = useState(false);
-  const [createSaasEcoId, setCreateSaasEcoId] = useState<number | null>(null);
+  const [createPlatformOpen, setCreatePlatformOpen] = useState(false);
+  const [platformCreateContext, setPlatformCreateContext] = useState<{ eco?: string; saas?: string } | null>(null);
+  const [createSaasInline, setCreateSaasInline] = useState(false);
   const [toast, setToast] = useState("");
-  const currentEco = ecoList.find(e => e.id === createSaasEcoId);
+  const [activeWorkbenchPanel, setActiveWorkbenchPanel] = useState<WorkbenchPanel>("overview");
+  const [treeWidth, setTreeWidth] = useState(280);
+  const [isResizingTree, setIsResizingTree] = useState(false);
+  const selectedEco = ecoList.find(e => e.id === selected) ?? ecoList[0];
+  const [ecoDraft, setEcoDraft] = useState({ name: "", desc: "", status: "", companyName: "", legalPerson: "", contactName: "", contactPhone: "", region: "" });
+  useEffect(() => {
+    if (!isResizingTree) return;
+    const handlePointerMove = (event: PointerEvent) => {
+      const nextWidth = Math.min(420, Math.max(220, event.clientX - 24));
+      setTreeWidth(nextWidth);
+    };
+    const stopResizing = () => setIsResizingTree(false);
+    window.addEventListener("pointermove", handlePointerMove);
+    window.addEventListener("pointerup", stopResizing);
+    window.addEventListener("pointercancel", stopResizing);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", stopResizing);
+      window.removeEventListener("pointercancel", stopResizing);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+  }, [isResizingTree]);
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) setIsResizingTree(false);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  useEffect(() => {
+    if (!selectedEco) return;
+    setEcoDraft({
+      name: selectedEco.name,
+      desc: selectedEco.desc,
+      status: selectedEco.status,
+      companyName: selectedEco.company?.name || "",
+      legalPerson: selectedEco.company?.legalPerson || "",
+      contactName: selectedEco.company?.contactName || "",
+      contactPhone: selectedEco.company?.contactPhone || "",
+      region: selectedEco.company?.region || "",
+    });
+  }, [selectedEco]);
+  const selectedProject = selectedNode.type === "project" ? projectList.find(project => project.id === selectedNode.id) : undefined;
   const { setApprovals } = useApprovals();
+  const selectEco = (id: number) => {
+    setSelected(id);
+    setSelectedNode({ type: "eco", id });
+    setExpanded(current => current === id ? null : id);
+    setActiveWorkbenchPanel("overview");
+    setEditingAccountUid(null);
+    setCreateSaasInline(false);
+  };
+  const selectNode = (node: { type: "saas" | "platform" | "project" | "direct"; id: number }, ecoId: number) => {
+    setSelected(ecoId);
+    setSelectedNode(node);
+    setExpanded(ecoId);
+    setEditingAccountUid(null);
+    setActiveWorkbenchPanel("overview");
+    setCreateSaasInline(false);
+  };
+  const openPlatformCreate = (context: { eco?: string; saas?: string }) => {
+    setPlatformCreateContext(context);
+    setCreatePlatformOpen(true);
+  };
+  useEffect(() => {
+    const target = getIdentityConfigTarget(role);
+    const firstSaas = saasList[0];
+    const firstPlatform = platformList[0];
+    const firstProject = projectList[0];
+    if (target.nodeType === "eco" && ecoList[0]) {
+      setSelected(ecoList[0].id);
+      setSelectedNode({ type: "eco", id: ecoList[0].id });
+    } else if (target.nodeType === "saas" && firstSaas) {
+      setSelected(firstSaas.eco ? ecoList.find(eco => eco.name === firstSaas.eco)?.id ?? ecoList[0]?.id ?? null : ecoList[0]?.id ?? null);
+      setSelectedNode({ type: "saas", id: firstSaas.id });
+    } else if (target.nodeType === "platform" && firstPlatform) {
+      setSelected(ecoList.find(eco => eco.name === firstPlatform.eco)?.id ?? ecoList[0]?.id ?? null);
+      setSelectedNode({ type: "platform", id: firstPlatform.id });
+    } else if (target.nodeType === "project" && firstProject) {
+      setSelected(ecoList.find(eco => eco.name === firstProject.eco)?.id ?? ecoList[0]?.id ?? null);
+      setSelectedNode({ type: "project", id: firstProject.id });
+    }
+    setActiveWorkbenchPanel(target.panel);
+  }, [role]);
+  const openMyConfig = () => {
+    const target = getIdentityConfigTarget(role);
+    const firstSaas = saasList[0];
+    const firstPlatform = platformList[0];
+    const firstProject = projectList[0];
+    const ecoId = target.nodeType === "saas" ? ecoList.find(eco => eco.name === firstSaas?.eco)?.id : target.nodeType === "platform" ? ecoList.find(eco => eco.name === firstPlatform?.eco)?.id : target.nodeType === "project" ? ecoList.find(eco => eco.name === firstProject?.eco)?.id : ecoList[0]?.id;
+    setSelected(ecoId ?? null);
+    if (target.nodeType === "eco") setSelectedNode({ type: "eco", id: ecoId ?? 0 });
+    if (target.nodeType === "saas" && firstSaas) setSelectedNode({ type: "saas", id: firstSaas.id });
+    if (target.nodeType === "platform" && firstPlatform) setSelectedNode({ type: "platform", id: firstPlatform.id });
+    if (target.nodeType === "project" && firstProject) setSelectedNode({ type: "project", id: firstProject.id });
+    setActiveWorkbenchPanel(target.panel);
+  };
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-7 gap-3">
-        {[
-          { label: "下属生态", value: total.ecosystems },
-          { label: "SaaS 合作伙伴", value: total.saas },
-          { label: "招募平台", value: total.platforms },
-          { label: "运营项目", value: total.projects },
-          { label: "全局用户", value: total.users.toLocaleString() },
-          { label: "全局群组", value: total.groups },
-          { label: "总月营收", value: total.revenue },
-        ].map(s => (
-          <div key={s.label} className="px-3 py-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-            <div className="text-xs font-mono" style={{ color: S.muted }}>{s.label}</div>
-            <div className="text-xl font-bold mt-0.5" style={{ color: S.text }}>{s.value}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="p-5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-        <div className="flex items-center gap-2 mb-4">
-          <Zap size={16} style={{ color: "#1e293b" }} />
-          <span className="text-sm font-bold" style={{ color: S.text }}>超级生态</span>
-          <span className="px-2 py-0.5 text-xs font-bold ml-2" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }}>最高层级</span>
-        </div>
-        <p className="text-xs leading-relaxed mb-4 font-mono" style={{ color: S.textSec }}>
-          超级生态是整个体系的最顶层。统一管理旗下所有生态、SaaS 合作伙伴、平台和具体项目。拥有全局数据视角、最高级权限、多租户管控和生态资源调配能力。
-          每个下属生态按行业划分，下辖多个 SaaS 合作伙伴，由合作伙伴发展平台并提供能力与权益支持。
-        </p>
-        <div className="flex gap-2 flex-wrap">
-          {["全局数据看板", "跨生态权限管理", "多租户隔离", "统一账号资产", "生态营收汇总"].map(t => (
-            <span key={t} className="px-2.5 py-1 text-xs font-bold font-mono" style={{ background: S.accentLight, color: "#1e293b", borderRadius: S.radiusSm, border: `1px solid rgba(204,255,0,0.3)` }}>{t}</span>
-          ))}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2"><span className="text-sm font-bold" style={{ color: S.text }}>生态层级</span><span className="text-xs font-mono" style={{ color: S.textSec }}>{ecoList.length} 个生态</span></div>
+          <div className="mt-0.5 text-xs" style={{ color: S.textSec }}>从生态进入 SaaS 合作伙伴、平台和项目经营范围</div>
         </div>
       </div>
-
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div><span className="text-sm font-bold" style={{ color: S.text }}>旗下生态 ({ecoList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>超级生态下辖的行业垂直生态，每个生态下辖多个 SaaS 合作伙伴与资源池</div></div>
-          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateEcoOpen(true)}>
-            <Plus size={12} /> 新建生态
-          </button>
-        </div>
-        {ecoList.map(e => (
-          <div
-            key={e.id}
-            role="button"
-            tabIndex={0}
-            className="p-4 cursor-pointer transition-all"
-            style={{
-              background: selected === e.id ? S.accentLight : S.surface,
-              border: `1px solid ${S.border}`,
-              borderLeft: selected === e.id ? `3px solid ${S.accent}` : `3px solid transparent`,
-              borderRadius: S.radius,
-              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-            }}
-            onClick={() => setSelected(selected === e.id ? null : e.id)}
-            onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); setSelected(selected === e.id ? null : e.id); } }}
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius }}>
-                {e.name[0]}
-              </div>
-              <div className="flex-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold" style={{ color: S.text }}>{e.name}</span>
-                  <span className="px-2 py-0.5 text-xs font-bold" style={{ background: statusCfg[e.status]?.bg, color: statusCfg[e.status]?.color, borderRadius: S.radiusSm }}>{e.status}</span>
-                </div>
-                <div className="text-xs mt-0.5 font-mono" style={{ color: S.muted }}>{e.desc}</div>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-center flex-shrink-0">
-                {[["下属 SaaS 合作伙伴", e.platforms], ["招募平台", e.projects], ["生态会员", e.members.toLocaleString()], ["月营收", e.revenue]].map(([l, v]) => (
-                  <div key={l as string} className="px-3 py-1.5" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-                    <div className="text-xs font-bold font-mono" style={{ color: S.text }}>{v}</div>
-                    <div className="font-mono" style={{ color: S.muted, fontSize: "10px" }}>{l}</div>
-                  </div>
-                ))}
-              </div>
-              <ChevronRight size={16} style={{ color: S.muted, transform: selected === e.id ? "rotate(90deg)" : "none", transition: "transform 0.2s" }} />
+      <div className="grid min-w-0 gap-3 lg:items-stretch" style={{ gridTemplateColumns: "minmax(0, 1fr)" }}>
+        <div className="min-w-0 lg:grid lg:gap-1" style={{ gridTemplateColumns: `minmax(220px, ${treeWidth}px) 4px minmax(0, 1fr)` }}>
+          <section className="min-w-0 space-y-2 rounded p-3" aria-label="生态树" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+            <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-xs font-bold" style={{ color: S.text }}>我的生态</div>
+              <div className="mt-0.5 text-[10px]" style={{ color: S.textSec }}>生态层级与经营范围</div>
             </div>
-
-            {selected === e.id && (
-              <div className="mt-4 pt-4 space-y-3" style={{ borderTop: `1px solid ${S.border}` }}>
-                <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-                  <div className="flex items-center gap-2 text-xs font-bold mb-2"><Building2 size={13} />公司主体信息</div>
-                  {e.company ? (
-                    <div className="grid grid-cols-3 gap-x-4 gap-y-1.5 text-[11px] font-mono">
-                      <div><span style={{ color: S.muted }}>公司名称：</span><span style={{ color: S.text }}>{e.company.name}</span></div>
-                      <div><span style={{ color: S.muted }}>信用代码：</span><span style={{ color: S.textSec }}>{e.company.creditCode || "—"}</span></div>
-                      <div><span style={{ color: S.muted }}>法人：</span><span style={{ color: S.textSec }}>{e.company.legalPerson || "—"}</span></div>
-                      <div><span style={{ color: S.muted }}>对接人：</span><span style={{ color: S.textSec }}>{e.company.contactName || "—"}{e.company.contactPhone ? ` · ${e.company.contactPhone}` : ""}</span></div>
-                      <div><span style={{ color: S.muted }}>所在地：</span><span style={{ color: S.textSec }}>{e.company.region || "—"}</span></div>
-                      <div><span style={{ color: S.muted }}>开户行：</span><span style={{ color: S.textSec }}>{e.company.bankName ? `${e.company.bankName}（${maskAccount(e.company.bankAccount)}）` : "—"}</span></div>
-                    </div>
-                  ) : (
-                    <div className="text-[11px] font-mono" style={{ color: S.muted }}>未录入公司主体</div>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <button type="button" className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasEcoId(e.id)}><Plus size={12} /> 新建 SaaS 合作伙伴</button>
-                  {[
-                    ["查看平台", () => onOpenPlatforms(e.name)],
-                    ["项目列表", () => onOpenProjects(e.name)],
-                    ["数据报表", onOpenReports],
-                  ].map(([label, action]) => (
-                    <button key={label as string} type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={ev => { ev.stopPropagation(); (action as () => void)(); }}>{label as string}</button>
-                  ))}
-                </div>
-              </div>
-            )}
+            <div className="flex items-center gap-1">
+              <CreateResourceMenu role={role} onSelect={kind => {
+                if (kind === "ecosystem") setCreateEcoOpen(true);
+                if (kind === "platform") setCreatePlatformOpen(true);
+                if (kind === "saas") setCreateSaasInline(true);
+              }} />
+              <button type="button" title="配置我的当前范围" aria-label="配置我的当前范围" className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.bg, color: S.text }} onClick={openMyConfig}><Settings size={14} /></button>
+            </div>
           </div>
-        ))}
+          {ecoList.map(e => {
+            const ecoSaas = saasList.filter(s => s.eco === e.name);
+            const ecoPlatforms = platformList.filter(p => p.eco === e.name);
+            const directPlatforms = ecoPlatforms.filter(p => !p.partner && !p.saas);
+            const orphanPlatforms = ecoPlatforms.filter(platform => !ecoSaas.some(saas => platform.saas === saas.name || platform.partner === saas.name));
+            const projectCount = ecoPlatforms.reduce((count, platform) => count + platform.projects, 0);
+            const isSelected = selected === e.id;
+            const isExpanded = expanded === e.id;
+            const toggleSet = (setter: React.Dispatch<React.SetStateAction<Set<number>>>, id: number) => setter(current => {
+              const next = new Set(current);
+              if (next.has(id)) next.delete(id); else next.add(id);
+              return next;
+            });
+            const renderPlatform = (platform: PlatformItem, ecoId: number) => {
+              const platformProjects = projectList.filter(project => project.platform === platform.name && project.eco === e.name);
+              const platformSelected = selectedNode.type === "platform" && selectedNode.id === platform.id;
+              const platformExpanded = expandedPlatforms.has(platform.id);
+              return <div key={platform.id} className="relative ml-8 pl-4" style={{ borderLeft: `1px solid ${S.borderMed}` }}>
+                <div className="relative flex min-w-0 items-center gap-2 py-1.5" style={{ borderTop: `1px solid ${S.borderMed}` }}>
+                  <span className="absolute -left-[17px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full" style={{ background: platformSelected ? S.accent : S.muted, boxShadow: `0 0 0 2px ${S.surface}` }} />
+                  <button type="button" className="min-w-0 flex-1 truncate text-left text-[11px] font-bold" style={{ color: platformSelected ? S.text : S.textSec }} onClick={() => selectNode({ type: "platform", id: platform.id }, ecoId)}>{platform.name}</button>
+                  <div className="flex flex-shrink-0 items-center gap-1"><button type="button" title="平台配置" aria-label={`配置${platform.name}`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.bg, color: S.text }} onClick={() => { selectNode({ type: "platform", id: platform.id }, ecoId); setActiveWorkbenchPanel("overview"); }}><Settings size={13} /></button><button type="button" title="查看项目" aria-label={`查看${platform.name}项目`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.bg, color: S.text }} onClick={() => { selectNode({ type: "platform", id: platform.id }, ecoId); setActiveWorkbenchPanel("projects"); }}><LayoutDashboard size={13} /></button><button type="button" title="新建项目" aria-label={`为${platform.name}新建项目`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.accent, color: S.onPrimary }} onClick={() => setToast(`${platform.name}的新建项目入口暂未开放`)}><Plus size={13} /></button></div>
+                  <span className="flex-shrink-0 text-[10px] font-mono" style={{ color: S.muted }}>{platform.status}</span>
+                  <button type="button" aria-label={`${platformExpanded ? "收起" : "展开"}${platform.name}项目`} aria-expanded={platformExpanded} className="flex h-5 w-5 flex-shrink-0 items-center justify-center" style={{ color: S.muted }} onClick={event => { event.stopPropagation(); toggleSet(setExpandedPlatforms, platform.id); }}><ChevronDown size={13} style={{ transform: platformExpanded ? "rotate(180deg)" : "none" }} /></button>
+                </div>
+                {platformExpanded && platformProjects.map(project => {
+                  const projectSelected = selectedNode.type === "project" && selectedNode.id === project.id;
+                  return <button key={project.id} type="button" className="relative ml-4 flex w-[calc(100%-1rem)] min-w-0 items-center gap-2 border-t py-1.5 pl-4 text-left" style={{ borderColor: S.borderMed, color: projectSelected ? S.text : S.textSec }} onClick={() => { selectNode({ type: "project", id: project.id }, ecoId); setActiveWorkbenchPanel("projectOverview"); }}><span className="absolute -left-[1px] top-1/2 h-1.5 w-1.5 -translate-y-1/2 rounded-full" style={{ background: projectSelected ? S.accent : S.borderMed }} /><span className="min-w-0 flex-1 truncate text-[10px]">{project.name}</span><span className="flex-shrink-0 text-[9px] font-mono" style={{ color: S.muted }}>{project.status}</span></button>;
+                })}
+              </div>;
+            };
+            return <div key={e.id} className="min-w-0 overflow-hidden" style={{ background: isSelected ? S.accentLight : S.surface, border: `1px solid ${isSelected ? "rgba(204,255,0,.55)" : S.border}`, borderRadius: S.radius }}>
+              <div className="flex min-w-0 flex-nowrap items-center gap-2 p-3">
+                <span className="h-2.5 w-2.5 flex-shrink-0 rounded-full" style={{ background: isSelected ? S.accent : S.muted }} />
+                <button type="button" className="min-w-0 flex-1 text-left" onClick={() => selectEco(e.id)} aria-expanded={isExpanded}><span className="flex flex-wrap items-center gap-2"><span className="truncate text-sm font-bold" style={{ color: S.text }}>{e.name}</span><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: statusCfg[e.status]?.bg, color: statusCfg[e.status]?.color, borderRadius: S.radiusSm }}>{e.status}</span></span><span className="mt-0.5 block truncate text-[10px] font-mono" style={{ color: S.muted }}>{ecoSaas.length} SaaS · {ecoPlatforms.length || e.platforms} 平台 · {projectCount || e.projects} 项目</span></button>
+                <div className="flex flex-shrink-0 items-center gap-1.5">
+                  <button type="button" title="生态配置" aria-label={`配置${e.name}`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.bg, color: S.text }} onClick={() => { setSelectedNode({ type: "eco", id: e.id }); setSelected(e.id); setActiveWorkbenchPanel("ecoSettings"); }}><Settings size={13} /></button>
+                  <button type="button" title="查看旗下平台" aria-label={`查看${e.name}旗下平台`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.bg, color: S.text }} onClick={() => { setSelectedNode({ type: "eco", id: e.id }); setSelected(e.id); setActiveWorkbenchPanel("platforms"); }}><LayoutDashboard size={13} /></button>
+                  <button type="button" title="新建旗下平台" aria-label={`为${e.name}新建平台`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.accent, color: S.onPrimary }} onClick={() => openPlatformCreate(buildPlatformCreateDefaults(e.name))}><Plus size={13} /></button>
+                </div>
+                <button type="button" aria-label={`${isExpanded ? "收起" : "展开"}${e.name}`} aria-expanded={isExpanded} className="flex h-7 w-7 flex-shrink-0 items-center justify-center" style={{ color: S.muted }} onClick={() => setExpanded(current => current === e.id ? null : e.id)}><ChevronDown size={15} style={{ transform: isExpanded ? "rotate(180deg)" : "none" }} /></button>
+              </div>
+              {isExpanded && <div className="space-y-1 border-t px-3 pb-3 pt-2" style={{ borderColor: S.border }}>
+                {ecoSaas.map(saas => {
+                  const saasSelected = selectedNode.type === "saas" && selectedNode.id === saas.id;
+                  const saasExpanded = expandedSaas.has(saas.id);
+                  const saasPlatforms = ecoPlatforms.filter(platform => platform.saas === saas.name || platform.partner === saas.name);
+                  return <div key={saas.id} className="relative ml-3 pl-4" style={{ borderLeft: `1px solid ${S.borderMed}` }}><div className="relative flex min-w-0 flex-nowrap items-center gap-2 border-t py-2" style={{ borderColor: S.borderMed }}><span className="absolute -left-[17px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full" style={{ background: saasSelected ? S.accent : S.muted, boxShadow: `0 0 0 2px ${S.surface}` }} /><button type="button" className="min-w-0 flex-1 truncate text-left text-xs font-bold" style={{ color: saasSelected ? S.text : S.textSec }} onClick={() => selectNode({ type: "saas", id: saas.id }, e.id)}>{saas.name}</button><div className="flex flex-shrink-0 items-center gap-1"><button type="button" title="SaaS 配置" aria-label={`配置${saas.name}`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.bg, color: S.text }} onClick={() => { selectNode({ type: "saas", id: saas.id }, e.id); setActiveWorkbenchPanel("overview"); }}><Settings size={13} /></button><button type="button" title="查看旗下平台" aria-label={`查看${saas.name}旗下平台`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.bg, color: S.text }} onClick={() => { selectNode({ type: "saas", id: saas.id }, e.id); setActiveWorkbenchPanel("platforms"); }}><LayoutDashboard size={13} /></button><button type="button" title="新建旗下平台" aria-label={`为${saas.name}新建平台`} className="flex h-7 w-7 items-center justify-center rounded" style={{ background: S.accent, color: S.onPrimary }} onClick={() => openPlatformCreate(buildPlatformCreateDefaults(e.name, saas.name))}><Plus size={13} /></button></div><span className="flex-shrink-0 text-[10px] font-mono" style={{ color: S.muted }}>{saas.status}</span><button type="button" aria-label={`${saasExpanded ? "收起" : "展开"}${saas.name}平台`} aria-expanded={saasExpanded} className="flex h-5 w-5 flex-shrink-0 items-center justify-center" style={{ color: S.muted }} onClick={event => { event.stopPropagation(); toggleSet(setExpandedSaas, saas.id); }}><ChevronDown size={13} style={{ transform: saasExpanded ? "rotate(180deg)" : "none" }} /></button></div>{saasExpanded && saasPlatforms.map(platform => renderPlatform(platform, e.id))}</div>;
+                })}
+                {directPlatforms.length > 0 && <div className="relative ml-3 pl-4" style={{ borderLeft: `1px solid ${S.borderMed}` }}><div className="relative flex items-center gap-2 border-t py-2" style={{ borderColor: S.borderMed }}><span className="absolute -left-[17px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full" style={{ background: S.accent, boxShadow: `0 0 0 2px ${S.surface}` }} /><button type="button" className="min-w-0 flex-1 truncate text-left text-xs font-bold" style={{ color: S.text }} onClick={() => selectNode({ type: "direct", id: e.id }, e.id)}>直属超级生态</button><span className="flex-shrink-0 text-[10px] font-mono" style={{ color: S.muted }}>{directPlatforms.length} 个平台</span></div>{directPlatforms.map(platform => renderPlatform(platform, e.id))}</div>}
+                {orphanPlatforms.map(platform => renderPlatform(platform, e.id))}
+                {ecoSaas.length === 0 && directPlatforms.length === 0 && orphanPlatforms.length === 0 && <div className="ml-3 py-1 text-[10px] font-mono" style={{ color: S.muted }}>暂未配置二级对象</div>}
+              </div>}
+            </div>;
+          })}
+          </section>
+          <div className="hidden items-stretch lg:flex" aria-hidden="true">
+            <button type="button" aria-label="调整生态树宽度" title="拖动调整生态树宽度" className="h-full w-1 cursor-col-resize" onPointerDown={event => { event.currentTarget.setPointerCapture(event.pointerId); setIsResizingTree(true); }} />
+          </div>
+           {selectedEco ? (() => {
+          const ecoSaas = saasList.filter(s => s.eco === selectedEco.name);
+          const ecoPlatforms = platformList.filter(p => p.eco === selectedEco.name);
+          const directPlatforms = ecoPlatforms.filter(p => !p.partner && !p.saas);
+          const selectedSaas = selectedNode.type === "saas" ? saasList.find(s => s.id === selectedNode.id && s.eco === selectedEco.name) : undefined;
+          const selectedPlatform = selectedNode.type === "platform" ? platformList.find(platform => platform.id === selectedNode.id && platform.eco === selectedEco.name) : undefined;
+          const visibleProjects = projectList.filter(project => project.eco === selectedEco.name && (!selectedSaas || project.saas === selectedSaas.name || project.partner === selectedSaas.name) && (!selectedPlatform || project.platform === selectedPlatform.name));
+          const projectCount = visibleProjects.length || ecoPlatforms.reduce((count, platform) => count + platform.projects, 0);
+          const orphanPlatforms = ecoPlatforms.filter(platform => !ecoSaas.some(saas => platform.saas === saas.name || platform.partner === saas.name));
+          const showDirect = selectedNode.type === "direct" && selectedNode.id === selectedEco.id;
+          const panelTitle = selectedProject?.name || selectedPlatform?.name || selectedSaas?.name || (showDirect ? "直属超级生态" : selectedEco.name);
+          const panelDesc = selectedProject ? `归属于 ${selectedProject.platform}，集中管理项目入口、流量来源和业务应用。` : selectedPlatform?.desc || selectedSaas?.desc || (showDirect ? "由超级生态管理员直接管理的平台集合，无需经过 SaaS 合作伙伴。" : selectedEco.desc);
+          const identityConfig = selectedNode.type === "eco"
+            ? { roleKeys: ["eco_leader", "eco_coo"] as IdentityRole["roleKey"][], scopeType: "eco" as const, scopeId: `eco-${selectedNode.id}` }
+            : selectedNode.type === "saas"
+              ? { roleKeys: ["saas_owner", "saas_op"] as IdentityRole["roleKey"][], scopeType: "saas" as const, scopeId: `saas-${selectedNode.id}` }
+              : selectedNode.type === "platform"
+                ? { roleKeys: ["platform_admin", "platform_op"] as IdentityRole["roleKey"][], scopeType: "platform" as const, scopeId: `platform-${selectedNode.id}` }
+                : selectedNode.type === "project"
+                  ? { roleKeys: ["project_owner", "regional_op", "service"] as IdentityRole["roleKey"][], scopeType: "project" as const, scopeId: `project-${selectedNode.id}` }
+                  : { roleKeys: ["super_admin"] as IdentityRole["roleKey"][], scopeType: "global" as const, scopeId: "*" };
+          const identityAccounts = getIdentityAccounts(accounts, identityConfig.roleKeys, identityConfig.scopeType, identityConfig.scopeId);
+          const accountToEdit = accounts.find(account => account.uid === editingAccountUid);
+          const saveAccount = () => {
+            if (!accountToEdit || !accountDraft.name.trim() || !accountDraft.email.trim()) return;
+            const now = new Date();
+            const time = now.toLocaleString("zh-CN", { hour12: false }).replace(/\\//g, "-");
+            setAccounts(list => list.map(account => account.uid === accountToEdit.uid ? { ...account, name: accountDraft.name.trim(), email: accountDraft.email.trim(), phone: accountDraft.phone.trim(), operationLogs: [{ id: `edit-${Date.now()}`, type: "edit", actor: "超级生态管理员", time, summary: "在生态详情中更新账号信息" }, ...account.operationLogs] } : account));
+            setEditingAccountUid(null);
+            setToast("账号信息已保存");
+          };
+          const saveEcoSettings = () => {
+            const previousName = selectedEco.name;
+            const name = ecoDraft.name.trim();
+            if (!name) {
+              setToast("生态名称不能为空");
+              return;
+            }
+            setEcoList(list => list.map(eco => eco.id === selectedEco.id ? {
+              ...eco,
+              name,
+              desc: ecoDraft.desc.trim(),
+              status: ecoDraft.status,
+              company: {
+                ...(eco.company || {}),
+                name: ecoDraft.companyName.trim(),
+                legalPerson: ecoDraft.legalPerson.trim(),
+                contactName: ecoDraft.contactName.trim(),
+                contactPhone: ecoDraft.contactPhone.trim(),
+                region: ecoDraft.region.trim(),
+              },
+            } : eco));
+            if (name !== previousName) {
+              setSaasList(list => list.map(item => item.eco === previousName ? { ...item, eco: name } : item));
+              setPlatformList(list => list.map(item => item.eco === previousName ? { ...item, eco: name } : item));
+              setProjectList(list => list.map(item => item.eco === previousName ? { ...item, eco: name } : item));
+            }
+            setToast("生态配置已保存");
+            setActiveWorkbenchPanel("overview");
+          };
+          const toggleAccountStatus = (account: SystemAccount) => {
+            const nextStatus = account.status === "active" ? "disabled" : "active";
+            const now = new Date();
+            const time = now.toLocaleString("zh-CN", { hour12: false }).replace(/\\//g, "-");
+            setAccounts(list => list.map(item => item.uid === account.uid ? { ...item, status: nextStatus, operationLogs: [{ id: `${nextStatus}-${Date.now()}`, type: nextStatus === "active" ? "enable" : "disable", actor: "超级生态管理员", time, summary: `${nextStatus === "active" ? "启用" : "停用"}账号` }, ...item.operationLogs] } : item));
+            setToast(nextStatus === "active" ? "账号已启用" : "账号已停用");
+          };
+          const panelStatus = selectedProject?.status || selectedPlatform?.status || selectedSaas?.status || selectedEco.status;
+          const PanelIcon = selectedProject ? Workflow : selectedPlatform ? Building2 : selectedSaas ? Package : showDirect ? Zap : Globe;
+          const scopeLabel = selectedProject ? `项目 · ${selectedProject.platform}` : selectedPlatform ? `平台 · ${selectedPlatform.name}` : selectedSaas ? `SaaS 合作伙伴 · ${selectedSaas.name}` : showDirect ? "直属平台范围" : `生态 · ${selectedEco.name}`;
+          const recentLogs = identityAccounts.flatMap(account => account.operationLogs || []).slice(0, 3);
+          const statItems = selectedSaas
+            ? [["旗下平台", selectedSaas.platformCount, LayoutDashboard], ["下辖项目", selectedSaas.projects, Workflow], ["系统用户", selectedSaas.users.toLocaleString(), UsersRound], ["活跃群组", selectedSaas.groups, MessageSquare]]
+            : showDirect
+              ? [["直属平台", directPlatforms.length, Building2], ["项目", directPlatforms.reduce((n, p) => n + p.projects, 0), Workflow], ["用户", directPlatforms.reduce((n, p) => n + p.users, 0).toLocaleString(), UsersRound], ["群组", directPlatforms.reduce((n, p) => n + p.groups, 0), MessageSquare]]
+              : selectedPlatform
+                ? [["下辖项目", selectedPlatform.projects, Workflow], ["平台用户", selectedPlatform.users.toLocaleString(), UsersRound], ["运营群组", selectedPlatform.groups, MessageSquare], ["月营收", selectedPlatform.revenue, TrendingUp]]
+                : [["SaaS伙伴", ecoSaas.length, Package], ["平台", ecoPlatforms.length || selectedEco.platforms, Building2], ["项目", projectCount || selectedEco.projects, Workflow], ["生态会员", selectedEco.members.toLocaleString(), UsersRound]];
+          return <section className="min-w-0 space-y-3 p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }} aria-label="生态详情">
+            <div className="flex items-start justify-between gap-3"><div className="flex min-w-0 items-start gap-2.5"><span className="flex h-9 w-9 flex-shrink-0 items-center justify-center" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}><PanelIcon size={17} /></span><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><span className="text-base font-bold" style={{ color: S.text }}>{panelTitle}</span><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: statusCfg[panelStatus]?.bg || S.accentLight, color: statusCfg[panelStatus]?.color || S.text, borderRadius: S.radiusSm }}>{panelStatus}</span></div><div className="mt-1 flex flex-wrap items-center gap-2 text-[10px] font-mono" style={{ color: S.muted }}><span>{scopeLabel}</span><span>·</span><span>{identityAccounts.length} 个身份账号</span></div><div className="mt-1 text-xs leading-relaxed" style={{ color: S.muted }}>{panelDesc}</div></div></div><button type="button" title="更多对象操作" aria-label="更多对象操作" className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded" style={{ color: S.muted, background: S.bg }} onClick={() => setToast(`${panelTitle}的更多操作暂未开放`)}><MoreHorizontal size={15} /></button></div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{statItems.map(([label, value, Icon]) => <div key={label as string} className="flex min-w-0 items-center gap-2 px-2.5 py-2.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Icon size={14} style={{ color: S.accent }} /><div className="min-w-0"><div className="truncate text-sm font-bold" style={{ color: S.text }}>{value as string | number}</div><div className="truncate text-[10px] font-mono" style={{ color: S.muted }}>{label as string}</div></div></div>)}</div>
+            <div className="flex flex-wrap gap-1.5 border-b pb-3" style={{ borderColor: S.border }} aria-label="对象配置菜单"><span className="mr-1 flex items-center gap-1 text-[10px] font-bold" style={{ color: S.muted }}><Activity size={12} />{selectedProject ? "项目配置" : "对象配置"}</span>{selectedProject ? <>{[["projectOverview", "项目概览", LayoutDashboard], ["projectChannels", "渠道与流量", Share2], ["projectApps", "应用与小程序", Package], ["projectCustomers", "客户与权益", UsersRound], ["projectOrders", "订单与履约", Workflow], ["projectTeam", "团队与权限", ShieldCheck], ["projectReports", "数据报表", TrendingUp]].map(([key, label, Icon]) => <button key={key as string} type="button" title={label as string} aria-label={label as string} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: activeWorkbenchPanel === key ? S.accent : S.bg, color: activeWorkbenchPanel === key ? S.onPrimary : S.text, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setActiveWorkbenchPanel(key as WorkbenchPanel)}><Icon size={12} />{label as string}</button>)}</> : <><button type="button" title="账号管理" aria-label="账号管理" className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: activeWorkbenchPanel === "accounts" ? S.accent : S.bg, color: activeWorkbenchPanel === "accounts" ? S.onPrimary : S.text, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setActiveWorkbenchPanel("accounts")}><UsersRound size={12} />账号管理</button><button type="button" title="生态配置" aria-label="生态配置" className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: activeWorkbenchPanel === "ecoSettings" ? S.accent : S.bg, color: activeWorkbenchPanel === "ecoSettings" ? S.onPrimary : S.text, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setActiveWorkbenchPanel("ecoSettings")}><Settings size={12} />生态配置</button><button type="button" title="商业与计费" aria-label="商业与计费" className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: activeWorkbenchPanel === "billing" ? S.accent : S.bg, color: activeWorkbenchPanel === "billing" ? S.onPrimary : S.text, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setActiveWorkbenchPanel("billing")}><TrendingUp size={12} />商业与计费</button>{(selectedSaas || selectedEco) && <button type="button" title="查看旗下平台" aria-label="查看旗下平台" className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: activeWorkbenchPanel === "platforms" ? S.accent : S.bg, color: activeWorkbenchPanel === "platforms" ? S.onPrimary : S.text, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setActiveWorkbenchPanel("platforms")}><LayoutDashboard size={12} />旗下平台</button>}{(selectedSaas || selectedPlatform || showDirect || selectedEco) && <button type="button" title="查看项目" aria-label="查看项目" className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: activeWorkbenchPanel === "projects" ? S.accent : "#1e293b", color: activeWorkbenchPanel === "projects" ? S.onPrimary : S.accent, border: `1px solid ${activeWorkbenchPanel === "projects" ? S.accent : "#1e293b"}`, borderRadius: S.radiusSm }} onClick={() => setActiveWorkbenchPanel("projects")}><Workflow size={12} />项目列表</button>}{!selectedPlatform && getCreateResourceKinds(role).includes("saas") && <button type="button" title="新建 SaaS 合作伙伴" aria-label="新建 SaaS 合作伙伴" className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: S.bg, color: S.text, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setCreateSaasInline(true)}><Plus size={12} />新建 SaaS</button>}{selectedEco && <button type="button" title="查看数据报表" aria-label="查看数据报表" className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold" style={{ background: activeWorkbenchPanel === "reports" ? S.accent : S.bg, color: activeWorkbenchPanel === "reports" ? S.onPrimary : S.text, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setActiveWorkbenchPanel("reports")}><TrendingUp size={12} />数据报表</button>}</>}</div>
+            {createSaasInline && <CreateSaasInlineForm ecoList={ecoList} defaultEco={selectedEco.name} onClose={() => setCreateSaasInline(false)} onCreate={data => {
+              setSaasList(list => [...list, { id: Date.now(), ...data, platformCount: 0, projects: 0, users: 0, groups: 0, status: "孵化中", isCurrent: false }]);
+              const approval = createApproval("saas_onboard", { title: `SaaS 合作伙伴入驻：${data.name}（${data.eco}）`, submitter: "超级生态管理员", description: `在${data.eco}下新建 SaaS 合作伙伴「${data.name}」，${data.desc || "无描述"}`, detail: { SaaS合作伙伴名称: data.name, 所属生态: data.eco, 描述: data.desc || "—" }, payload: { type: "saas_onboard", name: data.name, eco: data.eco, desc: data.desc } });
+              setApprovals(prev => [approval, ...prev]);
+              setCreateSaasInline(false);
+              setToast("已创建并推送审批单");
+            }} />}
+            {activeWorkbenchPanel !== "overview" && <div className="space-y-3 rounded border p-3" style={{ borderColor: S.border, background: S.bg }} aria-label="当前工作区内容"><div className="flex items-center justify-between gap-2"><div className="text-xs font-bold" style={{ color: S.text }}>{activeWorkbenchPanel === "ecoSettings" ? "生态配置" : activeWorkbenchPanel === "projectOverview" ? "项目概览" : activeWorkbenchPanel === "projectChannels" ? "渠道与流量" : activeWorkbenchPanel === "projectApps" ? "应用与小程序" : activeWorkbenchPanel === "projectCustomers" ? "客户与权益" : activeWorkbenchPanel === "projectOrders" ? "订单与履约" : activeWorkbenchPanel === "projectTeam" ? "团队与权限" : activeWorkbenchPanel === "projectReports" ? "数据报表" : activeWorkbenchPanel === "accounts" ? "账号管理" : activeWorkbenchPanel === "billing" ? "商业与计费" : activeWorkbenchPanel === "platforms" ? "旗下平台" : activeWorkbenchPanel === "projects" ? "项目列表" : "数据报表"}</div><button type="button" title="返回对象概览" aria-label="返回对象概览" className="px-2 py-1 text-[10px]" style={{ color: S.muted }} onClick={() => setActiveWorkbenchPanel("overview")}>返回概览</button></div>{activeWorkbenchPanel === "ecoSettings" && <div className="space-y-3"><div className="rounded px-3 py-2" style={{ background: S.accentLight, border: `1px solid ${S.borderMed}` }}><div className="text-xs font-bold" style={{ color: S.text }}>生态基本信息</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>配置生态名称、定位、状态和公司主体信息。</div></div><div className="grid gap-3 sm:grid-cols-2"><label className="space-y-1 text-[10px] font-bold" style={{ color: S.text }}>生态名称<input name="eco-name" aria-label="生态名称" value={ecoDraft.name} onChange={event => setEcoDraft(draft => ({ ...draft, name: event.target.value }))} className="mt-1 w-full rounded border px-2.5 py-2 text-xs font-normal" /></label><label className="space-y-1 text-[10px] font-bold" style={{ color: S.text }}>生态状态<select name="eco-status" aria-label="生态状态" value={ecoDraft.status} onChange={event => setEcoDraft(draft => ({ ...draft, status: event.target.value }))} className="mt-1 w-full rounded border px-2.5 py-2 text-xs font-normal"><option>主力生态</option><option>成长中</option><option>孵化中</option><option>稳定运营</option></select></label></div><label className="block space-y-1 text-[10px] font-bold" style={{ color: S.text }}>生态简介<textarea name="eco-desc" aria-label="生态简介" value={ecoDraft.desc} onChange={event => setEcoDraft(draft => ({ ...draft, desc: event.target.value }))} className="mt-1 min-h-20 w-full rounded border px-2.5 py-2 text-xs font-normal" /></label><div className="rounded px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}` }}><div className="mb-2 text-xs font-bold" style={{ color: S.text }}>公司主体</div><div className="grid gap-3 sm:grid-cols-2"><label className="space-y-1 text-[10px] font-bold" style={{ color: S.text }}>公司名称<input name="eco-company-name" aria-label="公司名称" value={ecoDraft.companyName} onChange={event => setEcoDraft(draft => ({ ...draft, companyName: event.target.value }))} className="mt-1 w-full rounded border px-2.5 py-2 text-xs font-normal" /></label><label className="space-y-1 text-[10px] font-bold" style={{ color: S.text }}>法人<input name="eco-legal-person" aria-label="法人" value={ecoDraft.legalPerson} onChange={event => setEcoDraft(draft => ({ ...draft, legalPerson: event.target.value }))} className="mt-1 w-full rounded border px-2.5 py-2 text-xs font-normal" /></label><label className="space-y-1 text-[10px] font-bold" style={{ color: S.text }}>对接人<input name="eco-contact-name" aria-label="对接人" value={ecoDraft.contactName} onChange={event => setEcoDraft(draft => ({ ...draft, contactName: event.target.value }))} className="mt-1 w-full rounded border px-2.5 py-2 text-xs font-normal" /></label><label className="space-y-1 text-[10px] font-bold" style={{ color: S.text }}>联系电话<input name="eco-contact-phone" aria-label="联系电话" value={ecoDraft.contactPhone} onChange={event => setEcoDraft(draft => ({ ...draft, contactPhone: event.target.value }))} className="mt-1 w-full rounded border px-2.5 py-2 text-xs font-normal" /></label><label className="space-y-1 text-[10px] font-bold sm:col-span-2" style={{ color: S.text }}>所在地区<input name="eco-region" aria-label="所在地区" value={ecoDraft.region} onChange={event => setEcoDraft(draft => ({ ...draft, region: event.target.value }))} className="mt-1 w-full rounded border px-2.5 py-2 text-xs font-normal" /></label></div></div><div className="flex justify-end gap-2"><button type="button" className="px-3 py-2 text-xs" style={{ color: S.muted }} onClick={() => setActiveWorkbenchPanel("overview")}>取消</button><button type="button" className="flex items-center gap-1 px-3 py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={saveEcoSettings}><Save size={13} />保存生态配置</button></div></div>}{activeWorkbenchPanel === "accounts" && <div className="space-y-2">{identityAccounts.length === 0 ? <div className="rounded px-3 py-3 text-[11px]" style={{ background: S.surface, color: S.muted }}>当前对象暂无身份账号，请通过当前对象的账号配置完成分配。</div> : identityAccounts.map(account => <div key={account.uid} className="flex flex-wrap items-center justify-between gap-2 rounded px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}` }}><div><div className="text-xs font-bold" style={{ color: S.text }}>{account.name}</div><div className="text-[10px] font-mono" style={{ color: S.muted }}>{account.email} · {account.status === "active" ? "已启用" : "已停用"}</div></div><div className="flex gap-2"><button type="button" title="编辑账号" aria-label={`编辑${account.name}账号`} className="flex items-center gap-1 text-[10px] font-bold" style={{ color: S.text }} onClick={() => { setEditingAccountUid(account.uid); setAccountDraft({ name: account.name, email: account.email, phone: account.phone }); }}><Pencil size={12} />编辑</button><button type="button" title={account.status === "active" ? "停用账号" : "启用账号"} aria-label={`${account.status === "active" ? "停用" : "启用"}${account.name}账号`} className="flex items-center gap-1 text-[10px]" style={{ color: S.muted }} onClick={() => toggleAccountStatus(account)}>{account.status === "active" ? "停用" : "启用"}</button></div></div>)}</div>}{activeWorkbenchPanel === "billing" && (() => { const billingName = selectedPlatform?.name || selectedSaas?.name || selectedEco.name; const sub = subs.find(item => item.subscriberName === billingName); const bill = bills.find(item => item.payerName === billingName); return <div className="grid gap-2 sm:grid-cols-2"><div className="rounded px-3 py-2" style={{ background: S.surface }}><div className="text-[10px]" style={{ color: S.muted }}>当前套餐</div><div className="mt-1 text-xs font-bold" style={{ color: S.text }}>{sub?.planKey || "未配置套餐"}</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>{sub ? `${sub.status} · 到期 ${sub.endAt}` : "暂无订阅记录"}</div></div><div className="rounded px-3 py-2" style={{ background: S.surface }}><div className="text-[10px]" style={{ color: S.muted }}>最近账单</div><div className="mt-1 text-xs font-bold" style={{ color: S.text }}>{bill ? `¥${bill.amountCny.toLocaleString()}` : "暂无账单"}</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>{bill ? `${bill.status} · ${bill.dueAt}` : "当前对象暂无待处理账单"}</div></div></div>; })()}{activeWorkbenchPanel === "projectOverview" && selectedProject && <div className="grid gap-2 sm:grid-cols-2">{[["项目平台", selectedProject.platform], ["项目状态", selectedProject.status], ["覆盖地区", selectedProject.cities.join("、")], ["企业微信", selectedProject.enterpriseWx]].map(([label, value]) => <div key={label} className="rounded px-3 py-2" style={{ background: S.surface }}><div className="text-[10px]" style={{ color: S.muted }}>{label}</div><div className="mt-1 text-xs font-bold" style={{ color: S.text }}>{value}</div></div>)}</div>}{activeWorkbenchPanel === "projectChannels" && selectedProject && <div className="space-y-2"><div className="rounded px-3 py-2" style={{ background: S.accentLight, border: `1px solid ${S.borderMed}` }}><div className="text-xs font-bold" style={{ color: S.text }}>项目渠道与流量</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>配置用户从哪里进入项目，以及进入后如何识别和分配。</div></div>{[["微信小店", "待绑定", "商品与会员入口"], ["抖音", "待绑定", "短视频与直播流量"], ["小红书", "待绑定", "内容种草入口"], ["公众号 / 视频号", "待绑定", "内容与私域承接"]].map(([name, status, desc]) => <div key={name} className="flex flex-wrap items-center justify-between gap-2 rounded px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}` }}><div><div className="text-xs font-bold" style={{ color: S.text }}>{name}</div><div className="text-[10px]" style={{ color: S.muted }}>{desc}</div></div><span className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.muted, borderRadius: S.radiusSm }}>{status}</span></div>)}<div className="rounded px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}` }}><div className="text-xs font-bold" style={{ color: S.text }}>分配规则</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>按渠道、地区和会员身份分配到项目运营团队，当前规则待配置。</div></div></div>}{activeWorkbenchPanel === "projectApps" && selectedProject && <div className="space-y-2"><div className="rounded px-3 py-2" style={{ background: S.accentLight, border: `1px solid ${S.borderMed}` }}><div className="text-xs font-bold" style={{ color: S.text }}>项目应用与小程序</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>小程序是项目应用入口之一，也可以连接订单、会员和企业微信工具。</div></div>{[["会员小程序", "待连接", "会员注册、权益和服务入口"], ["活动报名小程序", "待连接", "活动发布与报名转化"], ["订单管理应用", "待连接", "订单、履约与售后协同"], ["企业微信助手", "待授权", "客户承接与运营提醒"]].map(([name, status, desc]) => <div key={name} className="flex flex-wrap items-center justify-between gap-2 rounded px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}` }}><div><div className="text-xs font-bold" style={{ color: S.text }}>{name}</div><div className="text-[10px]" style={{ color: S.muted }}>{desc}</div></div><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.text, borderRadius: S.radiusSm }} onClick={() => setToast(`${name}连接配置暂未开放`)}>{status}</button></div>)}</div>}{activeWorkbenchPanel === "projectCustomers" && selectedProject && <div className="grid gap-2 sm:grid-cols-3">{[["项目用户", selectedProject.users], ["会员层级", selectedProject.tiers.length], ["权益规则", "待配置"]].map(([label, value]) => <div key={label} className="rounded px-3 py-3" style={{ background: S.surface }}><div className="text-sm font-bold" style={{ color: S.text }}>{value}</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>{label}</div></div>)}</div>}{activeWorkbenchPanel === "projectOrders" && selectedProject && <div className="grid gap-2 sm:grid-cols-3">{[["订单总数", "待接入"], ["履约状态", "待接入"], ["售后工单", "待接入"]].map(([label, value]) => <div key={label} className="rounded px-3 py-3" style={{ background: S.surface }}><div className="text-sm font-bold" style={{ color: S.text }}>{value}</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>{label}</div></div>)}</div>}{activeWorkbenchPanel === "projectTeam" && selectedProject && <div className="space-y-2"><div className="rounded px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}` }}><div className="text-xs font-bold" style={{ color: S.text }}>项目身份与权限</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>项目负责人、区域运营和客服仅可访问当前项目范围。</div></div>{identityConfig.roleKeys.map(roleKey => <div key={roleKey} className="flex items-center justify-between rounded px-3 py-2" style={{ background: S.surface }}><span className="text-xs font-bold" style={{ color: S.text }}>{roleKeyMeta[roleKey].label}</span><span className="text-[10px]" style={{ color: S.muted }}>项目范围</span></div>)}</div>}{activeWorkbenchPanel === "projectReports" && selectedProject && <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[["项目用户", selectedProject.users], ["运营群组", selectedProject.groups], ["会员层级", selectedProject.tiers.length], ["覆盖城市", selectedProject.cities.length]].map(([label, value]) => <div key={label as string} className="rounded px-3 py-2" style={{ background: S.surface }}><div className="text-sm font-bold" style={{ color: S.text }}>{value}</div><div className="text-[10px]" style={{ color: S.muted }}>{label}</div></div>)}</div>}{activeWorkbenchPanel === "platforms" && (() => {
+                const platformScope = selectedSaas
+                  ? getPlatformsForSaas(ecoPlatforms, selectedSaas.name, selectedEco.name)
+                  : getPlatformsForEco(ecoPlatforms, selectedEco.name);
+                const scopeTitle = selectedSaas ? `${selectedSaas.name} · 旗下平台` : `${selectedEco.name} · 直属及旗下平台`;
+                const createContext = selectedSaas
+                  ? buildPlatformCreateDefaults(selectedEco.name, selectedSaas.name)
+                  : buildPlatformCreateDefaults(selectedEco.name);
+                return <div className="space-y-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3 rounded px-3 py-3" style={{ background: S.accentLight, border: `1px solid ${S.borderMed}` }}>
+                    <div className="min-w-0"><div className="text-xs font-bold" style={{ color: S.text }}>{scopeTitle}</div><div className="mt-1 text-[10px]" style={{ color: S.muted }}>{selectedSaas ? `所属生态：${selectedEco.name}` : "未挂载 SaaS 的平台由超级生态直接管理"}</div></div>
+                    <button type="button" className="flex flex-shrink-0 items-center gap-1 px-2.5 py-1.5 text-[10px] font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => openPlatformCreate(createContext)}><Plus size={12} />新建旗下平台</button>
+                  </div>
+                  <div className="flex items-center justify-between"><span className="text-[10px] font-mono" style={{ color: S.muted }}>平台数量</span><span className="text-sm font-bold" style={{ color: S.text }}>{platformScope.length}</span></div>
+                  {platformScope.length === 0 ? <div className="rounded px-3 py-4 text-center text-[11px]" style={{ background: S.surface, color: S.muted }}>当前范围暂无平台，可从上方新建旗下平台。</div> : <div className="space-y-2">{platformScope.map(platform => <div key={platform.id} className="flex flex-wrap items-center justify-between gap-2 rounded px-3 py-2.5" style={{ background: S.surface, border: `1px solid ${S.border}` }}><div className="min-w-0"><div className="truncate text-xs font-bold" style={{ color: S.text }}>{platform.name}</div><div className="mt-1 text-[10px] font-mono" style={{ color: S.muted }}>{getPlatformOwnerLabel(platform)} · {platform.projects} 个项目</div></div><div className="flex flex-shrink-0 items-center gap-2"><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: statusCfg[platform.status]?.bg || S.bg, color: statusCfg[platform.status]?.color || S.textSec, borderRadius: S.radiusSm }}>{platform.status}</span><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.text, borderRadius: S.radiusSm }} onClick={() => { selectNode({ type: "platform", id: platform.id }, selectedEco.id); setActiveWorkbenchPanel("overview"); }}>配置</button></div></div>)}</div>}
+                </div>;
+              })()}{activeWorkbenchPanel === "projects" && <div className="space-y-1">{projects.filter(project => project.eco === selectedEco.name && (!selectedPlatform || project.platform === selectedPlatform.name)).map(project => <div key={project.id} className="flex items-center justify-between rounded px-3 py-2" style={{ background: S.surface }}><span className="text-xs font-bold" style={{ color: S.text }}>{project.name}</span><span className="text-[10px] font-mono" style={{ color: S.muted }}>{project.users.toLocaleString()} 用户 · {project.status}</span></div>)}</div>}{activeWorkbenchPanel === "reports" && <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">{[["平台", ecoPlatforms.length], ["项目", projectCount], ["用户", ecoPlatforms.reduce((total, platform) => total + platform.users, 0).toLocaleString()], ["群组", ecoPlatforms.reduce((total, platform) => total + platform.groups, 0)]].map(([label, value]) => <div key={label as string} className="rounded px-3 py-2" style={{ background: S.surface }}><div className="text-sm font-bold" style={{ color: S.text }}>{value}</div><div className="text-[10px]" style={{ color: S.muted }}>{label}</div></div>)}</div>}</div>}
+            <div className="space-y-2 border-t pt-3" style={{ borderColor: S.border }}><div className="flex items-center gap-2 text-xs font-bold" style={{ color: S.text }}><Building2 size={13} />{selectedPlatform ? "平台信息" : selectedSaas ? "合作范围" : showDirect ? "直属平台" : "公司主体"}</div>{selectedPlatform ? <div className="grid gap-y-1 text-[11px] font-mono sm:grid-cols-2"><div><span style={{ color: S.muted }}>所属生态：</span>{selectedPlatform.eco}</div><div><span style={{ color: S.muted }}>合作主体：</span>{getPlatformOwnerLabel(selectedPlatform)}</div><div><span style={{ color: S.muted }}>项目数量：</span>{selectedPlatform.projects} 个</div><div><span style={{ color: S.muted }}>数据状态：</span>{selectedPlatform.dataStatus || "待接入"}</div></div> : selectedSaas ? <div className="grid gap-y-1 text-[11px] font-mono sm:grid-cols-2"><div><span style={{ color: S.muted }}>所属生态：</span>{selectedSaas.eco}</div><div><span style={{ color: S.muted }}>合作状态：</span>{selectedSaas.status}</div><div><span style={{ color: S.muted }}>平台配额：</span>{selectedSaas.platformCount} 个</div><div><span style={{ color: S.muted }}>项目数量：</span>{selectedSaas.projects} 个</div></div> : showDirect ? <div className="space-y-1">{directPlatforms.map(platform => <div key={platform.id} className="flex items-center justify-between gap-2 rounded px-2.5 py-2" style={{ background: S.bg }}><span className="min-w-0 truncate text-xs font-bold" style={{ color: S.text }}>{platform.name}</span><span className="flex-shrink-0 text-[10px] font-mono" style={{ color: S.muted }}>{platform.projects} 项目 · {platform.status}</span></div>)}</div> : selectedEco.company ? <div className="grid gap-y-1 text-[11px] font-mono sm:grid-cols-2"><div><span style={{ color: S.muted }}>名称：</span>{selectedEco.company.name}</div><div><span style={{ color: S.muted }}>法人：</span>{selectedEco.company.legalPerson || "—"}</div><div><span style={{ color: S.muted }}>对接人：</span>{selectedEco.company.contactName || "—"}</div><div><span style={{ color: S.muted }}>所在地：</span>{selectedEco.company.region || "—"}</div></div> : <div className="text-[11px]" style={{ color: S.muted }}>未录入公司主体</div>}</div>
+            <div className="space-y-2 border-t pt-3" style={{ borderColor: S.border }}><div className="flex items-center justify-between gap-2"><div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: S.text }}><History size={13} />运营记录</div><span className="text-[10px] font-mono" style={{ color: S.muted }}>{recentLogs.length ? `最近 ${recentLogs.length} 条` : "暂无记录"}</span></div>{recentLogs.length ? <div className="space-y-1.5">{recentLogs.map((log, index) => <div key={`${log.id}-${index}`} className="flex items-start justify-between gap-3 rounded px-2.5 py-2 text-[10px]" style={{ background: S.bg }}><span className="min-w-0" style={{ color: S.text }}>{log.summary}</span><span className="flex-shrink-0 font-mono" style={{ color: S.muted }}>{log.time}</span></div>)}</div> : <div className="rounded px-2.5 py-2 text-[10px]" style={{ background: S.bg, color: S.muted }}>当前对象暂无账号操作记录</div>}</div>
+            <div className="flex items-start gap-2 border-t pt-3" style={{ borderColor: S.border }}><AlertTriangle size={13} className="mt-0.5 flex-shrink-0" style={{ color: S.warning }} /><div className="text-[10px] leading-relaxed" style={{ color: S.muted }}>{identityAccounts.length === 0 ? "当前对象尚未配置身份账号，请先完成账号配置。" : identityAccounts.some(account => account.status !== "active") ? "当前对象存在未启用账号，请检查账号状态。" : "当前对象账号状态正常，无待处理风险。"}</div></div>
+            <div className="space-y-2 border-t pt-3" style={{ borderColor: S.border }}>
+              <div className="flex items-center justify-between gap-2"><div><div className="text-xs font-bold" style={{ color: S.text }}>身份账号</div><div className="mt-0.5 text-[10px]" style={{ color: S.muted }}>{getIdentityRoleLabel(identityConfig.roleKeys)} · 密码仅显示配置状态</div></div><span className="text-[10px] font-mono" style={{ color: S.muted }}>{identityAccounts.length} 个账号</span></div>
+              {identityAccounts.length === 0 ? <div className="rounded px-3 py-3 text-[11px]" style={{ background: S.bg, color: S.muted }}>暂未配置账号</div> : identityAccounts.map(account => <div key={account.uid} className="space-y-2 rounded px-3 py-2.5" style={{ background: S.bg, border: `1px solid ${S.border}` }}>
+                {editingAccountUid === account.uid ? <div className="space-y-2"><input aria-label="账号姓名" value={accountDraft.name} onChange={event => setAccountDraft(draft => ({ ...draft, name: event.target.value }))} className="w-full rounded border px-2 py-1.5 text-xs" placeholder="姓名" /><input aria-label="账号邮箱" value={accountDraft.email} onChange={event => setAccountDraft(draft => ({ ...draft, email: event.target.value }))} className="w-full rounded border px-2 py-1.5 text-xs" placeholder="邮箱" /><input aria-label="账号手机号" value={accountDraft.phone} onChange={event => setAccountDraft(draft => ({ ...draft, phone: event.target.value }))} className="w-full rounded border px-2 py-1.5 text-xs" placeholder="手机号" /><div className="flex gap-2"><button type="button" className="px-2.5 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={saveAccount}>保存</button><button type="button" className="px-2.5 py-1.5 text-xs" style={{ color: S.muted }} onClick={() => setEditingAccountUid(null)}>取消</button></div></div> : <><div className="flex items-start justify-between gap-2"><div className="min-w-0"><div className="text-xs font-bold" style={{ color: S.text }}>{account.name}</div><div className="mt-0.5 truncate text-[10px] font-mono" style={{ color: S.muted }}>{account.email} · {account.phone || "未填写手机号"}</div></div><span className="flex-shrink-0 px-1.5 py-0.5 text-[10px] font-bold" style={{ background: account.status === "active" ? S.accent : "#e2e8f0", color: account.status === "active" ? S.onPrimary : S.textSec, borderRadius: S.radiusSm }}>{account.status === "active" ? "启用" : account.status === "disabled" ? "停用" : "待激活"}</span></div><div className="text-[10px]" style={{ color: S.muted }}>{account.identities.find(identity => identity.roleKey === identityConfig.roleKeys[0])?.permissionSummary || account.identities.find(identity => identity.scopeIds.includes(identityConfig.scopeId))?.permissionSummary || "已配置身份权限"}</div><div className="flex flex-wrap gap-2"><button type="button" title="编辑账号" aria-label={`编辑${account.name}账号`} className="flex items-center gap-1 text-[11px] font-bold" style={{ color: S.text }} onClick={() => { setEditingAccountUid(account.uid); setAccountDraft({ name: account.name, email: account.email, phone: account.phone }); }}><Pencil size={12} />编辑账号</button><button type="button" title={account.status === "active" ? "停用账号" : "启用账号"} aria-label={`${account.status === "active" ? "停用" : "启用"}${account.name}账号`} className="flex items-center gap-1 text-[11px]" style={{ color: account.status === "active" ? S.muted : S.accent }} onClick={() => toggleAccountStatus(account)}>{account.status === "active" ? <XCircle size={12} /> : <UserCheck size={12} />}{account.status === "active" ? "停用账号" : "启用账号"}</button></div></>}
+              </div>)}
+            </div>
+          </section>;
+        })() : <section className="p-4 text-xs" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, color: S.muted }}>暂无生态数据</section>}
       </div>
-      {createEcoOpen && <CreateEcosystemDrawer onClose={() => setCreateEcoOpen(false)} onCreate={({ name, desc, tag, company, admin }) => {
-        const now = new Date();
-        const pad = (n: number) => String(n).padStart(2, "0");
-        const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-        const endAt = `${now.getFullYear() + 1}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-        const dueDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-        const dueAt = `${dueDate.getFullYear()}-${pad(dueDate.getMonth() + 1)}-${pad(dueDate.getDate())}`;
-        const createdAt = `${today} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
-        const newEcoId = Date.now();
-        setEcoList(list => [...list, { id: newEcoId, name, desc: tag ? `${desc}（行业：${tag}）` : desc, platforms: 0, projects: 0, members: 0, revenue: "¥0/月", status: "孵化中", company }]);
-        setAccounts(list => [...list, {
-          uid: `U${newEcoId}`,
-          name: admin.name, email: admin.email, phone: admin.phone, status: "active", createdAt,
-          identities: [{ roleKey: "eco_leader", scopeType: "eco", scopeIds: [`eco-${newEcoId}`], label: "生态负责人", permissionSummary: `${name}生态负责人` }],
-          assignedToolIds: [],
-        }]);
-        setSubs(list => [...list, { id: `SUB-${newEcoId}`, subscriberType: "eco", subscriberName: name, planKey: "eco-starter", priceCny: 29800, cycle: "yearly", startAt: today, endAt, status: "pending", gmvShareRate: 0.05 }]);
-        setBills(list => [...list, { id: `INV-${newEcoId}`, payerType: "eco", payerName: name, amountCny: 29800, items: ["生态·孵化版 年费"], status: "pending", dueAt }]);
-        setCreateEcoOpen(false);
-        setToast("生态已创建，已生成生态负责人账号 + 入驻账单");
+      </div>
+      {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} defaultEco={platformCreateContext?.eco} defaultSaas={platformCreateContext?.saas} onClose={() => { setCreatePlatformOpen(false); setPlatformCreateContext(null); }} onCreate={({ name, saas, partner, eco, desc }) => {
+        const ownerLabel = getPlatformOwnerLabel({ partner, saas });
+        setPlatformList(list => [...list, { id: Date.now(), name, partner, saas, eco, desc: desc || "", projects: 0, users: 0, groups: 0, teachers: 0, revenue: "待接入", status: "孵化中", dataStatus: "待接入" }]);
+        const approval = createApproval("platform_onboard", { title: `平台入驻：${name}（${ownerLabel}）`, submitter: "超级生态管理员", description: partner ? `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态` : `由超级生态直接新建平台「${name}」，所属${eco}生态`, detail: { 平台名称: name, 所属合作伙伴: ownerLabel, 所属生态: eco, 描述: desc || "—" }, payload: { type: "platform_onboard", name, saas, eco, desc: desc || "" } });
+        setApprovals(prev => [approval, ...prev]); setCreatePlatformOpen(false); setPlatformCreateContext(null); setActiveWorkbenchPanel("platforms"); setToast("平台已创建并推送审批单");
       }} />}
-      {createSaasEcoId !== null && <CreateSaasDrawer ecoList={ecoList} defaultEco={currentEco?.name} onClose={() => setCreateSaasEcoId(null)} onCreate={data => {
-        setSaasList(list => [...list, { id: Date.now(), ...data, platformCount: 0, projects: 0, users: 0, groups: 0, status: "孵化中", isCurrent: false }]);
-        const approval = createApproval("saas_onboard", {
-          title: `SaaS 合作伙伴入驻：${data.name}（${data.eco}）`,
-          submitter: "超级管理员",
-          description: `在${data.eco}下新建 SaaS 合作伙伴「${data.name}」，${data.desc || "无描述"}`,
-          detail: { SaaS合作伙伴名称: data.name, 所属生态: data.eco, 描述: data.desc || "—" },
-          payload: { type: "saas_onboard", name: data.name, eco: data.eco, desc: data.desc },
-        });
-        setApprovals(prev => [approval, ...prev]);
-        setCreateSaasEcoId(null);
-        setToast("已创建并推送审批单");
+      {createEcoOpen && <CreateEcosystemDrawer onClose={() => setCreateEcoOpen(false)} onCreate={({ name, desc, tag, company, admin }) => {
+        const now = new Date(); const pad = (n: number) => String(n).padStart(2, "0"); const today = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`; const endAt = `${now.getFullYear() + 1}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`; const dueDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); const dueAt = `${dueDate.getFullYear()}-${pad(dueDate.getMonth() + 1)}-${pad(dueDate.getDate())}`; const createdAt = `${today} ${pad(now.getHours())}:${pad(now.getMinutes())}`; const newEcoId = Date.now();
+        setEcoList(list => [...list, { id: newEcoId, name, desc: tag ? `${desc}（行业：${tag}）` : desc, platforms: 0, projects: 0, members: 0, revenue: "¥0/月", status: "孵化中", company }]); setAccounts(list => [...list, { uid: `U${newEcoId}`, name: admin.name, email: admin.email, phone: admin.phone, status: "active", createdAt, identities: [{ roleKey: "eco_leader", scopeType: "eco", scopeIds: [`eco-${newEcoId}`], label: "生态负责人", permissionSummary: `${name}生态负责人` }], assignedToolIds: [] }]); setSubs(list => [...list, { id: `SUB-${newEcoId}`, subscriberType: "eco", subscriberName: name, planKey: "eco-starter", priceCny: 29800, cycle: "yearly", startAt: today, endAt, status: "pending", gmvShareRate: 0.05 }]); setBills(list => [...list, { id: `INV-${newEcoId}`, payerType: "eco", payerName: name, amountCny: 29800, items: ["生态·孵化版 年费"], status: "pending", dueAt }]); setCreateEcoOpen(false); setToast("生态已创建，已生成生态负责人账号 + 入驻账单");
       }} />}
       <Toast message={toast} onClose={() => setToast("")} />
     </div>
@@ -391,11 +660,12 @@ function SuperView({
 
 // ─── 生态视图 ─────────────────────────────────────────────────
 function EcoView({
-  ecoList, saasList, setSaasList, platformList, setPlatformList,
+  ecoList, saasList, setSaasList, platformList, setPlatformList, role,
 }: {
   ecoList: EcoItem[];
   saasList: SaasItem[]; setSaasList: React.Dispatch<React.SetStateAction<SaasItem[]>>;
   platformList: PlatformItem[]; setPlatformList: React.Dispatch<React.SetStateAction<PlatformItem[]>>;
+  role: string;
 }) {
   const [filterEco, setFilterEco] = useState<string>("全部生态");
   const [createSaasOpen, setCreateSaasOpen] = useState(false);
@@ -413,9 +683,10 @@ function EcoView({
           <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
             {ecoOptions.map(o => <option key={o}>{o}</option>)}
           </select>
-          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateSaasOpen(true)}>
-            <Plus size={12} /> 新建 SaaS 合作伙伴
-          </button>
+          <CreateResourceMenu role={role} onSelect={kind => {
+            if (kind === "saas") setCreateSaasOpen(true);
+            if (kind === "platform") setCreatePlatformSaasId(saasList[0]?.id ?? null);
+          }} />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -477,11 +748,12 @@ function EcoView({
       }} />}
       {createPlatformSaasId !== null && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} defaultSaas={currentSaas?.name} defaultEco={currentSaas?.eco} onClose={() => setCreatePlatformSaasId(null)} onCreate={({ name, saas, partner, eco, desc }) => {
         setPlatformList(list => [...list, { id: Date.now(), name, partner, saas, eco, desc: desc || "", projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
+        const ownerLabel = getPlatformOwnerLabel({ partner, saas });
         const approval = createApproval("platform_onboard", {
-          title: `平台入驻：${name}（${partner}）`,
+          title: `平台入驻：${name}（${ownerLabel}）`,
           submitter: "生态运营",
-          description: `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态`,
-          detail: { 平台名称: name, 所属合作伙伴: partner, 所属生态: eco, 描述: desc || "—" },
+          description: partner ? `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态` : `由超级生态直接新建平台「${name}」，所属${eco}生态`,
+          detail: { 平台名称: name, 所属合作伙伴: ownerLabel, 所属生态: eco, 描述: desc || "—" },
           payload: { type: "platform_onboard", name, saas, eco, desc },
         });
         setApprovals(prev => [approval, ...prev]);
@@ -495,11 +767,12 @@ function EcoView({
 
 // ─── SaaS 合作伙伴视图 ───────────────────────────────────
 function SaasView({
-  ecoList, saasList, platformList, setPlatformList, setActiveTier, setActivePlatformId, setActivePlatformName,
+  ecoList, saasList, platformList, setPlatformList, role, setActiveTier, setActivePlatformId, setActivePlatformName,
 }: {
   ecoList: EcoItem[];
   saasList: SaasItem[];
   platformList: PlatformItem[]; setPlatformList: React.Dispatch<React.SetStateAction<PlatformItem[]>>;
+  role: string;
   setActiveTier?: (t: string) => void;
   setActivePlatformId: (id: number) => void;
   setActivePlatformName: (name: string) => void;
@@ -509,34 +782,37 @@ function SaasView({
   const [createPlatformOpen, setCreatePlatformOpen] = useState(false);
   const { setApprovals } = useApprovals();
   const ecoOptions = ["全部生态", ...Array.from(new Set(platformList.map(p => p.eco)))];
-  const partnerOptions = ["全部 SaaS 合作伙伴", ...Array.from(new Set(platformList.map(p => p.partner ?? p.saas)))];
-  const filtered = platformList.filter(p => (filterEco === "全部生态" || p.eco === filterEco) && (filterPartner === "全部 SaaS 合作伙伴" || (p.partner ?? p.saas) === filterPartner));
+  const partnerOptions = ["全部 SaaS 合作伙伴", ...Array.from(new Set(platformList.map(p => getPlatformOwnerLabel(p))))];
+  const filtered = platformList.filter(p => (filterEco === "全部生态" || p.eco === filterEco) && (filterPartner === "全部 SaaS 合作伙伴" || getPlatformOwnerLabel(p) === filterPartner));
   const totalProjects = filtered.reduce((n, p) => n + p.projects, 0);
   const totalUsers = filtered.reduce((n, p) => n + p.users, 0);
   const totalGroups = filtered.reduce((n, p) => n + p.groups, 0);
   const totalTeachers = filtered.reduce((n, p) => n + p.teachers, 0);
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div><span className="text-sm font-bold" style={{ color: S.text }}>旗下平台 ({platformList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 合作伙伴招募的平台实体，每个平台下辖多个运营项目</div></div>
-        <div className="flex gap-2">
-          <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-baseline gap-2"><span className="text-sm font-bold" style={{ color: S.text }}>旗下平台</span><span className="text-xs font-mono" style={{ color: S.muted }}>({filtered.length})</span></div>
+          <div className="mt-1 text-xs" style={{ color: S.muted }}>当前筛选范围内的平台经营汇总</div>
+        </div>
+        <div className="flex w-full min-w-0 flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap lg:flex-nowrap">
+          <select className="w-full min-w-0 px-3 py-1.5 text-xs font-bold sm:w-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
             {ecoOptions.map(o => <option key={o}>{o}</option>)}
           </select>
-          <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterPartner} onChange={e => setFilterPartner(e.target.value)}>
+          <select className="w-full min-w-0 px-3 py-1.5 text-xs font-bold sm:w-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterPartner} onChange={e => setFilterPartner(e.target.value)}>
             {partnerOptions.map(o => <option key={o}>{o}</option>)}
           </select>
-          <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
+          <CreateResourceMenu role={role} onSelect={kind => { if (kind === "platform") setCreatePlatformOpen(true); }} />
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-2">
-        {[["下辖项目", totalProjects, LayoutDashboard], ["平台用户", totalUsers.toLocaleString(), Eye], ["运营群组", totalGroups, MessageSquare], ["服务老师", totalTeachers, UsersRound]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as string | number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        {[["下辖项目", totalProjects, LayoutDashboard], ["平台用户", totalUsers.toLocaleString(), Eye], ["运营群组", totalGroups, MessageSquare], ["服务人员", totalTeachers, UsersRound]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as string | number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}
       </div>
       <div className="space-y-2">
         {filtered.map((pf, idx) => (
           <div
             key={pf.id}
-            className="p-4 flex items-center gap-4 transition-all"
+            className="flex flex-col gap-3 p-4 transition-all xl:flex-row xl:items-center xl:gap-4"
             style={{
               background: S.surface,
               border: `1px solid ${S.border}`,
@@ -544,7 +820,7 @@ function SaasView({
               boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
             }}
           >
-            <div className="flex items-center gap-3 flex-shrink-0" style={{ width: 300 }}>
+            <div className="flex min-w-0 items-center gap-3 xl:w-[300px] xl:flex-shrink-0">
               <div className="w-10 h-10 flex items-center justify-center text-lg font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius }}>
                 {pf.name[0]}
               </div>
@@ -554,20 +830,20 @@ function SaasView({
                   <span className="px-2 py-0.5 text-[10px] font-bold" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span>
                 </div>
                 <div className="flex gap-1.5 flex-wrap">
-                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{pf.partner ?? pf.saas}</span>
+                  <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{getPlatformOwnerLabel(pf)}</span>
                   <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#f1f5f9", color: "#475569", borderRadius: S.radiusSm }}>{pf.eco}</span>
                 </div>
               </div>
             </div>
-            <div className="flex-1 grid grid-cols-5 gap-3">
-              {[["下辖项目", pf.projects], ["平台用户", pf.users.toLocaleString()], ["运营群组", pf.groups], ["服务老师", `${pf.teachers} 人`], ["月营收", pf.revenue]].map(([l, v]) => (
+            <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-3 xl:flex-1 xl:grid-cols-5 xl:gap-3">
+              {[["下辖项目", pf.projects], ["平台用户", pf.users.toLocaleString()], ["运营群组", pf.groups], ["服务人员", `${pf.teachers} 人`], ["月营收", pf.revenue]].map(([l, v]) => (
                 <div key={l as string} className="px-3 py-2 text-center" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
                   <div className="text-xs font-bold font-mono" style={{ color: S.text }}>{v}</div>
                   <div className="font-mono" style={{ color: S.muted, fontSize: "10px" }}>{l}</div>
                 </div>
               ))}
             </div>
-            <div className="flex-shrink-0">
+            <div className="w-full xl:w-auto xl:flex-shrink-0">
               <button type="button" className="px-3 py-1.5 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => { setActivePlatformId(pf.id); setActivePlatformName(pf.name); setActiveTier && setActiveTier("platform"); }}>进入平台</button>
             </div>
           </div>
@@ -575,11 +851,12 @@ function SaasView({
       </div>
       {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} onClose={() => setCreatePlatformOpen(false)} onCreate={({ name, saas, partner, eco, desc }) => {
         setPlatformList(list => [...list, { id: Date.now(), name, partner, saas, eco, desc: desc || "", projects: 0, users: 0, groups: 0, teachers: 0, revenue: "孵化中", status: "孵化中" }]);
+        const ownerLabel = getPlatformOwnerLabel({ partner, saas });
         const approval = createApproval("platform_onboard", {
-          title: `平台入驻：${name}（${partner}）`,
+          title: `平台入驻：${name}（${ownerLabel}）`,
           submitter: "SaaS 合作伙伴负责人",
-          description: `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态`,
-          detail: { 平台名称: name, 所属合作伙伴: partner, 所属生态: eco, 描述: desc || "—" },
+          description: partner ? `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态` : `由超级生态直接新建平台「${name}」，所属${eco}生态`,
+          detail: { 平台名称: name, 所属合作伙伴: ownerLabel, 所属生态: eco, 描述: desc || "—" },
           payload: { type: "platform_onboard", name, saas, eco, desc: desc || "" },
         });
         setApprovals(prev => [approval, ...prev]);
@@ -591,7 +868,7 @@ function SaasView({
 
 // ─── 项目/平台视图 ────────────────────────────────────────────
 const fieldStyle = { background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, color: S.text, padding: "8px 10px", fontSize: 12, width: "100%" };
-const roleNames = ["超级管理员", "生态负责人", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "平台管理员", "平台运营", "项目负责人", "区域运营", "客服", "老师"];
+const roleNames = ["超级生态管理员", "生态负责人", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "平台管理员", "平台运营", "项目负责人", "区域运营", "客服", "老师"];
 const projectVisibilityRoles = ["生态负责人", "SaaS 合作伙伴负责人", "平台管理员", "项目负责人", "区域运营", "客服", "老师"];
 
 const groupRuleRoleOptions = ["游客", "体验官", "VIP0", "VIP1", "VIP2", "VIP3", "VIP4", "SVIP0", "SVIP1", "SVIP2", "SVIP3", "SVIP4", "SVIP5", "普通会员", "核心会员", "城市运营发展伙伴"];
@@ -631,7 +908,7 @@ function ProjectDrawer({ project, onClose, onSave }: { project: ProjectRecord; o
           {tab === "overview" && <>
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属平台</div><div className="text-sm font-bold mt-1">{draft.platform}</div><div className="text-xs mt-1" style={{ color: S.muted }}>SaaS 合作伙伴</div></div>
-              <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属合作伙伴 / 生态</div><div className="text-sm font-bold mt-1">{draft.partner ?? draft.saas}</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.eco}</div></div>
+              <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>所属合作伙伴 / 生态</div><div className="text-sm font-bold mt-1">{getPlatformOwnerLabel(draft)}</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.eco}</div></div>
               <div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>当前运营数据</div><div className="text-sm font-bold mt-1">{draft.users.toLocaleString()} 用户 · {draft.groups} 群</div><div className="text-xs mt-1" style={{ color: S.muted }}>{draft.revenue}</div></div>
             </div>
             <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><Building2 size={16} />企业微信归属</div><div className="text-sm font-bold mt-2">{draft.enterpriseWx}</div><div className="text-xs mt-1" style={{ color: S.muted }}>同一企业已承载 {draft.enterpriseProjectCount} 个项目 · 项目数据按项目隔离</div><button type="button" className="mt-3 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setTab("visibility")}>管理项目范围</button></div>
@@ -650,29 +927,29 @@ function ProjectDrawer({ project, onClose, onSave }: { project: ProjectRecord; o
   );
 }
 
-function CreateProjectDrawer({ ecoList, saasList, platformList, defaultPlatform, onClose, onCreate }: {
+function CreateProjectDrawer({ ecoList, saasList, platformList, defaultPlatform, platformLocked = false, onClose, onCreate }: {
   ecoList: EcoItem[]; saasList: SaasItem[]; platformList: PlatformItem[];
-  defaultPlatform?: string; onClose: () => void; onCreate: (p: ProjectRecord) => void;
+  defaultPlatform?: string; platformLocked?: boolean; onClose: () => void; onCreate: (p: ProjectRecord) => void;
 }) {
   const [name, setName] = useState("");
   const [platform, setPlatform] = useState(defaultPlatform || (platformList[0]?.name ?? "主理人公社"));
   const [enterpriseWx, setEnterpriseWx] = useState("健康企业微信");
   const firstPlatform = platformList.find(p => p.name === platform);
   const [eco, setEco] = useState(firstPlatform?.eco || (ecoList[0]?.name ?? "健康医药美业生态"));
-  const [partner, setPartner] = useState(firstPlatform?.partner ?? firstPlatform?.saas ?? (saasList[0]?.name ?? "健康产业发展伙伴"));
-  const [saas, setSaas] = useState(firstPlatform?.saas ?? (saasList[0]?.name ?? "健康产业发展伙伴"));
+  const [partner, setPartner] = useState(firstPlatform ? getPlatformOwnerLabel(firstPlatform) : "直属超级生态");
+  const [saas, setSaas] = useState(firstPlatform?.saas ?? "");
   const [creatorRole, setCreatorRole] = useState("项目负责人");
   const canCreate = name.trim().length > 1 && platform.trim().length > 0;
   const platformNameOptions = platformList.map(p => p.name);
   const ecoOptions = ecoList.map(e => e.name);
-  const saasOptions = saasList.filter(s => eco ? s.eco === eco : true).map(s => s.name);
-  const filteredPlatformOptions = platformList.filter(p => (!partner || (p.partner ?? p.saas) === partner) && (!eco || p.eco === eco)).map(p => p.name);
+  const saasOptions = ["直属超级生态", ...saasList.filter(s => eco ? s.eco === eco : true).map(s => s.name)];
+  const filteredPlatformOptions = platformList.filter(p => (!partner || getPlatformOwnerLabel(p) === partner) && (!eco || p.eco === eco)).map(p => p.name);
   const onPlatformChange = (next: string) => {
     setPlatform(next);
     const linked = platformList.find(p => p.name === next);
-    if (linked) { setPartner(linked.partner ?? linked.saas); setSaas(linked.saas ?? linked.partner ?? ""); setEco(linked.eco); }
+    if (linked) { setPartner(getPlatformOwnerLabel(linked)); setSaas(linked.saas ?? ""); setEco(linked.eco); }
   };
-  return <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,.16)" }} onClick={onClose}><aside className="h-full w-full max-w-[460px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}><div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}><div><div className="text-base font-bold">接入新项目</div><div className="text-xs mt-1" style={{ color: S.muted }}>创建后继续配置会员等级和社群机制</div></div><button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button></div><div className="p-5 space-y-4"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目归属关系</div><p className="text-xs mt-1" style={{ color: S.muted }}>生态 → SaaS 合作伙伴 → 平台 → 项目：项目归属到具体平台下，平台由 SaaS 合作伙伴招募；一个企业微信可以承载多个项目，项目数据、会员等级和社群规则独立隔离。</p></div><label className="block text-xs font-bold">项目名称<input className="mt-1" value={name} placeholder="例如：PRO会员" style={fieldStyle} onChange={e => setName(e.target.value)} /></label><label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">SaaS 合作伙伴<select className="mt-1" value={partner} style={fieldStyle} onChange={e => setPartner(e.target.value)}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">所属平台<select className="mt-1" value={platform} style={fieldStyle} onChange={e => onPlatformChange(e.target.value)}>{(filteredPlatformOptions.length ? filteredPlatformOptions : platformNameOptions).map(n => <option key={n}>{n}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>项目必须归属到某个平台下，平台由 SaaS 合作伙伴招募</span></label><label className="block text-xs font-bold">企业微信归属<input className="mt-1" value={enterpriseWx} placeholder="选择企业微信" style={fieldStyle} onChange={e => setEnterpriseWx(e.target.value)} /></label><label className="block text-xs font-bold">创建身份<select className="mt-1" value={creatorRole} style={fieldStyle} onChange={e => setCreatorRole(e.target.value)}>{roleNames.map(role => <option key={role}>{role}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>创建身份决定默认项目范围，后续可在“可见范围”中继续收敛。</span></label><div className="grid grid-cols-2 gap-2"><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认会员等级</div><div className="text-sm font-bold mt-1">3 个</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认可见身份</div><div className="text-sm font-bold mt-1">负责人 / 运营 / 客服</div></div></div></div><div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ id: Date.now(), name, platform, partner, saas, eco, users: 0, groups: 0, teacher: "待分配", cities: ["待配置"], revenue: "待核算", status: "孵化中", enterpriseWx, enterpriseProjectCount: 1, tiers: defaultTiers.map(t => ({ ...t })), groupTypes: [], mechanism: { welcome: "欢迎语 + 入群任务", cadence: "每周 1 次", route: "按城市 + 会员等级分群", escalation: "异常通知项目负责人" }, visibility: { "超级管理员": true, "生态负责人": creatorRole === "生态负责人" || true, "生态COO": false, "合作伙伴负责人": creatorRole === "合作伙伴负责人", "合作伙伴运营": false, "平台管理员": creatorRole === "平台管理员", "平台运营": false, "项目负责人": creatorRole === "项目负责人" || true, "区域运营": creatorRole === "区域运营" || true, "客服": creatorRole === "客服" || true, "老师": false } })}>创建项目</button></div></aside></div>;
+  return <div className="fixed inset-0 z-50 flex justify-end" style={{ background: "rgba(0,0,0,.16)" }} onClick={onClose}><aside className="h-full w-full max-w-[460px] overflow-auto" style={{ background: S.bg, boxShadow: "-10px 0 30px rgba(0,0,0,.12)" }} onClick={e => e.stopPropagation()}><div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}><div><div className="text-base font-bold">接入新项目</div><div className="text-xs mt-1" style={{ color: S.muted }}>创建后继续配置会员等级和社群机制</div></div><button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button></div><div className="p-5 space-y-4"><div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />项目归属关系</div><p className="text-xs mt-1" style={{ color: S.muted }}>生态 → 超级生态或 SaaS 合作伙伴 → 平台 → 项目：项目归属到具体平台下，平台可以由超级生态直接创建，也可以由 SaaS 合作伙伴创建；一个企业微信可以承载多个项目，项目数据、会员等级和社群规则独立隔离。</p></div><label className="block text-xs font-bold">项目名称<input className="mt-1" value={name} placeholder="例如：PRO会员" style={fieldStyle} onChange={e => setName(e.target.value)} /></label><label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">SaaS 合作伙伴<select className="mt-1" value={partner} style={fieldStyle} onChange={e => { const next = e.target.value; setPartner(next); setSaas(next === "直属超级生态" ? "" : next); }}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label><label className="block text-xs font-bold">所属平台<select className="mt-1" value={platform} disabled={platformLocked} style={{ ...fieldStyle, opacity: platformLocked ? 0.7 : 1 }} onChange={e => onPlatformChange(e.target.value)}>{(filteredPlatformOptions.length ? filteredPlatformOptions : platformNameOptions).map(n => <option key={n}>{n}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>{platformLocked ? "平台身份只能在当前平台下新建项目" : "项目必须归属到某个平台下，平台可以由超级生态直属创建或由 SaaS 合作伙伴创建"}</span></label><label className="block text-xs font-bold">企业微信归属<input className="mt-1" value={enterpriseWx} placeholder="选择企业微信" style={fieldStyle} onChange={e => setEnterpriseWx(e.target.value)} /></label><label className="block text-xs font-bold">创建身份<select className="mt-1" value={creatorRole} style={fieldStyle} onChange={e => setCreatorRole(e.target.value)}>{roleNames.map(role => <option key={role}>{role}</option>)}</select><span className="block mt-1 text-[10px] font-normal" style={{ color: S.muted }}>创建身份决定默认项目范围，后续可在“可见范围”中继续收敛。</span></label><div className="grid grid-cols-2 gap-2"><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认会员等级</div><div className="text-sm font-bold mt-1">3 个</div></div><div className="p-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><div className="text-xs" style={{ color: S.muted }}>默认可见身份</div><div className="text-sm font-bold mt-1">负责人 / 运营 / 客服</div></div></div></div><div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button><button type="button" className="flex-1 py-2 text-xs font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ id: Date.now(), name, platform, partner, saas, eco, users: 0, groups: 0, teacher: "待分配", cities: ["待配置"], revenue: "待核算", status: "孵化中", enterpriseWx, enterpriseProjectCount: 1, tiers: defaultTiers.map(t => ({ ...t })), groupTypes: [], mechanism: { welcome: "欢迎语 + 入群任务", cadence: "每周 1 次", route: "按城市 + 会员等级分群", escalation: "异常通知项目负责人" }, visibility: { "超级管理员": true, "生态负责人": creatorRole === "生态负责人" || true, "生态COO": false, "合作伙伴负责人": creatorRole === "合作伙伴负责人", "合作伙伴运营": false, "平台管理员": creatorRole === "平台管理员", "平台运营": false, "项目负责人": creatorRole === "项目负责人" || true, "区域运营": creatorRole === "区域运营" || true, "客服": creatorRole === "客服" || true, "老师": false } })}>创建项目</button></div></aside></div>;
 }
 
 // ─── 新建抽屉与 Toast ─────────────────────────────────────────
@@ -769,6 +1046,31 @@ function CreateEcosystemDrawer({ onClose, onCreate }: { onClose: () => void; onC
   );
 }
 
+function CreateSaasInlineForm({ ecoList, defaultEco, onClose, onCreate }: { ecoList: EcoItem[]; defaultEco?: string; onClose: () => void; onCreate: (data: { name: string; eco: string; desc: string }) => void }) {
+  const [name, setName] = useState("");
+  const [eco, setEco] = useState(defaultEco || ecoList[0]?.name || ecosystems[0].name);
+  const [desc, setDesc] = useState("");
+  const canCreate = name.trim().length > 0;
+  const ecoOptions = Array.from(new Set(ecoList.map(e => e.name)));
+  return (
+    <div className="space-y-3 rounded border p-3" style={{ background: S.bg, borderColor: S.border }} aria-label="新建 SaaS 合作伙伴">
+      <div className="flex items-start justify-between gap-2">
+        <div><div className="text-xs font-bold" style={{ color: S.text }}>新建 SaaS 合作伙伴</div><div className="mt-0.5 text-[10px]" style={{ color: S.muted }}>在当前生态详情中新增 SaaS 合作伙伴</div></div>
+        <button type="button" title="取消新建 SaaS" aria-label="取消新建 SaaS" className="p-1" style={{ color: S.muted }} onClick={onClose}><X size={14} /></button>
+      </div>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <label className="block text-[11px] font-bold" style={{ color: S.text }}>SaaS 合作伙伴名称<span style={{ color: "#c00" }}> *</span><input className="mt-1" value={name} placeholder="例如：健康产业发展伙伴" style={fieldStyle} onChange={e => setName(e.target.value)} /></label>
+        <label className="block text-[11px] font-bold" style={{ color: S.text }}>所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label>
+      </div>
+      <label className="block text-[11px] font-bold" style={{ color: S.text }}>描述<input className="mt-1" value={desc} placeholder="例如：负责发展相关平台并提供运营支持" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
+      <div className="flex justify-end gap-2">
+        <button type="button" className="px-2.5 py-1.5 text-[11px]" style={{ color: S.muted }} onClick={onClose}>取消</button>
+        <button type="button" className="px-2.5 py-1.5 text-[11px] font-bold" disabled={!canCreate} style={{ background: canCreate ? "#1e293b" : "#ddd", color: canCreate ? S.accent : "#888", borderRadius: S.radiusSm }} onClick={() => canCreate && onCreate({ name: name.trim(), eco, desc: desc.trim() })}>创建 SaaS 合作伙伴</button>
+      </div>
+    </div>
+  );
+}
+
 function CreateSaasDrawer({ ecoList, defaultEco, onClose, onCreate }: { ecoList: EcoItem[]; defaultEco?: string; onClose: () => void; onCreate: (data: { name: string; eco: string; desc: string }) => void }) {
   const [name, setName] = useState("");
   const [eco, setEco] = useState(defaultEco || ecoList[0]?.name || ecosystems[0].name);
@@ -803,8 +1105,8 @@ function CreateSaasDrawer({ ecoList, defaultEco, onClose, onCreate }: { ecoList:
   );
 }
 
-function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onClose, onCreate }: { saasList: SaasItem[]; ecoList: EcoItem[]; defaultSaas?: string; defaultEco?: string; onClose: () => void; onCreate: (data: { name: string; partner: string; saas: string; eco: string; desc: string }) => void }) {
-  const initialSaas = defaultSaas || saasList[0]?.name || saasPlatforms[0].name;
+function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onClose, onCreate }: { saasList: SaasItem[]; ecoList: EcoItem[]; defaultSaas?: string; defaultEco?: string; onClose: () => void; onCreate: (data: { name: string; partner?: string; saas?: string; eco: string; desc: string }) => void }) {
+  const initialSaas = defaultSaas || "";
   const [name, setName] = useState("");
   const [partner, setPartner] = useState(initialSaas);
   const [saas, setSaas] = useState(initialSaas);
@@ -824,19 +1126,19 @@ function CreatePlatformDrawer({ saasList, ecoList, defaultSaas, defaultEco, onCl
         <div className="flex items-start justify-between p-5" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
           <div>
             <div className="text-base font-bold">新建平台</div>
-            <div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 合作伙伴招募的运营实体，下辖多个项目</div>
+            <div className="text-xs mt-1" style={{ color: S.muted }}>可由超级生态或 SaaS 合作伙伴创建的运营实体，下辖多个项目</div>
           </div>
           <button type="button" className="p-1.5" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}><X size={16} /></button>
         </div>
         <div className="p-5 space-y-4">
           <div className="p-4" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radius }}>
             <div className="flex items-center gap-2 text-sm font-bold"><SlidersHorizontal size={16} />平台归属关系</div>
-            <p className="text-xs mt-1" style={{ color: S.muted }}>SaaS 合作伙伴 → 平台 → 项目：平台由 SaaS 合作伙伴招募，下辖多个运营项目，拥有独立运营团队与资源池。</p>
+            <p className="text-xs mt-1" style={{ color: S.muted }}>超级生态 / SaaS 合作伙伴 → 平台 → 项目：平台可以由超级生态直接创建，也可以归属某个 SaaS 合作伙伴。</p>
           </div>
           <label className="block text-xs font-bold">平台名称<span style={{ color: "#c00" }}> *</span><input className="mt-1" value={name} placeholder="例如：健康运营平台" style={fieldStyle} onChange={e => setName(e.target.value)} /></label>
-          <label className="block text-xs font-bold">所属 SaaS 合作伙伴<select className="mt-1" value={partner} style={fieldStyle} onChange={e => { setPartner(e.target.value); setSaas(e.target.value); onSaasChange(e.target.value); }}>{saasOptions.map(n => <option key={n}>{n}</option>)}</select></label>
+          <label className="block text-xs font-bold">所属 SaaS 合作伙伴<select className="mt-1" value={partner} style={fieldStyle} onChange={e => { const next = e.target.value; setPartner(next); setSaas(next); onSaasChange(next); }}><option value="">直属超级生态</option>{saasOptions.map(n => <option key={n} value={n}>{n}</option>)}</select></label>
           <label className="block text-xs font-bold">所属生态<select className="mt-1" value={eco} style={fieldStyle} onChange={e => setEco(e.target.value)}>{ecoOptions.map(n => <option key={n}>{n}</option>)}</select></label>
-          <label className="block text-xs font-bold">描述<input className="mt-1" value={desc} placeholder="例如：由 SaaS 合作伙伴招募的运营平台" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
+          <label className="block text-xs font-bold">描述<input className="mt-1" value={desc} placeholder="例如：由超级生态直接创建的运营平台" style={fieldStyle} onChange={e => setDesc(e.target.value)} /></label>
         </div>
         <div className="sticky bottom-0 flex gap-2 p-4" style={{ background: S.surface, borderTop: `1px solid ${S.border}` }}>
           <button type="button" className="flex-1 py-2 text-xs font-bold" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={onClose}>取消</button>
@@ -873,13 +1175,13 @@ function ProjectList({
           <button type="button" className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={onBack}>← 返回平台列表</button>
           <div>
             <div className="text-sm font-bold" style={{ color: S.text }}>{platformName} · 项目工作台 <span style={{ color: S.muted, fontWeight: "normal" }}>({filteredProjects.length})</span></div>
-            <div className="text-xs mt-1 font-mono" style={{ color: S.muted }}>所属合作伙伴：{platform?.partner ?? platform?.saas} · 所属生态：{platform?.eco}</div>
+            <div className="text-xs mt-1 font-mono" style={{ color: S.muted }}>所属合作伙伴：{getPlatformOwnerLabel({ partner: platform?.partner, saas: platform?.saas })} · 所属生态：{platform?.eco}</div>
           </div>
         </div>
         <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreateOpen(true)}><Plus size={12} /> 接入新项目</button>
       </div>
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">{[["可见项目", filteredProjects.length, Eye], ["企业微信", new Set(filteredProjects.map(p => p.enterpriseWx)).size, Building2], ["会员等级", filteredProjects.reduce((n, p) => n + p.tiers.length, 0), UsersRound], ["运营群组", filteredProjects.reduce((n, p) => n + p.groups, 0), MessageSquare]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}</div>
-    <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Building2 size={16} /><div className="text-xs leading-relaxed"><b>平台与项目关系</b>：平台由上层 SaaS 合作伙伴招募，下辖多个运营项目；项目是权限和运营数据隔离的最小单元。进入项目后，成员、会员等级、社群和报表只展示当前身份有权访问的范围。</div></div>
+    <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Building2 size={16} /><div className="text-xs leading-relaxed"><b>平台与项目关系</b>：平台可以由超级生态直接创建，也可以由上层 SaaS 合作伙伴创建，下辖多个运营项目；项目是权限和运营数据隔离的最小单元。进入项目后，成员、会员等级、社群和报表只展示当前身份有权访问的范围。</div></div>
     <div className="hidden lg:block overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
       <div className="min-w-[1260px]">
         <div className="flex items-center px-4 py-2.5 text-xs font-bold font-mono" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, color: "#475569" }}>
@@ -950,7 +1252,7 @@ function PlatformConfigDrawer({
           <button type="button" aria-label="关闭平台配置" onClick={onClose}><X size={16} /></button>
         </div>
         <div className="p-5 space-y-4">
-          <div className="p-3 text-xs leading-relaxed" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radiusSm }}><b>归属关系</b><div className="mt-1" style={{ color: S.textSec }}>SaaS 合作伙伴：{draft.partner ?? draft.saas} · 所属生态：{draft.eco}</div></div>
+          <div className="p-3 text-xs leading-relaxed" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radiusSm }}><b>归属关系</b><div className="mt-1" style={{ color: S.textSec }}>SaaS 合作伙伴：{getPlatformOwnerLabel(draft)} · 所属生态：{draft.eco}</div></div>
           <label className="block text-xs font-bold">平台名称<input className="mt-1" style={fieldStyle} value={draft.name} onChange={e => setDraft({ ...draft, name: e.target.value })} /></label>
           <label className="block text-xs font-bold">平台描述<textarea className="mt-1" rows={4} style={{ ...fieldStyle, resize: "vertical" }} value={draft.desc} onChange={e => setDraft({ ...draft, desc: e.target.value })} /></label>
           <label className="block text-xs font-bold">平台状态<select className="mt-1" style={fieldStyle} value={draft.status} onChange={e => setDraft({ ...draft, status: e.target.value })}><option>运营中</option><option>生产中</option><option>孵化中</option><option>暂停运营</option><option>已归档</option></select></label>
@@ -966,10 +1268,11 @@ function PlatformConfigDrawer({
 
 // ─── 第 4 层：平台视图（平台列表 → 进入平台 → 项目列表） ─────
 function PlatformView({
-  platformList, setPlatformList, ecoList, saasList, projectList, setProjectList, onEnterPlatform, ecoFilter,
+  platformList, setPlatformList, ecoList, saasList, projectList, setProjectList, role, onEnterPlatform, ecoFilter,
 }: {
   platformList: PlatformItem[]; setPlatformList: React.Dispatch<React.SetStateAction<PlatformItem[]>>; ecoList: EcoItem[]; saasList: SaasItem[];
   projectList: ProjectItem[]; setProjectList: React.Dispatch<React.SetStateAction<ProjectItem[]>>;
+  role: string;
   onEnterPlatform: (id: number, name: string) => void;
   ecoFilter?: string;
 }) {
@@ -978,8 +1281,17 @@ function PlatformView({
     setFilterEco(ecoFilter || "全部生态");
   }, [ecoFilter]);
   const [createPlatformOpen, setCreatePlatformOpen] = useState(false);
+  const [createProjectOpen, setCreateProjectOpen] = useState(false);
   const [configPlatform, setConfigPlatform] = useState<PlatformItem | null>(null);
   const [communityPlatform, setCommunityPlatform] = useState<string>(platformList[0]?.name || "");
+  const isPlatformScopedRole = ["平台管理员", "平台运营", "项目负责人", "区域运营"].includes(role);
+  const currentPlatformName = isPlatformScopedRole ? platformList[0]?.name : communityPlatform;
+  useEffect(() => {
+    const nextPlatform = isPlatformScopedRole ? platformList[0]?.name || "" : communityPlatform;
+    if (nextPlatform !== communityPlatform && (!communityPlatform || !platformList.some(platform => platform.name === communityPlatform) || isPlatformScopedRole)) {
+      setCommunityPlatform(nextPlatform);
+    }
+  }, [communityPlatform, isPlatformScopedRole, platformList]);
   const { rulesByScope } = useCommunityData();
   const { setApprovals } = useApprovals();
 
@@ -988,37 +1300,39 @@ function PlatformView({
   const totalProjects = platformList.reduce((n, p) => n + p.projects, 0);
   const totalUsers = platformList.reduce((n, p) => n + p.users, 0);
   const totalGroups = platformList.reduce((n, p) => n + p.groups, 0);
-  const totalTeachers = platformList.reduce((n, p) => n + p.teachers, 0);
+  const revenueLabel = platformList.length === 1 ? platformList[0]?.revenue ?? "待接入" : "待汇总";
   const scrollToSection = (section: string) => {
     const target = Array.from(document.querySelectorAll<HTMLElement>(`[data-section="${section}"]`)).find(element => element.offsetParent !== null);
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return <div id="platform-overview" data-section="overview" className="space-y-3">
-    <div className="flex items-center justify-between">
-      <div><span className="text-sm font-bold" style={{ color: S.text }}>平台工作台 ({platformList.length})</span><div className="text-xs mt-1" style={{ color: S.muted }}>由 SaaS 合作伙伴招募的运营实体，每个平台下辖多个运营项目</div></div>
-      <div className="flex gap-2">
-        <select className="px-3 py-1.5 text-xs font-bold" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
+    <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div><span className="text-sm font-bold" style={{ color: S.text }}>平台工作台</span><div className="text-xs mt-1" style={{ color: S.muted }}>当前可管理 {platformList.length} 个平台 · 按平台聚合项目、社群与运营配置</div></div>
+      <div className="flex flex-wrap gap-2">
+        <select className="flex-1 px-3 py-1.5 text-xs font-bold sm:flex-none" aria-label="筛选所属生态" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.muted, borderRadius: S.radiusSm }} value={filterEco} onChange={e => setFilterEco(e.target.value)}>
           {ecoOptions.map(o => <option key={o}>{o}</option>)}
         </select>
-        <button type="button" className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => setCreatePlatformOpen(true)}><Plus size={12} /> 新建平台</button>
+        <CreateResourceMenu role={role} onSelect={kind => {
+          if (kind === "platform") setCreatePlatformOpen(true);
+          if (kind === "project" && filtered.length > 0 && currentPlatformName) setCreateProjectOpen(true);
+        }} />
       </div>
     </div>
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
-      {[["可见平台", platformList.length, Building2], ["下辖项目", totalProjects, LayoutDashboard], ["服务老师", totalTeachers, UsersRound], ["平台用户", totalUsers.toLocaleString(), Eye], ["运营群组", totalGroups, MessageSquare]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><Icon size={15} style={{ color: S.muted }} /><div><div className="text-sm font-bold">{value as string | number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}
+    <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+      {[['运营项目', totalProjects, LayoutDashboard], ['平台用户', totalUsers.toLocaleString(), Eye], ['平台群组', totalGroups, MessageSquare], ['本月营收', revenueLabel, TrendingUp]].map(([label, value, Icon]) => <div key={label as string} className="flex items-center gap-2 px-3 py-2.5" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Icon size={15} style={{ color: S.primary }} /><div className="min-w-0"><div className="truncate text-sm font-bold">{value as string | number}</div><div className="text-[10px]" style={{ color: S.muted }}>{label as string}</div></div></div>)}
     </div>
-    <div className="p-3 flex items-start gap-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.3)`, borderRadius: S.radius }}><Layers size={16} /><div className="text-xs leading-relaxed"><b>平台与SaaS 合作伙伴关系</b>：SaaS 合作伙伴招募平台并下发能力与权益；一个SaaS 合作伙伴可招募多个平台，一个平台下辖多个项目。平台聚合多个项目的运营团队、资源池和汇总视角。</div></div>
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-2" aria-label="平台管理快捷入口">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" aria-label="平台工作台导航">
       {[
         ["平台总览", LayoutDashboard, () => scrollToSection("overview")],
         ["项目运营", Package, () => scrollToSection("projects")],
         ["平台级社群", MessageSquare, () => scrollToSection("community")],
         ["平台配置", Settings, () => setConfigPlatform(platformList.find(platform => platform.name === communityPlatform) || platformList[0] || null)],
       ].map(([label, Icon, action]) => (
-        <button key={label as string} type="button" className="flex items-center gap-2 px-3 py-2 text-left text-xs font-bold transition-colors" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radius }} onClick={action as () => void}>
+        <button key={label as string} type="button" className="flex items-center gap-2 px-3 py-2 text-left text-xs font-bold transition-colors" style={{ background: S.surface, border: `1px solid ${S.border}`, color: S.textSec, borderRadius: S.radiusSm }} onClick={action as () => void}>
           <Icon size={14} style={{ color: S.primary }} />
-          <span>{label as string}</span>
-          <ChevronRight size={12} className="ml-auto" style={{ color: S.mutedLight }} />
+          <span className="truncate">{label as string}</span>
+          <ChevronRight size={12} className="ml-auto flex-shrink-0" style={{ color: S.mutedLight }} />
         </button>
       ))}
     </div>
@@ -1043,7 +1357,7 @@ function PlatformView({
         {filtered.map((pf, idx) => (
           <div key={pf.id} role="button" tabIndex={0} className="flex items-center px-4 py-3 cursor-pointer transition-all text-xs font-mono" style={{ background: idx % 2 === 0 ? "#ffffff" : "#fafaf8", borderBottom: `1px solid ${S.border}` }} onClick={() => onEnterPlatform(pf.id, pf.name)} onKeyDown={ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); onEnterPlatform(pf.id, pf.name); } }}>
             <div className="flex-shrink-0 flex items-center gap-2" style={{ width: 220 }}><div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{pf.name[3] ?? pf.name[0]}</div><span className="font-bold">{pf.name}</span></div>
-            <div className="flex-shrink-0" style={{ width: 150, color: S.muted }}>{pf.partner ?? pf.saas}</div>
+            <div className="flex-shrink-0" style={{ width: 150, color: S.muted }}>{getPlatformOwnerLabel(pf)}</div>
             <div className="flex-shrink-0" style={{ width: 130, color: S.muted }}>{pf.eco}</div>
             <div className="flex-shrink-0" style={{ width: 200 }}><span className="font-bold">{pf.projects}</span><span style={{ color: S.muted }}> 项目 / </span><span className="font-bold">{pf.users.toLocaleString()}</span><span style={{ color: S.muted }}> 用户 / </span><span className="font-bold">{pf.groups}</span><span style={{ color: S.muted }}> 群</span></div>
             <div className="flex-shrink-0" style={{ width: 100, color: S.text }}>{pf.teachers} 人</div>
@@ -1059,7 +1373,7 @@ function PlatformView({
     <div data-section="projects" className="lg:hidden space-y-2">
       {filtered.map(pf => (
         <article key={pf.id} className="p-3 space-y-3" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 3px rgba(0,0,0,.04)" }}>
-          <div className="flex items-start justify-between gap-3"><div className="flex items-center gap-2 min-w-0"><div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{pf.name[3] ?? pf.name[0]}</div><div className="min-w-0"><div className="text-sm font-bold truncate">{pf.name}</div><div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>{pf.partner ?? pf.saas} · {pf.eco}</div></div></div><span className="px-1.5 py-0.5 text-[10px] font-bold flex-shrink-0" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span></div>
+          <div className="flex items-start justify-between gap-3"><div className="flex items-center gap-2 min-w-0"><div className="w-7 h-7 flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{pf.name[3] ?? pf.name[0]}</div><div className="min-w-0"><div className="text-sm font-bold truncate">{pf.name}</div><div className="text-[10px] mt-0.5 truncate" style={{ color: S.muted }}>{getPlatformOwnerLabel(pf)} · {pf.eco}</div></div></div><span className="px-1.5 py-0.5 text-[10px] font-bold flex-shrink-0" style={{ background: statusCfg[pf.status]?.bg, color: statusCfg[pf.status]?.color, borderRadius: S.radiusSm }}>{pf.status}</span></div>
           <div className="grid grid-cols-3 gap-2 text-xs"><div><div className="font-bold">{pf.projects}</div><div style={{ color: S.muted }}>项目</div></div><div><div className="font-bold">{pf.users.toLocaleString()}</div><div style={{ color: S.muted }}>用户</div></div><div><div className="font-bold">{pf.groups}</div><div style={{ color: S.muted }}>群组</div></div></div>
           <div className="flex gap-2" onClick={e => e.stopPropagation()}><button type="button" className="flex-1 py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => onEnterPlatform(pf.id, pf.name)}>进入平台</button><button type="button" className="px-3 py-2 text-xs font-bold" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm, border: `1px solid ${S.border}` }} onClick={() => setConfigPlatform(pf)}>配置</button></div>
         </article>
@@ -1067,16 +1381,18 @@ function PlatformView({
     </div>
     {createPlatformOpen && <CreatePlatformDrawer saasList={saasList} ecoList={ecoList} onClose={() => setCreatePlatformOpen(false)} onCreate={({ name, saas, partner, eco, desc }) => {
       setPlatformList(list => [...list, { id: Date.now(), name, partner, saas, eco, desc, projects: 0, users: 0, groups: 0, teachers: 0, revenue: "待接入", status: "孵化中", dataStatus: "待接入" }]);
-      const approval = createApproval("platform_onboard", {
-        title: `平台入驻：${name}（${partner}）`,
-        submitter: "平台管理员",
-        description: `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态`,
-        detail: { 平台名称: name, 所属合作伙伴: partner, 所属生态: eco, 描述: desc || "—" },
+        const ownerLabel = getPlatformOwnerLabel({ partner, saas });
+        const approval = createApproval("platform_onboard", {
+          title: `平台入驻：${name}（${ownerLabel}）`,
+          submitter: "平台管理员",
+          description: partner ? `在${partner} SaaS 合作伙伴下新建平台「${name}」，所属${eco}生态` : `由超级生态直接新建平台「${name}」，所属${eco}生态`,
+          detail: { 平台名称: name, 所属合作伙伴: ownerLabel, 所属生态: eco, 描述: desc || "—" },
         payload: { type: "platform_onboard", name, saas, eco, desc: desc || "" },
       });
       setApprovals(prev => [approval, ...prev]);
       setCreatePlatformOpen(false);
     }} />}
+    {createProjectOpen && currentPlatformName && <CreateProjectDrawer ecoList={ecoList} saasList={saasList} platformList={platformList} defaultPlatform={currentPlatformName} platformLocked={isPlatformScopedRole} onClose={() => setCreateProjectOpen(false)} onCreate={p => { registerScopeRules(p.platform, "project", p.name, p.groupTypes); setProjectList(list => [p, ...list]); setCreateProjectOpen(false); setToast(`项目「${p.name}」已创建`); }} />}
     {configPlatform && <PlatformConfigDrawer platform={configPlatform} onClose={() => setConfigPlatform(null)} onSave={next => setPlatformList(list => list.map(item => item.id === next.id ? next : item))} />}
   </div>;
 }
@@ -3112,7 +3428,7 @@ function AccountManagerTab({ accounts, setAccounts, projectList }: { accounts: S
 // ─── 主组件 ───────────────────────────────────────────────────
 type MainTab = "architecture" | "accounts" | "commercial";
 const mockCurrentAccounts: { name: string; role: string; avatar: string }[] = [
-  { name: "孙悦",  role: "超级管理员", avatar: "孙" },
+  { name: "孙悦",  role: "超级生态管理员", avatar: "孙" },
   { name: "李昊",  role: "生态负责人", avatar: "李" },
   { name: "周敏",  role: "生态COO", avatar: "周" },
   { name: "钱程",  role: "SaaS 合作伙伴负责人", avatar: "钱" },
@@ -3140,28 +3456,66 @@ const { accounts, setAccounts } = useAccounts();
   const [ecosystemFilter, setEcosystemFilter] = useState<string | undefined>(undefined);
   const [mainTab, setMainTab] = useState<MainTab>("architecture");
   // 当前登录身份（联动：按身份过滤生态/SaaS/平台/项目的可见性；仅作为演示态）
-  const [currentRole, setCurrentRole] = useState<string>("超级管理员");
+  const [currentRole, setCurrentRole] = useState<string>("超级生态管理员");
   const currentUser = mockCurrentAccounts.find(u => u.role === currentRole) ?? mockCurrentAccounts[0];
+  const roleTier: Record<string, string> = {
+    "超级生态管理员": "super",
+    "生态负责人": "eco",
+    "生态COO": "eco",
+    "SaaS 合作伙伴负责人": "saas",
+    "SaaS 合作伙伴运营": "saas",
+    "平台管理员": "platform",
+    "平台运营": "platform",
+    "项目负责人": "platform",
+    "区域运营": "platform",
+    "客服": "platform",
+    "老师": "platform",
+  };
+  useEffect(() => {
+    const nextTier = roleTier[currentRole] ?? "super";
+    setActiveTier(nextTier);
+    setActivePlatformId(null);
+    setActivePlatformName(null);
+    setMainTab("architecture");
+  }, [currentRole]);
   // 超级态：全量可见；生态层仅当 visibility/生态相关身份才能看到某个生态；这里做简化：按身份过滤项目列表 + 平台列表；生态/SaaS/超级态不变
   const scopedProjects = projectList.filter(p => {
-    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营"].includes(currentRole)) return true;
-    if (currentRole === "生态负责人") return !!p.visibility["生态负责人"] || true; // 生态负责人看旗下生态所有项目
-    if (currentRole === "平台管理员") return !!p.visibility["平台管理员"] || true; // 平台管理员看旗下平台所有项目
-    if (currentRole === "平台运营") return !!p.visibility["平台运营"] || true;
+    if (["超级生态管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营"].includes(currentRole)) return true;
+    if (currentRole === "生态负责人") return !!p.visibility["生态负责人"];
+    if (currentRole === "平台管理员") return !!p.visibility["平台管理员"];
+    if (currentRole === "平台运营") return !!p.visibility["平台运营"];
     return !!p.visibility[currentRole];
   });
   const scopedPlatforms = platformList.filter(pf => {
-    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "生态负责人", "平台管理员", "平台运营"].includes(currentRole)) return true;
+    if (["超级生态管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "生态负责人"].includes(currentRole)) return true;
+    const roleKeyByLabel: Record<string, IdentityRole["roleKey"]> = {
+      "平台管理员": "platform_admin",
+      "平台运营": "platform_op",
+      "项目负责人": "project_owner",
+      "区域运营": "regional_op",
+    };
+    const roleKey = roleKeyByLabel[currentRole];
+    const scopedAccount = roleKey
+      ? accounts.find(account => account.identities.some(identity => identity.roleKey === roleKey && identity.scopeIds.length > 0))
+      : undefined;
+    const identity = scopedAccount?.identities.find(item => item.roleKey === roleKey);
+    if (identity?.scopeType === "platform") {
+      return identity.scopeIds.includes(`platform-${pf.id}`);
+    }
+    const scopedProjectIds = identity?.scopeType === "project" ? identity.scopeIds : [];
+    if (scopedProjectIds.length > 0) {
+      return scopedProjects.some(project => scopedProjectIds.includes(`project-${project.id}`) && project.platform === pf.name);
+    }
     const pfProjects = scopedProjects.filter(p => p.platform === pf.name);
     return pfProjects.length > 0;
   });
   const scopedEcos = ecoList.filter(eco => {
-    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营"].includes(currentRole)) return true;
+    if (["超级生态管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营"].includes(currentRole)) return true;
     if (currentRole === "生态负责人") return true; // 模拟：生态负责人看全部（真实需按 uid 绑定）
     return scopedProjects.some(p => p.eco === eco.name);
   });
   const scopedSaas = saasList.filter(s => {
-    if (["超级管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "生态负责人"].includes(currentRole)) return true;
+    if (["超级生态管理员", "生态COO", "SaaS 合作伙伴负责人", "SaaS 合作伙伴运营", "生态负责人"].includes(currentRole)) return true;
     return scopedProjects.some(p => p.saas === s.name);
   });
   const counts: TierCounts = {
@@ -3177,136 +3531,32 @@ const { accounts, setAccounts } = useAccounts();
 
   return (
     <div className="p-6 h-full flex flex-col gap-5 overflow-auto" style={{ background: S.bg, fontFamily: "monospace" }}>
-      {/* 页头 */}
-      <div className="flex items-start justify-between flex-shrink-0 gap-4 flex-wrap">
-        <div>
-          <h2 className="font-bold" style={{ color: S.text, letterSpacing: "0.05em" }}>行业生态与平台管理</h2>
-          <p className="text-xs mt-0.5 font-mono" style={{ color: S.muted }}>
-            从行业生态逐层进入 SaaS 合作伙伴、平台和项目，进入项目后可继续配置会员权益与社群体系。
-          </p>
-        </div>
-        <div className="flex items-center gap-2 flex-shrink-0 flex-wrap">
-          <div className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-            <div className="w-2 h-2" style={{ background: S.accent, borderRadius: "50%" }} />
-            <span className="text-xs font-mono" style={{ color: S.muted }}>当前：</span>
-            <span className="text-xs font-bold font-mono" style={{ color: S.text }}>{activePlatformName ? `平台 · ${activePlatformName}` : "平台管理"}</span>
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2"><span className="text-sm font-bold" style={{ color: S.text }}>{getEcosystemContext(activeTier, activePlatformName).label}</span><span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: S.accentLight, color: S.textSec, borderRadius: S.radiusSm }}>{currentRole}</span></div>
+          <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-1.5 text-xs font-mono" style={{ color: S.muted }}>
+            {getEcosystemContext(activeTier, activePlatformName).path.map((segment, index) => <span key={`${segment}-${index}`} className="flex items-center gap-1.5"><span style={{ color: index === getEcosystemContext(activeTier, activePlatformName).path.length - 1 ? S.text : S.muted }}>{segment}</span>{index < getEcosystemContext(activeTier, activePlatformName).path.length - 1 && <ChevronRight size={12} style={{ color: S.muted }} />}</span>)}
           </div>
-          {/* 当前登录身份选择器（权限联动演示） */}
-          <div className="flex items-center gap-2 px-3 py-2" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radiusSm }}>
-            <div className="w-7 h-7 flex items-center justify-center text-sm font-bold flex-shrink-0" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{currentUser.avatar}</div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-bold" style={{ color: S.text }}>{currentUser.name}</span>
-                <span className="px-1.5 py-0.5 text-[10px] font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: "3px" }}>{currentRole}</span>
-              </div>
-              <label className="flex items-center gap-1 mt-0.5" style={{ color: S.muted, fontSize: "10px" }}>
-                切换身份
-                <select
-                  className="px-1 py-0.5 outline-none"
-                  style={{ background: "transparent", border: "none", color: S.text, fontSize: "10px", fontFamily: "monospace", fontWeight: 700, cursor: "pointer" }}
-                  value={currentRole}
-                  onChange={e => setCurrentRole(e.target.value)}
-                >
-                  {mockCurrentAccounts.map(u => <option key={u.role}>{u.role}</option>)}
-                </select>
-              </label>
-            </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5 self-start sm:self-auto">
+          <div className="flex items-center gap-1.5 px-2 py-1.5" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,.35)`, borderRadius: S.radiusSm }}>
+            <div className="flex h-6 w-6 items-center justify-center text-xs font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>{currentUser.avatar}</div>
+            <select aria-label="切换身份" className="max-w-[128px] bg-transparent text-[10px] font-bold outline-none" style={{ color: S.text }} value={currentRole} onChange={e => setCurrentRole(e.target.value)}>{mockCurrentAccounts.map(u => <option key={u.role}>{u.role}</option>)}</select>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 px-3 py-2 text-xs font-mono flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.textSec }}>
-        <span style={{ color: S.text }}>行业生态</span>
-        <ChevronRight size={13} style={{ color: S.muted }} />
-        <span style={{ color: activeTier === "platform" ? S.text : S.muted }}>平台</span>
-        {activePlatformName && <><ChevronRight size={13} style={{ color: S.muted }} /><span style={{ color: S.text }}>{activePlatformName}</span><ChevronRight size={13} style={{ color: S.muted }} /><span style={{ color: S.muted }}>项目配置</span></>}
-      </div>
-
-      {/* 四层架构图 */}
-      <ArchitectureDiagram tiers={tiers} activeTier={activeTier} onSelect={(id) => { setActiveTier(id); if (id !== "platform") { setActivePlatformId(null); setActivePlatformName(null); } }} />
-
-      {/* 当前层级说明条 */}
-      <div className="flex items-center gap-4 px-4 py-3 flex-shrink-0" style={{ background: S.accentLight, border: `1px solid rgba(204,255,0,0.3)`, borderRadius: S.radius }}>
-        <tier.icon size={16} style={{ color: "#1e293b", flexShrink: 0 }} />
-        <div className="flex-1">
-          <span className="text-sm font-bold" style={{ color: S.text }}>第 {tier.level} 层：{tier.label}</span>
-          <span className="text-xs ml-3 font-mono" style={{ color: S.muted }}>{tier.desc}</span>
-        </div>
-        <div className="flex items-center gap-4 flex-shrink-0">
-          {tier.metrics.map(m => (
-            <div key={m.label} className="text-center">
-              <div className="text-sm font-bold" style={{ color: S.text }}>{m.value}</div>
-              <div className="font-mono" style={{ color: S.muted, fontSize: "10px" }}>{m.label}</div>
-            </div>
-          ))}
-        </div>
-        <div className="flex-shrink-0 px-3 py-1.5 text-xs font-bold font-mono" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }}>
-          {tier.role}
-        </div>
-      </div>
-
-      <div className="flex items-center justify-between gap-3 px-4 py-3 flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-        <div className="text-xs font-mono" style={{ color: S.textSec }}>
-          <span style={{ color: S.text, fontWeight: 700 }}>操作路径：</span>选择平台 → 进入平台 → 配置项目 → 社群体系
-        </div>
-        {activeTier !== "platform" && <button type="button" className="text-xs font-bold px-3 py-1.5" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radiusSm }} onClick={() => { setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }}>进入平台工作台 <ArrowRight size={13} className="inline ml-1" /></button>}
-      </div>
-
-      {/* 横排主 Tab：架构视图 / 账号管理 / 商业与计费（层级说明条下方、层级内容上方） */}
-      <div className="flex gap-1 p-1 flex-shrink-0" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-        {([
-          ["architecture", "架构视图", Layers, "四层架构总览、生态、SaaS、平台、项目管理"],
-          ["accounts",     "账号管理", UsersRound, "系统账号、身份绑定、企微/微信号绑定管理"],
-          ["commercial",   "商业与计费", TrendingUp, "四级收费方案、订阅管理、分润看板、账单中心"],
-        ] as [MainTab, string, any, string][]).map(([id, label, Icon, hint]) => (
-          <button
-            key={id}
-            type="button"
-            title={hint}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3 text-xs font-bold transition-all relative"
-            style={{
-              background: mainTab === id ? "#1e293b" : "transparent",
-              color: mainTab === id ? S.accent : S.textSec,
-              borderRadius: S.radiusSm,
-            }}
-            onClick={() => setMainTab(id)}
-          >
-            <Icon size={15} />
-            <span>{label}</span>
-            {mainTab === id && <span className="absolute right-2 bottom-2 w-1.5 h-1.5" style={{ background: S.accent, borderRadius: "50%" }} />}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab 内容区 */}
       <div className="flex-1">
         {mainTab === "accounts" && <AccountManagerTab accounts={accounts} setAccounts={setAccounts} projectList={projectList} />}
         {mainTab === "commercial" && <CommercialTab subs={subs} bills={bills} />}
-        {mainTab === "architecture" && (<>
-          {activeTier === "super"    && <SuperView ecoList={ecoList} setEcoList={setEcoList} saasList={saasList} setSaasList={setSaasList} accounts={accounts} setAccounts={setAccounts} subs={subs} setSubs={setSubs} bills={bills} setBills={setBills} onOpenPlatforms={ecoName => { setEcosystemFilter(ecoName); setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }} onOpenProjects={ecoName => { setEcosystemFilter(ecoName); setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }} onOpenReports={() => { const url = new URL(window.location.href); url.searchParams.set("module", "reports"); window.history.pushState({}, "", url); window.dispatchEvent(new PopStateEvent("popstate")); }} />}
-          {activeTier === "eco"      && <EcoView ecoList={ecoList} saasList={saasList} setSaasList={setSaasList} platformList={platformList} setPlatformList={setPlatformList} />}
-          {activeTier === "saas"     && <SaasView ecoList={ecoList} saasList={saasList} platformList={platformList} setPlatformList={setPlatformList} setActiveTier={setActiveTier} setActivePlatformId={(id) => setActivePlatformId(id)} setActivePlatformName={(n) => setActivePlatformName(n)} />}
-          {activeTier === "platform" && (
-              activePlatformId !== null && activePlatformName !== null ? (
-                <ProjectList
-                  projectList={projectList} setProjectList={setProjectList}
-                  ecoList={ecoList} saasList={saasList} platformList={platformList}
-                  platformName={activePlatformName} platformId={activePlatformId}
-                  onEnterProject={(name) => projectMode(activePlatformName, name)}
-                  onBack={() => { platformMode(); setActivePlatformId(null); setActivePlatformName(null); }}
-                />
-            ) : (
-              <PlatformView
-                platformList={platformList} setPlatformList={setPlatformList}
-                ecoList={ecoList} saasList={saasList}
-                projectList={projectList} setProjectList={setProjectList}
-                onEnterPlatform={(id, name) => { setEcosystemFilter(undefined); setActiveTier("platform"); setActivePlatformId(id); setActivePlatformName(name); }}
-                ecoFilter={ecosystemFilter}
-              />
-            )
-          )}
-        </>)}
+        {mainTab === "architecture" && <>
+          {activeTier === "super" && <SuperView role={currentRole} ecoList={ecoList} setEcoList={setEcoList} saasList={saasList} setSaasList={setSaasList} platformList={platformList} setPlatformList={setPlatformList} projectList={projectList} setProjectList={setProjectList} accounts={accounts} setAccounts={setAccounts} subs={subs} setSubs={setSubs} bills={bills} setBills={setBills} onOpenPlatforms={ecoName => { setEcosystemFilter(ecoName); setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }} onOpenProjects={ecoName => { setEcosystemFilter(ecoName); setActiveTier("platform"); setActivePlatformId(null); setActivePlatformName(null); }} onOpenReports={() => { const url = new URL(window.location.href); url.searchParams.set("module", "reports"); window.history.pushState({}, "", url); window.dispatchEvent(new PopStateEvent("popstate")); }} />}
+          {activeTier === "eco" && <EcoView role={currentRole} ecoList={ecoList} saasList={saasList} setSaasList={setSaasList} platformList={platformList} setPlatformList={setPlatformList} />}
+           {activeTier === "saas" && <SaasView role={currentRole} ecoList={ecoList} saasList={saasList} platformList={platformList} setPlatformList={setPlatformList} setActiveTier={setActiveTier} setActivePlatformId={setActivePlatformId} setActivePlatformName={setActivePlatformName} />}
+          {activeTier === "platform" && (activePlatformId !== null && activePlatformName !== null ? <ProjectList projectList={projectList} setProjectList={setProjectList} ecoList={ecoList} saasList={saasList} platformList={platformList} platformName={activePlatformName} platformId={activePlatformId} onEnterProject={name => projectMode(activePlatformName, name)} onBack={() => { platformMode(); setActivePlatformId(null); setActivePlatformName(null); }} /> : <PlatformView role={currentRole} platformList={scopedPlatforms} setPlatformList={setPlatformList} ecoList={ecoList} saasList={saasList} projectList={projectList} setProjectList={setProjectList} onEnterPlatform={(id, name) => { setEcosystemFilter(undefined); setActiveTier("platform"); setActivePlatformId(id); setActivePlatformName(name); }} ecoFilter={ecosystemFilter} />)}
+        </>}
       </div>
+
     </div>
   );
 }

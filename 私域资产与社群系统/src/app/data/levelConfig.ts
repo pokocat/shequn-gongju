@@ -66,11 +66,11 @@ export const businessIdentityOptions: BusinessIdentityCode[] = [
   "MEMBER",
 ];
 export const businessIdentityLabels: Record<BusinessIdentityCode, string> = {
-  D1: "D1 · 创始人",
-  D2: "D2 · 核心合伙人",
-  D3: "D3 · 事业合伙人",
-  D4: "D4 · 分公司负责人",
-  D5: "D5 · 分公司合伙人",
+  D1: "D1",
+  D2: "D2",
+  D3: "D3",
+  D4: "D4",
+  D5: "D5",
   LEADER: "团长",
   MEMBER: "会员",
 };

@@ -1,39 +1,40 @@
-import { useEffect, useState, createContext, useContext, type ReactNode } from "react";
-import { Monitor, Globe, Star } from "lucide-react";
+import { Suspense, lazy, useEffect, useState, createContext, useContext, type ReactNode } from "react";
+import { Monitor, Globe, Smartphone } from "lucide-react";
 import PCLayout from "./components/PCLayout";
 import Overview from "./components/Overview";
-import UnifiedAccountManagement from "./components/UnifiedAccountManagement";
-import CustomerService from "./components/CustomerService";
-import InfluenceRanking from "./components/InfluenceRanking";
-import MemberOperationsWorkbench from "./components/MemberOperationsWorkbench";
-import EcosystemManagement from "./components/EcosystemManagement";
-import BusinessProjectCenter from "./components/BusinessProjectCenter";
-import BusinessCapabilityCenter from "./components/BusinessCapabilityCenter";
-import ChannelFlow from "./components/ChannelFlow";
-import Orders from "./components/Orders";
-import Tickets from "./components/Tickets";
-import ApprovalCenter from "./components/ApprovalCenter";
-import Permissions from "./components/Permissions";
-import PlatformModeConfig from "./components/PlatformModeConfig";
-import CityBranch from "./components/CityBranch";
-import ReportCenter from "./components/ReportCenter";
-import MiniProgramCenter from "./components/MiniProgramCenter";
-import MemberBenefits from "./components/MemberBenefits";
-import Commission from "./components/Commission";
-import ZhuLiRenApp from "./components/ZhuLiRenApp";
-import LandingPage from "./components/LandingPage";
 import { CommunicationTool, initialTools } from "./data/communicationTools";
 import { SystemAccount, mockAccounts } from "./data/accountTypes";
 import { InviteRecord, mockInvites } from "./data/inviteRecords";
 import { Approval, mockApprovals } from "./data/approvalTypes";
 import { ThemeProvider, useTheme, S, resolvePalette } from "./theme";
 
+const UnifiedAccountManagement = lazy(() => import("./components/UnifiedAccountManagement"));
+const CustomerService = lazy(() => import("./components/CustomerService"));
+const InfluenceRanking = lazy(() => import("./components/InfluenceRanking"));
+const MemberOperationsWorkbench = lazy(() => import("./components/MemberOperationsWorkbench"));
+const EcosystemManagement = lazy(() => import("./components/EcosystemManagement"));
+const BusinessProjectCenter = lazy(() => import("./components/BusinessProjectCenter"));
+const BusinessCapabilityCenter = lazy(() => import("./components/BusinessCapabilityCenter"));
+const ChannelFlow = lazy(() => import("./components/ChannelFlow"));
+const Orders = lazy(() => import("./components/Orders"));
+const Tickets = lazy(() => import("./components/Tickets"));
+const ApprovalCenter = lazy(() => import("./components/ApprovalCenter"));
+const Permissions = lazy(() => import("./components/Permissions"));
+const PlatformModeConfig = lazy(() => import("./components/PlatformModeConfig"));
+const CityBranch = lazy(() => import("./components/CityBranch"));
+const ReportCenter = lazy(() => import("./components/ReportCenter"));
+const MiniProgramCenter = lazy(() => import("./components/MiniProgramCenter"));
+const MemberBenefits = lazy(() => import("./components/MemberBenefits"));
+const Commission = lazy(() => import("./components/Commission"));
+const ZhuLiRenApp = lazy(() => import("./components/ZhuLiRenApp"));
+const ZhuLiRenV1 = lazy(() => import("./components/ZhuLiRenV1"));
+const ZhuLiRenPC = lazy(() => import("./components/ZhuLiRenPC"));
+const LandingPage = lazy(() => import("./components/LandingPage"));
+
 const moduleMap: Record<string, React.ComponentType> = {
   overview:   Overview,
-  // 账号资产中心：四类型（微信/手机号/邮箱/媒体）台账；commtools 旧路由保持兼容 → 统一跳账号资产中心
   accounts:   UnifiedAccountManagement,
   commtools:  UnifiedAccountManagement,
-  // 微信账号管理：统一资产入口，个人/企业微信选中后加载旧版微信管理设计
   wechat:     UnifiedAccountManagement,
   cs:         CustomerService,
   influence:  InfluenceRanking,
@@ -56,7 +57,7 @@ const moduleMap: Record<string, React.ComponentType> = {
   capabilities: BusinessCapabilityCenter,
 };
 
-type ViewMode = "landing" | "pc" | "zhuliren";
+type ViewMode = "landing" | "pc" | "zhuliren-1" | "zhuliren-2" | "zhuliren-pc";
 export type WorkspaceContext = "platform" | "project";
 type ProjectContextValue = { platform: string; project: string; workspaceContext: WorkspaceContext; setWorkspaceContext: (value: WorkspaceContext) => void; platformMode: () => void; projectMode: (platform: string, project: string) => void; setPlatform: (value: string) => void; setProject: (value: string) => void; projectsByPlatform: Record<string, string[]> };
 export const ProjectContext = createContext<ProjectContextValue>({ platform: "主理人公社", project: "V001 军师", workspaceContext: "project", setWorkspaceContext: () => {}, platformMode: () => {}, projectMode: () => {}, setPlatform: () => {}, setProject: () => {}, projectsByPlatform: {} });
@@ -122,7 +123,7 @@ function ApprovalsProvider({ children, value }: { children: ReactNode; value: { 
 export default function App() {
   const [view, setView] = useState<ViewMode>(() => {
     const requestedView = new URLSearchParams(window.location.search).get("view");
-    return requestedView === "pc" || requestedView === "zhuliren" ? requestedView : "landing";
+    return requestedView === "pc" || requestedView === "zhuliren-1" || requestedView === "zhuliren-2" || requestedView === "zhuliren-pc" ? requestedView : "landing";
   });
   const [activeModule, setActiveModule] = useState(() => {
     const requestedModule = new URLSearchParams(window.location.search).get("module");
@@ -157,6 +158,7 @@ export default function App() {
     const url = new URL(window.location.href);
     if (nextView === "landing") url.searchParams.delete("view");
     else url.searchParams.set("view", nextView);
+    if (nextView !== "pc") url.searchParams.delete("module");
     window.history.replaceState({}, "", url);
   };
 
@@ -178,7 +180,7 @@ export default function App() {
       const params = new URLSearchParams(window.location.search);
       const nextView = params.get("view");
       const nextModule = params.get("module");
-      if (nextView === "pc" || nextView === "zhuliren") setView(nextView);
+      if (nextView === "pc" || nextView === "zhuliren-1" || nextView === "zhuliren-2" || nextView === "zhuliren-pc") setView(nextView);
       if (nextModule && nextModule in moduleMap) {
         setActiveModule(nextModule);
         if (nextModule === "ecosystem") {
@@ -200,18 +202,23 @@ export default function App() {
     return (
       <ThemeProvider>
         <div className="size-full relative">
-          <div className="fixed top-4 right-4 z-[100] flex gap-1 p-1 rounded-xl shadow-lg" style={{ background: "rgba(5,9,23,0.8)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}>
+        <div className="fixed top-4 right-4 z-[100] flex gap-1 p-1 rounded-xl shadow-lg" style={{ background: "rgba(5,9,23,0.8)", border: "1px solid rgba(255,255,255,0.1)", backdropFilter: "blur(8px)" }}>
             <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "linear-gradient(135deg, #4361ee, #7c3aed)", color: "white" }}>
               <Globe size={12} /> 官网
             </button>
             <button onClick={() => selectView("pc")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
               <Monitor size={12} /> PC 后台
             </button>
-            <button onClick={() => selectView("zhuliren")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
-              <Star size={12} /> 主理人公社
+            <button onClick={() => selectView("zhuliren-2")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
+              <Smartphone size={12} /> 主理人2
+            </button>
+            <button onClick={() => selectView("zhuliren-pc")} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all" style={{ background: "transparent", color: "rgba(255,255,255,0.5)" }}>
+              <Monitor size={12} /> 主理人 PC
             </button>
           </div>
-          <LandingPage onEnterApp={() => selectView("pc")} />
+          <Suspense fallback={<div className="size-full" />}>
+            <LandingPage onEnterApp={() => selectView("pc")} />
+          </Suspense>
         </div>
       </ThemeProvider>
     );
@@ -237,7 +244,17 @@ export default function App() {
         },
         projectsByPlatform
       }}>
-      <AppShell toolsValue={toolsValue} accountsValue={accountsValue} invitesValue={invitesValue} approvalsValue={approvalsValue} view={view} selectView={selectView} activeModule={activeModule} selectModule={selectModule} ActiveComponent={ActiveComponent} />
+      <AppShell
+        toolsValue={toolsValue}
+        accountsValue={accountsValue}
+        invitesValue={invitesValue}
+        approvalsValue={approvalsValue}
+        view={view}
+        selectView={selectView}
+        activeModule={activeModule}
+        selectModule={selectModule}
+        ActiveComponent={ActiveComponent}
+      />
       </ProjectContext.Provider>
     </ThemeProvider>
   );
@@ -270,7 +287,9 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
               {([
                 { id: "landing", label: "WEB", icon: Globe },
                 { id: "pc", label: "PC", icon: Monitor },
-                { id: "zhuliren", label: "主理人", icon: Star },
+                { id: "zhuliren-1", label: "主理人1", icon: Smartphone },
+                { id: "zhuliren-2", label: "主理人2", icon: Smartphone },
+                { id: "zhuliren-pc", label: "主理人 PC", icon: Monitor },
               ] as const).map(v => (
                 <button key={v.id} onClick={() => selectView(v.id)} className="flex items-center gap-1 px-2.5 py-1.5 text-[11px] transition-all font-bold"
                   style={{
@@ -290,10 +309,26 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
 
         {view === "pc" ? (
           <PCLayout view={view} selectView={selectView} activeModule={activeModule} onModuleChange={selectModule}>
-            {activeModule === "overview" ? <Overview onNavigate={selectModule} /> : <ActiveComponent />}
+            <Suspense fallback={<div className="size-full" />}>
+              {activeModule === "overview" ? <Overview onNavigate={selectModule} /> : <ActiveComponent />}
+            </Suspense>
           </PCLayout>
+        ) : view === "zhuliren-1" ? (
+          <Suspense fallback={<div className="size-full" />}>
+            <ZhuLiRenV1 />
+          </Suspense>
+        ) : view === "zhuliren-2" ? (
+          <Suspense fallback={<div className="size-full" />}>
+            <ZhuLiRenApp />
+          </Suspense>
+        ) : view === "zhuliren-pc" ? (
+          <Suspense fallback={<div className="size-full" />}>
+            <ZhuLiRenPC />
+          </Suspense>
         ) : (
-          <ZhuLiRenApp />
+          <Suspense fallback={<div className="size-full" />}>
+            <ZhuLiRenApp />
+          </Suspense>
         )}
       </div>
       </ApprovalsProvider>

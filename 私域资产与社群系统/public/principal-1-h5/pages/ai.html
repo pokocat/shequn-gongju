@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI 军师</title>
+<link rel="stylesheet" href="../css/app.css?v=20260917">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>
+.ai-layer{ padding-bottom: 8.027px; display:flex; flex-direction:column; min-height:100%; box-sizing:border-box; }
+/* 场景快捷键 */
+.scene-sw{ display:flex; gap:5.16px; padding:10.32px 10.32px 6.88px; overflow-x:auto; }
+.scene-sw::-webkit-scrollbar{ display:none; }
+.scene-chip{
+  flex-shrink:0; padding:5.733px 11.467px; border-radius:17.2px;
+  font-size:var(--fs-meta); font-weight:600; color:var(--signal-700);
+  background:var(--signal-50); border:0.573px solid var(--line-brand);
+  cursor:pointer; white-space:nowrap; transition:all .15s;
+}
+.scene-chip:active{ transform:scale(.95); background:var(--sunk-3); }
+/* 对话区 */
+.chat-scroll{ flex:1; overflow-y:auto; padding:4.587px 10.32px 12.04px; }
+.msg{ display:flex; margin-bottom:10.32px; }
+.msg--ai{ justify-content:flex-start; }
+.msg--me{ justify-content:flex-end; }
+.msg-ava{
+  width:28.64px; height:28.64px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,#8B5CF6,#5B21B6); color:#FFF;
+  display:flex; align-items:center; justify-content:center; margin-right:6.88px;
+}
+.msg-ava svg{ width:14px; height:14px; }
+.bubble{
+  max-width:78%; padding:8.6px 10.32px; border-radius:12.04px;
+  font-size:var(--fs-meta); line-height:1.55;
+}
+.msg--ai .bubble{ background:var(--sunk-2); color:var(--ink-900); border:0.573px solid var(--line-soft); border-top-left-radius:4.013px; }
+.msg--me .bubble{ background:linear-gradient(135deg,var(--signal-600),var(--signal-800)); color:#FFF; border-top-right-radius:4.013px; }
+/* 生成内容卡 */
+.gen-card{
+  width:100%; max-width:100%; margin-top:6.88px; padding:10.32px;
+  border-radius:var(--r-box); background:#FFF; border:0.573px solid var(--line-brand);
+  box-shadow:0 3px 10px rgba(124,58,237,.08);
+}
+.gen-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:5.733px; }
+.gen-plat{ font-size:var(--fs-micro); font-weight:700; color:var(--signal-700); background:var(--signal-50); padding:1.72px 6.88px; border-radius:4.587px; }
+.gen-note{ font-size:var(--fs-micro); color:var(--ink-500); }
+.gen-body{ font-size:var(--fs-meta); color:var(--ink-800); line-height:1.65; white-space:pre-wrap; }
+.gen-tags{ margin-top:5.733px; font-size:var(--fs-micro); color:var(--pulse-600); font-weight:600; }
+.gen-btns{ display:flex; gap:5.16px; margin-top:8.027px; }
+.gen-btn{ flex:1; text-align:center; padding:6.88px 0; border-radius:8.027px; font-size:var(--fs-micro); font-weight:700; cursor:pointer; }
+.gen-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; }
+.gen-btn--ghost{ background:var(--sunk-2); color:var(--signal-700); border:0.573px solid var(--line-brand); }
+.gen-btn:active{ transform:scale(.97); }
+/* 打字中 */
+.typing{ display:flex; gap:3.44px; padding:4.013px 0; }
+.typing i{ width:5.16px; height:5.16px; border-radius:50%; background:var(--signal-400); animation:tp 1s infinite; }
+.typing i:nth-child(2){ animation-delay:.15s; }
+.typing i:nth-child(3){ animation-delay:.3s; }
+@keyframes tp{ 0%,60%,100%{ transform:translateY(0); opacity:.4; } 30%{ transform:translateY(-3px); opacity:1; } }
+/* 底部输入条 */
+.ai-input{
+  position:sticky; bottom:0; z-index:20; display:flex; gap:6.88px;
+  padding:8.027px 10.32px calc(8.027px + 6px);
+  background:rgba(255,247,236,.96); border-top:0.573px solid var(--line-soft);
+}
+.ai-input input{
+  flex:1; height:36.8px; border-radius:18.4px; border:0.573px solid var(--line);
+  background:#FFF; padding:0 13.76px; font-size:var(--fs-meta); color:var(--ink-900); outline:none;
+}
+.ai-input input::placeholder{ color:var(--ink-400); }
+.ai-send{
+  width:36.8px; height:36.8px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,var(--signal-600),var(--signal-800)); color:#FFF;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.ai-send svg{ width:16px; height:16px; }
+/* 复制成功 toast */
+.ai-toast{
+  position:fixed; top:40%; left:50%; transform:translateX(-50%); z-index:999;
+  background:rgba(51,33,15,.82); color:#FFF; font-size:var(--fs-meta);
+  padding:8.6px 18.92px; border-radius:20.64px; pointer-events:none;
+  opacity:0; transition:opacity .2s;
+}
+.ai-toast.is-on{ opacity:1; }
+</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>AI 军师</h1>
+    <code>/pages/ai/index</code>
+  </div>
+  <p class="mp-note">推广内容生产力：选场景 → AI 按本周方向生成平台适配内容 → 复制 / 去发布。不会的随时问。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer ai-layer wx-view">
+        <div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">AI 军师</span><div class="subbar-slot wx-view"></div></div></div></div>
+        <div class="scene-sw" id="sceneSw">
+          <div class="scene-chip" data-scene="朋友圈文案">朋友圈文案</div>
+          <div class="scene-chip" data-scene="小红书笔记">小红书笔记</div>
+          <div class="scene-chip" data-scene="公众号文章">公众号文章</div>
+          <div class="scene-chip" data-scene="知乎回答">知乎回答</div>
+          <div class="scene-chip" data-scene="视频号脚本">视频号脚本</div>
+          <div class="scene-chip" data-scene="微信贴图">微信贴图</div>
+        </div>
+        <div class="chat-scroll" id="chatScroll"></div>
+        <div class="ai-input">
+          <input id="aiInput" type="text" placeholder="有什么不会的，问 AI 军师…" />
+          <div class="ai-send" id="aiSend" role="button" aria-label="发送"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg></div>
+        </div>
+      </div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<div class="ai-toast" id="aiToast">已复制到剪贴板</div>
+<script>
+// 跨页跳转
+(function () {
+  var SLUG = "ai";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") { if (history.length > 1) history.back(); else location.href = "promote.html" + location.search; return; }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+<script>
+// ===== AI 军师（场景化内容生成 · 演示） =====
+var AVA_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>';
+var TOPIC = '9 月新课《私域起航》';
+// 各场景生成内容（预置两版，支持重新生成）
+var GEN = {
+  '朋友圈文案': [
+    { body: '做社群最怕的不是没人，是来了留不住。\n《私域起航》这套课把「拉新—留存—转化」拆成了 7 个可复制的动作，每个动作都配了实操清单。\n9.9 元体验营本周开营，评论区扣 1 我发你入口。', tags: '#私域运营 #主理人日常' },
+    { body: '私域做不起来的原因，90% 是顺序错了。\n先用内容引流，再用服务留人，最后才是转化——《私域起航》讲的正是这套顺序。\n本周体验营 9.9 元，名额有限，想要的私我。', tags: '#社群增长 #方法论' }
+  ],
+  '小红书笔记': [
+    { body: '标题：私域引流 3 个月从 0 到 800 人，我只做对了 1 件事\n\n正文：不投流、不硬广，靠一套「内容钩子」打法持续引流。核心逻辑：每篇笔记只解决一个问题，结尾留一个钩子（资料包 / 体验课）。\n\n9 月我把这套打法整理成了《私域起航》课程，体验营只要 9.9，适合 0-1 阶段的主理人。', tags: '#私域流量 #社群运营 #副业 #主理人 #小红书运营' },
+    { body: '标题：新手做私域，千万别一上来就建群\n\n正文：先内容后社群，顺序反了全是无用功。我的路径：小红书内容引流 → 加顾问 → 9.9 体验营 → 正价社群。\n\n《私域起航》把这条路径拆成了 7 步，每步都有 checklist，照着做就行。', tags: '#私域 #社群 #运营干货 #新手指南' }
+  ],
+  '公众号文章': [
+    { body: '标题：为什么你的社群活跃度撑不过 14 天？\n\n大纲：\n一、问题：90% 的社群死在「只有拉新没有运营」\n二、解法：内容引流 + 服务留存 + 仪式感转化\n三、案例：一个 300 人社群的 30 天激活实验\n四、行动：7 步私域起航路径图（附课程入口）', tags: '结尾引导：点击「阅读原文」加入体验营' },
+    { body: '标题：私域起航：从流量思维到留量思维\n\n大纲：\n一、流量越来越贵，留量才是资产\n二、把陌生人变成顾客的 3 个信任阶梯\n三、《私域起航》课程体系介绍\n四、9.9 元体验营报名方式', tags: '结尾引导：扫码添加顾问，回复「起航」' }
+  ],
+  '知乎回答': [
+    { body: '问题：社群运营如何做冷启动？\n\n回答：先说结论——冷启动的关键不是拉人，是「给一个来的理由」。\n\n我的做法分三步：1）先在公域持续输出垂直内容，让目标人群刷到你；2）用一个低门槛钩子（资料包 / 9.9 元体验营）完成加微；3）用 7 天体验营建立信任再转正价。\n\n这套打法在《私域起航》里有完整拆解，感兴趣的可以了解。', tags: '软性植入 · 知乎风格重逻辑' },
+    { body: '问题：做私域还有前途吗？\n\n回答：私域不是风口，是基本功。公域获客成本逐年上涨，把每一个来之不易的用户沉淀下来反复服务，才是普通创业者唯一能卷赢的方向。\n\n关键在方法：内容钩子 → 低门槛体验 → 信任转化。《私域起航》课程就是围绕这条线设计的。', tags: '软性植入 · 观点型回答' }
+  ],
+  '视频号脚本': [
+    { body: '分镜 1（0-3s）钩子：私域做不起来，不是你不行，是顺序错了。\n分镜 2（3-10s）痛点：先建群再想内容，群就死了。\n分镜 3（10-25s）方法：内容引流 → 加顾问 → 体验营 → 正价转化。\n分镜 4（25-35s）行动：9 月《私域起航》体验营 9.9 元，评论区扣 1。\n分镜 5（35-40s）结尾：关注我，下期拆转化话术。', tags: '口播时长约 40 秒' },
+    { body: '分镜 1（0-3s）钩子：为什么你的群 14 天就没人说话？\n分镜 2（3-12s）反例：只拉新不运营的三种死法。\n分镜 3（12-28s）正解：信任阶梯 + 仪式感设计。\n分镜 4（28-38s）行动：《私域起航》体验营，主页链接。\n分镜 5（38-45s）结尾：点赞收藏，转给正在做社群的朋友。', tags: '口播时长约 45 秒' }
+  ],
+  '微信贴图': [
+    { body: '贴图 1：主理人的一天（开工版）\n贴图 2：又引流 86 人（得意版）\n贴图 3：社群今日已活跃（欣慰版）\n贴图 4：转化它来了（冲版）\n贴图 5：下班？不存在的（疲惫版）\n贴图 6：本月佣金到账（爽版）', tags: '6 张一套 · 品牌色描边' },
+    { body: '贴图 1：私域起航，跟我上船（号召版）\n贴图 2：内容已发，坐等引流（淡定版）\n贴图 3：课代表总结（学霸版）\n贴图 4：这段话我悟了（顿悟版）\n贴图 5：转发这条锦鲤（福利版）\n贴图 6：9.9 体验营走起（行动版）', tags: '6 张一套 · 引导转发' }
+  ]
+};
+var chatEl = document.getElementById('chatScroll');
+var busy = false;
+
+function scrollBottom(){ chatEl.scrollTop = chatEl.scrollHeight; }
+function esc(s){ return String(s); }
+
+function addMe(text){
+  var d = document.createElement('div');
+  d.className = 'msg msg--me';
+  d.innerHTML = '<div class="bubble">' + esc(text) + '</div>';
+  chatEl.appendChild(d); scrollBottom();
+}
+
+function addAi(html){
+  var d = document.createElement('div');
+  d.className = 'msg msg--ai';
+  d.innerHTML = '<div class="msg-ava">' + AVA_SVG + '</div><div style="min-width:0;">' + html + '</div>';
+  chatEl.appendChild(d); scrollBottom();
+  return d;
+}
+
+function genCard(scene, idx){
+  var g = (GEN[scene] || [])[idx % 2] || GEN['朋友圈文案'][0];
+  return '<div class="gen-card">' +
+    '<div class="gen-head"><span class="gen-plat">' + esc(scene) + ' · ' + esc(TOPIC) + '</span><span class="gen-note">按本周方向生成</span></div>' +
+    '<div class="gen-body">' + esc(g.body) + '</div>' +
+    (g.tags ? '<div class="gen-tags">' + esc(g.tags) + '</div>' : '') +
+    '<div class="gen-btns">' +
+    '<div class="gen-btn gen-btn--ghost" data-act="copy">复制文案</div>' +
+    '<div class="gen-btn gen-btn--ghost" data-act="regen">重新生成</div>' +
+    '<div class="gen-btn gen-btn--pri" data-act="go">去发布</div>' +
+    '</div></div>';
+}
+
+function askScene(scene){
+  if (busy) return;
+  busy = true;
+  addMe('帮我写一篇' + scene + '，主题：' + TOPIC);
+  // 生成中
+  var t = addAi('<div class="bubble"><div class="typing"><i></i><i></i><i></i></div></div>');
+  setTimeout(function(){
+    t.querySelector('.bubble').outerHTML = '<div class="bubble" style="background:transparent;border:none;padding:0;">' + genCard(scene, 0) + '</div>';
+    t.dataset.scene = scene; t.dataset.gen = 0;
+    scrollBottom(); busy = false;
+  }, 700);
+}
+
+// 欢迎 + 示例对话
+addAi('<div class="bubble">我是你的 AI 军师。本周推广方向是「' + TOPIC + '」，选上面的场景，我帮你写；或者直接输入问题问我。</div>');
+
+// 事件：场景快捷键
+document.getElementById('sceneSw').addEventListener('click', function(e){
+  var c = e.target.closest ? e.target.closest('.scene-chip') : null;
+  if (c) askScene(c.getAttribute('data-scene'));
+});
+
+// 事件：生成卡按钮（委托）
+chatEl.addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('.gen-btn') : null;
+  if (!b) return;
+  var act = b.getAttribute('data-act');
+  var msg = b.closest('.msg');
+  if (act === 'copy') {
+    var body = msg.querySelector('.gen-body').textContent;
+    try { navigator.clipboard.writeText(body).catch(function(){}); } catch (err) {}
+    var toast = document.getElementById('aiToast');
+    toast.classList.add('is-on');
+    setTimeout(function(){ toast.classList.remove('is-on'); }, 1400);
+  } else if (act === 'regen') {
+    var scene = msg.dataset.scene || '朋友圈文案';
+    var next = (parseInt(msg.dataset.gen || '0', 10) + 1) % 2;
+    msg.dataset.gen = next;
+    msg.querySelector('.gen-card').outerHTML = genCard(scene, next);
+    scrollBottom();
+  } else if (act === 'go') {
+    location.href = 'promote.html' + location.search;
+  }
+});
+
+// 事件：输入发送（演示）
+function sendInput(){
+  var inp = document.getElementById('aiInput');
+  var v = inp.value.trim();
+  if (!v || busy) return;
+  inp.value = '';
+  addMe(v);
+  busy = true;
+  var t = addAi('<div class="bubble"><div class="typing"><i></i><i></i><i></i></div></div>');
+  setTimeout(function(){
+    t.querySelector('.bubble').innerHTML = '好问题。正式版接入后我会结合你的账号数据和本周方向给出针对性建议；原型演示阶段，可以先试试上面的内容生成场景。';
+    scrollBottom(); busy = false;
+  }, 700);
+}
+document.getElementById('aiSend').addEventListener('click', sendInput);
+document.getElementById('aiInput').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') sendInput();
+});
+</script>
+</body></html>

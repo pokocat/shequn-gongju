@@ -347,6 +347,7 @@ const { tools, setTools } = useTools();
   const [page, setPage] = useState(1);
   const [selectedRows, setSelectedRows] = useState<string[]>([]);
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null);
+  const [detailOpen, setDetailOpen] = useState(true);
   const [detailTab, setDetailTab] = useState<DetailTabKey>("profile");
 
   // ── 按项目 / 按人 视图专用 state ─────────────────────────────
@@ -507,6 +508,15 @@ const { tools, setTools } = useTools();
     () => filteredTools.find(t => t.id === selectedToolId) || null,
     [selectedToolId, filteredTools],
   );
+
+  useEffect(() => {
+    if (!detailOpen || !selectedTool) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [detailOpen, selectedTool]);
 
   const activeFilterCount =
     Number(projectFilter !== "全部项目") +
@@ -1125,13 +1135,15 @@ const { tools, setTools } = useTools();
               projects={initialProjects}
               tools={tools}
               selectedToolId={selectedToolId}
-              onSelectTool={id => { setSelectedToolId(id); setDetailTab("profile"); }}
+              onSelectTool={id => { setSelectedToolId(id); setDetailTab("profile"); setDetailOpen(true); }}
               accountNameById={accountNameById}
             />
           </div>
           {/* 右栏：账号详情（复用 DetailPanel） */}
-          {selectedTool && (
-            <DetailPanel
+          {selectedTool && detailOpen && (
+            <>
+              <div className="md:hidden fixed inset-0 z-30" style={{ background: "rgba(15,23,42,.32)" }} onClick={() => setDetailOpen(false)} aria-hidden="true" />
+              <DetailPanel
               key={selectedTool.id}
               tool={selectedTool}
               accountName={accountNameById(selectedTool.boundAccountId)}
@@ -1148,9 +1160,11 @@ const { tools, setTools } = useTools();
               onMediaMatrix={() => showToast("🔗 已打开矩阵配置面板")}
               onMediaBiz={() => showToast("💼 已创建商单申请")}
               onToast={showToast}
+              onClose={() => setDetailOpen(false)}
             />
+            </>
           )}
-          {!selectedTool && (
+          {(!selectedTool || !detailOpen) && (
             <div className="w-[400px] flex-shrink-0 flex flex-col items-center justify-center text-center p-8"
               style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusLg, color: S.muted }}>
               <Package size={32} style={{ marginBottom: 8, color: S.mutedLight }} />
@@ -1167,9 +1181,8 @@ const { tools, setTools } = useTools();
             <ResourceCards
               tools={pagedTools}
               selectedToolId={selectedToolId}
-              onSelect={id => { setSelectedToolId(id); setDetailTab("ops"); }}
+              onSelect={id => { setSelectedToolId(id); setDetailTab("operations"); setDetailOpen(true); }}
               onAction={showToast}
-              onHandover={toolId => setHandoverDraft({ toolId, targetUid: accounts.find(a => a.uid !== tools.find(t => t.id === toolId)?.boundAccountId)?.uid || accounts[0]?.uid || "" })}
             />
             <BrowsePager page={safePage} totalPages={totalPages} total={filteredTools.length} onPageChange={setPage} />
           </div>
@@ -1222,8 +1235,8 @@ const { tools, setTools } = useTools();
                         borderLeft: isSelected ? `3px solid ${S.primary}` : "3px solid transparent",
                         paddingTop: 10, paddingBottom: 10,
                       }}
-                      onClick={() => { setSelectedToolId(t.id); setDetailTab("ops"); }}
-                      onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedToolId(t.id); setDetailTab("ops"); } }}>
+                      onClick={() => { setSelectedToolId(t.id); setDetailTab("operations"); setDetailOpen(true); }}
+                      onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedToolId(t.id); setDetailTab("operations"); setDetailOpen(true); } }}>
                       <div className="flex-shrink-0 flex items-center justify-center" style={columnStyle("select", { width: 36 })}>
                         <input type="checkbox" aria-label={`选择 ${t.name}`} checked={selectedRows.includes(t.id)}
                           onClick={e => e.stopPropagation()} onChange={() => toggleRow(t.id)} />
@@ -1270,13 +1283,8 @@ const { tools, setTools } = useTools();
                         onClick={e => e.stopPropagation()}>
                         <button type="button" title="预览" className="px-2 py-1 text-xs font-semibold"
                           style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-                          onClick={() => { setSelectedToolId(t.id); setDetailTab("general"); }}>
+                          onClick={() => { setSelectedToolId(t.id); setDetailTab("profile"); setDetailOpen(true); }}>
                           <Eye size={11} className="inline mr-0.5" />详情
-                        </button>
-                        <button type="button" title="交接" className="px-2 py-1 text-xs font-bold"
-                          style={{ background: S.ink, color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-                          onClick={() => setHandoverDraft({ toolId: t.id, targetUid: accounts.find(a => a.uid !== t.boundAccountId)?.uid || accounts[0]?.uid || "" })}>
-                          交接
                         </button>
                       </div>
                     </div>
@@ -1302,8 +1310,10 @@ const { tools, setTools } = useTools();
         )}
 
         {/* 右侧：详情面板 */}
-        {selectedTool && (
-          <DetailPanel
+        {selectedTool && detailOpen && (
+          <>
+            <div className="md:hidden fixed inset-0 z-30" style={{ background: "rgba(15,23,42,.32)" }} onClick={() => setDetailOpen(false)} aria-hidden="true" />
+            <DetailPanel
             key={selectedTool.id}
             tool={selectedTool}
             accountName={accountNameById(selectedTool.boundAccountId)}
@@ -1320,9 +1330,11 @@ const { tools, setTools } = useTools();
             onMediaMatrix={() => showToast("🔗 已打开矩阵配置面板：选择目标矩阵 + 关系（主号/子号）")}
             onMediaBiz={() => showToast("💼 已创建商单申请：进入审批中心『业务合作类』走审批")}
             onToast={showToast}
+            onClose={() => setDetailOpen(false)}
           />
+          </>
         )}
-        {!selectedTool && (
+        {(!selectedTool || !detailOpen) && (
           <div className="w-[400px] flex-shrink-0 flex flex-col items-center justify-center text-center p-8"
             style={{ background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: S.radiusLg, color: S.muted }}>
             <Package size={32} style={{ marginBottom: 8, color: S.mutedLight }} />
@@ -1342,13 +1354,12 @@ const { tools, setTools } = useTools();
 // 卡片模式：3 列网格
 // ────────────────────────────────────────────────────────────────
 function ResourceCards({
-  tools, selectedToolId, onSelect, onAction, onHandover,
+  tools, selectedToolId, onSelect, onAction,
 }: {
   tools: Tool[];
   selectedToolId: string | null;
   onSelect: (id: string | null) => void;
   onAction: (msg: string) => void;
-  onHandover: (toolId: string) => void;
 }) {
   if (!tools.length) {
     return <div className="flex-1 grid place-items-center" style={{ color: S.muted, fontFamily: "monospace" }}>暂无匹配数据</div>;
@@ -1427,12 +1438,8 @@ function ResourceCards({
                 </span>
               </div>
 
-              <div className="mt-2 flex items-center justify-end gap-1.5 pt-2" style={{ borderTop: `1px solid ${S.border}` }}
-                onClick={e => e.stopPropagation()}>
-                <button type="button" className="px-2 py-1 text-xs" style={{ background: S.bg, border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-                  onClick={() => onSelect(isSelected ? null : t.id)}>查看详情</button>
-                <button type="button" className="px-2.5 py-1 text-xs font-bold" style={{ background: S.ink, color: S.accent, borderRadius: S.radiusSm, fontFamily: "monospace" }}
-                  onClick={() => onHandover(t.id)}>交接</button>
+              <div className="mt-2 flex items-center justify-end gap-1.5 pt-2" style={{ borderTop: `1px solid ${S.border}` }}>
+                <span className="px-2 py-1 text-xs" style={{ background: S.bg, border: `1px solid ${S.borderMed}`, color: S.textSec, borderRadius: S.radiusSm, fontFamily: "monospace" }}>查看详情</span>
               </div>
             </button>
           );
@@ -1457,7 +1464,7 @@ function DetailPanel({
   onRequestHandover, onConfirmAction, onMutate,
   onSwitchProject, onSwitchOwner,
   onMediaMatrix, onMediaBiz,
-  accountUid, onToast,
+  accountUid, onToast, onClose,
 }: {
   tool: Tool;
   accountName: string;
@@ -1474,6 +1481,7 @@ function DetailPanel({
   onMediaMatrix: () => void;
   onMediaBiz: () => void;
   onToast: (msg: string) => void;
+  onClose: () => void;
 }) {
   void accounts; void onToast;
   const tm = typeMeta[tool.type];
@@ -1492,13 +1500,15 @@ function DetailPanel({
   ];
 
   return (
-    <aside className="w-[400px] flex-shrink-0 flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="资源详情">
+    <aside className="fixed right-0 top-0 bottom-0 z-40 w-[min(420px,calc(100vw-24px))] md:static md:z-auto md:w-[min(420px,36vw)] flex-shrink-0 flex flex-col overflow-hidden shadow-2xl md:shadow-none" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="资源详情">
       {/* 顶部标题栏 */}
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid ${S.border}`, background: "#f1f5f9" }}>
         <div>
           <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>资源详情</div>
           <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>点击列表资源后查看与调度</div>
         </div>
+        <button type="button" title="关闭详情" aria-label="关闭详情" className="w-7 h-7 grid place-items-center" style={{ border: `1px solid ${S.border}`, background: S.surface, borderRadius: S.radiusSm, color: S.muted }}
+          onClick={onClose}><X size={13} /></button>
         <button type="button" title="刷新" className="w-7 h-7 grid place-items-center" style={{ border: `1px solid ${S.border}`, background: S.surface, borderRadius: S.radiusSm }}
           onClick={() => onToast(`🔁 已刷新 ${tool.name} 的风控状态`)}><RefreshCw size={13} /></button>
       </div>

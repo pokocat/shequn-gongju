@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>矩阵账号</title>
+<link rel="stylesheet" href="../css/app.css?v=20260917">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>
+.mx-layer{ padding-bottom: 132px; }
+/* IP 档案卡 */
+.ip-card{
+  margin:10.32px; padding:14.907px; border-radius:var(--r-box);
+  background:var(--grad-hero); border:0.573px solid var(--line-brand);
+  box-shadow:0 3px 12px rgba(124,58,237,.10);
+  position:relative;
+}
+.ip-edit{
+  position:absolute; top:10.32px; right:10.32px; z-index:2;
+  display:flex; align-items:center; gap:2.867px;
+  font-size:var(--fs-micro); font-weight:700; color:var(--signal-700);
+  background:rgba(255,255,255,.65); border:0.573px solid var(--line-brand);
+  padding:3.44px 8.027px; border-radius:11.467px; cursor:pointer;
+}
+.ip-edit:active{ transform:scale(.95); }
+.ip-edit svg{ width:10.32px; height:10.32px; }
+.ip-top{ display:flex; align-items:center; gap:11.467px; }
+.ip-ava{
+  width:54.053px; height:54.053px; border-radius:50%; flex-shrink:0;
+  background:linear-gradient(135deg,#7C3AED,#A98BF5); color:#FFF;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22.933px; font-weight:800;
+  box-shadow:0 0 0 2.293px #FFF, 0 0 0 3.8px rgba(124,58,237,.2);
+}
+.ip-info{ flex:1; min-width:0; }
+.ip-name{ font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); display:flex; align-items:center; gap:5.16px; }
+.ip-lv{ font-size:var(--fs-micro); font-weight:800; color:#FFF; padding:1.72px 6.88px; border-radius:5.733px; background:linear-gradient(135deg,#92400E,#D97A35); }
+.ip-pos{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:2.293px; }
+.ip-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:6.88px; margin-top:12.04px; }
+.ip-stat{ text-align:center; padding:8.027px 4px; border-radius:8.027px; background:rgba(255,255,255,.5); border:0.573px solid var(--line-soft); }
+.ip-stat-v{ display:block; font-size:var(--fs-h4); font-weight:800; color:var(--ink-900); }
+.ip-stat-l{ display:block; font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+/* 账号列表 */
+.acct-row{ display:flex; align-items:center; gap:9.173px; padding:10.32px 0; border-bottom:0.573px solid var(--line-soft); }
+.acct-row:last-child{ border-bottom:none; }
+.acct-ico{ width:34.4px; height:34.4px; border-radius:9.173px; display:flex; align-items:center; justify-content:center; color:var(--signal-700); background:var(--signal-50); border:0.573px solid var(--line-brand); flex-shrink:0; }
+.acct-ico svg{ width:18px; height:18px; }
+.acct-info{ flex:1; min-width:0; }
+.acct-t{ font-size:var(--fs-meta); font-weight:700; color:var(--ink-900); display:flex; align-items:center; gap:4.587px; }
+.acct-star{ font-size:var(--fs-micro); font-weight:700; color:#92400E; background:rgba(234,179,8,.12); padding:1.147px 5.16px; border-radius:4px; }
+.acct-d{ font-size:var(--fs-micro); color:var(--ink-600); margin-top:1.147px; }
+.acct-v{ text-align:right; flex-shrink:0; }
+.acct-fans{ font-size:var(--fs-meta); font-weight:800; color:var(--ink-900); display:block; }
+.acct-flow{ font-size:var(--fs-micro); color:var(--pulse-600); font-weight:600; display:block; margin-top:1.147px; }
+/* 添加按钮 */
+.mx-add{
+  display:flex; align-items:center; justify-content:center; gap:5.16px;
+  margin:10.32px; padding:11.467px 0; border-radius:11.467px;
+  background:#FFF; border:0.72px dashed var(--line-signal);
+  color:var(--signal-700); font-size:var(--fs-sec); font-weight:700; cursor:pointer;
+}
+.mx-add:active{ transform:scale(.98); }
+.mx-add svg{ width:15px; height:15px; }
+/* ===== IP 档案编辑弹层（居中） ===== */
+.ed-mask{
+  position:fixed; inset:0; z-index:120; background:rgba(51,33,15,.42);
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; pointer-events:none; transition:opacity .2s;
+}
+.ed-mask.is-open{ opacity:1; pointer-events:auto; }
+.ed-sheet{
+  width:319px; border-radius:16.053px; background:#FFF7EC; padding:17.2px 16.053px;
+  transform:scale(.8); transition:transform .2s;
+  box-shadow:0 20px 50px rgba(51,33,15,.25);
+}
+.ed-mask.is-open .ed-sheet{ transform:scale(1); }
+.ed-h{ font-size:var(--fs-h3); font-weight:800; color:var(--ink-900); text-align:center; }
+.ed-ava-row{ display:flex; justify-content:center; margin:12.04px 0 4.587px; }
+.ed-ava{
+  width:56px; height:56px; border-radius:50%; color:#FFF;
+  display:flex; align-items:center; justify-content:center;
+  font-size:22.933px; font-weight:800; cursor:pointer;
+  background:linear-gradient(135deg,#7C3AED,#A98BF5);
+  box-shadow:0 0 0 2.293px #FFF7EC, 0 0 0 3.8px rgba(124,58,237,.2);
+  position:relative; transition:transform .15s;
+}
+.ed-ava:active{ transform:scale(.94); }
+.ed-ava-tip{ font-size:var(--fs-micro); color:var(--ink-500); text-align:center; }
+.ed-field{ margin-top:10.32px; }
+.ed-label{ display:block; font-size:var(--fs-micro); font-weight:700; color:var(--ink-700); margin-bottom:4.013px; }
+.ed-input{
+  width:100%; box-sizing:border-box; height:37.44px; border-radius:9.173px;
+  border:0.573px solid var(--line); background:#FFF; padding:0 11.467px;
+  font-size:var(--fs-meta); color:var(--ink-900); outline:none;
+}
+.ed-input:focus{ border-color:var(--signal-500); box-shadow:0 0 0 2.293px rgba(124,58,237,.12); }
+.ed-count{ font-size:var(--fs-micro); color:var(--ink-400); text-align:right; margin-top:2.293px; }
+.ed-btns{ display:flex; gap:6.88px; margin-top:14.907px; }
+.ed-btn{ flex:1; text-align:center; padding:9.173px 0; border-radius:9.173px; font-size:var(--fs-meta); font-weight:700; cursor:pointer; }
+.ed-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; }
+.ed-btn--ghost{ background:var(--sunk-2); color:var(--ink-700); }
+.ed-btn:active{ transform:scale(.97); }
+</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>矩阵账号</h1>
+    <code>/pages/matrix/index</code>
+  </div>
+  <p class="mp-note">IP 打造与多平台矩阵账号管理：一个 IP · 六个平台 · 统一数据。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer mx-layer wx-view">
+        <div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">矩阵账号</span><div class="subbar-slot wx-view"></div></div></div></div>
+        <div class="ip-card">
+          <div class="ip-edit" id="ipEdit" role="button" aria-label="编辑IP档案"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>编辑</div>
+          <div class="ip-top">
+            <div class="ip-ava" id="ipAva">王</div>
+            <div class="ip-info">
+              <div class="ip-name"><span id="ipName">私域老王</span> <span class="ip-lv">IP · Lv3</span></div>
+              <div class="ip-pos" id="ipPos">社群运营实战派 · 主理人公社团长</div>
+            </div>
+          </div>
+          <div class="ip-stats">
+            <div class="ip-stat"><span class="ip-stat-v">8,432</span><span class="ip-stat-l">总粉丝</span></div>
+            <div class="ip-stat"><span class="ip-stat-v">24.3k</span><span class="ip-stat-l">总曝光</span></div>
+            <div class="ip-stat"><span class="ip-stat-v">1,208</span><span class="ip-stat-l">总引流</span></div>
+          </div>
+        </div>
+        <div class="card card-pad gap wx-view">
+          <div class="f-between mb-8 wx-view"><span class="col-h wx-text">平台账号</span><span class="t-tiny wx-text">6 个平台 · 3 个主推</span></div>
+          <div id="acctList"></div>
+        </div>
+        <div class="mx-add" id="mxAdd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>添加账号</div>
+        <div class="ed-mask" id="edMask"><div class="ed-sheet">
+          <div class="ed-h">编辑 IP 档案</div>
+          <div class="ed-ava-row"><div class="ed-ava" id="edAva">王</div></div>
+          <div class="ed-ava-tip">点击头像切换颜色</div>
+          <div class="ed-field">
+            <span class="ed-label">IP 名称</span>
+            <input class="ed-input" id="edName" maxlength="12" type="text" placeholder="给 IP 起个名字" />
+            <div class="ed-count"><span id="edNameCount">0</span> / 12</div>
+          </div>
+          <div class="ed-field">
+            <span class="ed-label">IP 定位</span>
+            <input class="ed-input" id="edPos" maxlength="20" type="text" placeholder="一句话介绍你的 IP 定位" />
+            <div class="ed-count"><span id="edPosCount">0</span> / 20</div>
+          </div>
+          <div class="ed-btns">
+            <div class="ed-btn ed-btn--ghost" id="edCancel">取消</div>
+            <div class="ed-btn ed-btn--pri" id="edSave">保存</div>
+          </div>
+        </div></div>
+      </div>
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转
+(function () {
+  var SLUG = "matrix";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") { if (history.length > 1) history.back(); else location.href = "promote.html" + location.search; return; }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+<script>
+// ===== 矩阵账号列表 =====
+var SVGW = function(d){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.8 1.8) scale(0.85)">' + d + '</g></svg>'; };
+var ACCOUNTS = [
+  { plat:'朋友圈', ico:SVGW('<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>'), name:'老王的私域笔记', fans:'好友 2,847', flow:38, star:true },
+  { plat:'小红书', ico:SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M9 7h6"/><path d="M9 11h6"/><path d="M9 15h3"/>'), name:'老王的运营手账', fans:'粉丝 2,860', flow:7, star:true },
+  { plat:'视频号', ico:SVGW('<rect x="2" y="5" width="20" height="14" rx="3"/><path d="M10 9l5 3-5 3z"/>'), name:'老王聊私域', fans:'粉丝 1,204', flow:22, star:true },
+  { plat:'公众号', ico:SVGW('<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>'), name:'私域起航笔记', fans:'粉丝 892', flow:15, star:false },
+  { plat:'知乎', ico:SVGW('<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M9.5 8.5h5"/><path d="M12 8.5V14"/>'), name:'王sir说运营', fans:'粉丝 486', flow:4, star:false },
+  { plat:'微信贴图', ico:SVGW('<circle cx="12" cy="12" r="9"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01"/><path d="M15 9h.01"/>'), name:'老王表情包', fans:'累计发送 146', flow:0, star:false }
+];
+var listEl = document.getElementById('acctList');
+listEl.innerHTML = ACCOUNTS.map(function(a){
+  return '<div class="acct-row">' +
+    '<div class="acct-ico">' + a.ico + '</div>' +
+    '<div class="acct-info"><div class="acct-t">' + a.plat + ' · ' + a.name + (a.star ? '<span class="acct-star">主推</span>' : '') + '</div>' +
+    '<div class="acct-d">' + a.fans + '</div></div>' +
+    '<div class="acct-v"><span class="acct-fans">' + (a.fans.indexOf('好友') === 0 ? a.fans.replace('好友 ', '') : a.fans.replace(/(粉丝 |累计发送 )/, '')) + '</span>' +
+    '<span class="acct-flow">本月引流 ' + a.flow + '</span></div>' +
+    '</div>';
+}).join('');
+document.getElementById('mxAdd').addEventListener('click', function(){
+  var t = document.createElement('div');
+  t.textContent = '正式版可绑定新平台账号';
+  t.style.cssText = 'position:fixed;top:40%;left:50%;transform:translateX(-50%);background:rgba(51,33,15,.82);color:#fff;font-size:13px;padding:8px 18px;border-radius:20px;z-index:99999;';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 1400);
+});
+
+// ===== IP 档案编辑（可编辑状态） =====
+var AVA_COLORS = [
+  ['#7C3AED', '#A98BF5'],  // 紫（默认）
+  ['#92400E', '#D97A35'],  // 橙金
+  ['#047857', '#34D399'],  // 青绿
+  ['#9D174D', '#F472B6']   // 玫红
+];
+var DEFAULT_PROFILE = { name: '私域老王', pos: '社群运营实战派 · 主理人公社团长', colorIdx: 0 };
+var STORE_KEY = 'mx-ip-profile';
+
+function loadProfile(){
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (raw) {
+      var p = JSON.parse(raw);
+      if (p && p.name) {
+        if (!p.pos || p.pos === '平台成员') p.pos = DEFAULT_PROFILE.pos;
+        return p;
+      }
+    }
+  } catch (e) {}
+  return DEFAULT_PROFILE;
+}
+function applyProfile(p){
+  document.getElementById('ipAva').textContent = p.name.charAt(p.name.length - 1);
+  document.getElementById('ipName').textContent = p.name;
+  document.getElementById('ipPos').textContent = p.pos;
+  var c = AVA_COLORS[p.colorIdx % AVA_COLORS.length];
+  var grad = 'linear-gradient(135deg,' + c[0] + ',' + c[1] + ')';
+  document.getElementById('ipAva').style.background = grad;
+  document.getElementById('edAva').style.background = grad;
+}
+var profile = loadProfile();
+applyProfile(profile);
+
+// 弹层开关
+var edColorIdx = profile.colorIdx;
+function openEditor(){
+  document.getElementById('edName').value = profile.name;
+  document.getElementById('edPos').value = profile.pos;
+  edColorIdx = profile.colorIdx;
+  updateCounts(); updateEdAva();
+  document.getElementById('edMask').classList.add('is-open');
+  // 视口小于机身时，让弹层对齐可视区中心
+  requestAnimationFrame(function(){
+    var sb = document.querySelector('.ed-sheet').getBoundingClientRect();
+    var delta = (sb.top + sb.height / 2) - (window.innerHeight / 2);
+    if (Math.abs(delta) > 4) window.scrollBy(0, delta);
+  });
+}
+function closeEditor(){ document.getElementById('edMask').classList.remove('is-open'); }
+document.getElementById('ipEdit').addEventListener('click', openEditor);
+document.getElementById('edCancel').addEventListener('click', closeEditor);
+
+// 输入联动：字数统计 + 头像首字
+function updateCounts(){
+  var n = document.getElementById('edName').value;
+  var p = document.getElementById('edPos').value;
+  document.getElementById('edNameCount').textContent = n.length;
+  document.getElementById('edPosCount').textContent = p.length;
+  document.getElementById('edAva').textContent = (n.trim().charAt(n.trim().length - 1) || 'IP');
+}
+function updateEdAva(){
+  var c = AVA_COLORS[edColorIdx % AVA_COLORS.length];
+  document.getElementById('edAva').style.background = 'linear-gradient(135deg,' + c[0] + ',' + c[1] + ')';
+}
+document.getElementById('edName').addEventListener('input', updateCounts);
+document.getElementById('edPos').addEventListener('input', updateCounts);
+// 头像点击轮换颜色
+document.getElementById('edAva').addEventListener('click', function(){
+  edColorIdx = (edColorIdx + 1) % AVA_COLORS.length;
+  updateEdAva();
+});
+
+// 保存
+document.getElementById('edSave').addEventListener('click', function(){
+  var name = document.getElementById('edName').value.trim();
+  var pos = document.getElementById('edPos').value.trim();
+  if (!name) { document.getElementById('edName').focus(); return; }
+  if (!pos) pos = '这个 IP 还没有定位';
+  profile = { name: name, pos: pos, colorIdx: edColorIdx };
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(profile)); } catch (e) {}
+  applyProfile(profile);
+  closeEditor();
+  var t = document.createElement('div');
+  t.textContent = 'IP 档案已更新';
+  t.style.cssText = 'position:fixed;top:40%;left:50%;transform:translateX(-50%);background:rgba(51,33,15,.82);color:#fff;font-size:13px;padding:8px 18px;border-radius:20px;z-index:99999;';
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 1400);
+});
+// 点遮罩关闭
+document.getElementById('edMask').addEventListener('click', function(e){
+  if (e.target === this) closeEditor();
+});
+</script>
+</body></html>

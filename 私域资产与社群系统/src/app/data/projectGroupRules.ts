@@ -1,4 +1,55 @@
-export type AllocationMode = "轮巡分配" | "统一分配" | "定向分配" | "漏斗分层";
+export type ProjectDefinition = {
+  id: string;
+  name: string;
+  aliases: string[];
+};
+
+export const principalLeaderProjects: ProjectDefinition[] = [
+  { id: "v001-strategist", name: "V001 军师", aliases: ["AI军师"] },
+  { id: "super-ad-company", name: "AI超级广告公司", aliases: ["AI超级广告平台"] },
+  { id: "talent-incubation", name: "AI艺人孵化", aliases: ["AI艺人孵化平台"] },
+  { id: "digital-assets", name: "AI数字资产平台", aliases: [] },
+  { id: "health-management", name: "AI大健康", aliases: ["AI营养补剂会员平台"] },
+  { id: "knowledge-subscription", name: "AI知识付费", aliases: ["AI知识付费平台"] },
+  { id: "education", name: "AI教育", aliases: ["AI教育平台"] },
+  { id: "talent-licensing", name: "AI明星艺人授权", aliases: ["AI艺人授权平台"] },
+  { id: "enterprise-gifts", name: "AI企业礼品采购", aliases: [] },
+];
+
+const projectDefinitionsByName = new Map(
+  principalLeaderProjects.flatMap(project => [
+    [project.name, project],
+    ...project.aliases.map(alias => [alias, project] as const),
+  ])
+);
+
+export function resolveProject(projectName: string | null | undefined): ProjectDefinition | null {
+  if (!projectName) return null;
+  return projectDefinitionsByName.get(projectName) ?? null;
+}
+
+export function resolveProjectId(projectName: string | null | undefined): string | null {
+  return resolveProject(projectName)?.id ?? null;
+}
+
+export function getCanonicalProjectName(projectName: string | null | undefined): string | null {
+  return resolveProject(projectName)?.name ?? projectName ?? null;
+}
+
+export function projectNamesMatch(left: string | null | undefined, right: string | null | undefined) {
+  if (!left || !right) return false;
+  return getCanonicalProjectName(left) === getCanonicalProjectName(right);
+}
+
+export function getProjectServiceAccounts(projectName: string | null | undefined, city?: string) {
+  return wechatAccounts.filter(account =>
+    account.enabled &&
+    account.scope === "project" &&
+    projectNamesMatch(account.project, projectName) &&
+    (!city || account.city === city || account.city === "全国" || city === "全国")
+  );
+}
+
 
 export type GroupTypeRule = {
   id: string;
@@ -187,7 +238,12 @@ export const defaultGroupTypeRules: GroupTypeRule[] = projectGroupRules["AI学�
  */
 export function getGroupRulesForProject(projectName: string | null | undefined): GroupTypeRule[] {
   if (!projectName) return [];
-  return projectGroupRules[projectName] ?? [];
+  if (projectGroupRules[projectName]) return projectGroupRules[projectName];
+  const project = resolveProject(projectName);
+  if (!project) return [];
+  return [project.name, ...project.aliases]
+    .map(name => projectGroupRules[name])
+    .find(Boolean) ?? [];
 }
 
 export function buildGroupCode(typeCode: string, city: string, sequence: number) {

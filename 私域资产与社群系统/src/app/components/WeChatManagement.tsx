@@ -409,7 +409,7 @@ function AuthorizedWechatModal({ onClose, onSave, accountKind = "personal" }: { 
       <div className="grid grid-cols-1 md:grid-cols-[264px_minmax(0,1fr)]" style={{ maxHeight: "80vh" }}>
         <aside className="p-5 flex flex-col gap-4" style={{ background: "#fbfbfb", borderRight: `1px solid ${S.border}` }}>
           <div className="flex items-center justify-between"><span className="text-sm font-bold">{isWecom ? "企业微信扫码授权" : "微信扫码授权"}</span><span className="px-2 py-1 text-[10px] font-bold" style={{ background: authorized ? "#f0fff4" : "#fff8e8", color: authorized ? "#276749" : "#9a5a00", borderRadius: S.radiusSm }}>{authorized ? "已授权" : "待扫码"}</span></div>
-          <div className="p-3 flex items-center justify-center" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}><img src="/zhuliren-final/assets/addwechat-reference-qr.png" alt="微信授权二维码" style={{ width: 206, height: 206, objectFit: "contain" }} /></div>
+          <div className="p-3 flex items-center justify-center" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}><img src="/member-app/assets/addwechat-reference-qr.png" alt="微信授权二维码" style={{ width: 206, height: 206, objectFit: "contain" }} /></div>
           <div className="text-center"><div className="text-xs font-bold">{authorized ? "授权成功，可继续填写" : `${isWecom ? "企业微信管理员" : "微信"}扫描二维码进入`}</div><div className="text-[10px] mt-1 leading-relaxed" style={{ color: S.muted }}>请使用待录入{isWecom ? "企业微信管理员" : "微信"}扫码，授权成功后系统自动读取微信昵称、微信号和头像。</div></div>
           <div className="p-3 space-y-2" style={{ background: authorized ? S.accentLight : "#fff8e8", border: `1px solid ${authorized ? S.accentMid : "#f2d6a0"}`, borderRadius: S.radius }}><div className="flex items-center gap-2 text-xs font-bold" style={{ color: authorized ? "#276749" : "#9a5a00" }}>{authorized ? <CheckCircle2 size={14} /> : <ShieldCheck size={14} />}{authorized ? "身份已确认" : "授权前不会写入账号"}</div><div className="text-[10px] leading-relaxed" style={{ color: S.muted }}>{authorized ? "自动读取字段可修改，敏感字段仍需人工补充。" : "二维码仅用于本次登录授权，不会直接保存密码。"}</div></div>
           {!authorized ? <button type="button" className="w-full py-2.5 text-xs font-bold" style={{ background: S.primary, color: S.onPrimary, borderRadius: S.radius }} onClick={authorize}>确认已扫码授权</button> : <button type="button" className="w-full py-2.5 text-xs font-bold" style={{ background: "#ffffff", color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }} onClick={() => setAuthorized(false)}>重新扫码授权</button>}
@@ -1768,7 +1768,7 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
   };
 
   return (
-    <aside className="flex-shrink-0 flex flex-row overflow-hidden" style={{ width, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="个人微信详情">
+    <aside className="fixed inset-y-0 right-0 z-40 flex flex-row overflow-hidden shadow-xl lg:static lg:z-auto lg:shadow-none" style={{ width: `min(${width}px, calc(100vw - 24px))`, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="个人微信详情">
       {/* P2-② 详情左边缘拖拽手柄条（5px 透明条，悬停显示主题色） */}
       <div onMouseDown={onWidthDragStart} title="左右拖动调整详情宽度（300–620）" style={{ width: 5, cursor: "col-resize", flexShrink: 0, background: S.border, borderRight: `1px solid ${S.borderMed}`, borderRadius: `${S.radiusLg} 0 0 ${S.radiusLg}` }} onMouseEnter={e => (e.currentTarget.style.background = S.accent)} onMouseLeave={e => (e.currentTarget.style.background = S.border)} />
       <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
@@ -1950,7 +1950,7 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
   };
 
   return (
-    <aside className="flex-shrink-0 flex flex-row overflow-hidden" style={{ width: wwidth, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="企业微信详情">
+    <aside className="fixed inset-y-0 right-0 z-40 flex flex-row overflow-hidden shadow-xl lg:static lg:z-auto lg:shadow-none" style={{ width: `min(${wwidth}px, calc(100vw - 24px))`, background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }} aria-label="企业微信详情">
       {/* P2-② 企微详情左边缘拖拽手柄（5px，悬停主题色） */}
       <div onMouseDown={onWwDragStart} title="左右拖动调整详情宽度（300–620）" style={{ width: 5, cursor: "col-resize", flexShrink: 0, background: S.border, borderRight: `1px solid ${S.borderMed}`, borderRadius: `${S.radiusLg} 0 0 ${S.radiusLg}` }} onMouseEnter={e => (e.currentTarget.style.background = S.accent)} onMouseLeave={e => (e.currentTarget.style.background = S.border)} />
       <div className="flex-1 min-w-0 flex flex-col overflow-hidden">
@@ -3315,6 +3315,7 @@ const [search, setSearch] = useState("");
           )}
 
           {/* 详情抽屉（三视角共用） */}
+          {selectedAccount && <button type="button" aria-label="关闭微信详情" className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => { setSelectedRow(null); setDetailMode("view"); }} />}
           {selectedAccount && (mainTab === "wecom" ? (
             (() => {
               // 从 wecomAccounts 原始企业台账反查：按 no = 9 + wecomId 对应关系（wechatId/nickname === enterprise.wecomId）

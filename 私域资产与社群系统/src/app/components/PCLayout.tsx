@@ -3,13 +3,13 @@ import {
   LayoutDashboard,
   User, CreditCard, FileText, Shield, MapPin,
   Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
-  BarChart2, Star, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
+  BarChart2, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
   Globe, Monitor, Smartphone, ChevronDown, Check, Store, BriefcaseBusiness, Menu, X
 } from "lucide-react";
 import { S, useThemeSingleton, ThemeControls } from "../theme";
 import { useProjectContext } from "../App";
 
-type ViewMode = "landing" | "pc" | "mobile" | "zhuliren";
+type ViewMode = "landing" | "pc" | "zhuliren-1" | "zhuliren-2" | "zhuliren-pc";
 
 const navGroups = [
   { label: "工作台", items: [
@@ -59,8 +59,9 @@ type VMItem = {
 const VIEW_MODES: VMItem[] = [
   { id: "landing",  label: "官网展示", short: "WEB",   desc: "公开官网 · 营销介绍页", icon: Globe,     accent: "#0ea5e9", onAccent: "#ffffff" },
   { id: "pc",       label: "PC 后台",  short: "PC",    desc: "工作台 · 全功能控制台", icon: Monitor,    accent: S.accent,   onAccent: S.onAccent },
-  { id: "mobile",   label: "APP 预览", short: "APP",   desc: "会员小程序 · 私域用户端", icon: Smartphone, accent: "#22c55e", onAccent: "#14532d" },
-  { id: "zhuliren", label: "主理人",    short: "主理人", desc: "城市主理人 · 合伙人工作台", icon: Star,     accent: S.primaryDark, onAccent: "#ffffff" },
+  { id: "zhuliren-1", label: "主理人1", short: "主理人1", desc: "旧版会员小程序 · 手机壳交互预览", icon: Smartphone, accent: "#bd7221", onAccent: "#ffffff" },
+  { id: "zhuliren-2", label: "主理人2", short: "主理人2", desc: "新版主理人小程序 · 消息与经营", icon: Smartphone, accent: S.primaryDark, onAccent: "#ffffff" },
+  { id: "zhuliren-pc", label: "主理人 PC", short: "主理人 PC", desc: "主理人桌面经营工作台", icon: Monitor, accent: "#315f8f", onAccent: "#ffffff" },
 ];
 
 function ViewModePicker({
@@ -347,7 +348,7 @@ export default function PCLayout({
       {/* ── MAIN ─────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
-        <div className="min-h-14 flex items-center px-3 sm:px-5 gap-2 sm:gap-3 flex-shrink-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
+        <div className="flex min-h-14 flex-wrap items-center gap-2 px-3 py-2 sm:gap-3 sm:px-5 sm:py-0" style={{ background: S.surface, borderBottom: `1px solid ${S.border}` }}>
           {isCompactViewport && <button type="button" aria-label={mobileNavOpen ? "关闭导航" : "打开导航"} title={mobileNavOpen ? "关闭导航" : "打开导航"} onClick={() => setMobileNavOpen(value => !value)} className="w-8 h-8 flex items-center justify-center flex-shrink-0" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm, color: S.textSec }}>{mobileNavOpen ? <X size={16} /> : <Menu size={16} />}</button>}
           {/* 视图切换：浮动下拉选择器 */}
           <ViewModePicker view={view} setView={selectView} />
@@ -385,14 +386,14 @@ export default function PCLayout({
           </div>
 
           {/* Search */}
-          <div className="flex-1 min-w-0 max-w-sm ml-1 sm:ml-2">
+          <div className="order-last w-full min-w-0 sm:order-none sm:flex-1 sm:max-w-sm sm:ml-2">
             <div className="flex items-center gap-2 px-3 py-1.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
               <Search size={12} style={{ color: S.muted }} />
               <input className="bg-transparent outline-none flex-1 text-xs" style={{ color: S.text }} placeholder="搜索工作台" />
             </div>
           </div>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             {/* ── 右上角主题 + 暗黑模式 ────────────────────────────────── */}
             <ThemeControls />
             <button type="button" title="查看待审批" aria-label="查看待审批 18 项" onClick={() => onModuleChange("approval")} className="relative w-7 h-7 flex items-center justify-center" style={{ color: S.muted }}>

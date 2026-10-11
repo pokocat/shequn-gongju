@@ -178,28 +178,65 @@ function OverviewTab({ search }: { search: string }) {
       </div>
 
       {detail && (
-        <div className="w-64 flex-shrink-0 p-4 flex flex-col gap-3" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium uppercase" style={{ color: S.text, fontFamily: "monospace", letterSpacing: "0.05em" }}>// 账号详情</span>
-            <button onClick={() => setSelected(null)}><X size={13} style={{ color: S.muted }} /></button>
-          </div>
-          <div className="py-3 text-center" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <div className="text-2xl mb-1">{platformIcon[detail.type] || "📱"}</div>
-            <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{detail.identifier}</div>
-            <div className="text-xs mt-1 uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>{detail.type}</div>
-            <div className="mt-2 flex justify-center"><StatusBadge status={detail.status} /></div>
-          </div>
-          {[["保管人", detail.manager], ["详情", detail.detail]].map(([k, v]) => (
-            <div key={k} className="flex justify-between py-1.5" style={{ borderBottom: `1px solid ${S.border}` }}>
-              <span className="text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>{k}</span>
-              <span className="text-xs text-right max-w-[140px]" style={{ color: S.text, fontFamily: "monospace" }}>{v}</span>
+        <>
+          <button
+            type="button"
+            aria-label="关闭账号详情"
+            className="fixed inset-0 z-30 bg-black/20 lg:hidden"
+            onClick={() => setSelected(null)}
+          />
+          <aside
+            aria-label="账号详情"
+            className="fixed inset-y-0 right-0 z-40 flex w-[min(360px,calc(100vw-24px))] flex-col gap-3 overflow-y-auto p-4 shadow-xl lg:static lg:z-auto lg:w-[320px] lg:max-w-[36%] lg:flex-shrink-0 lg:rounded-lg lg:shadow-none"
+            style={{ background: S.surface, border: `1px solid ${S.borderMed}` }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-sm font-medium uppercase" style={{ color: S.text, fontFamily: "monospace", letterSpacing: "0.05em" }}>// 账号详情</span>
+                <div className="mt-1 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>当前选中资源</div>
+              </div>
+              <button type="button" aria-label="关闭账号详情" onClick={() => setSelected(null)}><X size={15} style={{ color: S.muted }} /></button>
             </div>
-          ))}
-          <div className="flex flex-col gap-2 mt-2">
-            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑</button>
-            <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.bg, border: `1px solid rgba(0,0,0,0.10)`, color: S.text, borderRadius: S.radius, fontFamily: "monospace" }}>发起交接</button>
-          </div>
-        </div>
+            <div className="py-3 text-center" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+              <div className="text-2xl mb-1">{platformIcon[detail.type] || "📱"}</div>
+              <div className="break-all text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{detail.identifier}</div>
+              <div className="mt-1 text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>{detail.type}</div>
+              <div className="mt-2 flex justify-center"><StatusBadge status={detail.status} /></div>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="p-2" style={{ background: S.bg, borderRadius: S.radius }}>
+                <div className="text-[10px] uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>风险</div>
+                <div className="mt-1 flex items-center gap-1 text-xs font-medium" style={{ color: detail.risk === "normal" ? S.text : "#b45309" }}>
+                  <RiskIcon risk={detail.risk} />
+                  {detail.risk === "normal" ? "无异常" : detail.risk === "high" ? "高风险" : "需关注"}
+                </div>
+              </div>
+              <div className="p-2" style={{ background: S.bg, borderRadius: S.radius }}>
+                <div className="text-[10px] uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>归属</div>
+                <div className="mt-1 truncate text-xs font-medium" style={{ color: S.text, fontFamily: "monospace" }}>{detail.manager === "—" ? "待分配" : detail.manager}</div>
+              </div>
+            </div>
+            <div className="flex flex-col">
+              {[["保管人", detail.manager === "—" ? "待分配" : detail.manager], ["资源摘要", detail.detail], ["状态", detail.status]].map(([k, v]) => (
+                <div key={k} className="flex items-start justify-between gap-3 py-2" style={{ borderBottom: `1px solid ${S.border}` }}>
+                  <span className="flex-shrink-0 text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>{k}</span>
+                  <span className="max-w-[190px] break-words text-right text-xs" style={{ color: S.text, fontFamily: "monospace" }}>{v}</span>
+                </div>
+              ))}
+            </div>
+            <div>
+              <div className="mb-2 text-xs font-medium uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// 关联与配置</div>
+              <div className="space-y-2 text-xs" style={{ color: S.textSec, fontFamily: "monospace" }}>
+                <div className="flex items-center justify-between"><span>项目范围</span><span style={{ color: S.text }}>{detail.type === "手机号" ? "资产中心" : "当前项目"}</span></div>
+                <div className="flex items-center justify-between"><span>敏感信息</span><span style={{ color: S.text }}>已脱敏</span></div>
+              </div>
+            </div>
+            <div className="mt-auto flex flex-col gap-2 pt-2">
+              <button type="button" className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑配置</button>
+              <button type="button" className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.bg, border: `1px solid rgba(0,0,0,0.10)`, color: S.text, borderRadius: S.radius, fontFamily: "monospace" }}>发起交接</button>
+            </div>
+          </aside>
+        </>
       )}
     </div>
   );
@@ -421,7 +458,9 @@ function PhoneTab({ search }: { search: string }) {
       </div>
 
       {detail && (
-        <div className="w-[300px] flex-shrink-0 flex flex-col overflow-hidden" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
+        <>
+          <button type="button" aria-label="关闭手机号详情" className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSelected(null)} />
+          <aside aria-label="手机号详情" className="fixed inset-y-0 right-0 z-40 flex w-[min(360px,calc(100vw-24px))] flex-col overflow-hidden shadow-xl lg:static lg:z-auto lg:w-[300px] lg:max-w-[36%] lg:flex-shrink-0 lg:rounded-lg lg:shadow-none" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
           <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ borderBottom: `1px solid rgba(0,0,0,0.08)`, background: "#f1f5f9", borderRadius: `${S.radiusLg} ${S.radiusLg} 0 0` }}>
             <span className="text-sm font-medium uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// 手机号详情</span>
             <button onClick={() => setSelected(null)}><X size={13} style={{ color: S.muted }} /></button>
@@ -561,7 +600,8 @@ function PhoneTab({ search }: { search: string }) {
               <button className="py-2 text-xs uppercase font-bold" style={{ background: S.bg, color: S.text, border: `1px solid rgba(0,0,0,0.10)`, borderRadius: S.radius, fontFamily: "monospace" }}>重新分配</button>
             </div>
           </div>
-        </div>
+          </aside>
+        </>
       )}
     </div>
   );
@@ -621,7 +661,9 @@ function WechatTab({ search }: { search: string }) {
       </div>
 
       {detail && (
-        <div className="w-64 flex-shrink-0 p-4 flex flex-col gap-3" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
+        <>
+          <button type="button" aria-label="关闭微信号详情" className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSelected(null)} />
+          <aside aria-label="微信号详情" className="fixed inset-y-0 right-0 z-40 flex w-[min(360px,calc(100vw-24px))] flex-col gap-3 overflow-y-auto p-4 shadow-xl lg:static lg:z-auto lg:w-64 lg:max-w-[36%] lg:flex-shrink-0 lg:rounded-lg lg:shadow-none" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// 微信号详情</span>
             <button onClick={() => setSelected(null)}><X size={13} style={{ color: S.muted }} /></button>
@@ -654,7 +696,8 @@ function WechatTab({ search }: { search: string }) {
             <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑信息</button>
             <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.bg, border: `1px solid rgba(0,0,0,0.10)`, color: S.text, borderRadius: S.radius, fontFamily: "monospace" }}>发起交接</button>
           </div>
-        </div>
+          </aside>
+        </>
       )}
     </div>
   );
@@ -771,7 +814,9 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
       </div>
 
       {detail && (
-        <div className="w-72 flex-shrink-0 p-4 flex flex-col gap-3 overflow-auto" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
+        <>
+          <button type="button" aria-label="关闭媒体账号详情" className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSelected(null)} />
+          <aside aria-label="媒体账号详情" className="fixed inset-y-0 right-0 z-40 flex w-[min(360px,calc(100vw-24px))] flex-col gap-3 overflow-auto p-4 shadow-xl lg:static lg:z-auto lg:w-72 lg:max-w-[36%] lg:flex-shrink-0 lg:rounded-lg lg:shadow-none" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// 账号详情</span>
             <button onClick={() => setSelected(null)}><X size={13} style={{ color: S.muted }} /></button>
@@ -846,7 +891,8 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
               <button className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radius, fontFamily: "monospace" }}>重启账号运营</button>
             )}
           </div>
-        </div>
+          </aside>
+        </>
       )}
     </div>
   );
@@ -854,36 +900,72 @@ function MediaTab({ search, platform, viewMode }: { search: string; platform: st
 
 // ─── 邮箱/其他 Tab ────────────────────────────────────────────
 function EmailOtherTab({ search }: { search: string }) {
+  const [selected, setSelected] = useState<number | null>(null);
   const filtered = emailOthers.filter(e => e.identifier.includes(search) || e.manager.includes(search) || e.type.includes(search) || e.usedFor.includes(search));
+  const detail = emailOthers.find(e => e.id === selected);
   return (
-    <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-      <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
-        <ColHead width="90px">账号类型</ColHead>
-        <ColHead width="230px">账号标识</ColHead>
-        <ColHead width="280px">用于哪些平台/用途</ColHead>
-        <ColHead width="100px">保管人</ColHead>
-        <ColHead width="80px">状态</ColHead>
+    <div className="flex gap-4 flex-1 min-h-0">
+      <div className="flex-1 overflow-hidden flex flex-col" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+        <div className="flex items-center px-4 py-2.5 gap-4 flex-shrink-0" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}`, borderRadius: `${S.radius} ${S.radius} 0 0` }}>
+          <ColHead width="90px">账号类型</ColHead>
+          <ColHead width="230px">账号标识</ColHead>
+          <ColHead width="280px">用于哪些平台/用途</ColHead>
+          <ColHead width="100px">保管人</ColHead>
+          <ColHead width="80px">状态</ColHead>
+        </div>
+        <div className="overflow-auto flex-1">
+          {filtered.map(e => {
+            const tc = typeColors[e.type] || { bg: "#f1f5f9", color: "#475569" };
+            return (
+              <Row key={e.id} selected={selected === e.id} onClick={() => setSelected(selected === e.id ? null : e.id)}>
+                <span className="flex-shrink-0 px-2 py-0.5 text-xs" style={{ background: tc.bg, color: tc.color, width: "90px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{e.type}</span>
+                <Col width="230px" highlight>
+                  <div className="flex items-center gap-1.5">
+                    {e.risk !== "normal" && <RiskIcon risk={e.risk} />}
+                    <Mail size={11} style={{ color: S.muted }} />
+                    {e.identifier}
+                  </div>
+                </Col>
+                <Col width="280px">{e.usedFor}</Col>
+                <Col width="100px">{e.manager}</Col>
+                <div style={{ width: "80px" }}><StatusBadge status={e.status} /></div>
+              </Row>
+            );
+          })}
+        </div>
       </div>
-      <div className="overflow-auto flex-1">
-        {filtered.map(e => {
-          const tc = typeColors[e.type] || { bg: "#f1f5f9", color: "#475569" };
-          return (
-            <div key={e.id} className="flex items-center px-4 py-3 gap-4" style={{ borderBottom: `1px solid ${S.border}` }}>
-              <span className="flex-shrink-0 px-2 py-0.5 text-xs" style={{ background: tc.bg, color: tc.color, width: "90px", borderRadius: S.radiusSm, fontFamily: "monospace" }}>{e.type}</span>
-              <Col width="230px" highlight>
-                <div className="flex items-center gap-1.5">
-                  {e.risk !== "normal" && <RiskIcon risk={e.risk} />}
-                  <Mail size={11} style={{ color: S.muted }} />
-                  {e.identifier}
-                </div>
-              </Col>
-              <Col width="280px">{e.usedFor}</Col>
-              <Col width="100px">{e.manager}</Col>
-              <div style={{ width: "80px" }}><StatusBadge status={e.status} /></div>
+      {detail && (
+        <>
+          <button type="button" aria-label="关闭邮箱账号详情" className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSelected(null)} />
+          <aside aria-label="邮箱及其他账号详情" className="fixed inset-y-0 right-0 z-40 flex w-[min(360px,calc(100vw-24px))] flex-col gap-3 overflow-y-auto p-4 shadow-xl lg:static lg:z-auto lg:w-[320px] lg:max-w-[36%] lg:flex-shrink-0 lg:rounded-lg lg:shadow-none" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusLg }}>
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-sm font-medium uppercase" style={{ color: S.text, fontFamily: "monospace" }}>// 账号详情</span>
+                <div className="mt-1 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>当前选中资源</div>
+              </div>
+              <button type="button" aria-label="关闭账号详情" onClick={() => setSelected(null)}><X size={15} style={{ color: S.muted }} /></button>
             </div>
-          );
-        })}
-      </div>
+            <div className="py-4 text-center" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+              <Mail size={20} className="mx-auto mb-2" style={{ color: S.text }} />
+              <div className="break-all text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{detail.identifier}</div>
+              <div className="mt-1 text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>{detail.type}</div>
+              <div className="mt-2 flex justify-center"><StatusBadge status={detail.status} /></div>
+            </div>
+            <div className="flex flex-col">
+              {[['用途', detail.usedFor], ['保管人', detail.manager], ['风险', detail.risk === "normal" ? "无异常" : "需关注"], ['安全信息', "已脱敏"]].map(([label, value]) => (
+                <div key={label} className="flex items-start justify-between gap-3 py-2" style={{ borderBottom: `1px solid ${S.border}` }}>
+                  <span className="flex-shrink-0 text-xs uppercase" style={{ color: S.muted, fontFamily: "monospace" }}>{label}</span>
+                  <span className="max-w-[200px] break-words text-right text-xs" style={{ color: S.text, fontFamily: "monospace" }}>{value}</span>
+                </div>
+              ))}
+            </div>
+            <div className="mt-auto flex flex-col gap-2 pt-2">
+              <button type="button" className="w-full py-2 text-xs uppercase font-bold" style={{ background: "#1e293b", color: S.accent, borderRadius: S.radius, fontFamily: "monospace" }}>编辑配置</button>
+              <button type="button" className="w-full py-2 text-xs uppercase font-bold" style={{ background: S.bg, border: `1px solid rgba(0,0,0,0.10)`, color: S.text, borderRadius: S.radius, fontFamily: "monospace" }}>发起交接</button>
+            </div>
+          </aside>
+        </>
+      )}
     </div>
   );
 }

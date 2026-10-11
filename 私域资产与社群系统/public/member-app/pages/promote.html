@@ -62,11 +62,6 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .pm-btn--pri{ background:linear-gradient(90deg,var(--signal-600),var(--signal-800)); color:#FFF; box-shadow:0 4px 14px rgba(109,40,217,.3); }
 .pm-btn--ghost{ background:#FFF; color:var(--signal-700); border:0.573px solid var(--line-signal); }
 .pm-btn:active{ transform:scale(.98); }
-/* AI 军师悬浮球 */
-.ai-fab{ position:fixed; right:14.907px; bottom:calc(112px); width:47.013px; height:47.013px; border-radius:50%; z-index:95; background:linear-gradient(135deg,#8B5CF6,#5B21B6); box-shadow:0 6px 18px rgba(91,33,182,.4), inset 0 1px 0 rgba(255,255,255,.25); display:flex; flex-direction:column; align-items:center; justify-content:center; color:#FFF; cursor:pointer; }
-.ai-fab:active{ transform:scale(.92); }
-.ai-fab svg{ width:19px; height:19px; }
-.ai-fab-t{ font-size:6.4px; font-weight:700; margin-top:1px; letter-spacing:.5px; }
 </style>
 </head>
 <body class="mp-body">
@@ -103,7 +98,6 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
         <div id="pmBody"></div>
         <div class="pm-actions" id="pmActions"></div>
       </div>
-      <div class="ai-fab" id="aiFab" role="button" aria-label="AI军师"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg><span class="ai-fab-t">军师</span></div>
       <div class="mp-home"></div>
     </div>
   </div>
@@ -119,7 +113,11 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
     e.preventDefault();
     var t = el.getAttribute("data-nav");
     if (t === "__back__") { if (history.length > 1) history.back(); else location.href = "tasks.html" + location.search; return; }
-    location.href = t + ".html" + location.search;
+    if (parent !== window) {
+      parent.postMessage({ mpNavigate: t, search: location.search }, "*");
+    } else {
+      location.href = t + ".html" + location.search;
+    }
   });
 })();
 </script>
@@ -162,7 +160,7 @@ function renderStat3(){
 function distGridHtml(){
   var h = '<div class="card card-pad gap wx-view" style="margin-top:10.32px;">' +
     '<div class="f-between mb-8 wx-view"><span class="col-h wx-text">内容分发</span>' +
-    '<span class="t-tiny wx-text">点击平台 · AI 军师帮你写</span></div>' +
+    '<span class="t-tiny wx-text">点击平台 · 查看推广素材</span></div>' +
     '<div class="dist-grid">';
   DIST.forEach(function(p){
     h += '<div class="dist-tile" data-ai="' + esc(p.n) + '">' +
@@ -243,16 +241,6 @@ document.getElementById('viewSw').addEventListener('click', function(e){
     el.classList.toggle('view-pill--on', el.getAttribute('data-view') === v);
   });
   renderAll();
-});
-
-// 分发宫格 → AI 军师（带平台场景）
-document.getElementById('pmBody').addEventListener('click', function(e){
-  var t = e.target.closest ? e.target.closest('.dist-tile') : null;
-  if (t) location.href = 'ai.html' + location.search;
-});
-
-document.getElementById('aiFab').addEventListener('click', function(){
-  location.href = 'ai.html' + location.search;
 });
 
 renderAll();

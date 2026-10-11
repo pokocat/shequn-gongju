@@ -8,7 +8,7 @@
     {
       "slug": "notifications",
       "name": "notifications",
-      "title": "消息中心",
+      "title": "消息",
       "variant": "",
       "route": "/pages/notifications/index",
       "group": "主导航（TabBar）"
@@ -16,7 +16,7 @@
     {
       "slug": "notifications--会话详情",
       "name": "notifications",
-      "title": "消息中心",
+      "title": "消息",
       "variant": "会话详情",
       "route": "/pages/notifications/index",
       "group": "主导航（TabBar）"
@@ -24,7 +24,7 @@
     {
       "slug": "notifications--游客态",
       "name": "notifications",
-      "title": "消息中心",
+      "title": "消息",
       "variant": "游客态",
       "route": "/pages/notifications/index",
       "group": "主导航（TabBar）"
@@ -32,7 +32,7 @@
     {
       "slug": "notifications--搜索无结果",
       "name": "notifications",
-      "title": "消息中心",
+      "title": "消息",
       "variant": "搜索无结果",
       "route": "/pages/notifications/index",
       "group": "主导航（TabBar）"
@@ -96,7 +96,7 @@
     {
       "slug": "index",
       "name": "index",
-      "title": "发现（首页）",
+      "title": "成长",
       "variant": "",
       "route": "/pages/index/index",
       "group": "主导航（TabBar）"
@@ -104,7 +104,7 @@
     {
       "slug": "index--游客态",
       "name": "index",
-      "title": "发现（首页）",
+      "title": "成长",
       "variant": "游客态",
       "route": "/pages/index/index",
       "group": "主导航（TabBar）"
@@ -112,7 +112,7 @@
     {
       "slug": "index--加载骨架",
       "name": "index",
-      "title": "发现（首页）",
+      "title": "成长",
       "variant": "加载骨架",
       "route": "/pages/index/index",
       "group": "主导航（TabBar）"
@@ -120,7 +120,7 @@
     {
       "slug": "index--加载失败",
       "name": "index",
-      "title": "发现（首页）",
+      "title": "成长",
       "variant": "加载失败",
       "route": "/pages/index/index",
       "group": "主导航（TabBar）"
@@ -128,7 +128,7 @@
     {
       "slug": "group",
       "name": "group",
-      "title": "微信群",
+      "title": "服务",
       "variant": "",
       "route": "/pages/group/index",
       "group": "主导航（TabBar）"
@@ -136,7 +136,7 @@
     {
       "slug": "group--社群广场",
       "name": "group",
-      "title": "微信群",
+      "title": "服务",
       "variant": "社群广场",
       "route": "/pages/group/index",
       "group": "主导航（TabBar）"
@@ -144,7 +144,7 @@
     {
       "slug": "group--活动详情弹层",
       "name": "group",
-      "title": "微信群",
+      "title": "服务",
       "variant": "活动详情弹层",
       "route": "/pages/group/index",
       "group": "主导航（TabBar）"
@@ -152,7 +152,7 @@
     {
       "slug": "group--游客态",
       "name": "group",
-      "title": "微信群",
+      "title": "服务",
       "variant": "游客态",
       "route": "/pages/group/index",
       "group": "主导航（TabBar）"
@@ -160,7 +160,7 @@
     {
       "slug": "group--未入群",
       "name": "group",
-      "title": "微信群",
+      "title": "服务",
       "variant": "未入群",
       "route": "/pages/group/index",
       "group": "主导航（TabBar）"
@@ -168,8 +168,8 @@
     {
       "slug": "group-chat",
       "name": "group-chat",
-      "title": "群会话同步",
-      "variant": "企业微信群",
+      "title": "我的微信群",
+      "variant": "",
       "route": "/pages/group-chat/index",
       "group": "主导航（TabBar）"
     },
@@ -491,14 +491,6 @@
       "title": "添加服务顾问",
       "variant": "未分配顾问",
       "route": "/pages/advisor/index",
-      "group": "班级与入群"
-    },
-    {
-      "slug": "message",
-      "name": "message",
-      "title": "公告详情",
-      "variant": "",
-      "route": "/pages/message/index",
       "group": "班级与入群"
     },
     {
@@ -931,7 +923,7 @@
       "title": "主理台",
       "variant": "",
       "route": "/pages/tasks/index",
-      "group": "代理与任务"
+      "group": "主导航（TabBar）"
     },
     {
       "slug": "tasks--全部完成",
@@ -939,7 +931,7 @@
       "title": "主理台",
       "variant": "全部完成",
       "route": "/pages/tasks/index",
-      "group": "代理与任务"
+      "group": "主导航（TabBar）"
     },
     {
       "slug": "tasks--还没有任务",
@@ -947,7 +939,7 @@
       "title": "主理台",
       "variant": "还没有任务",
       "route": "/pages/tasks/index",
-      "group": "代理与任务"
+      "group": "主导航（TabBar）"
     },
     {
       "slug": "ops-task",

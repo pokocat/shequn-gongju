@@ -1,138 +1,116 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Bell, BookOpen, Check, ChevronLeft, CircleDollarSign, FileText, Gift, LayoutDashboard, MessageCircle, Search, Settings, Sparkles, Target, TrendingUp, User, Users } from "lucide-react";
+import ZhuLiRenAccountDetail, { type ZhuLiRenAccountRow } from "./ZhuLiRenAccountDetail";
+import ZhuLiRenGrowthDetail from "./ZhuLiRenGrowthDetail";
+import ZhuLiRenMessageDetail from "./ZhuLiRenMessageDetail";
+import { defaultPrincipalTheme, getPrincipalTheme, principalThemeStorageKey, principalThemes } from "../data/principalSocietyThemes";
+import { initialActionItems, initialCommunities, initialGrowthTasks, initialMembers, initialPrincipal, initialProjects, type ActionItem, type Community, type CommunityStatus, type GrowthTask, type Project, type ThemeId } from "../data/principalSociety";
 
-type ZhuLiRenAppProps = {
-  onOpenWeb: () => void;
-  onOpenPc: () => void;
-  onOpenMobile: () => void;
-};
+type TabId = "workbench" | "communities" | "projects" | "growth" | "me";
+type DetailView = { type: "action"; item: ActionItem } | { type: "community"; item: Community } | { type: "project"; item: Project } | { type: "message"; name: string; preview: string } | { type: "growth"; task: GrowthTask } | { type: "account"; title: string; detail: string; rows?: ZhuLiRenAccountRow[] } | { type: "theme" } | null;
 
-/**
- * The mini-program is intentionally hosted from static bundles in `public/`.
- * Keeping their DOM/CSS/interaction together preserves each source
- * pixel-for-pixel while the parent app still owns global view switching.
- *
- * 三个源刻意都留着，因为它们回答的是不同的问题：
- *  · **实现** `/member-app/`     —— 线上代码导出的 147 屏前端页面（HTML/CSS/JS）。
- *                                 **设计修改的工作台**：它本身就是前端代码，所见即所得地改；
- *                                 定稿后再同步到小程序源码仓库。
- *  · **实时** `:8091`            —— 小程序源码（ai-univ/主理人）构建的 H5 运行版，
- *                                 用来核对设计落到真实源码后的运行效果（Taro 转换有渲染差异，
- *                                 不追求与实现像素一致）；
- *  · **原型** `/zhuliren-final/` —— 已定稿的设计原型（64 屏，可交互），是设计意图的事实源。
- * 三个源的整机展示统一为 430×932 手机壳规格——切源时只有内容变，机器不变。
- * 默认落在实现：设计迭代发生在这里。
- */
-const SOURCES = [
-  {
-    id: "impl" as const,
-    label: "实现",
-    title: "主理人公社小程序 · 前端设计（线上代码导出）",
-    src: "/member-app/shell.html?embed=1",
-    hint: "前端代码 · 直接修改 · 147 屏",
-  },
-  {
-    id: "live" as const,
-    label: "实时",
-    title: "主理人公社小程序 · 实时 H5（源码构建）",
-    src: "http://localhost:8091/",
-    hint: "ai-univ 源码构建 · 核对运行效果",
-  },
-  {
-    id: "proto" as const,
-    label: "原型",
-    title: "主理人公社小程序 · 设计原型",
-    src: "/zhuliren-final/index.html?screen=home&embed=1&version=20260814c",
-    hint: "已定稿的可交互原型",
-  },
+type Tab = { id: TabId; label: string; icon: typeof MessageCircle };
+const tabs: Tab[] = [
+  { id: "workbench", label: "工作台", icon: LayoutDashboard },
+  { id: "communities", label: "社群", icon: Users },
+  { id: "projects", label: "项目", icon: Target },
+  { id: "growth", label: "成长", icon: Sparkles },
+  { id: "me", label: "我的", icon: User },
 ];
 
-/** 与「实现」shell.html 同款手机壳：固定 430×932（设计稿画布），整机等比缩放适配宿主 tab。
- *  宽度不能跟着视口变——一变，rem 适配的 H5 就不再是「所见即设计稿」。 */
-function PhoneFrame({ src, title }: { src: string; title: string }) {
-  const wrapRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(1);
-
-  useEffect(() => {
-    const el = wrapRef.current;
-    if (!el) return;
-    const update = () => {
-      const r = el.getBoundingClientRect();
-      setScale(Math.max(0.2, Math.min(1, (r.height - 8) / 932, (r.width - 8) / 430)));
-    };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  return (
-    <div ref={wrapRef} className="flex h-full w-full items-center justify-center overflow-hidden">
-      <div
-        style={{
-          width: 430,
-          height: 932,
-          flex: "0 0 auto",
-          transformOrigin: "center center",
-          transform: `scale(${scale})`,
-          borderRadius: 46,
-          overflow: "hidden",
-          background: "#FFF7EC",
-          boxShadow:
-            "0 0 0 9px #fff, 0 0 0 10px rgba(25,33,16,.12), 0 28px 72px rgba(35,45,20,.18)",
-        }}
-      >
-        <iframe title={title} src={src} className="block h-full w-full border-0" />
-      </div>
-    </div>
-  );
+function Pill({ children, tone = "brand" }: { children: React.ReactNode; tone?: "brand" | "warning" | "muted" | "danger" }) {
+  const tones = { brand: "bg-[var(--ps-soft)] text-[var(--ps-brand)]", warning: "bg-[#fff2df] text-[var(--ps-warning)]", muted: "bg-black/5 text-[var(--ps-subtle)]", danger: "bg-[#fbe9e7] text-[var(--ps-danger)]" };
+  return <span className={`rounded-full px-2 py-1 text-[10px] font-semibold ${tones[tone]}`}>{children}</span>;
 }
 
-export default function ZhuLiRenApp({ onOpenWeb, onOpenPc, onOpenMobile }: ZhuLiRenAppProps) {
-  const [sourceId, setSourceId] = useState<"live" | "impl" | "proto">("impl");
-  const source = SOURCES.find(s => s.id === sourceId) ?? SOURCES[0];
+function Avatar({ src, fallback, className = "h-10 w-10" }: { src?: string; fallback: string; className?: string }) {
+  return <span className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[var(--ps-soft)] text-[11px] font-bold text-[var(--ps-brand)] ${className}`}><img src={src} alt="" className="h-full w-full object-cover" onError={event => { event.currentTarget.style.display = "none"; }} /><span aria-hidden="true">{fallback}</span></span>;
+}
 
-  return (
-    <div className="relative h-full min-h-0 overflow-hidden bg-[#f4f6ee] pt-[52px] pb-3">
-      <nav aria-label="系统视图切换" className="absolute left-1/2 top-2 z-10 flex -translate-x-1/2 overflow-hidden rounded-full border border-[#d8e5c5] bg-white shadow-[0_6px_18px_rgba(45,61,29,0.10)]">
-        <button type="button" onClick={onOpenWeb} className="border-r border-[#e7eddc] px-3 py-2 font-mono text-[11px] font-bold tracking-wide text-[#6b7562] hover:bg-[#f6faee]">WEB</button>
-        <button type="button" onClick={onOpenPc} className="border-r border-[#e7eddc] px-3 py-2 font-mono text-[11px] font-bold tracking-wide text-[#6b7562] hover:bg-[#f6faee]">PC</button>
-        <button type="button" onClick={onOpenMobile} className="border-r border-[#e7eddc] px-3 py-2 font-mono text-[11px] font-bold tracking-wide text-[#6b7562] hover:bg-[#f6faee]">会员APP</button>
-        <span className="bg-[#b9ff3d] px-3 py-2 font-mono text-[11px] font-bold tracking-wide text-black">主理人</span>
-      </nav>
+function Header({ title, subtitle, onSearch }: { title: string; subtitle?: string; onSearch?: () => void }) {
+  return <header className="flex items-start justify-between px-5 pb-4 pt-[max(18px,env(safe-area-inset-top))]"><div><h1 className="text-[24px] font-semibold tracking-[-0.05em] text-[var(--ps-text)]">{title}</h1>{subtitle && <p className="mt-1 text-[12px] text-[var(--ps-subtle)]">{subtitle}</p>}</div><button aria-label={`${title}搜索`} onClick={onSearch} className="flex min-h-11 min-w-11 items-center justify-center rounded-full p-2 text-[var(--ps-subtle)]"><Search size={19} /></button></header>;
+}
 
-      {/* 原型 / 实现 / 实时：右上角，与中间的视图切换分开——它切的是「同一个产品的哪一份稿」，不是切视图 */}
-      <div className="absolute right-3 top-2 z-10 flex items-center gap-2">
-        <span className="hidden max-w-[240px] truncate text-[10px] text-[#79826f] lg:inline" title={source.hint}>{source.hint}</span>
-        <div role="group" aria-label="页面来源" className="flex overflow-hidden rounded-full border border-[#d8e5c5] bg-white shadow-[0_6px_18px_rgba(45,61,29,0.10)]">
-          {SOURCES.map(s => (
-            <button
-              key={s.id}
-              type="button"
-              aria-pressed={s.id === sourceId}
-              onClick={() => setSourceId(s.id)}
-              className={
-                "px-3 py-2 font-mono text-[11px] font-bold tracking-wide transition-colors " +
-                (s.id === sourceId ? "bg-[#b9ff3d] text-black" : "text-[#6b7562] hover:bg-[#f6faee]")
-              }
-            >
-              {s.label}
-            </button>
-          ))}
-        </div>
-      </div>
+function SectionTitle({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
+  return <div className="mb-3 flex items-center justify-between"><h2 className="text-[16px] font-semibold text-[var(--ps-text)]">{title}</h2>{action && <button onClick={onAction} className="flex min-h-10 items-center gap-1 text-[12px] font-medium text-[var(--ps-brand)]">{action}<ArrowRight size={13} /></button>}</div>;
+}
 
-      {/* 实时源：外层手机壳与「实现」同规格（430×932·圆角46·白边+投影），等比缩放居中。
-          实现/原型内部自带同规格 shell，直接铺满。key 绑 sourceId：切换重建，避免内部路由残留。 */}
-      {source.id === "live" ? (
-        <PhoneFrame title={source.title} src={source.src} />
-      ) : (
-        <iframe
-          key={source.id}
-          title={source.title}
-          src={source.src}
-          className="block h-full w-full border-0"
-        />
-      )}
-    </div>
-  );
+function EmptyState({ title, action, onAction }: { title: string; action?: string; onAction?: () => void }) {
+  return <div className="rounded-[var(--ps-radius)] border border-dashed border-[var(--ps-border)] bg-[var(--ps-surface)] px-5 py-10 text-center"><p className="text-[12px] text-[var(--ps-subtle)]">{title}</p>{action && <button onClick={onAction} className="mt-4 min-h-11 rounded-xl bg-[var(--ps-brand)] px-4 text-[12px] font-semibold text-white">{action}</button>}</div>;
+}
+
+function BottomNav({ active, onChange, unread }: { active: TabId; onChange: (id: TabId) => void; unread: number }) {
+  return <nav aria-label="主导航" className="fixed bottom-0 left-1/2 z-30 flex w-full max-w-[430px] -translate-x-1/2 border-t border-[var(--ps-border)] bg-[var(--ps-surface)]/95 px-2 pb-[max(8px,env(safe-area-inset-bottom))] pt-2 backdrop-blur-xl">{tabs.map(({ id, label, icon: Icon }) => <button key={id} aria-current={active === id ? "page" : undefined} onClick={() => onChange(id)} className="relative flex min-h-[54px] flex-1 flex-col items-center justify-center gap-1 rounded-xl text-[10px] text-[var(--ps-subtle)]"><span className={`relative flex h-7 w-10 items-center justify-center rounded-xl ${active === id ? "bg-[var(--ps-soft)] text-[var(--ps-brand)]" : ""}`}><Icon size={19} strokeWidth={active === id ? 2.3 : 1.8} />{id === "workbench" && unread > 0 && <span aria-label={`${unread} 条待处理`} className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--ps-danger)] px-1 text-[9px] font-bold text-white">{unread}</span>}</span><span className={active === id ? "font-semibold text-[var(--ps-brand)]" : ""}>{label}</span></button>)}</nav>;
+}
+
+function Workbench({ principal, actions, communities, projects, onAction, onCommunity, onProject, onNavigate }: { principal: typeof initialPrincipal; actions: ActionItem[]; communities: Community[]; projects: Project[]; onAction: (item: ActionItem) => void; onCommunity: (item: Community) => void; onProject: (item: Project) => void; onNavigate: (tab: TabId) => void }) {
+  const pending = actions.filter(item => item.status === "pending");
+  return <><Header title={`早上好，${principal.name}`} subtitle="今天也把重要的事推进一点" /><div className="space-y-6 px-4 pb-6"><section className="rounded-[var(--ps-radius)] bg-[var(--ps-brand)] p-5 text-white shadow-[var(--ps-shadow)]"><div className="flex items-center gap-3"><Avatar src={principal.avatar} fallback="王" className="h-12 w-12 rounded-full bg-white/20 text-white" /><div><p className="text-[11px] text-white/75">{principal.level}</p><h2 className="mt-1 text-[20px] font-semibold">今日行动</h2></div></div><div className="mt-5 flex items-end justify-between"><div><span className="text-[34px] font-semibold leading-none">{pending.length}</span><span className="ml-2 text-[12px] text-white/75">项待处理</span></div><span className="text-[11px] text-white/75">成长值 {principal.growthValue.toLocaleString()}</span></div></section><section><SectionTitle title="今日行动" action="查看全部" onAction={() => onNavigate("growth")} /><div className="space-y-2">{pending.slice(0, 3).map(item => <button key={item.id} onClick={() => onAction(item)} className="flex min-h-[76px] w-full items-center gap-3 rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4 text-left"><span className={`flex h-9 w-9 items-center justify-center rounded-xl ${item.priority === "高" ? "bg-[#fff0df] text-[var(--ps-warning)]" : "bg-[var(--ps-soft)] text-[var(--ps-brand)]"}`}><Check size={16} /></span><span className="min-w-0 flex-1"><span className="flex items-center justify-between gap-2"><strong className="truncate text-[13px] text-[var(--ps-text)]">{item.title}</strong><Pill tone={item.priority === "高" ? "warning" : "muted"}>{item.priority}优先</Pill></span><span className="mt-1 block truncate text-[10px] text-[var(--ps-subtle)]">{item.description}</span></span><ArrowRight size={15} className="shrink-0 text-[var(--ps-subtle)]" /></button>)}{pending.length === 0 && <EmptyState title="今天的行动已完成" />}</div></section><section><SectionTitle title="需要关注的社群" action="查看全部" onAction={() => onNavigate("communities")} /><div className="space-y-2">{communities.filter(item => item.status === "attention").slice(0, 2).map(item => <button key={item.id} onClick={() => onCommunity(item)} className="flex w-full items-center gap-3 rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4 text-left"><Avatar fallback={item.name.slice(0, 1)} /><span className="min-w-0 flex-1"><strong className="block truncate text-[13px] text-[var(--ps-text)]">{item.name}</strong><span className="mt-1 block text-[10px] text-[var(--ps-subtle)]">{item.attentionReason} · 活跃度 {item.activityScore}%</span></span><Pill tone="warning">需关注</Pill></button>)}</div></section><section><SectionTitle title="项目进展" action="查看全部" onAction={() => onNavigate("projects")} /><div className="space-y-2">{projects.slice(0, 2).map(item => <button key={item.id} onClick={() => onProject(item)} className="w-full rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4 text-left"><div className="flex items-center justify-between"><strong className="text-[13px] text-[var(--ps-text)]">{item.name}</strong><span className="text-[11px] text-[var(--ps-brand)]">{item.progress}%</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-[var(--ps-soft)]"><div className="h-full rounded-full bg-[var(--ps-brand)]" style={{ width: `${item.progress}%` }} /></div><div className="mt-3 flex justify-between text-[10px] text-[var(--ps-subtle)]"><span>{item.nextAction}</span><span>{item.nextActionDueAt}</span></div></button>)}</div></section><section><SectionTitle title="快捷操作" /><div className="grid grid-cols-3 gap-2"><button onClick={() => onNavigate("communities")} className="min-h-24 rounded-2xl bg-[var(--ps-soft)] p-3 text-left text-[11px] text-[var(--ps-brand)]"><Users size={18} /><span className="mt-3 block">管理社群</span></button><button onClick={() => onNavigate("projects")} className="min-h-24 rounded-2xl bg-[var(--ps-soft)] p-3 text-left text-[11px] text-[var(--ps-brand)]"><Target size={18} /><span className="mt-3 block">推进项目</span></button><button onClick={() => onNavigate("growth")} className="min-h-24 rounded-2xl bg-[var(--ps-soft)] p-3 text-left text-[11px] text-[var(--ps-brand)]"><Sparkles size={18} /><span className="mt-3 block">查看成长</span></button></div></section></div></>;
+}
+
+function CommunityHome({ communities, onOpen, onToast }: { communities: Community[]; onOpen: (item: Community) => void; onToast: (message: string) => void }) {
+  const [filter, setFilter] = useState<"全部" | CommunityStatus>("全部");
+  const list = filter === "全部" ? communities : communities.filter(item => item.status === filter);
+  const labels: Array<[typeof filter, string]> = [["全部", "全部"], ["active", "活跃中"], ["attention", "需要关注"], ["archived", "已归档"]];
+  return <><Header title="社群" subtitle={`${communities.length} 个社群，今天优先处理重要变化`} onSearch={() => onToast("社群搜索已准备")} /><div className="space-y-5 px-4 pb-6"><div className="flex gap-1 overflow-x-auto rounded-2xl bg-[var(--ps-soft)] p-1">{labels.map(([value, label]) => <button key={value} onClick={() => setFilter(value)} className={`min-h-10 whitespace-nowrap rounded-xl px-3 text-[11px] ${filter === value ? "bg-[var(--ps-surface)] font-semibold text-[var(--ps-brand)] shadow-sm" : "text-[var(--ps-subtle)]"}`}>{label}</button>)}</div>{list.length === 0 ? <EmptyState title="当前筛选下暂无社群" action="查看全部" onAction={() => setFilter("全部")} /> : <div className="space-y-3">{list.map(item => <button key={item.id} onClick={() => onOpen(item)} className="w-full rounded-[var(--ps-radius)] border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4 text-left"><div className="flex items-start gap-3"><Avatar fallback={item.name.slice(0, 1)} /><span className="min-w-0 flex-1"><div className="flex items-center justify-between gap-2"><strong className="truncate text-[14px] text-[var(--ps-text)]">{item.name}</strong><Pill tone={item.status === "attention" ? "warning" : item.status === "archived" ? "muted" : "brand"}>{item.status === "attention" ? "需关注" : item.status === "archived" ? "已归档" : "活跃"}</Pill></div><span className="mt-1 block text-[11px] text-[var(--ps-subtle)]">{item.type} · {item.memberCount} 位成员</span></span></div><div className="mt-4 grid grid-cols-3 gap-2 text-[10px] text-[var(--ps-subtle)]"><span>活跃度<strong className="ml-1 text-[var(--ps-text)]">{item.activityScore}%</strong></span><span>今日新增<strong className="ml-1 text-[var(--ps-text)]">{item.todayNewMembers}</strong></span><span>待跟进<strong className="ml-1 text-[var(--ps-text)]">{item.pendingFollowUps}</strong></span></div>{item.attentionReason && <p className="mt-3 rounded-xl bg-[#fff8ed] px-3 py-2 text-[10px] text-[var(--ps-warning)]">{item.attentionReason}</p>}</button>)}</div>}</div></>;
+}
+
+function ProjectHome({ projects, onOpen, onToast }: { projects: Project[]; onOpen: (item: Project) => void; onToast: (message: string) => void }) {
+  return <><Header title="项目" subtitle="把每个下一步都推进成结果" onSearch={() => onToast("项目搜索已准备")} /><div className="space-y-4 px-4 pb-6">{projects.map(item => <button key={item.id} onClick={() => onOpen(item)} className="w-full rounded-[var(--ps-radius)] border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4 text-left"><div className="flex items-center justify-between"><Pill>{item.status}</Pill><span className="text-[11px] text-[var(--ps-brand)]">{item.progress}%</span></div><h2 className="mt-4 text-[17px] font-semibold text-[var(--ps-text)]">{item.name}</h2><p className="mt-1 text-[11px] text-[var(--ps-subtle)]">{item.type} · 更新于 {item.updatedAt}</p><div className="mt-4 h-2 overflow-hidden rounded-full bg-[var(--ps-soft)]"><div className="h-full rounded-full bg-[var(--ps-brand)]" style={{ width: `${item.progress}%` }} /></div><div className="mt-4 flex items-center justify-between text-[11px] text-[var(--ps-subtle)]"><span>{item.nextAction}</span><span>{item.nextActionDueAt}</span></div></button>)}</div></>;
+}
+
+function GrowthHome({ tasks, onOpen }: { tasks: GrowthTask[]; onOpen: (task: GrowthTask) => void }) {
+  const completed = tasks.filter(item => item.status === "已完成").length;
+  return <><Header title="成长" subtitle="看见阶段，也看见下一步" onSearch={() => undefined} /><div className="space-y-5 px-4 pb-6"><section className="rounded-[var(--ps-radius)] bg-[var(--ps-soft)] p-5"><div className="flex items-center justify-between"><div><Pill>代理成长</Pill><h2 className="mt-3 text-[22px] font-semibold text-[var(--ps-text)]">S3 · 独立经营</h2><p className="mt-1 text-[11px] text-[var(--ps-subtle)]">距离下一阶段还差 {Math.max(0, 3 - completed)} 项任务</p></div><div className="flex h-16 w-16 flex-col items-center justify-center rounded-full border-4 border-[var(--ps-brand)] bg-[var(--ps-surface)] text-[var(--ps-brand)]"><span className="text-[17px] font-bold">68%</span><span className="text-[8px]">当前进度</span></div></div></section><section><SectionTitle title="今日任务" /><div className="space-y-2">{tasks.map(task => <button key={task.id} onClick={() => onOpen(task)} className="flex w-full items-center gap-3 rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4 text-left"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--ps-soft)] text-[var(--ps-brand)]"><Sparkles size={16} /></span><span className="min-w-0 flex-1"><span className="flex items-center justify-between gap-2"><strong className="truncate text-[13px] text-[var(--ps-text)]">{task.title}</strong><Pill tone={task.status === "已完成" ? "brand" : "muted"}>{task.status}</Pill></span><span className="mt-1 block text-[10px] text-[var(--ps-subtle)]">{task.description} · +{task.growthValue} 成长值</span></span></button>)}</div></section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><div className="flex items-center gap-3"><BookOpen size={18} className="text-[var(--ps-brand)]" /><div><strong className="text-[13px] text-[var(--ps-text)]">代理经营基础课</strong><p className="mt-1 text-[10px] text-[var(--ps-subtle)]">预计学习 35 分钟 · 完成后获得 100 成长值</p></div></div></section></div></>;
+}
+
+function MeHome({ principal, onAccount, onTheme, onToast }: { principal: typeof initialPrincipal; onAccount: (title: string, detail: string) => void; onTheme: () => void; onToast: (message: string) => void }) {
+  const entries: Array<[string, string, typeof Gift]> = [["我的订单", "2 笔进行中", Gift], ["我的权益", "12 项可使用", Gift], ["我的群权限", "4 个群聊", Users], ["培训档案", "S3 · 独立经营", BookOpen], ["收益与提现", "¥8,460 可提现", CircleDollarSign]];
+  return <><Header title="我的" subtitle="账户、偏好与权益" onSearch={() => onToast("账号设置已准备")} /><div className="space-y-5 px-4 pb-6"><section className="flex items-center gap-4 rounded-[var(--ps-radius)] bg-[var(--ps-brand)] p-5 text-white"><Avatar src={principal.avatar} fallback="王" className="h-16 w-16 rounded-full bg-white/20 text-white" /><div><h2 className="text-[18px] font-semibold">{principal.name} · 创始人</h2><p className="mt-1 text-[11px] text-white/75">{principal.level} · 主理人公社</p><div className="mt-2 inline-flex rounded-full bg-white/15 px-2 py-1 text-[10px]">成长值 {principal.growthValue.toLocaleString()}</div></div></section><section className="overflow-hidden rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)]">{entries.map(([label, detail, Icon]) => <button key={label} onClick={() => onAccount(label, detail)} className="flex w-full items-center gap-3 border-b border-[var(--ps-border)] px-4 py-4 text-left last:border-0"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--ps-soft)] text-[var(--ps-brand)]"><Icon size={17} /></span><span className="min-w-0 flex-1"><strong className="block text-[13px] text-[var(--ps-text)]">{label}</strong><span className="mt-1 block text-[10px] text-[var(--ps-subtle)]">{detail}</span></span><ArrowRight size={15} className="text-[var(--ps-subtle)]" /></button>)}</section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><button onClick={onTheme} className="flex min-h-12 w-full items-center gap-3 text-left"><span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--ps-soft)] text-[var(--ps-brand)]"><Sparkles size={17} /></span><span className="flex-1"><strong className="block text-[13px] text-[var(--ps-text)]">UI 风格</strong><span className="mt-1 block text-[10px] text-[var(--ps-subtle)]">切换主理人公社的视觉方向</span></span><ArrowRight size={15} className="text-[var(--ps-subtle)]" /></button><div className="mt-3 grid grid-cols-2 gap-2"><button onClick={() => onToast("通知中心已准备")} className="min-h-11 rounded-xl bg-[var(--ps-soft)] text-[11px] text-[var(--ps-brand)]"><Bell className="mx-auto mb-1" size={15} />通知中心</button><button onClick={() => onToast("数据已同步")} className="min-h-11 rounded-xl bg-[var(--ps-soft)] text-[11px] text-[var(--ps-brand)]"><TrendingUp className="mx-auto mb-1" size={15} />同步数据</button></div></section></div></>;
+}
+
+function ThemePicker({ current, onSelect, onBack }: { current: ThemeId; onSelect: (id: ThemeId) => void; onBack: () => void }) {
+  return <div className="min-h-screen bg-[var(--ps-page)]"><header className="flex items-center gap-3 px-5 pb-4 pt-[max(18px,env(safe-area-inset-top))]"><button aria-label="返回我的" onClick={onBack} className="rounded-full p-2 text-[var(--ps-subtle)]"><ChevronLeft size={21} /></button><div><h1 className="text-[19px] font-semibold text-[var(--ps-text)]">UI 风格</h1><p className="text-[11px] text-[var(--ps-subtle)]">只改变视觉，不改变业务数据</p></div></header><main className="space-y-3 px-4 pb-8">{principalThemes.map(theme => <button key={theme.id} onClick={() => onSelect(theme.id)} className={`w-full rounded-[var(--ps-radius)] border p-4 text-left ${current === theme.id ? "border-[var(--ps-brand)] ring-2 ring-[var(--ps-brand)]/15" : "border-[var(--ps-border)]"}`} style={theme.vars}><div className="flex items-center justify-between"><div><strong className="text-[15px] text-[var(--ps-text)]">{theme.name}</strong><p className="mt-1 text-[11px] text-[var(--ps-subtle)]">{theme.tagline}</p></div><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--ps-brand)] text-white">{current === theme.id ? <Check size={17} /> : <Sparkles size={17} />}</span></div><div className="mt-4 flex gap-2"><span className="h-7 flex-1 rounded-lg bg-[var(--ps-page)]" /><span className="h-7 flex-1 rounded-lg bg-[var(--ps-soft)]" /><span className="h-7 flex-1 rounded-lg bg-[var(--ps-brand)]" /></div></button>)}</main></div>;
+}
+
+function Detail({ detail, onBack, onComplete, onToast }: { detail: Exclude<DetailView, null>; onBack: () => void; onComplete: () => void; onToast: (message: string) => void }) {
+  if (detail.type === "message") return <ZhuLiRenMessageDetail kind="conversation" title={detail.name} preview={detail.preview} unread={0} onBack={onBack} />;
+  if (detail.type === "growth") return <ZhuLiRenGrowthDetail kind="task" title={detail.task.title} description={`${detail.task.description} · +${detail.task.growthValue} 成长值`} status={detail.task.status} onBack={onBack} onAdvance={detail.task.status === "已完成" ? undefined : onComplete} />;
+  if (detail.type === "account") return <ZhuLiRenAccountDetail title={detail.title} detail={detail.detail} rows={detail.rows} onBack={onBack} />;
+  if (detail.type === "theme") return <ThemePicker current={"community-blue"} onSelect={id => { onToast(`已切换为${getPrincipalTheme(id).name}`); onBack(); }} onBack={onBack} />;
+  const isCommunity = detail.type === "community";
+  const item = detail.item;
+  return <div className="min-h-screen bg-[var(--ps-page)]"><header className="flex items-center gap-3 px-5 pb-4 pt-[max(18px,env(safe-area-inset-top))]"><button aria-label="返回" onClick={onBack} className="rounded-full p-2 text-[var(--ps-subtle)]"><ChevronLeft size={21} /></button><div><h1 className="text-[19px] font-semibold text-[var(--ps-text)]">{isCommunity ? "社群详情" : "项目详情"}</h1><p className="text-[11px] text-[var(--ps-subtle)]">查看当前状态和下一步</p></div></header><main className="space-y-4 px-4 pb-8">{isCommunity ? <><section className="rounded-[var(--ps-radius)] bg-[var(--ps-brand)] p-5 text-white"><Pill tone="muted">{item.type}</Pill><h2 className="mt-4 text-[23px] font-semibold">{item.name}</h2><p className="mt-2 text-[12px] text-white/75">{item.memberCount} 位成员 · 最近更新 {item.updatedAt}</p></section><section className="grid grid-cols-3 gap-2">{[["成员", item.memberCount], ["活跃度", `${item.activityScore}%`], ["待跟进", item.pendingFollowUps]].map(([label, value]) => <div key={label} className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-3"><span className="text-[10px] text-[var(--ps-subtle)]">{label}</span><strong className="mt-2 block text-[18px] text-[var(--ps-text)]">{value}</strong></div>)}</section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><SectionTitle title="动态" /><p className="text-[12px] leading-6 text-[var(--ps-subtle)]">今日新增 {item.todayNewMembers} 位成员，当前有 {item.pendingFollowUps} 位成员待跟进。</p></section></> : <><section className="rounded-[var(--ps-radius)] bg-[var(--ps-brand)] p-5 text-white"><Pill tone="muted">{item.type}</Pill><h2 className="mt-4 text-[23px] font-semibold">{item.name}</h2><p className="mt-2 text-[12px] text-white/75">当前阶段：{item.status}</p><div className="mt-5 h-2 overflow-hidden rounded-full bg-white/20"><div className="h-full rounded-full bg-white" style={{ width: `${item.progress}%` }} /></div><p className="mt-2 text-right text-[11px] text-white/75">{item.progress}%</p></section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><SectionTitle title="下一步动作" /><p className="text-[14px] font-semibold text-[var(--ps-text)]">{item.nextAction}</p><p className="mt-1 text-[11px] text-[var(--ps-subtle)]">截止 {item.nextActionDueAt}</p></section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><SectionTitle title="里程碑" />{item.milestones.map(milestone => <div key={milestone.id} className="flex items-center gap-3 border-b border-[var(--ps-border)] py-3 last:border-0"><span className={`flex h-7 w-7 items-center justify-center rounded-full ${milestone.status === "已完成" ? "bg-[var(--ps-soft)] text-[var(--ps-brand)]" : "bg-black/5 text-[var(--ps-subtle)]"}`}>{milestone.status === "已完成" ? <Check size={14} /> : <Target size={14} />}</span><span className="flex-1 text-[12px] text-[var(--ps-text)]">{milestone.title}</span><span className="text-[10px] text-[var(--ps-subtle)]">{milestone.dueAt}</span></div>)}</section><button onClick={onComplete} className="min-h-12 w-full rounded-xl bg-[var(--ps-brand)] py-3 text-[12px] font-semibold text-white">更新项目进展</button></>}</main></div>;
+}
+
+export default function ZhuLiRenApp() {
+  const [activeTab, setActiveTab] = useState<TabId>("workbench");
+  const [detail, setDetail] = useState<DetailView>(null);
+  const [principal, setPrincipal] = useState(initialPrincipal);
+  const [actions, setActions] = useState(initialActionItems);
+  const [communities] = useState(initialCommunities);
+  const [projects, setProjects] = useState(initialProjects);
+  const [tasks, setTasks] = useState(initialGrowthTasks);
+  const [toast, setToast] = useState<string | null>(null);
+  const [theme, setTheme] = useState<ThemeId>(() => {
+    const stored = window.localStorage.getItem(principalThemeStorageKey) as ThemeId | null;
+    return stored === "community-blue" || stored === "principal-green" || stored === "principal-black" ? stored : defaultPrincipalTheme;
+  });
+  const unread = actions.filter(item => item.status === "pending").length;
+  const themeVars = getPrincipalTheme(theme).vars;
+
+  useEffect(() => { window.localStorage.setItem(principalThemeStorageKey, theme); setPrincipal(current => ({ ...current, preferredTheme: theme })); }, [theme]);
+  useEffect(() => { if (!toast) return; const timer = window.setTimeout(() => setToast(null), 2200); return () => window.clearTimeout(timer); }, [toast]);
+
+  const openAccount = (title: string, detailText: string) => setDetail({ type: "account", title, detail: detailText, rows: [{ label: "当前状态", value: "已同步" }, { label: "最近更新", value: "刚刚" }] });
+  const completeDetail = () => {
+    if (!detail) return;
+    if (detail.type === "action") { setActions(current => current.map(item => item.id === detail.item.id ? { ...item, status: "completed", completedAt: "刚刚" } : item)); setToast(`已完成「${detail.item.title}」`); }
+    if (detail.type === "growth") { setTasks(current => current.map(item => item.id === detail.task.id ? { ...item, status: item.status === "未开始" ? "进行中" : item.status === "进行中" ? "待提交" : "已完成" } : item)); setToast(`「${detail.task.title}」状态已更新`); }
+    if (detail.type === "project") { setProjects(current => current.map(item => item.id === detail.item.id ? { ...item, progress: Math.min(100, item.progress + 8), status: item.progress >= 92 ? "已完成" : "进行中" } : item)); setToast(`「${detail.item.name}」进展已更新`); }
+    setDetail(null);
+  };
+  const content = detail?.type === "theme" ? <ThemePicker current={theme} onSelect={id => { setTheme(id); setToast(`已切换为${getPrincipalTheme(id).name}`); setDetail(null); }} onBack={() => setDetail(null)} /> : detail ? <Detail detail={detail} onBack={() => setDetail(null)} onComplete={completeDetail} onToast={setToast} /> : activeTab === "workbench" ? <Workbench principal={principal} actions={actions} communities={communities} projects={projects} onAction={item => setDetail({ type: "action", item })} onCommunity={item => setDetail({ type: "community", item })} onProject={item => setDetail({ type: "project", item })} onNavigate={setActiveTab} /> : activeTab === "communities" ? <CommunityHome communities={communities} onOpen={item => setDetail({ type: "community", item })} onToast={setToast} /> : activeTab === "projects" ? <ProjectHome projects={projects} onOpen={item => setDetail({ type: "project", item })} onToast={setToast} /> : activeTab === "growth" ? <GrowthHome tasks={tasks} onOpen={task => setDetail({ type: "growth", task })} /> : <MeHome principal={principal} onAccount={openAccount} onTheme={() => setDetail({ type: "theme" })} onToast={setToast} />;
+
+  return <div className="min-h-screen bg-[var(--ps-page)] text-[var(--ps-text)]" style={{ ...themeVars, fontFamily: "'Noto Sans SC', 'PingFang SC', sans-serif" }}><div className="mx-auto min-h-screen w-full max-w-[430px] overflow-hidden bg-[var(--ps-page)]"><main className="min-h-screen pb-[86px]">{content}</main>{!detail && <BottomNav active={activeTab} onChange={setActiveTab} unread={unread} />}{toast && <div role="status" aria-live="polite" className="fixed bottom-[92px] left-1/2 z-40 w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 rounded-2xl bg-[var(--ps-text)] px-4 py-3 text-center text-[12px] font-medium text-[var(--ps-page)] shadow-[var(--ps-shadow)]">{toast}</div>}</div></div>;
 }

@@ -33,7 +33,7 @@ function HomeTab() {
           <div>
             <div className="font-bold tracking-wider" style={{ fontSize: "17px", color: M.text, fontFamily: "monospace" }}>嗨，李云天</div>
             <div className="text-xs mt-0.5 flex items-center gap-1.5 font-mono" style={{ color: M.primary }}>
-              <img src="/badges/transparent/badge-r2-pro.png" alt="PRO" width={20} height={20} draggable={false} style={{ width: 20, height: 20, display: "inline-block", filter: "drop-shadow(0 0 4px #7C3AED55)" }} />
+              <img src="/member-app/assets/badges/badge-r2-pro.png" alt="PRO" width={20} height={20} draggable={false} style={{ width: 20, height: 20, display: "inline-block", filter: "drop-shadow(0 0 4px #7C3AED55)" }} />
               PRO会员 · 北京 · 有效至 2027-03-01
             </div>
           </div>
@@ -51,7 +51,7 @@ function HomeTab() {
           <div className="flex items-start justify-between mb-4 relative">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <img src="/badges/transparent/badge-r2-pro.png" alt="PRO" width={32} height={32} draggable={false} style={{ width: 32, height: 32, display: "inline-block", filter: "drop-shadow(0 2px 6px rgba(124,58,237,.4))" }} />
+                <img src="/member-app/assets/badges/badge-r2-pro.png" alt="PRO" width={32} height={32} draggable={false} style={{ width: 32, height: 32, display: "inline-block", filter: "drop-shadow(0 2px 6px rgba(124,58,237,.4))" }} />
                 <span className="text-xs font-bold tracking-widest" style={{ color: M.primary, fontFamily: "monospace" }}>PRO 会员</span>
               </div>
               <div className="font-bold" style={{ fontSize: "18px", color: M.text, fontFamily: "monospace" }}>会员中心</div>

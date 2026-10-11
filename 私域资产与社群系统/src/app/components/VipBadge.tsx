@@ -30,11 +30,11 @@ export interface VipBadgeProps {
 
 /** rarity → 徽章图片路径映射 */
 const BADGE_IMAGES: Record<VipRarity, string> = {
-  0: "/badges/transparent/badge-r0-guest.png",
-  1: "/badges/transparent/badge-r1-trial.png",
-  2: "/badges/transparent/badge-r2-pro.png",
-  3: "/badges/transparent/badge-r3-vip.png",
-  4: "/badges/transparent/badge-r4-black.png",
+  0: "/member-app/assets/badges/badge-r0-guest.png",
+  1: "/member-app/assets/badges/badge-r1-trial.png",
+  2: "/member-app/assets/badges/badge-r2-pro.png",
+  3: "/member-app/assets/badges/badge-r3-vip.png",
+  4: "/member-app/assets/badges/badge-r4-black.png",
 };
 
 /** rarity → 显示名 */

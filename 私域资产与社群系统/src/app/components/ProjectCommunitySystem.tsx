@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getAvatar } from "./Avatar";
 import GroupAssignment from "./GroupAssignment";
 import { Archive, Edit3, GitBranch, Plus, Search, Users, UsersRound, X } from "lucide-react";
@@ -200,6 +200,7 @@ export default function ProjectCommunitySystem({ platform, scope, project, rules
   const [showModal, setShowModal] = useState(false);
   const [editGroupNo, setEditGroupNo] = useState<string | null>(null);
   const [memberGroup, setMemberGroup] = useState<SharedGroup | null>(null);
+  const [selectedGroupNo, setSelectedGroupNo] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
 
@@ -214,6 +215,12 @@ export default function ProjectCommunitySystem({ platform, scope, project, rules
     .map(group => ({ ...group, ...(scopeEdits[group.no] || {}) }))
     .filter(group => !archivedNos.includes(group.no)), [generatedGroups, scopeKey, scopeEdits, archivedNos]);
   const filtered = projectGroups.filter(g => g.name.includes(search) || g.city.includes(search) || g.wechat.includes(search) || g.groupNo.includes(search));
+  const selectedGroup = filtered.find(group => group.no === selectedGroupNo) || null;
+  useEffect(() => {
+    if (selectedGroupNo && !projectGroups.some(group => group.no === selectedGroupNo)) {
+      setSelectedGroupNo(null);
+    }
+  }, [projectGroups, selectedGroupNo]);
   const usedCount = projectGroups.filter(g => g.memberCount > 0).length;
   const fullCount = projectGroups.filter(g => g.memberCount >= g.max).length;
   const totalCapacity = projectGroups.reduce((sum, g) => sum + g.max, 0);
@@ -299,46 +306,74 @@ export default function ProjectCommunitySystem({ platform, scope, project, rules
 
       {subTab === "library" && (
         <div className="space-y-2">
-          <div className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <Search size={13} style={{ color: S.muted }} />
-            <input className="bg-transparent outline-none text-xs flex-1" style={{ color: S.textSec, fontFamily: "monospace" }} placeholder="搜索群名、城市、微信号、群编号..." value={search} onChange={e => setSearch(e.target.value)} />
-            {search && <button onClick={() => setSearch("")}><X size={12} style={{ color: S.muted }} /></button>}
-          </div>
-          <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, maxHeight: 340 }}>
-            <div style={{ minWidth: 860 }}>
-              <div className="flex items-center px-4 py-2.5 sticky top-0 z-10" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}` }}>
-                {([["群编号", 90], ["群名", 220], ["地区", 90], ["所属微信", 90], ["群类型", 90], ["服务官", 80], ["入群人数", 110], ["操作", 150]] as [string, number][]).map(([label, w]) => (
-                  <div key={label} className="flex-shrink-0 text-xs font-medium uppercase" style={{ width: w, color: "#475569", fontFamily: "monospace", letterSpacing: "0.05em" }}>{label}</div>
-                ))}
+          <div className="grid min-w-0 gap-2 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div className="min-w-0 space-y-2">
+              <div className="flex items-center gap-2 px-3 py-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
+                <Search size={13} style={{ color: S.muted }} />
+                <input className="min-w-0 flex-1 bg-transparent outline-none text-xs" style={{ color: S.textSec, fontFamily: "monospace" }} placeholder="搜索群名、城市、微信号、群编号..." value={search} onChange={e => setSearch(e.target.value)} />
+                {search && <button type="button" aria-label="清除群搜索" onClick={() => setSearch("")}><X size={12} style={{ color: S.muted }} /></button>}
               </div>
-              {filtered.map(g => {
-                const tc = typeCfg[g.type] || { bg: "#f1f5f9", color: "#475569" };
-                const pct = g.memberCount / g.max;
-                return (
-                  <div key={g.no} className="flex items-center px-4 py-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
-                    <div className="flex-shrink-0 text-xs font-bold" style={{ width: 90, color: S.muted, fontFamily: "monospace" }}>{g.groupNo}</div>
-                    <div className="flex-shrink-0" style={{ width: 220 }}>
-                      <div className="text-xs font-medium" style={{ color: S.text, fontFamily: "monospace" }}>{g.name}</div>
-                      <div className="mt-1 h-1 overflow-hidden" style={{ background: S.border, width: 160, borderRadius: "4px" }}>
-                        <div className="h-full" style={{ width: `${Math.min(100, pct * 100)}%`, background: pct >= 0.9 ? "#1e293b" : S.accent, borderRadius: "4px" }} />
-                      </div>
-                      <div className="text-[10px] mt-0.5" style={{ color: pct >= 0.9 ? S.text : S.muted, fontFamily: "monospace" }}>{g.memberCount}/{g.max}</div>
-                    </div>
-                    <div className="flex-shrink-0 text-xs" style={{ width: 90, color: S.muted, fontFamily: "monospace" }}>{g.city}</div>
-                    <div className="flex-shrink-0 text-xs font-medium" style={{ width: 90, color: S.text, fontFamily: "monospace" }}>{g.wechat}</div>
-                    <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 text-xs" style={{ background: tc.bg, color: tc.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{g.type}</span></div>
-                    <div className="flex-shrink-0 text-xs" style={{ width: 80, color: S.textSec, fontFamily: "monospace" }}>{managerFor(g)}</div>
-                    <div className="flex-shrink-0 text-xs font-medium" style={{ width: 110, color: S.text, fontFamily: "monospace" }}>{g.memberCount} 人</div>
-                    <div className="flex-shrink-0 flex items-center gap-1.5" style={{ width: 150 }}>
-                      <button className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setMemberGroup(g)}><Users size={11} className="inline mr-0.5" />名单</button>
-                      <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={() => setEditGroupNo(g.no)}><Edit3 size={11} className="inline mr-0.5" />编辑</button>
-                      <button type="button" title="归档群" aria-label="归档群" className="w-7 h-7 grid place-items-center" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => handleArchiveGroup(g)}><Archive size={13} /></button>
-                    </div>
+              <div className="overflow-auto" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, maxHeight: 340 }}>
+                <div style={{ minWidth: 860 }}>
+                  <div className="flex items-center px-4 py-2.5 sticky top-0 z-10" style={{ background: "#f1f5f9", borderBottom: `1px solid ${S.border}` }}>
+                    {([["群编号", 90], ["群名", 220], ["地区", 90], ["所属微信", 90], ["群类型", 90], ["服务官", 80], ["入群人数", 110], ["操作", 150]] as [string, number][]).map(([label, w]) => (
+                      <div key={label} className="flex-shrink-0 text-xs font-medium uppercase" style={{ width: w, color: "#475569", fontFamily: "monospace", letterSpacing: "0.05em" }}>{label}</div>
+                    ))}
                   </div>
-                );
-              })}
-              {filtered.length === 0 && <div className="py-10 text-center text-xs" style={{ color: S.muted }}>{enabledRules.length ? `本${scopeLabel}暂无社群，点击右上角「创建${scopeLabel}社群」开始搭建` : `启用群类型规则后即可创建${scopeLabel}社群`}</div>}
+                  {filtered.map(g => {
+                    const tc = typeCfg[g.type] || { bg: "#f1f5f9", color: "#475569" };
+                    const pct = g.max > 0 ? g.memberCount / g.max : 0;
+                    return (
+                      <div key={g.no} className="flex items-center px-4 py-2.5 cursor-pointer" style={{ background: selectedGroupNo === g.no ? S.accentLight : "transparent", borderBottom: `1px solid ${S.border}`, borderLeft: selectedGroupNo === g.no ? `3px solid ${S.accent}` : "3px solid transparent" }} onClick={() => setSelectedGroupNo(selectedGroupNo === g.no ? null : g.no)}>
+                        <div className="flex-shrink-0 text-xs font-bold" style={{ width: 90, color: S.muted, fontFamily: "monospace" }}>{g.groupNo}</div>
+                        <div className="flex-shrink-0" style={{ width: 220 }}>
+                          <div className="text-xs font-medium" style={{ color: S.text, fontFamily: "monospace" }}>{g.name}</div>
+                          <div className="mt-1 h-1 overflow-hidden" style={{ background: S.border, width: 160, borderRadius: "4px" }}>
+                            <div className="h-full" style={{ width: `${Math.min(100, pct * 100)}%`, background: pct >= 0.9 ? "#1e293b" : S.accent, borderRadius: "4px" }} />
+                          </div>
+                          <div className="text-[10px] mt-0.5" style={{ color: pct >= 0.9 ? S.text : S.muted, fontFamily: "monospace" }}>{g.memberCount}/{g.max}</div>
+                        </div>
+                        <div className="flex-shrink-0 text-xs" style={{ width: 90, color: S.muted, fontFamily: "monospace" }}>{g.city}</div>
+                        <div className="flex-shrink-0 text-xs font-medium" style={{ width: 90, color: S.text, fontFamily: "monospace" }}>{g.wechat}</div>
+                        <div className="flex-shrink-0" style={{ width: 90 }}><span className="px-1.5 py-0.5 text-xs" style={{ background: tc.bg, color: tc.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{g.type}</span></div>
+                        <div className="flex-shrink-0 text-xs" style={{ width: 80, color: S.textSec, fontFamily: "monospace" }}>{managerFor(g)}</div>
+                        <div className="flex-shrink-0 text-xs font-medium" style={{ width: 110, color: S.text, fontFamily: "monospace" }}>{g.memberCount} 人</div>
+                        <div className="flex-shrink-0 flex items-center gap-1.5" style={{ width: 150 }}>
+                          <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={event => { event.stopPropagation(); setMemberGroup(g); }}><Users size={11} className="inline mr-0.5" />名单</button>
+                          <button type="button" className="px-2 py-1 text-xs font-bold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm, fontFamily: "monospace" }} onClick={event => { event.stopPropagation(); setEditGroupNo(g.no); }}><Edit3 size={11} className="inline mr-0.5" />编辑</button>
+                          <button type="button" title="归档群" aria-label="归档群" className="w-7 h-7 grid place-items-center" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={event => { event.stopPropagation(); handleArchiveGroup(g); }}><Archive size={13} /></button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {filtered.length === 0 && <div className="py-10 text-center text-xs" style={{ color: S.muted }}>{enabledRules.length ? `本${scopeLabel}暂无社群，点击右上角「创建${scopeLabel}社群」开始搭建` : `启用群类型规则后即可创建${scopeLabel}社群`}</div>}
+                </div>
+              </div>
             </div>
+            {selectedGroup && (
+              <>
+                <button type="button" aria-label="关闭群详情" className="fixed inset-0 z-30 bg-black/20 lg:hidden" onClick={() => setSelectedGroupNo(null)} />
+                <aside aria-label="群详情" className="fixed inset-y-0 right-0 z-40 flex w-[min(360px,calc(100vw-24px))] flex-col overflow-y-auto p-4 shadow-xl lg:static lg:z-auto lg:w-auto lg:max-w-none lg:rounded-lg lg:shadow-none" style={{ background: S.surface, border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}>
+                  <div className="flex items-start justify-between gap-3" style={{ borderBottom: `1px solid ${S.border}`, paddingBottom: 12 }}>
+                    <div className="min-w-0"><div className="truncate text-sm font-bold" style={{ color: S.text }}>{selectedGroup.name}</div><div className="mt-1 text-[10px] font-mono" style={{ color: S.muted }}>{selectedGroup.groupNo}</div></div>
+                    <button type="button" aria-label="关闭群详情" onClick={() => setSelectedGroupNo(null)} className="flex-shrink-0" style={{ color: S.muted }}><X size={15} /></button>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between"><span className="px-2 py-1 text-[10px] font-bold" style={{ background: (typeCfg[selectedGroup.type] || { bg: S.accent }).bg, color: (typeCfg[selectedGroup.type] || { color: S.onPrimary }).color, borderRadius: S.radiusSm }}>{selectedGroup.type}</span><span className="text-[10px] font-bold" style={{ color: selectedGroup.ownerStatus === "正常" ? "#15803d" : "#c2410c" }}>{selectedGroup.ownerStatus || "待确认"}</span></div>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {[["成员", `${selectedGroup.memberCount}/${selectedGroup.max}`], ["推送", `${selectedGroup.pushCount}`], ["扫码", `${selectedGroup.scanCount}`], ["城市", selectedGroup.city || "待分配"]].map(([label, value]) => <div key={label} className="p-2" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><div className="text-sm font-bold" style={{ color: S.text }}>{value}</div><div className="text-[10px]" style={{ color: S.muted }}>{label}</div></div>)}
+                  </div>
+                  <div className="mt-4 space-y-2 text-xs">
+                    {[["所属平台", selectedGroup.platform], [scope === "project" ? "所属项目" : "管理范围", selectedGroup.project || selectedGroup.platform], ["绑定微信", selectedGroup.wechat || "待分配"], ["服务负责人", managerFor(selectedGroup)]].map(([label, value]) => <div key={label} className="flex items-start justify-between gap-3"><span style={{ color: S.muted }}>{label}</span><span className="max-w-[62%] text-right font-medium" style={{ color: S.textSec }}>{value || "待分配"}</span></div>)}
+                  </div>
+                  <div className="mt-4 p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}><div className="text-[10px] font-bold" style={{ color: S.text }}>群备注</div><div className="mt-1 text-xs leading-relaxed" style={{ color: S.textSec }}>{selectedGroup.note || "暂无备注"}</div></div>
+                  <div className="mt-4 grid grid-cols-2 gap-2">
+                    <button type="button" className="py-2 text-xs font-bold" style={{ background: S.accent, color: S.onPrimary, borderRadius: S.radiusSm }} onClick={() => setMemberGroup(selectedGroup)}><Users size={12} className="mr-1 inline" />名单</button>
+                    <button type="button" className="py-2 text-xs font-bold" style={{ background: S.surface, color: S.textSec, border: `1px solid ${S.borderMed}`, borderRadius: S.radiusSm }} onClick={() => setEditGroupNo(selectedGroup.no)}><Edit3 size={12} className="mr-1 inline" />编辑</button>
+                  </div>
+                  <button type="button" className="mt-2 w-full py-2 text-xs font-bold" style={{ background: S.surface, color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => handleArchiveGroup(selectedGroup)}><Archive size={12} className="mr-1 inline" />归档群</button>
+                </aside>
+              </>
+            )}
           </div>
         </div>
       )}

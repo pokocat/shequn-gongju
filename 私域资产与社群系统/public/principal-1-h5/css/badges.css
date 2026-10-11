@@ -1,0 +1,440 @@
+/* ==========================================================================
+   BADGE LIBRARY v3 · 主理人公社游戏化等级徽章库
+   --------------------------------------------------------------------------
+   设计套路：多层嵌套金属框 + 宝石内核 + 流光扫过 + 光晕脉冲 + 王冠尖齿
+   稀有度色阶：灰(r0) → 绿(r1) → 紫(r2) → 金(r3) → 红(r4)
+   
+   套系：wz=王者盾  ys=原神水晶  lol=王冠  cy=赛博
+   尺寸：sm=社群行徽章  md=hero卡  lg=会员卡
+   ========================================================================== */
+
+/* ---------- 通用动画 ---------- */
+@keyframes bdSweep{
+  0%{ transform:translateX(-120%) skewX(-22deg); opacity:0; }
+  10%{ opacity:1; }
+  60%,100%{ transform:translateX(220%) skewX(-22deg); opacity:0; }
+}
+@keyframes bdPulseGlow{
+  0%,100%{ filter:brightness(1) drop-shadow(0 0 3px var(--glow,#7C3AED)); }
+  50%{ filter:brightness(1.22) drop-shadow(0 0 16px var(--glow,#7C3AED)); }
+}
+@keyframes bdFloatY{
+  0%,100%{ transform:translateY(0); }
+  50%{ transform:translateY(-2px); }
+}
+@keyframes bdSlowSpin{ to{ transform:rotate(360deg); } }
+@keyframes bdScan{
+  0%{ top:-3px; opacity:0; }
+  10%{ opacity:.85; }
+  90%{ opacity:.85; }
+  100%{ top:100%; opacity:0; }
+}
+@keyframes bdFlicker{
+  0%,100%{ opacity:1; }
+  92%{ opacity:1; } 94%{ opacity:.3; } 96%{ opacity:1; } 98%{ opacity:.5; }
+}
+@keyframes bdParticles{
+  0%,100%{ opacity:.2; transform:translate(0,0) scale(1); }
+  50%{ opacity:1; transform:translate(var(--tx,6px),var(--ty,-8px)) scale(1.5); }
+}
+@keyframes bdNeonPulse{
+  0%,100%{ box-shadow:0 0 12px var(--neon,rgba(167,139,250,.5)),0 0 24px var(--neon,rgba(167,139,250,.3)),inset 0 0 10px color-mix(in srgb,var(--neon,rgba(167,139,250,.3)) 25%,transparent); }
+  50%{ box-shadow:0 0 22px var(--neon,rgba(167,139,250,.75)),0 0 44px var(--neon,rgba(167,139,250,.5)),inset 0 0 18px color-mix(in srgb,var(--neon,rgba(167,139,250,.5)) 40%,transparent); }
+}
+
+/* ---------- 通用基础 ---------- */
+.bd{
+  vertical-align:middle;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  font-style:normal;
+}
+
+/* ==========================================================================
+   套系 1：王者盾 WZ（三层金属盾徽 + 宝石内核 + 流光扫过）
+   
+   结构：外金属框(polygon) + 中金属边(dark) + 宝石内核 + 流光高光条
+   ========================================================================== */
+.bd-wz{
+  --w:38px; --h:44px;
+  width:var(--w); height:var(--h);
+  position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.15));
+}
+/* 外金属框（8边形） */
+.bd-wz::before{
+  content:''; position:absolute; inset:0; z-index:1;
+  clip-path:polygon(50% 0%,88% 7%,100% 25%,100% 73%,50% 100%,0 73%,0 25%,12% 7%);
+  background:linear-gradient(160deg,#C4B5A0,#8B7355,#5C4A35);
+}
+/* 中深色边（8边形缩小） */
+.bd-wz::after{
+  content:''; position:absolute; inset:3px; z-index:2;
+  clip-path:polygon(50% 2%,85% 9%,98% 27%,98% 71%,50% 98%,2% 71%,2% 27%,15% 9%);
+  background:linear-gradient(160deg,#5C4A35,#2E2519);
+  box-shadow:inset 0 0 6px rgba(0,0,0,.5);
+}
+/* 宝石内核（用 b 标签做） */
+.bd-wz > b{
+  position:relative; z-index:5;
+  width:calc(var(--w) - 14px); height:calc(var(--h) - 14px);
+  display:flex; align-items:center; justify-content:center;
+  clip-path:polygon(50% 4%,82% 12%,93% 30%,93% 68%,50% 96%,7% 68%,7% 30%,18% 12%);
+  font-weight:900; font-size:10px; letter-spacing:.5px;
+  color:var(--wz-fg,#fff); line-height:1; text-align:center;
+  text-shadow:0 1px 3px rgba(0,0,0,.4);
+  /* 宝石高光斜条 */
+  background-image:linear-gradient(135deg,transparent 35%,rgba(255,255,255,.45) 45%,transparent 55%);
+  background-size:100% 100%;
+}
+/* 流光扫过条（装饰用） */
+.bd-wz > b::before{
+  content:''; position:absolute; left:0; right:0; top:0; bottom:0; z-index:1;
+  background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,.4) 50%,transparent 70%);
+  transform:translateX(-120%) skewX(-22deg);
+  opacity:0;
+}
+
+/* --- 等级配色 --- */
+/* r0 普通 · 灰土褐 */
+.bd-wz.bd-r0{ --wz-fg:#FFF7EC; --glow:#8B7355; }
+.bd-wz.bd-r0::before{ background:linear-gradient(160deg,#9E8E78,#6B5A44,#3E3223); }
+.bd-wz.bd-r0::after{ background:linear-gradient(160deg,#4A3D2B,#241D14); box-shadow:inset 0 0 8px rgba(0,0,0,.55); }
+.bd-wz.bd-r0 > b{ background:linear-gradient(160deg,#7A6A52,#3E3223); }
+
+/* r1 进阶 · 翠绿 */
+.bd-wz.bd-r1{ --wz-fg:#fff; --glow:#10B981; }
+.bd-wz.bd-r1::before{ background:linear-gradient(160deg,#6EE7B7,#10B981,#047857); }
+.bd-wz.bd-r1::after{ background:linear-gradient(160deg,#065F46,#022C22); box-shadow:inset 0 0 8px rgba(0,0,0,.45),0 0 8px rgba(16,185,129,.3); }
+.bd-wz.bd-r1 > b{ background:linear-gradient(160deg,#34D399,#064E3B); }
+
+/* r2 精英 · 紫色 */
+.bd-wz.bd-r2{ --wz-fg:#fff; --glow:#7C3AED; }
+.bd-wz.bd-r2::before{ background:linear-gradient(160deg,#C4B5FD,#8B5CF6,#5B21B6); }
+.bd-wz.bd-r2::after{ background:linear-gradient(160deg,#4C1D95,#1E1B4B); box-shadow:inset 0 0 10px rgba(0,0,0,.45),0 0 12px rgba(124,58,237,.4); }
+.bd-wz.bd-r2 > b{ background:linear-gradient(160deg,#A78BFA,#3B0764); box-shadow:inset 0 0 8px rgba(0,0,0,.3); }
+.bd-wz.bd-r2 > b::before{ animation:bdSweep 4s ease-in-out infinite; }
+
+/* r3 史诗 · 金色（流光扫过 + 光晕脉冲） */
+.bd-wz.bd-r3{ --wz-fg:#451A03; --glow:#F59E0B; }
+.bd-wz.bd-r3::before{ background:linear-gradient(160deg,#FEF3C7,#F59E0B,#92400E); animation:bdPulseGlow 3s ease-in-out infinite; }
+.bd-wz.bd-r3::after{ background:linear-gradient(160deg,#B45309,#451A03); box-shadow:inset 0 0 10px rgba(0,0,0,.4),0 0 16px rgba(245,158,11,.5); }
+.bd-wz.bd-r3 > b{ background:linear-gradient(160deg,#FDE68A,#B45309); box-shadow:inset 0 0 10px rgba(0,0,0,.3); }
+.bd-wz.bd-r3 > b::before{ animation:bdSweep 3s ease-in-out infinite; }
+
+/* r4 传说 · 赤红（快速流光 + 强光晕） */
+.bd-wz.bd-r4{ --wz-fg:#fff; --glow:#EF4444; }
+.bd-wz.bd-r4::before{ background:linear-gradient(160deg,#FECACA,#DC2626,#7F1D1D); animation:bdPulseGlow 2s ease-in-out infinite; }
+.bd-wz.bd-r4::after{ background:linear-gradient(160deg,#991B1B,#450A0A); box-shadow:inset 0 0 12px rgba(0,0,0,.45),0 0 20px rgba(220,38,38,.55); }
+.bd-wz.bd-r4 > b{ background:linear-gradient(160deg,#FCA5A5,#991B1B); box-shadow:inset 0 0 10px rgba(0,0,0,.3); }
+.bd-wz.bd-r4 > b::before{ animation:bdSweep 2.2s ease-in-out infinite; }
+
+/* --- 尺寸 --- */
+.bd-wz.bd-sm{ --w:32px; --h:38px; }
+.bd-wz.bd-sm > b{ font-size:9px; width:calc(var(--w) - 10px); height:calc(var(--h) - 10px); }
+.bd-wz.bd-md{ --w:48px; --h:56px; }
+.bd-wz.bd-md > b{ font-size:12px; }
+.bd-wz.bd-lg{ --w:72px; --h:84px; }
+.bd-wz.bd-lg > b{ font-size:17px; }
+
+
+/* ==========================================================================
+   套系 2：原神水晶 YS（外环双圆 + 旋转六棱水晶 + 高光 + 粒子）
+   
+   DOM：<i class="ys-ring"><svg>...</svg></i> <i class="ys-core"><b>文本</b></i>
+   ========================================================================== */
+.bd-ys{
+  --size:38px;
+  width:var(--size); height:var(--size);
+  position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+/* 外环双圆（慢旋转） */
+.bd-ys > .ys-ring{
+  position:absolute; inset:-3px; z-index:1;
+  animation:bdSlowSpin 25s linear infinite;
+}
+.bd-ys > .ys-ring svg{ width:100%; height:100%; overflow:visible; display:block; }
+.bd-ys > .ys-ring svg circle{ fill:none; stroke-width:1.2; }
+
+/* 水晶内核（六棱） */
+.bd-ys > .ys-core{
+  position:relative; z-index:3;
+  width:22px; height:26px;
+  clip-path:polygon(50% 0%,100% 25%,90% 100%,10% 100%,0 25%);
+  display:flex; align-items:center; justify-content:center;
+  transform:rotate(12deg);
+  animation:bdFloatY 3.5s ease-in-out infinite;
+  font-style:normal;
+}
+.bd-ys > .ys-core > b{
+  transform:rotate(-12deg);
+  font-weight:900; font-size:9px; line-height:1;
+  color:var(--ys-fg,#fff);
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+}
+/* 水晶高光斜条（用 before） */
+.bd-ys > .ys-core::before{
+  content:''; position:absolute; top:2px; left:2px;
+  width:45%; height:40%;
+  background:linear-gradient(135deg,rgba(255,255,255,.7),transparent);
+  border-radius:2px;
+  z-index:2;
+}
+
+/* --- 等级配色 --- */
+.bd-ys.bd-r0{ --ys-fg:#FFF7EC; }
+.bd-ys.bd-r0 > .ys-ring svg circle{ stroke:#8B7355; stroke-dasharray:6 8; opacity:.6; }
+.bd-ys.bd-r0 > .ys-core{ background:linear-gradient(150deg,#6B5A44,#3E3223); box-shadow:0 0 6px rgba(62,50,35,.4); }
+
+.bd-ys.bd-r1{ --ys-fg:#fff; --glow:#10B981; }
+.bd-ys.bd-r1 > .ys-ring svg circle{ stroke:#34D399; stroke-dasharray:5 6; opacity:.75; }
+.bd-ys.bd-r1 > .ys-core{ background:linear-gradient(150deg,#10B981,#064E3B); box-shadow:0 0 10px rgba(16,185,129,.5); }
+
+.bd-ys.bd-r2{ --ys-fg:#fff; --glow:#7C3AED; }
+.bd-ys.bd-r2 > .ys-ring svg circle{ stroke:#C4B5FD; stroke-dasharray:4 5; opacity:.85; }
+.bd-ys.bd-r2 > .ys-core{ background:linear-gradient(150deg,#8B5CF6,#3B0764); box-shadow:0 0 14px rgba(124,58,237,.6); animation:bdFloatY 3s ease-in-out infinite,bdPulseGlow 3s ease-in-out infinite; }
+
+.bd-ys.bd-r3{ --ys-fg:#451A03; --glow:#F59E0B; }
+.bd-ys.bd-r3 > .ys-ring svg circle{ stroke:#FBBF24; stroke-dasharray:3 4; animation:bdSlowSpin 12s linear infinite; }
+.bd-ys.bd-r3 > .ys-core{ background:linear-gradient(150deg,#F59E0B,#7C2D12); box-shadow:0 0 20px rgba(245,158,11,.7); animation:bdFloatY 2.5s ease-in-out infinite,bdPulseGlow 2.5s ease-in-out infinite; }
+
+.bd-ys.bd-r4{ --ys-fg:#fff; --glow:#EF4444; }
+.bd-ys.bd-r4 > .ys-ring svg circle{ stroke:#FCA5A5; stroke-dasharray:2 3; animation:bdSlowSpin 8s linear infinite; }
+.bd-ys.bd-r4 > .ys-core{ background:linear-gradient(150deg,#EF4444,#7F1D1D); box-shadow:0 0 26px rgba(220,38,38,.8); animation:bdFloatY 2s ease-in-out infinite,bdPulseGlow 1.6s ease-in-out infinite; }
+
+/* --- 尺寸 --- */
+.bd-ys.bd-sm{ --size:32px; }
+.bd-ys.bd-sm > .ys-core{ width:18px; height:22px; }
+.bd-ys.bd-sm > .ys-core > b{ font-size:8px; }
+.bd-ys.bd-md{ --size:48px; }
+.bd-ys.bd-md > .ys-core{ width:28px; height:34px; }
+.bd-ys.bd-md > .ys-core > b{ font-size:11px; }
+.bd-ys.bd-lg{ --size:72px; }
+.bd-ys.bd-lg > .ys-core{ width:42px; height:50px; }
+.bd-ys.bd-lg > .ys-core > b{ font-size:15px; }
+
+
+/* ==========================================================================
+   套系 3：LOL 王冠（尖齿王冠 + 双层金属环 + 宝石内核 + 底部绶带）
+   
+   DOM：<i class="lol-crown"></i> <b class="lol-em">文本</b> <i class="lol-band">★</i>
+   ========================================================================== */
+.bd-lol{
+  --w:38px; --h:50px;
+  width:var(--w); height:var(--h);
+  position:relative;
+  display:inline-flex; align-items:flex-end; justify-content:center;
+  padding-bottom:4px;
+  flex-shrink:0;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.2));
+}
+
+/* 王冠（尖齿更锋利 + 金属纹理） */
+.bd-lol > .lol-crown{
+  position:absolute; top:0; left:50%; transform:translateX(-50%);
+  width:34px; height:18px; z-index:1;
+  /* 11 尖齿王冠形状 */
+  clip-path:polygon(
+    0 100%,2% 55%,8% 70%,14% 15%,20% 65%,26% 0,
+    38% 60%,50% 8%,62% 60%,74% 0,80% 65%,86% 15%,
+    92% 70%,98% 55%,100% 100%
+  );
+  font-style:normal;
+}
+
+/* 宝石内核（双层圆环 + 宝石面） */
+.bd-lol > .lol-em{
+  width:24px; height:24px; z-index:3;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:8px;
+  border-width:2.5px;
+  line-height:1;
+  position:relative;
+  text-shadow:0 1px 2px rgba(0,0,0,.35);
+  font-style:normal;
+}
+/* 内核金属高光（用 before 做斜条） */
+.bd-lol > .lol-em::before{
+  content:''; position:absolute; top:15%; left:15%;
+  width:30%; height:20%; border-radius:50%;
+  background:rgba(255,255,255,.5);
+  z-index:-1;
+}
+
+/* 底部绶带 */
+.bd-lol > .lol-band{
+  position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+  width:30px; height:9px; z-index:2;
+  clip-path:polygon(0 0,100% 0,94% 100%,50% 70%,6% 100%);
+  font-size:6px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  font-style:normal;
+}
+
+/* --- 等级配色 --- */
+.bd-lol.bd-r0 > .lol-crown{ background:linear-gradient(180deg,#9E8E78,#3E3223); }
+.bd-lol.bd-r0 > .lol-em{ background:linear-gradient(160deg,#5C4A35,#2E2519); border-color:#9E8E78; color:#FFF7EC; }
+.bd-lol.bd-r0 > .lol-band{ background:linear-gradient(180deg,#5C4A35,#2E2519); color:#D4C5A9; }
+
+.bd-lol.bd-r1 > .lol-crown{ background:linear-gradient(180deg,#4ADE80,#064E3B); }
+.bd-lol.bd-r1 > .lol-em{ background:linear-gradient(160deg,#10B981,#052E16); border-color:#34D399; color:#fff; box-shadow:0 0 10px rgba(16,185,129,.4); }
+.bd-lol.bd-r1 > .lol-band{ background:linear-gradient(180deg,#16A34A,#064E3B); color:#BBF7D0; }
+
+.bd-lol.bd-r2 > .lol-crown{ background:linear-gradient(180deg,#C4B5FD,#3B0764); }
+.bd-lol.bd-r2 > .lol-em{ background:linear-gradient(160deg,#8B5CF6,#1E1B4B); border-color:#DDD6FE; color:#fff; box-shadow:0 0 14px rgba(124,58,237,.5); animation:bdPulseGlow 3s ease-in-out infinite; }
+.bd-lol.bd-r2 > .lol-band{ background:linear-gradient(180deg,#7C3AED,#3B0764); color:#DDD6FE; }
+
+/* 金色王冠 + 流光 */
+.bd-lol.bd-r3 > .lol-crown{
+  background-image:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.6) 45%,transparent 65%),linear-gradient(180deg,#FEF3C7,#B45309);
+  background-size:200% 100%,100% 100%;
+  animation:bdSweep 3.5s ease-in-out infinite;
+}
+.bd-lol.bd-r3 > .lol-em{ background:linear-gradient(160deg,#F59E0B,#7C2D12); border-color:#FBBF24; color:#451A03; box-shadow:0 0 18px rgba(245,158,11,.6); animation:bdPulseGlow 2.5s ease-in-out infinite; }
+.bd-lol.bd-r3 > .lol-band{ background:linear-gradient(180deg,#F59E0B,#7C2D12); color:#FDE68A; }
+
+/* 传说红冠 + 快速流光 */
+.bd-lol.bd-r4 > .lol-crown{
+  background-image:linear-gradient(110deg,transparent 25%,rgba(255,255,255,.7) 45%,transparent 65%),linear-gradient(180deg,#FECACA,#7F1D1D);
+  background-size:200% 100%,100% 100%;
+  animation:bdSweep 2.2s ease-in-out infinite;
+}
+.bd-lol.bd-r4 > .lol-em{ background:linear-gradient(160deg,#EF4444,#7F1D1D); border-color:#FCA5A5; color:#fff; box-shadow:0 0 24px rgba(220,38,38,.7); animation:bdPulseGlow 1.5s ease-in-out infinite; }
+.bd-lol.bd-r4 > .lol-band{ background:linear-gradient(180deg,#DC2626,#7F1D1D); color:#FECACA; }
+
+/* --- 尺寸 --- */
+.bd-lol.bd-sm{ --w:32px; --h:42px; }
+.bd-lol.bd-sm > .lol-crown{ width:28px; height:14px; }
+.bd-lol.bd-sm > .lol-em{ width:20px; height:20px; font-size:7px; border-width:2px; }
+.bd-lol.bd-sm > .lol-band{ width:26px; height:8px; font-size:5px; }
+.bd-lol.bd-md{ --w:48px; --h:62px; }
+.bd-lol.bd-md > .lol-crown{ width:42px; height:22px; }
+.bd-lol.bd-md > .lol-em{ width:32px; height:32px; font-size:10px; border-width:2.5px; }
+.bd-lol.bd-md > .lol-band{ width:40px; height:11px; font-size:7px; }
+.bd-lol.bd-lg{ --w:72px; --h:92px; }
+.bd-lol.bd-lg > .lol-crown{ width:62px; height:30px; }
+.bd-lol.bd-lg > .lol-em{ width:48px; height:48px; font-size:14px; border-width:3px; }
+.bd-lol.bd-lg > .lol-band{ width:60px; height:16px; font-size:9px; }
+
+
+/* ==========================================================================
+   套系 4：赛博 CY（霓虹方章 + 角标装饰 + 扫描线 + 故障闪烁）
+   
+   DOM：<i class="cy-frame"></i> <b class="cy-num">文本</b> <i class="cy-scan"></i>
+   ========================================================================== */
+.bd-cy{
+  --w:38px; --h:38px;
+  width:var(--w); height:var(--h);
+  position:relative;
+  display:inline-flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  border-radius:6px; overflow:hidden;
+  font-family:'Menlo','Consolas',monospace;
+  font-style:normal;
+}
+/* 霓虹框（带角标装饰） */
+.bd-cy > .cy-frame{
+  position:absolute; inset:0; z-index:1;
+  border-radius:6px;
+  border:1.5px solid var(--cy-border,#8B7355);
+  background:linear-gradient(160deg,color-mix(in srgb,var(--cy-color,#5C4A35) 25%,transparent),color-mix(in srgb,var(--cy-color,#3E3223) 55%,transparent));
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--cy-border,#8B7355) 30%,transparent) inset,0 0 8px color-mix(in srgb,var(--cy-color,#5C4A35) 35%,transparent);
+  font-style:normal;
+}
+/* 角标装饰（用 before/after 做 L 形角标） */
+.bd-cy > .cy-frame::before,
+.bd-cy > .cy-frame::after{
+  content:''; position:absolute; width:6px; height:6px;
+  border:1px solid var(--cy-border,#8B7355);
+}
+.bd-cy > .cy-frame::before{ top:2px; left:2px; border-right:none; border-bottom:none; }
+.bd-cy > .cy-frame::after{ bottom:2px; right:2px; border-left:none; border-top:none; }
+
+/* 等级数字 */
+.bd-cy > .cy-num{
+  position:relative; z-index:3;
+  font-size:10px; font-weight:900;
+  color:var(--cy-color,#D4C5A9);
+  text-shadow:0 0 4px var(--cy-color,#D4C5A9),0 1px 0 rgba(0,0,0,.3);
+  letter-spacing:1px; line-height:1;
+  font-style:normal;
+}
+
+/* 扫描线 */
+.bd-cy > .cy-scan{
+  position:absolute; top:0; left:0; right:0; height:1.5px; z-index:2;
+  background:linear-gradient(90deg,transparent,var(--cy-color,#fff) 20%,transparent 80%);
+  pointer-events:none;
+  font-style:normal;
+}
+
+/* --- 等级配色 --- */
+.bd-cy.bd-r0{ --cy-color:#D4C5A9; --cy-border:#8B7355; }
+.bd-cy.bd-r0 > .cy-frame{ background:linear-gradient(160deg,rgba(94,74,48,.4),rgba(62,50,35,.6)); }
+.bd-cy.bd-r0 > .cy-scan{ display:none; }
+
+.bd-cy.bd-r1{ --cy-color:#34D399; --cy-border:#10B981; --neon:rgba(16,185,129,.5); }
+.bd-cy.bd-r1 > .cy-frame{
+  background:linear-gradient(160deg,rgba(16,185,129,.2),rgba(6,78,59,.45));
+  box-shadow:0 0 10px rgba(16,185,129,.4),inset 0 0 8px rgba(16,185,129,.15);
+}
+.bd-cy.bd-r1 > .cy-scan{ animation:bdScan 3.5s ease-in-out infinite; }
+
+.bd-cy.bd-r2{ --cy-color:#C4B5FD; --cy-border:#8B5CF6; --neon:rgba(167,139,250,.55); }
+.bd-cy.bd-r2 > .cy-frame{
+  background:linear-gradient(160deg,rgba(124,58,237,.22),rgba(59,7,100,.45));
+  box-shadow:0 0 14px rgba(124,58,237,.5),inset 0 0 12px rgba(124,58,237,.18);
+}
+.bd-cy.bd-r2 > .cy-frame::before, .bd-cy.bd-r2 > .cy-frame::after{ border-color:#C4B5FD; }
+.bd-cy.bd-r2 > .cy-scan{ animation:bdScan 3s ease-in-out infinite; }
+
+.bd-cy.bd-r3{ --cy-color:#FBBF24; --cy-border:#F59E0B; --neon:rgba(245,158,11,.6); }
+.bd-cy.bd-r3 > .cy-frame{
+  background:linear-gradient(160deg,rgba(245,158,11,.2),rgba(124,45,18,.45));
+  box-shadow:0 0 18px rgba(245,158,11,.55),inset 0 0 14px rgba(245,158,11,.2);
+  animation:bdNeonPulse 2.8s ease-in-out infinite;
+}
+.bd-cy.bd-r3 > .cy-frame::before, .bd-cy.bd-r3 > .cy-frame::after{ border-color:#FBBF24; }
+.bd-cy.bd-r3 > .cy-scan{ animation:bdScan 2.2s ease-in-out infinite; }
+
+.bd-cy.bd-r4{ --cy-color:#F87171; --cy-border:#EF4444; --neon:rgba(239,68,68,.7); }
+.bd-cy.bd-r4 > .cy-frame{
+  background:linear-gradient(160deg,rgba(239,68,68,.25),rgba(127,29,29,.5));
+  box-shadow:0 0 22px rgba(220,38,38,.65),inset 0 0 16px rgba(239,68,68,.25);
+  animation:bdNeonPulse 1.8s ease-in-out infinite;
+}
+.bd-cy.bd-r4 > .cy-frame::before, .bd-cy.bd-r4 > .cy-frame::after{ border-color:#FCA5A5; }
+.bd-cy.bd-r4 > .cy-scan{ animation:bdScan 2s ease-in-out infinite; }
+.bd-cy.bd-r4 > .cy-num{ animation:bdFlicker 2.5s infinite; }
+
+/* --- 尺寸 --- */
+.bd-cy.bd-sm{ --w:32px; --h:32px; border-radius:6px; }
+.bd-cy.bd-sm > .cy-frame{ border-radius:6px; }
+.bd-cy.bd-sm > .cy-num{ font-size:9px; }
+.bd-cy.bd-md{ --w:48px; --h:48px; border-radius:8px; }
+.bd-cy.bd-md > .cy-frame{ border-radius:8px; }
+.bd-cy.bd-md > .cy-num{ font-size:13px; }
+.bd-cy.bd-lg{ --w:72px; --h:72px; border-radius:12px; }
+.bd-cy.bd-lg > .cy-frame{ border-radius:12px; }
+.bd-cy.bd-lg > .cy-num{ font-size:19px; }
+
+
+/* ==========================================================================
+   社群→徽章套系 映射表
+   const COMMUNITY_BADGE_MAP = {
+     ca1_growth:  { family:'wz',  rarity:2, label:'高级', size:'md' },
+     ca1_xuanpin: { family:'ys',  rarity:0, label:'普通', size:'md' },
+     ca1_hudong:  { family:'cy',  rarity:0, label:'普通', size:'md' },
+     sqh_renewal: { family:'wz',  rarity:2, label:'高级', size:'md' },
+     sqh_summit:  { family:'cy',  rarity:3, label:'史诗', size:'md' },
+     upgrade_cta: { family:'lol', rarity:4, label:'VIP',  size:'md' },
+     member_card: { family:'lol', rarity:3, label:'L3',  size:'lg' },
+   };
+   ========================================================================== */
