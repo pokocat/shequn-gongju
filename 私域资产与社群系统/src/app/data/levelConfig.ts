@@ -215,6 +215,80 @@ export const defaultPlatformModeConfig: PlatformModeConfig = {
 export const memberLevelForRank = (rank: number) =>
   memberLevelOptions[[2, 2, 1, 0, 1][rank - 1] ?? 0];
 
+export type IdentityType = "member" | "channel" | "supplier" | "service" | "operator";
+export type IdentityStatus = "active" | "pending" | "inactive";
+export type IdentityCode = `${"V" | "D" | "G" | "S" | "Y"}${1 | 2 | 3 | 4 | 5}`;
+
+export type IdentityMetadata = {
+  type: IdentityType;
+  code: IdentityCode;
+  name: string;
+  color: string;
+  scope: string;
+};
+
+const identityTypeLabels: Record<IdentityType, string> = {
+  member: "零售会员",
+  channel: "渠道 / 分销",
+  supplier: "供应商",
+  service: "服务人员",
+  operator: "运营人员",
+};
+
+const identityTypeColors: Record<IdentityType, string> = {
+  member: "#5a6e00",
+  channel: "#4f46e5",
+  supplier: "#b45309",
+  service: "#008565",
+  operator: "#7c3aed",
+};
+
+const identityScopes: Record<IdentityType, string> = {
+  member: "零售会员与消费关系",
+  channel: "渠道分发与订单归属",
+  supplier: "供货与履约协同",
+  service: "客户服务与社群运营",
+  operator: "系统治理与经营配置",
+};
+
+const identityNames: Record<IdentityType, string[]> = {
+  member: ["游客", "体验官", "PRO会员", "VIP", "黑金"],
+  channel: ["创始人", "核心合伙人", "事业合伙人", "分公司负责人", "分公司合伙人"],
+  supplier: ["基础供应商", "认证供应商", "核心供应商", "战略供应商", "生态供应商"],
+  service: ["服务助理", "服务专员", "服务老师", "资深服务老师", "服务负责人"],
+  operator: ["运营助理", "运营专员", "运营经理", "运营负责人", "平台管理员"],
+};
+
+const identityCodeFor = (type: IdentityType, level: number): IdentityCode =>
+  `${type === "member" ? "V" : type === "channel" ? "D" : type === "supplier" ? "G" : type === "service" ? "S" : "Y"}${Math.min(5, Math.max(1, level))}` as IdentityCode;
+
+export const identityMetadata: IdentityMetadata[] = (Object.keys(identityTypeLabels) as IdentityType[]).flatMap(type =>
+  identityNames[type].map((name, index) => ({
+    type,
+    code: identityCodeFor(type, index + 1),
+    name,
+    color: identityTypeColors[type],
+    scope: identityScopes[type],
+  })),
+);
+
+export const getIdentityMetadata = (code: IdentityCode) =>
+  identityMetadata.find(identity => identity.code === code) ?? identityMetadata[0];
+
+export const identityTypeLabel = (type: IdentityType) => identityTypeLabels[type];
+export const memberIdentityCodeForRank = (rank: number): IdentityCode => identityCodeFor("member", [3, 3, 2, 1, 2][rank - 1] ?? 1);
+
+export const primaryIdentityForScene: Record<"relationship" | "channel" | "supplier" | "service" | "operator", IdentityType> = {
+  relationship: "member",
+  channel: "channel",
+  supplier: "supplier",
+  service: "service",
+  operator: "operator",
+};
+
+export const getIdentityCodeLabel = (code: IdentityCode, extraCount = 0) =>
+  extraCount > 0 ? `${code} +${extraCount}` : code;
+
 export const getPlatformRole = (code: PlatformRoleCode) =>
   platformRoles.find((role) => role.code === code) ?? platformRoles[0];
 

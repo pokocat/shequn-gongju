@@ -389,18 +389,27 @@ function TrafficLogTab() {
 // ─── 主组件 ───────────────────────────────────────────────────
 const tabs = ["渠道绑定", "分配规则", "流量日志"];
 
-export default function ChannelFlow() {
+type ChannelFlowMode = "config" | "operation";
+
+type ChannelFlowProps = {
+  mode?: ChannelFlowMode;
+  platformName?: string;
+  embedded?: boolean;
+};
+
+export default function ChannelFlow({ mode = "operation", platformName, embedded = false }: ChannelFlowProps) {
   useThemeSingleton();
-const [activeTab, setActiveTab] = useState("渠道绑定");
+  const isConfig = mode === "config";
+  const [activeTab, setActiveTab] = useState(isConfig ? "渠道绑定" : "分配规则");
 
   return (
-    <div style={{ padding: 24, height: "100%", display: "flex", flexDirection: "column", gap: 16, background: S.bg, fontFamily: "monospace" }}>
+    <div style={{ padding: embedded ? 0 : 24, height: embedded ? "auto" : "100%", display: "flex", flexDirection: "column", gap: 16, background: embedded ? "transparent" : S.bg, fontFamily: "monospace" }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexShrink: 0 }}>
         <div>
-          <h2 style={{ margin: 0, fontWeight: 700, color: S.text, fontFamily: "monospace", fontSize: 16 }}>渠道流量与分配</h2>
+          <h2 style={{ margin: 0, fontWeight: 700, color: S.text, fontFamily: "monospace", fontSize: 16 }}>{isConfig ? (platformName ? `${platformName} · 渠道与流量配置` : "渠道与流量配置") : "渠道分发与分销"}</h2>
           <p style={{ margin: "4px 0 0", fontSize: 11, color: S.muted, fontFamily: "monospace" }}>
-            绑定各媒体渠道账号（微信小店/抖音/小红书等），配置用户从不同渠道进来后的自动分配规则
+            {isConfig ? "管理渠道平台、账号绑定、流量来源参数与归因规则" : "执行渠道分发、流量分配与分销运营，追踪渠道转化效果"}
           </p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 11, padding: "6px 12px", flexShrink: 0, border: `1px solid rgba(204,255,0,0.4)`, borderRadius: S.radiusSm, background: S.accentLight, color: S.text, fontFamily: "monospace", fontWeight: 700 }}>

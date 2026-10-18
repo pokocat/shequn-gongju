@@ -18,8 +18,8 @@ const platforms = [
 describe("生态页面上下文", () => {
   it("根据当前层级生成一致的路径和当前对象标签", () => {
     expect(getEcosystemContext("super", null)).toEqual({
-      label: "我的生态",
-      path: ["我的生态"],
+      label: "超级生态",
+      path: ["行业生态", "超级生态"],
     });
     expect(getEcosystemContext("saas", null)).toEqual({
       label: "SaaS 合作伙伴",
@@ -43,7 +43,7 @@ describe("生态页面上下文", () => {
   });
 
   it("按身份映射到对应配置范围", () => {
-    expect(getIdentityConfigTarget("超级生态管理员")).toEqual({ nodeType: "eco", panel: "ecoSettings" });
+    expect(getIdentityConfigTarget("超级生态管理员")).toEqual({ nodeType: "super", panel: "superSettings" });
     expect(getIdentityConfigTarget("生态COO")).toEqual({ nodeType: "eco", panel: "ecoSettings" });
     expect(getIdentityConfigTarget("SaaS 合作伙伴运营")).toEqual({ nodeType: "saas", panel: "overview" });
     expect(getIdentityConfigTarget("平台管理员")).toEqual({ nodeType: "platform", panel: "overview" });

@@ -1,47 +1,43 @@
-import { ReactNode, useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import {
-  LayoutDashboard,
-  User, CreditCard, FileText, Shield, MapPin,
-  Bell, Search, Settings, LogOut, Zap, AlertTriangle, Headphones, Layers, Share2,
-  BarChart2, DollarSign, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
-  Globe, Monitor, Smartphone, ChevronDown, Check, Store, BriefcaseBusiness, Menu, X
+  User, Shield, Bell, Search, Settings, LogOut, Zap, AlertTriangle,
+  Layers, BarChart2, ClipboardCheck, PanelLeftClose, PanelLeftOpen,
+  Globe, Monitor, Smartphone, ChevronDown, Check, CheckCircle2, BriefcaseBusiness, Menu, X,
 } from "lucide-react";
 import { S, useThemeSingleton, ThemeControls } from "../theme";
 import { useProjectContext } from "../App";
+import {
+  computeWizardProgress,
+  markWizardStepDone,
+  setConfigGroupCollapsed,
+  setWizardMinimized,
+  usePlatformMenuData,
+  type WizardStepState,
+} from "../data/platformMenuConfig";
 
 type ViewMode = "landing" | "pc" | "zhuliren-1" | "zhuliren-2" | "zhuliren-pc";
+type NavItem = { id: string; label: string; icon: typeof User; badge: string | null };
 
-const navGroups = [
-  { label: "工作台", items: [
-    { id: "users",      label: "经营工作台",   icon: User,            badge: null },
-    { id: "overview",   label: "跨项目总览",     icon: LayoutDashboard, badge: null },
-  ]},
-  { label: "客户与服务", items: [
-    { id: "cs",         label: "服务资源与员工", icon: Headphones,      badge: null },
-    { id: "tickets",    label: "工单中心",       icon: FileText,        badge: "12" },
-  ]},
-  { label: "平台与生态", items: [
-    { id: "ecosystem",  label: "行业生态 / 平台管理", icon: Layers,       badge: null },
-  ]},
-  { label: "业务项目", items: [
-    { id: "orders",     label: "订单与履约",     icon: CreditCard,      badge: "3" },
-    { id: "channel",    label: "渠道与分销",     icon: Share2,          badge: null },
-    { id: "cities",     label: "城市分站",       icon: MapPin,          badge: null },
-  ]},
-  { label: "资产与连接", items: [
-    { id: "wechat",      label: "账号资产中心",  icon: Shield,          badge: "2" },
+const navGroups: Array<{ label: string; items: NavItem[] }> = [
+  { label: "经营", items: [
+    { id: "users", label: "经营工作台", icon: User, badge: null },
+    { id: "businessOperations", label: "业务运营", icon: BarChart2, badge: null },
+    { id: "analytics", label: "经营分析", icon: BarChart2, badge: null },
+  ] },
+  { label: "资产与能力", items: [
+    { id: "wechat", label: "账号资产中心", icon: Shield, badge: "2" },
     { id: "capabilities", label: "业务能力中心", icon: BriefcaseBusiness, badge: null },
-  ]},
-  { label: "结算与治理", items: [
-    { id: "commission", label: "佣金与结算",     icon: DollarSign,      badge: null },
-    { id: "approval",   label: "审批与风控",     icon: ClipboardCheck,  badge: "18" },
-    { id: "platformMode", label: "角色与权限配置", icon: Settings,       badge: null },
-  ]},
-  { label: "数据分析", items: [
-    { id: "reports",    label: "数据报表中心",   icon: BarChart2,        badge: null },
-  ]},
+  ] },
+  { label: "治理", items: [
+    { id: "approval", label: "审批与风控", icon: ClipboardCheck, badge: "18" },
+  ] },
 ];
-const navItems = navGroups.flatMap(g => g.items);
+
+const configGroupItems: NavItem[] = [
+  { id: "ecosystem", label: "生态与平台管理", icon: Layers, badge: null },
+];
+
+const navItems = [...navGroups.flatMap(group => group.items), ...configGroupItems];
 
 /* ─────── ViewModePicker —— 视图切换下拉选择器 ───────────────────────
    数据驱动：4 种视图 Web / PC / App / 主理人
@@ -220,6 +216,53 @@ function ViewModePicker({
   );
 }
 
+function WizardCard({
+  steps,
+  doneCount,
+  total,
+  collapsed,
+  onNavigate,
+  onMarkDone,
+  onMinimize,
+}: {
+  steps: WizardStepState[];
+  doneCount: number;
+  total: number;
+  collapsed: boolean;
+  onNavigate: (id: string) => void;
+  onMarkDone: (key: WizardStepState["key"]) => void;
+  onMinimize: () => void;
+}) {
+  if (collapsed) {
+    return (
+      <button type="button" aria-label={`项目初始化配置 ${doneCount}/${total}`} onClick={() => onNavigate(steps.find(step => !step.done)?.targetModule ?? "users")} className="mx-auto my-3 flex h-9 w-9 items-center justify-center rounded-full text-[10px] font-bold" style={{ background: S.accentLight, color: S.primaryDark }}>
+        {doneCount}/{total}
+      </button>
+    );
+  }
+  return (
+    <div className="mx-3 my-3 rounded-lg p-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}` }}>
+      <div className="mb-2 flex items-center justify-between">
+        <div>
+          <div className="text-[11px] font-bold" style={{ color: S.text }}>项目初始化配置</div>
+          <div className="mt-0.5 text-[9px]" style={{ color: S.muted }}>完成后进入日常运营</div>
+        </div>
+        <button type="button" aria-label="最小化向导" onClick={onMinimize} className="text-[9px]" style={{ color: S.muted }}>收起</button>
+      </div>
+      <div className="mb-2 text-right font-mono text-[9px] font-bold" style={{ color: S.primary }}>{doneCount}/{total}</div>
+      <div className="space-y-1">
+        {steps.map(step => (
+          <div key={step.key} className="flex items-center gap-2 text-[10px]">
+            {step.done ? <CheckCircle2 size={12} style={{ color: S.primary, flexShrink: 0 }} /> : <span className="flex h-3 w-3 items-center justify-center" style={{ color: step.current ? S.primary : S.mutedLight }}>{{ true: "●", false: "○" }[String(step.current) as "true" | "false"]}</span>}
+            <button type="button" onClick={() => onNavigate(step.targetModule)} className="min-w-0 flex-1 truncate text-left" style={{ color: step.done ? S.muted : S.text, textDecoration: step.done ? "line-through" : "none", fontWeight: step.current ? 700 : 400 }}>{step.index}. {step.label}</button>
+            {!step.done && step.key !== "operation" && <button type="button" onClick={() => onMarkDone(step.key)} className="rounded px-1.5 py-0.5 text-[9px] font-bold" style={{ background: S.surface, color: S.primaryDark }}>完成</button>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface PCLayoutProps {
   activeModule: string;
   onModuleChange: (id: string) => void;
@@ -227,12 +270,14 @@ interface PCLayoutProps {
   selectView: (v: ViewMode) => void;
   children: ReactNode;
 }
-
 export default function PCLayout({
  view, selectView, activeModule, onModuleChange, children }: PCLayoutProps) {
   useThemeSingleton();
   const { platform, project, workspaceContext, setPlatform, setProject, projectsByPlatform } = useProjectContext();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const menuState = usePlatformMenuData();
+  const wizard = computeWizardProgress(menuState.signals);
+  const showWizard = !wizard.complete && !menuState.wizardMinimized;
   const [isCompactViewport, setIsCompactViewport] = useState(() => typeof window !== "undefined" && window.innerWidth < 980);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const activeItem = navItems.find(i => i.id === activeModule);
@@ -260,6 +305,25 @@ export default function PCLayout({
   const handleModuleChange = (id: string) => {
     onModuleChange(id);
     setMobileNavOpen(false);
+  };
+
+  const renderNavItem = (item: NavItem, source?: string) => {
+    const Icon = item.icon;
+    const isActive = activeModule === item.id;
+    return (
+      <button
+        key={item.id}
+        onClick={() => handleModuleChange(item.id)}
+        className={sidebarCollapsed ? "w-full flex items-center justify-center px-0 py-2 text-left transition-all mb-0.5" : "w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all mb-0.5"}
+        title={sidebarCollapsed ? `${item.label}${source ? ` · ${source}` : ""}` : undefined}
+        style={{ background: isActive ? S.primary : "transparent", borderRadius: S.radiusSm, color: isActive ? S.onPrimary : S.muted, fontSize: "12px", fontWeight: isActive ? 700 : 400 }}
+      >
+        <Icon size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.6 }} />
+        {!sidebarCollapsed && <span className="flex-1 truncate">{item.label}</span>}
+        {!sidebarCollapsed && source && <span className="max-w-[72px] truncate text-[8px]" style={{ color: isActive ? "rgba(255,255,255,.7)" : S.mutedLight }}>{source}</span>}
+        {!sidebarCollapsed && item.badge && <span className="px-1.5 py-0.5 font-bold" style={{ background: isActive ? "rgba(0,0,0,0.15)" : S.accent, color: isActive ? "#ffffff" : S.onAccent, fontSize: "9px", borderRadius: "4px", fontFamily: "monospace" }}>{item.badge}</span>}
+      </button>
+    );
   };
 
   return (
@@ -297,37 +361,30 @@ export default function PCLayout({
 
         {/* Nav */}
         <nav className="flex-1 py-2 overflow-y-auto px-2">
+          {showWizard && (
+            <WizardCard
+              steps={wizard.steps}
+              doneCount={wizard.doneCount}
+              total={wizard.total}
+              collapsed={sidebarCollapsed}
+              onNavigate={handleModuleChange}
+              onMarkDone={markWizardStepDone}
+              onMinimize={() => setWizardMinimized(true)}
+            />
+          )}
           {navGroups.map(group => (
             <div key={group.label}>
               {!sidebarCollapsed && <div style={{ color: S.mutedLight, fontSize: "9px", padding: "10px 10px 3px", letterSpacing: "0.14em", fontFamily: "monospace", fontWeight: 700 }}>{group.label}</div>}
-              {group.items.map(item => {
-                const Icon = item.icon;
-                const isActive = activeModule === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleModuleChange(item.id)}
-                    className={sidebarCollapsed ? "w-full flex items-center justify-center px-0 py-2 text-left transition-all mb-0.5" : "w-full flex items-center gap-2.5 px-3 py-2 text-left transition-all mb-0.5"}
-                    style={{
-                      background: isActive ? S.primary : "transparent",
-                      borderRadius: S.radiusSm,
-                      color: isActive ? S.onPrimary : S.muted,
-                      fontSize: "12px",
-                      fontWeight: isActive ? 700 : 400,
-                    }}
-                  >
-                    <Icon size={13} style={{ flexShrink: 0, opacity: isActive ? 1 : 0.6 }} />
-                    {!sidebarCollapsed && <span className="flex-1 truncate">{item.label}</span>}
-                    {!sidebarCollapsed && item.badge && (
-                      <span className="px-1.5 py-0.5 font-bold" style={{ background: isActive ? "rgba(0,0,0,0.15)" : S.accent, color: isActive ? "#ffffff" : S.onAccent, fontSize: "9px", borderRadius: "4px", fontFamily: "monospace" }}>
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+              {group.items.map(item => renderNavItem(item))}
             </div>
           ))}
+          <div>
+            {!sidebarCollapsed && <button type="button" onClick={() => setConfigGroupCollapsed(!menuState.configGroupCollapsed)} className="flex w-full items-center justify-between px-2.5 pt-4 pb-1 text-left" style={{ color: S.mutedLight, fontSize: "9px", letterSpacing: "0.14em", fontFamily: "monospace", fontWeight: 700 }}>
+              <span>系统配置</span>
+              <ChevronDown size={11} style={{ transform: menuState.configGroupCollapsed ? "rotate(-90deg)" : "none" }} />
+            </button>}
+            {(!menuState.configGroupCollapsed || sidebarCollapsed) && configGroupItems.map(item => renderNavItem(item))}
+          </div>
         </nav>
 
         {/* User */}

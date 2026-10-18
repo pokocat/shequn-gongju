@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AppWindow, BriefcaseBusiness, Check, ChevronRight, Link2, Plus, ShieldCheck, Users, X } from "lucide-react";
+import { AppWindow, BriefcaseBusiness, Check, ChevronRight, Link2, Plus, X } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 
 type BusinessProject = {

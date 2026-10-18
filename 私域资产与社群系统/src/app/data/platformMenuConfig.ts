@@ -63,7 +63,7 @@ export type CapabilityMenuRule = {
 
 export const CAPABILITY_MENU_RULES: CapabilityMenuRule[] = [
   { key: "orders", label: "订单与履约", modules: ["订单"], fallbackSource: "团长分销工具" },
-  { key: "channel", label: "渠道与分销", modules: ["代理"], fallbackSource: "城市合伙人系统" },
+  { key: "channel", label: "渠道分发与分销", modules: ["代理"], fallbackSource: "城市合伙人系统" },
   { key: "cities", label: "城市分站", modules: ["城市", "代理"], fallbackSource: "城市合伙人系统" },
   { key: "commission", label: "佣金与结算", modules: ["佣金"], fallbackSource: "团长分销工具" },
   { key: "tickets", label: "工单中心", modules: ["服务"], fallbackSource: "社群运营陪跑" },

@@ -1,7 +1,6 @@
 import { Suspense, lazy, useEffect, useState, createContext, useContext, type ReactNode } from "react";
 import { Monitor, Globe, Smartphone } from "lucide-react";
 import PCLayout from "./components/PCLayout";
-import Overview from "./components/Overview";
 import { CommunicationTool, initialTools } from "./data/communicationTools";
 import { SystemAccount, mockAccounts } from "./data/accountTypes";
 import { InviteRecord, mockInvites } from "./data/inviteRecords";
@@ -15,6 +14,7 @@ const MemberOperationsWorkbench = lazy(() => import("./components/MemberOperatio
 const EcosystemManagement = lazy(() => import("./components/EcosystemManagement"));
 const BusinessProjectCenter = lazy(() => import("./components/BusinessProjectCenter"));
 const BusinessCapabilityCenter = lazy(() => import("./components/BusinessCapabilityCenter"));
+const BusinessOperations = lazy(() => import("./components/BusinessOperations"));
 const ChannelFlow = lazy(() => import("./components/ChannelFlow"));
 const Orders = lazy(() => import("./components/Orders"));
 const Tickets = lazy(() => import("./components/Tickets"));
@@ -22,7 +22,7 @@ const ApprovalCenter = lazy(() => import("./components/ApprovalCenter"));
 const Permissions = lazy(() => import("./components/Permissions"));
 const PlatformModeConfig = lazy(() => import("./components/PlatformModeConfig"));
 const CityBranch = lazy(() => import("./components/CityBranch"));
-const ReportCenter = lazy(() => import("./components/ReportCenter"));
+const AnalyticsWorkbench = lazy(() => import("./components/AnalyticsWorkbench"));
 const MiniProgramCenter = lazy(() => import("./components/MiniProgramCenter"));
 const MemberBenefits = lazy(() => import("./components/MemberBenefits"));
 const Commission = lazy(() => import("./components/Commission"));
@@ -32,13 +32,16 @@ const ZhuLiRenPC = lazy(() => import("./components/ZhuLiRenPC"));
 const LandingPage = lazy(() => import("./components/LandingPage"));
 
 const moduleMap: Record<string, React.ComponentType> = {
-  overview:   Overview,
+  overview:   () => <AnalyticsWorkbench defaultTab="overview" />,
+  analytics:  AnalyticsWorkbench,
   accounts:   UnifiedAccountManagement,
   commtools:  UnifiedAccountManagement,
   wechat:     UnifiedAccountManagement,
   cs:         CustomerService,
   influence:  InfluenceRanking,
-  channel:    ChannelFlow,
+  businessOperations: BusinessOperations,
+  channel:    () => <ChannelFlow mode="operation" />,
+  channelConfig: () => <ChannelFlow mode="config" />,
   users:      MemberOperationsWorkbench,
   segment:    InfluenceRanking,
   members:    MemberBenefits,
@@ -49,7 +52,7 @@ const moduleMap: Record<string, React.ComponentType> = {
   platformMode: PlatformModeConfig,
   cities:     CityBranch,
   commission: Commission,
-  reports:    ReportCenter,
+  reports:    () => <AnalyticsWorkbench defaultTab="reports" />,
   miniPrograms: MiniProgramCenter,
   appMarket: () => <MiniProgramCenter startInMarket />,
   ecosystem:  EcosystemManagement,
@@ -127,7 +130,7 @@ export default function App() {
   });
   const [activeModule, setActiveModule] = useState(() => {
     const requestedModule = new URLSearchParams(window.location.search).get("module");
-    return requestedModule && requestedModule in moduleMap ? requestedModule : "overview";
+    return requestedModule && requestedModule in moduleMap ? requestedModule : "analytics";
   });
   const [tools, setTools] = useState<CommunicationTool[]>(initialTools);
   const [accounts, setAccounts] = useState<SystemAccount[]>(mockAccounts);
@@ -170,7 +173,7 @@ export default function App() {
       setProject("");
     }
     const url = new URL(window.location.href);
-    if (nextModule === "overview") url.searchParams.delete("module");
+    if (nextModule === "analytics") url.searchParams.delete("module");
     else url.searchParams.set("module", nextModule);
     window.history.pushState({}, "", url);
   };
@@ -310,7 +313,11 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
         {view === "pc" ? (
           <PCLayout view={view} selectView={selectView} activeModule={activeModule} onModuleChange={selectModule}>
             <Suspense fallback={<div className="size-full" />}>
-              {activeModule === "overview" ? <Overview onNavigate={selectModule} /> : <ActiveComponent />}
+              {activeModule === "analytics" ? (
+                <AnalyticsWorkbench onNavigate={selectModule} />
+              ) : (
+                <ActiveComponent />
+              )}
             </Suspense>
           </PCLayout>
         ) : view === "zhuliren-1" ? (

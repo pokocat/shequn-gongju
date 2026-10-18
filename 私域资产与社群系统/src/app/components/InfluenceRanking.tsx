@@ -1,9 +1,9 @@
 import { useMemo, useEffect, useState, useRef } from "react";
-import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch, Users, Store, ShieldCheck, Check, History } from "lucide-react";
+import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch, Users, Store, ShieldCheck, Check, History, SlidersHorizontal, UserRound, UserPlus } from "lucide-react";
 import { getAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
 import { SCOPE_CONFIGS, dataScopeOptions, type DataScope, type ScopeOperationId, type ScopeRow, type ScopeTreeNode } from "./workbenchScopes";
-import { businessIdentityLabels, memberLevelForRank, memberLevelOptions, platformRoleOptions } from "../data/levelConfig";
+import { businessIdentityLabels, getIdentityCodeLabel, getIdentityMetadata, identityTypeLabel, memberIdentityCodeForRank, memberLevelForRank, memberLevelOptions, platformRoleOptions, type IdentityCode, type IdentityStatus, type IdentityType } from "../data/levelConfig";
 import { calculateMemberNetworkScope, getMemberNetworkViews, memberNetworkExample, type MemberNetworkRole } from "../data/memberNetworkScope";
 import { agentTrainingRecords, agentTrainingStageMeta, trainingTaskStatusMeta, trainingTasks } from "../data/agentTraining";
 import { getJoinedGroupsForMember } from "../data/memberProfileGroups";
@@ -165,67 +165,88 @@ const activityFeed = [
   },
 ];
 
-// 关系树节点
+type RelationIdentity = {
+  type: IdentityType;
+  code: IdentityCode;
+  name: string;
+  scope: string;
+  status: IdentityStatus;
+};
+
 type RelationNode = {
   name: string;
   level: number;
   memberName?: string;
   wechatId?: string;
-  identity?: string;
-  memberLevel?: string;
+  relationRole?: string;
+  primaryIdentity?: RelationIdentity;
+  identities?: RelationIdentity[];
   avatarIndex?: number;
   children: RelationNode[];
 };
+
+const relationIdentity = (code: IdentityCode, status: IdentityStatus = "active"): RelationIdentity => {
+  const metadata = getIdentityMetadata(code);
+  return { type: metadata.type, code, name: metadata.name, scope: metadata.scope, status };
+};
+
 const relationTree: RelationNode = {
-  name: "皮卡丘", level: 1, memberName: "钱军", wechatId: "imp11", identity: "会员推荐人", memberLevel: "PRO会员", avatarIndex: 1,
+  name: "皮卡丘", level: 1, memberName: "钱军", wechatId: "imp11", relationRole: "会员推荐人", primaryIdentity: relationIdentity("V3"), identities: [relationIdentity("V3"), relationIdentity("D5")], avatarIndex: 1,
   children: [
     {
-      name: "盛光年", level: 2, memberName: "程涛", wechatId: "THEv424", identity: "群主", memberLevel: "PRO会员", avatarIndex: 0,
+      name: "盛光年", level: 2, memberName: "程涛", wechatId: "THEv424", relationRole: "群主", primaryIdentity: relationIdentity("V3"), identities: [relationIdentity("V3"), relationIdentity("S3")], avatarIndex: 0,
       children: [
-        { name: "文泽", level: 3, memberName: "文泽", wechatId: "FLM001", identity: "服务老师", memberLevel: "体验官", avatarIndex: 2, children: [
-          { name: "会员产品(0人)", level: 4, identity: "空分支", children: [] },
-          { name: "会员体验(0人)", level: 4, identity: "空分支", children: [] },
-        ] },
-        { name: "梓几", level: 3, memberName: "许明", wechatId: "afs612", identity: "会员", memberLevel: "普通会员", avatarIndex: 3, children: [
-          { name: "梓几(0人)", level: 4, identity: "空分支", children: [] },
-        ] },
+        { name: "文泽", level: 3, memberName: "文泽", wechatId: "FLM001", relationRole: "服务老师", primaryIdentity: relationIdentity("S3"), identities: [relationIdentity("S3"), relationIdentity("V2")], avatarIndex: 2,
+          children: [
+            { name: "会员产品(0人)", level: 4, relationRole: "空分支", children: [] },
+            { name: "会员体验(0人)", level: 4, relationRole: "空分支", children: [] },
+          ] },
+        { name: "梓几", level: 3, memberName: "许明", wechatId: "afs612", relationRole: "会员", primaryIdentity: relationIdentity("V2"), identities: [relationIdentity("V2")], avatarIndex: 3,
+          children: [{ name: "梓几(0人)", level: 4, relationRole: "空分支", children: [] }] },
       ]
     },
-    { name: "海槽", level: 2, memberName: "彭丽", wechatId: "125gfs", identity: "社群成员", memberLevel: "体验官", avatarIndex: 4, children: [{ name: "海槽(0人)", level: 4, identity: "空分支", children: [] }] },
+    { name: "海槽", level: 2, memberName: "彭丽", wechatId: "125gfs", relationRole: "社群成员", primaryIdentity: relationIdentity("V2"), identities: [relationIdentity("V2"), relationIdentity("G1")], avatarIndex: 4,
+      children: [{ name: "海槽(0人)", level: 4, relationRole: "空分支", children: [] }] },
   ]
 };
 
-function TreeNode({ node, depth = 0 }: { node: RelationNode; depth?: number }) {
+function TreeNode({ node, depth = 0, selectedName, onSelect, query = "", filter = "全部" }: { node: RelationNode; depth?: number; selectedName: string; onSelect: (node: RelationNode) => void; query?: string; filter?: string }) {
   const [open, setOpen] = useState(depth < 2);
   const hasChildren = node.children.length > 0;
+  const identityText = node.primaryIdentity ? `${node.primaryIdentity.code} ${node.primaryIdentity.name} ${identityTypeLabel(node.primaryIdentity.type)}` : "";
+  const text = `${node.name} ${node.memberName ?? ""} ${node.relationRole ?? ""} ${identityText}`.toLowerCase();
+  const matches = (!query || text.includes(query.toLowerCase())) && (filter === "全部" || node.relationRole === filter || node.primaryIdentity?.name === filter);
+  const hasMatchingChild = node.children.some(child => {
+    const childText = `${child.name} ${child.memberName ?? ""} ${child.relationRole ?? ""} ${child.primaryIdentity?.code ?? ""} ${child.primaryIdentity?.name ?? ""}`.toLowerCase();
+    return (!query || childText.includes(query.toLowerCase())) && (filter === "全部" || child.relationRole === filter || child.primaryIdentity?.name === filter);
+  });
+  if ((query || filter !== "全部") && !matches && !hasMatchingChild) return null;
+  const isEmptyBranch = node.relationRole === "空分支";
+  const extraIdentityCount = Math.max(0, (node.identities?.length ?? 0) - 1);
   return (
-    <div style={{ paddingLeft: depth > 0 ? 16 : 0 }}>
+    <div className="relative" style={{ paddingLeft: depth > 0 ? 18 : 0 }}>
       <div
-        className="flex items-center gap-1.5 py-1 cursor-pointer px-1"
+        className="flex items-center gap-2 py-2 px-2 cursor-pointer transition-colors"
         style={{
-          background: depth === 0 ? S.accentLight : "transparent",
+          background: selectedName === node.name ? S.accentLight : depth === 0 ? "rgba(204,255,0,0.08)" : "transparent",
           borderRadius: S.radiusSm,
-          borderLeft: depth === 0 ? `2px solid ${S.accent}` : "2px solid transparent",
+          borderLeft: selectedName === node.name ? `3px solid ${S.accent}` : "3px solid transparent",
+          opacity: isEmptyBranch ? 0.72 : 1,
         }}
-        onClick={() => setOpen(v => !v)}
+        onClick={() => onSelect(node)}
       >
-        {hasChildren && (
-          <ChevronRight size={12} style={{ color: S.muted, transform: open ? "rotate(90deg)" : "none", transition: "transform 0.2s", flexShrink: 0 }} />
-     )}
-        {!hasChildren && <div style={{ width: 12 }} />}
-        {node.memberName ? <div className="flex flex-col items-center gap-px flex-shrink-0"><img src={getAvatar(node.avatarIndex || 0)} alt={node.name} className="w-5 h-5" style={{ borderRadius: "50%", objectFit: "cover" }} />{node.memberLevel && <span className="px-0.5 text-[7px] leading-3 font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{node.memberLevel}</span>}</div> : <div className="w-2 h-2 flex-shrink-0" style={{ background: depth === 0 ? S.accent : S.mutedLight, borderRadius: "50%" }} />}
-        <div className="min-w-0 flex items-center gap-1.5 flex-wrap">
-          <span className="text-xs font-bold" style={{ color: depth === 0 ? S.text : S.textSec }}>{node.name}</span>
-          {node.memberName && node.memberName !== node.name && <span className="text-[10px]" style={{ color: S.muted }}>· {node.memberName}</span>}
-          {node.identity && <span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: "#e8fbf4", color: "#008565", borderRadius: "999px" }}>{node.identity}</span>}
+        {hasChildren ? <button type="button" aria-label={open ? "收起分支" : "展开分支"} onClick={event => { event.stopPropagation(); setOpen(v => !v); }} className="flex h-5 w-5 items-center justify-center"><ChevronRight size={12} style={{ color: S.muted, transform: open ? "rotate(90deg)" : "none", transition: "transform 0.2s" }} /></button> : <span className="w-5" />}
+        <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
+          {node.memberName ? <img src={getAvatar(node.avatarIndex || 0)} alt={node.name} className="h-7 w-7" style={{ borderRadius: "50%", objectFit: "cover" }} /> : <div className="flex h-7 w-7 items-center justify-center" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: "50%" }}><GitBranch size={12} style={{ color: S.muted }} /></div>}
+          {!isEmptyBranch && node.primaryIdentity && <span className="px-1 py-0.5 text-[8px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: node.primaryIdentity ? getIdentityMetadata(node.primaryIdentity.code).color : S.muted, borderRadius: "999px", lineHeight: 1.1 }}>{getIdentityCodeLabel(node.primaryIdentity.code, extraIdentityCount)}</span>}
         </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-1.5 flex-wrap"><span className="text-xs font-bold" style={{ color: isEmptyBranch ? S.muted : S.text }}>{node.name}</span>{node.relationRole && <span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: isEmptyBranch ? S.bg : "#eef2ff", color: isEmptyBranch ? S.muted : "#4f46e5", borderRadius: "999px" }}>{node.relationRole}</span>}</div>
+          {node.memberName && <div className="mt-0.5 text-[10px]" style={{ color: S.muted }}>{node.memberName}{node.primaryIdentity ? ` · ${node.primaryIdentity.name}` : ""}</div>}
+        </div>
+        {isEmptyBranch && <button type="button" className="flex items-center gap-1 px-1.5 py-1 text-[9px] font-bold" style={{ color: S.primary, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={event => { event.stopPropagation(); onSelect(node); }}><UserPlus size={11} />添加</button>}
       </div>
-      {open && hasChildren && (
-        <div style={{ borderLeft: `1px dashed ${S.border}`, marginLeft: 5 }}>
-          {node.children.map((c, i) => <TreeNode key={i} node={c} depth={depth + 1} />)}
-        </div>
-      )}
-
+      {open && hasChildren && <div style={{ borderLeft: `2px solid ${S.borderMed}`, marginLeft: 10 }}>{node.children.map((child, index) => <TreeNode key={`${child.name}-${index}`} node={child} depth={depth + 1} selectedName={selectedName} onSelect={onSelect} query={query} filter={filter} />)}</div>}
     </div>
   );
 }
@@ -515,6 +536,9 @@ export default function InfluenceRanking() {
   const profileGroupsRef = useRef<HTMLElement | null>(null);
  const [isTaskPanelCollapsed, setIsTaskPanelCollapsed] = useState(false);
   const [isRelationCollapsed, setIsRelationCollapsed] = useState(false);
+  const [relationQuery, setRelationQuery] = useState("");
+  const [relationFilter, setRelationFilter] = useState("全部");
+  const [selectedRelationNode, setSelectedRelationNode] = useState<RelationNode>(relationTree);
   const [isOperationCollapsed, setIsOperationCollapsed] = useState(false);
   const [isDataScopeCollapsed, setIsDataScopeCollapsed] = useState(false);
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
@@ -692,10 +716,6 @@ export default function InfluenceRanking() {
     if (startTask?.id) updateDynamicTask(startTask.id, "已完成", "启动配置已保存，项目进入运营中");
     showProfileNotice(`${selectedRow.name} 启动配置已保存，项目已进入运营中`);
   };
-
-  const selectedScopeMetrics: MetricResult[] = selectedRow && (dataScope === "community" || dataScope === "project")
-    ? calculateScopeMetrics(dataScope, selectedRow.data ?? {})
-    : [];
 
   const selectedTags = memberTags[selectedUser.rank] ?? defaultMemberTags;
   const memberServiceForUser = (rank: number) => {
@@ -989,15 +1009,6 @@ export default function InfluenceRanking() {
         ["代理状态", selectedAgentData.operationStage ?? "—"],
       ] as Array<[string, string]>
     : scopeCfg?.profileFields ?? [];
-  const selectedAgentSummary = isAgentScope
-    ? [
-        ["下线会员", `${selectedAgentData.downlineMembers ?? "0"} 人`, "#2385c8"],
-        ["下线会员授权", `${selectedAgentData.authorizedMembers ?? "0"} 人`, "#00a978"],
-        ["累计佣金", selectedAgentData.commission ?? "¥0", "#e77800"],
-        ["代理留存", selectedAgentData.retentionRate ?? "—", "#253800"],
-        ["运营阶段", selectedAgentData.operationStage ?? "—", "#6b4eff"],
-      ] as Array<[string, string, string]>
-    : scopeCfg?.summary ?? [];
   const selectedAgentTags = isAgentScope
     ? [{ label: selectedAgentData.agentLevel ?? "代理", background: "#fff0db", color: "#e77800" }]
     : scopeCfg?.profileTags ?? [];
@@ -1285,7 +1296,7 @@ export default function InfluenceRanking() {
               </div>
               <div className="flex-shrink-0" style={{ width: 160 }}>
                 <div className="flex items-center gap-2">
-                  <div className="flex flex-col items-center gap-0.5 flex-shrink-0"><img src={getAvatar(u.rank - 1)} alt={u.name} style={{ width: 28, height: 28, borderRadius: S.radiusSm, objectFit: "cover" }} /><span className="px-0.5 py-0.5 text-[7px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", border: `1px solid ${S.accentMid}`, borderRadius: "999px", lineHeight: 1.1 }}>{memberLevelForRank(u.rank)}</span></div>
+                  <div className="flex flex-col items-center gap-0.5 flex-shrink-0"><img src={getAvatar(u.rank - 1)} alt={u.name} style={{ width: 28, height: 28, borderRadius: S.radiusSm, objectFit: "cover" }} /><span className="px-0.5 py-0.5 text-[7px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", border: `1px solid ${S.accentMid}`, borderRadius: "999px", lineHeight: 1.1 }}>{memberIdentityCodeForRank(u.rank)}</span></div>
                   <div className="min-w-0"><div className="font-bold truncate" style={{ color: S.text }}>{u.name}<span className="ml-1 px-1 py-0.5 text-[9px] font-bold" style={{ background: "#eef2ff", color: "#4f46e5", borderRadius: S.radiusSm }}>{businessIdentityLabels[platformIdentityForRank(u.rank)]}</span></div><div className="text-[10px] truncate" style={{ color: S.muted }}>{u.wechat} · {u.city}</div></div>
                 </div>
               </div>
@@ -1378,14 +1389,16 @@ export default function InfluenceRanking() {
         {/* 底部：关系链 + 朋友圈操作 */}
         <div className="flex flex-wrap xl:flex-nowrap items-stretch gap-3 mx-4 mt-3 flex-shrink-0 pb-5">
           {/* 关系链 */}
-          {isRelationCollapsed ? <div className="w-9 flex-shrink-0 flex items-start justify-center pt-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><button type="button" title="展开关系链" aria-label="展开关系链" onClick={() => setIsRelationCollapsed(false)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelLeftOpen size={14} /></button></div> : <div className="p-3 flex-none w-full xl:w-[34%] min-w-0" style={{ minWidth: 0, maxWidth: "58%", minHeight: 220, resize: "horizontal", overflow: "auto", background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+          {isRelationCollapsed ? <div className="w-9 flex-shrink-0 flex items-start justify-center pt-2" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius }}><button type="button" title="展开关系链" aria-label="展开关系链" onClick={() => setIsRelationCollapsed(false)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelLeftOpen size={14} /></button></div> : <div className="p-3 flex-none w-full xl:w-[40%] min-w-0" style={{ minWidth: 0, maxWidth: "60%", minHeight: 280, background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
             <div className="flex items-center gap-2">
               <TrendingUp size={14} style={{ color: S.text }} />
               <span className="text-sm font-bold whitespace-nowrap" style={{ color: S.text }}>关系链</span>
-              <div className="flex items-center gap-1.5 px-2 py-1 min-w-0 flex-1" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Search size={11} style={{ color: S.muted }} /><input className="min-w-0 flex-1 bg-transparent outline-none text-xs" style={{ color: S.textSec }} placeholder="搜索" /></div>
-              <button type="button" title="收起关系链" aria-label="收起关系链" onClick={() => setIsRelationCollapsed(true)} className="w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelLeftClose size={14} /></button>
+              <span className="text-[10px] whitespace-nowrap" style={{ color: S.muted }}>{relationTree.children.length + relationTree.children.reduce((sum, child) => sum + child.children.length, 0)} 个关联节点</span>
+              <button type="button" title="收起关系链" aria-label="收起关系链" onClick={() => setIsRelationCollapsed(true)} className="ml-auto w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelLeftClose size={14} /></button>
             </div>
-            <div className="mt-3 max-h-[280px] overflow-auto"><TreeNode node={relationTree} /></div>
+            <div className="mt-3 flex items-center gap-1.5 px-2 py-1.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Search size={11} style={{ color: S.muted }} /><input value={relationQuery} onChange={event => setRelationQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none text-xs" style={{ color: S.textSec }} placeholder="搜索成员、微信号或身份" /></div>
+            <div className="mt-2 flex items-center gap-1 overflow-x-auto pb-1" aria-label="关系链筛选">{["全部", "会员", "群主", "服务老师", "社群成员", "空分支"].map(filter => <button key={filter} type="button" onClick={() => setRelationFilter(filter)} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: relationFilter === filter ? S.accent : S.bg, color: relationFilter === filter ? S.onAccent : S.muted, border: `1px solid ${relationFilter === filter ? S.accent : S.border}`, borderRadius: 999 }}><SlidersHorizontal size={10} className="inline mr-1" />{filter}</button>)}</div>
+            <div className="mt-2 max-h-[300px] overflow-auto"><TreeNode node={relationTree} selectedName={selectedRelationNode.name} onSelect={setSelectedRelationNode} query={relationQuery} filter={relationFilter} /></div>
           </div>}
 
           {/* 统一运营操作台 */}
@@ -1402,6 +1415,18 @@ export default function InfluenceRanking() {
                 <span className="block mt-1 text-[10px] truncate" style={{ color: "#6db100" }}>当前待办 · {activeTaskContext}</span>
               </div>
               <div className="flex items-center gap-2"><span className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>当前{isMemberScope ? "会员" : scopeCfg!.noun}</span><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setIsOperationCollapsed(value => !value)}>{isOperationCollapsed ? "展开" : "收起"}</button></div>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
+              <div className="col-span-2 lg:col-span-1 flex items-center gap-2"><div className="flex flex-col items-center gap-0.5 flex-shrink-0"><img src={selectedRelationNode.memberName ? getAvatar(selectedRelationNode.avatarIndex || 0) : getAvatar(0)} alt={selectedRelationNode.name} className="h-9 w-9" style={{ borderRadius: "50%", objectFit: "cover" }} />{selectedRelationNode.primaryIdentity && <span className="px-1 py-0.5 text-[8px] font-bold" style={{ background: S.accentLight, color: getIdentityMetadata(selectedRelationNode.primaryIdentity.code).color, borderRadius: "999px" }}>{getIdentityCodeLabel(selectedRelationNode.primaryIdentity.code, Math.max(0, (selectedRelationNode.identities?.length ?? 0) - 1))}</span>}</div><div className="min-w-0"><div className="flex items-center gap-1"><UserRound size={12} style={{ color: S.primary }} /><span className="text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.name}</span></div><div className="text-[10px] truncate" style={{ color: S.muted }}>{selectedRelationNode.memberName || "待添加成员"}</div></div></div>
+              <div><div className="text-[10px]" style={{ color: S.muted }}>身份类型 / 名称</div><div className="mt-1 text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.primaryIdentity ? `${identityTypeLabel(selectedRelationNode.primaryIdentity.type)} · ${selectedRelationNode.primaryIdentity.name}` : "—"}</div></div>
+              <div><div className="text-[10px]" style={{ color: S.muted }}>关系角色 / 微信号</div><div className="mt-1 text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.relationRole || "—"} · {selectedRelationNode.wechatId || "—"}</div></div>
+              <div className="flex items-end gap-1.5 justify-end"><button type="button" onClick={() => showProfileNotice(`已打开 ${selectedRelationNode.memberName || selectedRelationNode.name} 的档案`)} className="px-2 py-1 text-[10px] font-bold" style={{ color: S.textSec, background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>查看档案</button><button type="button" onClick={() => showProfileNotice(selectedRelationNode.relationRole === "空分支" ? `已准备向 ${selectedRelationNode.name} 添加成员` : `已准备为 ${selectedRelationNode.name} 添加下级`)} className="px-2 py-1 text-[10px] font-bold" style={{ color: S.onAccent, background: S.accent, borderRadius: S.radiusSm }}><UserPlus size={11} className="inline mr-1" />{selectedRelationNode.relationRole === "空分支" ? "添加成员" : "添加下级"}</button></div>
+              <div className="col-span-2 lg:col-span-4 grid grid-cols-2 lg:grid-cols-4 gap-2 pt-1" style={{ borderTop: `1px solid ${S.border}` }}>
+                <div><div className="text-[10px]" style={{ color: S.muted }}>身份范围</div><div className="mt-1 text-[10px] font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.primaryIdentity?.scope || "—"}</div></div>
+                <div><div className="text-[10px]" style={{ color: S.muted }}>状态</div><div className="mt-1 text-[10px] font-bold" style={{ color: "#008565" }}>{selectedRelationNode.primaryIdentity?.status === "active" ? "有效" : selectedRelationNode.primaryIdentity?.status === "pending" ? "待确认" : "—"}</div></div>
+                <div><div className="text-[10px]" style={{ color: S.muted }}>其他身份</div><div className="mt-1 text-[10px] font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.identities?.slice(1).map(identity => `${identity.code} ${identity.name}`).join("、") || "无"}</div></div>
+                <div><div className="text-[10px]" style={{ color: S.muted }}>关系规模</div><div className="mt-1 text-[10px] font-bold" style={{ color: S.text }}>父级 {selectedRelationNode.level > 1 ? 1 : 0} · 子级 {selectedRelationNode.children.length}</div></div>
+              </div>
             </div>
             {isOperationCollapsed ? <div className="px-2 py-2 text-xs" style={{ color: S.muted }}>操作台已收起，展开后可处理关系、创建工单、回访或发起运营动作。</div> : <>
             {isMemberScope && <div className="flex items-center gap-1.5 overflow-x-auto pb-1" aria-label="当前客户快捷操作">
@@ -1509,7 +1534,7 @@ export default function InfluenceRanking() {
           <div className="flex items-start gap-2.5 mt-2">
             <div className="flex flex-col items-center gap-1 flex-shrink-0">
               <img src={getAvatar(selectedUser.rank - 1)} alt={selectedUser.name} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover", border: `1px solid ${S.border}` }} />
-              <span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{memberLevelForRank(selectedUser.rank)}</span>
+              <span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{memberIdentityCodeForRank(selectedUser.rank)}</span>
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
@@ -1939,56 +1964,6 @@ export default function InfluenceRanking() {
             </div>
           </div>
 
-          <div className="px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-bold" style={{ color: S.text }}>经营摘要</span>
-              <span className="text-xs" style={{ color: S.muted }}>同步于 今天 10:42</span>
-            </div>
-            <div className="grid grid-cols-4 gap-2">
-              {selectedAgentSummary.map(([label, value, color]) => (
-                <div key={label} className="min-w-0">
-                  <div className="text-xs truncate" style={{ color: S.muted }}>{label}</div>
-                  <div className="text-sm font-bold mt-1 truncate" style={{ color }}>{value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <section className="px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm font-bold" style={{ color: S.text }}>分层指标</span>
-              <span className="text-xs" style={{ color: S.muted }}>基于运营数据计算 · 待配置、暂无数据与真实 0% 分开显示</span>
-            </div>
-            <div className="grid grid-cols-2 gap-x-6 mt-3">
-              {selectedScopeMetrics.map(metric => (
-                <div key={metric.label} className="flex items-center justify-between gap-2 py-1.5" style={{ borderBottom: `1px solid ${S.border}` }}>
-                  <span className="text-xs" style={{ color: S.muted }}>{metric.label}</span>
-                  <span className="text-xs font-bold text-right" style={{ color: metric.state === "pending" || metric.state === "no-data" ? S.muted : metric.color }}>{metric.value}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {isAgentScope && <section className="px-3.5 py-3" style={{ borderBottom: `1px solid ${S.border}` }}>
-            {!selectedTrainingRecord ? (
-              <div className="px-2.5 py-2 text-[10px] leading-relaxed" style={{ background: "#f8fafc", color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-                当前代理暂无培训记录
-              </div>
-            ) : <>
-              <div className="flex items-center justify-between mb-3">
-                <span className="text-sm font-bold" style={{ color: S.text }}>培训总览</span>
-                <span className="text-[10px]" style={{ color: selectedTrainingRecord.riskStatus === "high" ? "#c2410c" : selectedTrainingRecord.riskStatus === "attention" ? "#e77800" : "#008565" }}>{selectedTrainingRecord.riskStatus === "none" ? "进度正常" : selectedTrainingRecord.riskReason}</span>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="px-2.5 py-2" style={{ background: S.accentLight, borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>当前阶段</div><div className="text-sm font-bold mt-1" style={{ color: S.text }}>{selectedTrainingRecord.currentStage} · {agentTrainingStageMeta[selectedTrainingRecord.currentStage].label}</div></div>
-                <div className="px-2.5 py-2" style={{ background: "#f1f5f9", borderRadius: S.radiusSm }}><div className="text-[10px]" style={{ color: S.muted }}>阶段进度</div><div className="text-sm font-bold mt-1" style={{ color: "#2385c8" }}>{selectedTrainingRecord.stageProgress}%</div></div>
-              </div>
-              <div className="grid grid-cols-2 gap-x-4 mt-2">
-                <div className="flex items-center justify-between py-1.5 text-[10px]" style={{ borderBottom: `1px solid ${S.border}` }}><span style={{ color: S.muted }}>课程完成</span><b style={{ color: S.textSec }}>{selectedTrainingRecord.courseProgress.completed}/{selectedTrainingRecord.courseProgress.total}</b></div>
-                <div className="flex items-center justify-between py-1.5 text-[10px]" style={{ borderBottom: `1px solid ${S.border}` }}><span style={{ color: S.muted }}>实训通过</span><b style={{ color: S.textSec }}>{selectedTrainingRecord.practicalProgress.passed}/{selectedTrainingRecord.practicalProgress.total}</b></div>
-              </div>
-            </>}
-          </section>}
           <div className="flex items-center gap-0 px-3.5 pt-2.5" style={{ borderBottom: `1px solid ${S.border}` }}>
             {scopeCfg.profileTabs.map(tab => (
               <button
