@@ -1,4 +1,4 @@
-export type ThemeId = "community-blue" | "principal-green" | "principal-black";
+export type ThemeId = "peach" | "orchid" | "amber" | "rose" | "mono-lime" | "mono-electric" | "mono-lemon" | "mono-orange" | "forest" | "sage" | "sound" | "citrus" | "neon-night" | "sky-data" | "lavender" | "botanical";
 export type CommunityStatus = "active" | "attention" | "archived";
 export type ProjectStatus = "未开始" | "进行中" | "待确认" | "已完成" | "已暂停";
 export type ActionStatus = "pending" | "completed";
@@ -96,13 +96,13 @@ const avatarBase = "/principal-1-h5/assets/avatars/people";
 export const initialPrincipal: Principal = {
   id: "principal-001",
   name: "王总",
-  avatar: `${avatarBase}/avatar-17.png`,
+  avatar: `${avatarBase}/avatar-17.jpg`,
   level: "D3 · 事业合伙人",
   growthValue: 2680,
   tags: ["主理人", "项目共创"],
   phone: "138****2680",
   accountStatus: "正常",
-  preferredTheme: "community-blue",
+  preferredTheme: "peach",
   lastSyncAt: "刚刚",
 };
 
@@ -113,9 +113,9 @@ export const initialCommunities: Community[] = [
 ];
 
 export const initialMembers: Member[] = [
-  { id: "member-amy", name: "陈美玲", avatar: `${avatarBase}/avatar-13.png`, tags: ["新成员", "AI项目"], communityIds: ["community-ai-growth"], projectIds: ["project-ai-ad"], lastInteractionAt: "昨天", followUpStatus: "待跟进", followUpDueAt: "今天 18:00", contactChannels: ["微信"] },
-  { id: "member-jessica", name: "Jessica", avatar: `${avatarBase}/avatar-14.png`, tags: ["高意向"], communityIds: ["community-leader"], projectIds: ["project-growth"], lastInteractionAt: "周二", followUpStatus: "待跟进", followUpDueAt: "明天", contactChannels: ["微信", "电话"] },
-  { id: "member-shirley", name: "李雪", avatar: `${avatarBase}/avatar-15.png`, tags: ["活跃成员"], communityIds: ["community-ai-growth", "community-leader"], projectIds: ["project-ai-ad"], lastInteractionAt: "今天 09:20", followUpStatus: "已跟进", contactChannels: ["微信"] },
+  { id: "member-amy", name: "陈美玲", avatar: `${avatarBase}/avatar-13.jpg`, tags: ["新成员", "AI项目"], communityIds: ["community-ai-growth"], projectIds: ["project-ai-ad"], lastInteractionAt: "昨天", followUpStatus: "待跟进", followUpDueAt: "今天 18:00", contactChannels: ["微信"] },
+  { id: "member-jessica", name: "Jessica", avatar: `${avatarBase}/avatar-14.jpg`, tags: ["高意向"], communityIds: ["community-leader"], projectIds: ["project-growth"], lastInteractionAt: "周二", followUpStatus: "待跟进", followUpDueAt: "明天", contactChannels: ["微信", "电话"] },
+  { id: "member-shirley", name: "李雪", avatar: `${avatarBase}/avatar-15.jpg`, tags: ["活跃成员"], communityIds: ["community-ai-growth", "community-leader"], projectIds: ["project-ai-ad"], lastInteractionAt: "今天 09:20", followUpStatus: "已跟进", contactChannels: ["微信"] },
 ];
 
 export const initialProjects: Project[] = [

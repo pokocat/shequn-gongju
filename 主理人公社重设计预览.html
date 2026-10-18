@@ -1,0 +1,1196 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>主理人公社小程序重设计预览</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --brand: #ff6b8b;
+      --brand-strong: #df4f78;
+      --page: #fff7f3;
+      --surface: #ffffff;
+      --surface-2: #ffe9df;
+      --text: #3a2630;
+      --subtle: #9b7886;
+      --border: #f3d9d1;
+      --success: #2f9e77;
+      --warning: #c9822b;
+      --danger: #d85b63;
+      --shadow: 0 18px 46px rgba(255, 107, 139, .16);
+      --radius: 22px;
+      --ink-on-brand: #ffffff;
+    }
+
+    [data-theme="orchid"] {
+      --brand: #7c5cff;
+      --brand-strong: #5a3ee0;
+      --page: #f8f6ff;
+      --surface: #ffffff;
+      --surface-2: #ece7ff;
+      --text: #29243d;
+      --subtle: #7c7694;
+      --border: #ddd6f3;
+      --success: #31956f;
+      --warning: #c9822b;
+      --danger: #cf5d68;
+      --shadow: 0 18px 46px rgba(124, 92, 255, .15);
+    }
+
+    [data-theme="amber"] {
+      --brand: #ff8a3d;
+      --brand-strong: #e2651d;
+      --page: #fffaf1;
+      --surface: #ffffff;
+      --surface-2: #ffefd9;
+      --text: #3a2d1f;
+      --subtle: #96816f;
+      --border: #f0ddc6;
+      --success: #31956f;
+      --warning: #bd741f;
+      --danger: #cf5d68;
+      --shadow: 0 18px 46px rgba(255, 138, 61, .17);
+    }
+
+    [data-theme="rose"] {
+      --brand: #d63384;
+      --brand-strong: #b02068;
+      --page: #fff5fa;
+      --surface: #ffffff;
+      --surface-2: #ffe1f0;
+      --text: #3a2330;
+      --subtle: #9a7486;
+      --border: #f1d3e1;
+      --success: #31956f;
+      --warning: #c9822b;
+      --danger: #cf5d68;
+      --shadow: 0 18px 46px rgba(214, 51, 132, .16);
+    }
+
+    [data-theme="mono-lime"] {
+      --brand: #171717;
+      --brand-strong: #0a0a0a;
+      --page: #ffffff;
+      --surface: #fafafa;
+      --surface-2: #f4f4f4;
+      --text: #171717;
+      --subtle: #737373;
+      --border: #e5e5e5;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --accent: #4ade80;
+      --shadow: 0 18px 46px rgba(0, 0, 0, .08);
+      --ink-on-brand: #4ade80;
+    }
+
+    [data-theme="mono-electric"] {
+      --brand: #171717;
+      --brand-strong: #0a0a0a;
+      --page: #ffffff;
+      --surface: #fafafa;
+      --surface-2: #f4f4f4;
+      --text: #171717;
+      --subtle: #6b7280;
+      --border: #e5e7eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --accent: #0a84ff;
+      --shadow: 0 18px 46px rgba(0, 0, 0, .08);
+      --ink-on-brand: #0a84ff;
+    }
+
+    [data-theme="mono-lemon"] {
+      --brand: #171717;
+      --brand-strong: #0a0a0a;
+      --page: #ffffff;
+      --surface: #fafafa;
+      --surface-2: #f4f4f4;
+      --text: #171717;
+      --subtle: #737373;
+      --border: #e5e5e5;
+      --success: #22c55e;
+      --warning: #facc15;
+      --danger: #ef4444;
+      --accent: #fde047;
+      --shadow: 0 18px 46px rgba(0, 0, 0, .08);
+      --ink-on-brand: #fde047;
+    }
+
+    [data-theme="mono-orange"] {
+      --brand: #262626;
+      --brand-strong: #171717;
+      --page: #ffffff;
+      --surface: #fafafa;
+      --surface-2: #f4f4f4;
+      --text: #171717;
+      --subtle: #6b7280;
+      --border: #e5e7eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --accent: #fb923c;
+      --shadow: 0 18px 46px rgba(0, 0, 0, .08);
+      --ink-on-brand: #fb923c;
+    }
+    [data-theme="forest"] {
+      --brand: #173f35;
+      --brand-strong: #0d2c25;
+      --page: #edf5ef;
+      --surface: #ffffff;
+      --surface-2: #dcebe0;
+      --text: #15352e;
+      --subtle: #6e8980;
+      --border: #c9ded0;
+      --success: #2f8f67;
+      --warning: #c88732;
+      --danger: #cf5962;
+      --accent: #d9f36b;
+      --shadow: 0 18px 46px rgba(23, 63, 53, .14);
+      --ink-on-brand: #ffffff;
+    }
+
+    [data-theme="sage"] {
+      --brand: #2b463b;
+      --brand-strong: #182f27;
+      --page: #fbfcf8;
+      --surface: #ffffff;
+      --surface-2: #e8efe7;
+      --text: #1e3028;
+      --subtle: #819087;
+      --border: #dbe5da;
+      --success: #4f9a70;
+      --warning: #c98834;
+      --danger: #cf6570;
+      --accent: #b9d7a8;
+      --shadow: 0 18px 46px rgba(43, 70, 59, .12);
+      --ink-on-brand: #ffffff;
+    }
+
+    [data-theme="sound"] {
+      --brand: #f0643c;
+      --brand-strong: #c63d25;
+      --page: #171717;
+      --surface: #242424;
+      --surface-2: #343434;
+      --text: #ffffff;
+      --subtle: #a9a9a9;
+      --border: #444444;
+      --success: #8bd450;
+      --warning: #ffb347;
+      --danger: #ff6b62;
+      --accent: #ff7854;
+      --shadow: 0 18px 46px rgba(0, 0, 0, .28);
+      --ink-on-brand: #ffffff;
+    }
+
+    [data-theme="citrus"] {
+      --brand: #f59b35;
+      --brand-strong: #d86f20;
+      --page: #6e3219;
+      --surface: rgba(255, 255, 255, .12);
+      --surface-2: rgba(255, 210, 145, .18);
+      --text: #fff8ef;
+      --subtle: #e8c8ae;
+      --border: rgba(255, 220, 181, .22);
+      --success: #a7dc69;
+      --warning: #ffbd4a;
+      --danger: #ff806c;
+      --accent: #ffac4d;
+      --shadow: 0 18px 46px rgba(86, 31, 12, .28);
+      --ink-on-brand: #2c170d;
+    }
+
+    [data-theme="neon-night"] {
+      --brand: #d9ff3f;
+      --brand-strong: #a6d513;
+      --page: #202020;
+      --surface: #2b2b2b;
+      --surface-2: #353535;
+      --text: #f8f8f2;
+      --subtle: #a8aaa0;
+      --border: #494c40;
+      --success: #9ee35c;
+      --warning: #ffbe44;
+      --danger: #ff6c5f;
+      --accent: #d9ff3f;
+      --shadow: 0 18px 46px rgba(0, 0, 0, .3);
+      --ink-on-brand: #171717;
+    }
+
+    [data-theme="sky-data"] {
+      --brand: #4c9fe8;
+      --brand-strong: #2877c5;
+      --page: #eef8ff;
+      --surface: #ffffff;
+      --surface-2: #dff2ff;
+      --text: #203648;
+      --subtle: #7590a3;
+      --border: #d0e8f7;
+      --success: #43b982;
+      --warning: #e9aa3b;
+      --danger: #dc6f7d;
+      --accent: #f7b4c5;
+      --shadow: 0 18px 46px rgba(76, 159, 232, .16);
+      --ink-on-brand: #ffffff;
+    }
+
+    [data-theme="lavender"] {
+      --brand: #8c6ee6;
+      --brand-strong: #6845c4;
+      --page: #f7f2ff;
+      --surface: #ffffff;
+      --surface-2: #eee5ff;
+      --text: #302743;
+      --subtle: #9186aa;
+      --border: #e1d5f5;
+      --success: #5cb78c;
+      --warning: #ef9c4c;
+      --danger: #db7082;
+      --accent: #f3a4ba;
+      --shadow: 0 18px 46px rgba(140, 110, 230, .16);
+      --ink-on-brand: #ffffff;
+    }
+
+    [data-theme="botanical"] {
+      --brand: #35654a;
+      --brand-strong: #234b35;
+      --page: #f0f3ed;
+      --surface: #ffffff;
+      --surface-2: #e2e9df;
+      --text: #25382d;
+      --subtle: #819285;
+      --border: #d4dfd1;
+      --success: #5d9c6e;
+      --warning: #c89146;
+      --danger: #cb6b70;
+      --accent: #a9c98f;
+      --shadow: 0 18px 46px rgba(53, 101, 74, .13);
+      --ink-on-brand: #ffffff;
+    }
+
+
+    [data-theme="mono-lime"] .eyebrow,
+    [data-theme="mono-electric"] .eyebrow,
+    [data-theme="mono-lemon"] .eyebrow,
+    [data-theme="mono-orange"] .eyebrow {
+      color: var(--accent, var(--brand));
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+    }
+    [data-theme="mono-lime"] .hero,
+    [data-theme="mono-electric"] .hero,
+    [data-theme="mono-lemon"] .hero,
+    [data-theme="mono-orange"] .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    [data-theme="mono-lime"] .hero strong,
+    [data-theme="mono-electric"] .hero strong,
+    [data-theme="mono-lemon"] .hero strong,
+    [data-theme="mono-orange"] .hero strong {
+      color: var(--accent, var(--brand));
+    }
+    [data-theme="mono-lime"] .hero::after,
+    [data-theme="mono-electric"] .hero::after,
+    [data-theme="mono-lemon"] .hero::after,
+    [data-theme="mono-orange"] .hero::after {
+      background: linear-gradient(90deg, transparent, var(--accent, var(--brand)), transparent);
+      opacity: .5;
+    }
+    [data-theme="mono-lime"] .tag,
+    [data-theme="mono-electric"] .tag,
+    [data-theme="mono-lemon"] .tag,
+    [data-theme="mono-orange"] .tag {
+      color: var(--accent, var(--brand));
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+    [data-theme="mono-lime"] .tag.ok,
+    [data-theme="mono-electric"] .tag.ok,
+    [data-theme="mono-lemon"] .tag.ok,
+    [data-theme="mono-orange"] .tag.ok {
+      color: var(--success);
+      background: color-mix(in srgb, var(--success) 12%, var(--surface));
+    }
+    [data-theme="mono-lime"] .tag.warn,
+    [data-theme="mono-electric"] .tag.warn,
+    [data-theme="mono-lemon"] .tag.warn,
+    [data-theme="mono-orange"] .tag.warn {
+      color: var(--warning);
+      background: color-mix(in srgb, var(--warning) 12%, var(--surface));
+    }
+    [data-theme="mono-lime"] .price,
+    [data-theme="mono-electric"] .price,
+    [data-theme="mono-lemon"] .price,
+    [data-theme="mono-orange"] .price {
+      color: var(--accent, var(--brand));
+    }
+    [data-theme="mono-lime"] .progress i,
+    [data-theme="mono-electric"] .progress i,
+    [data-theme="mono-lemon"] .progress i,
+    [data-theme="mono-orange"] .progress i {
+      background: var(--accent, var(--brand));
+    }
+    [data-theme="mono-lime"] .rule strong,
+    [data-theme="mono-electric"] .rule strong,
+    [data-theme="mono-lemon"] .rule strong,
+    [data-theme="mono-orange"] .rule strong {
+      color: var(--accent, var(--brand));
+    }
+    [data-theme="mono-lime"] .hero p,
+    [data-theme="mono-electric"] .hero p,
+    [data-theme="mono-lemon"] .hero p,
+    [data-theme="mono-orange"] .hero p {
+      color: var(--subtle);
+    }
+
+    /* 完整皮肤：主题切换不仅换色，还改变字体、密度、组件语言和版式 */
+    body[data-theme="sound"], body[data-theme="neon-night"] { font-family: "Arial Narrow", "PingFang SC", sans-serif; }
+    body[data-theme="sound"] h1, body[data-theme="sound"] .title h2 { font-family: "Arial Black", "PingFang SC", sans-serif; text-transform: none; letter-spacing: -.075em; }
+    body[data-theme="sound"] .phone { border-radius: 22px; }
+    body[data-theme="sound"] .card { border-radius: 12px; box-shadow: none; }
+    body[data-theme="sound"] .conversation { border-bottom-color: #3d3d3d; }
+    body[data-theme="sound"] .avatar { border-radius: 50%; }
+    body[data-theme="sound"] .btn { border-radius: 999px; text-transform: uppercase; letter-spacing: .04em; }
+    body[data-theme="citrus"] { font-family: "Avenir Next Condensed", "PingFang SC", sans-serif; }
+    body[data-theme="citrus"] .phone { border-radius: 32px; }
+    body[data-theme="citrus"] .card { background: color-mix(in srgb, var(--surface) 78%, transparent); backdrop-filter: blur(18px); border-color: rgba(255,255,255,.2); }
+    body[data-theme="citrus"] .hero { border-radius: 18px; background: linear-gradient(135deg, #d96e29, #7e2d18); }
+    body[data-theme="citrus"] .btn { border-radius: 10px; background: var(--accent); color: var(--ink-on-brand); }
+    body[data-theme="forest"], body[data-theme="botanical"], body[data-theme="sage"] { font-family: "Optima", "PingFang SC", sans-serif; }
+    body[data-theme="forest"] h1, body[data-theme="botanical"] h1, body[data-theme="sage"] h1,
+    body[data-theme="forest"] .title h2, body[data-theme="botanical"] .title h2, body[data-theme="sage"] .title h2 { font-family: "Songti SC", "STSong", serif; font-weight: 600; }
+    body[data-theme="forest"] .card, body[data-theme="botanical"] .card { border-radius: 28px; box-shadow: 0 12px 24px rgba(35, 75, 53, .08); }
+    body[data-theme="forest"] .btn, body[data-theme="botanical"] .btn { border-radius: 999px; }
+    body[data-theme="sage"] .card { border-radius: 6px; box-shadow: none; }
+    body[data-theme="sage"] .btn { border-radius: 4px; }
+    body[data-theme="sky-data"] { font-family: "DIN Alternate", "PingFang SC", sans-serif; }
+    body[data-theme="sky-data"] .card { border-radius: 14px; box-shadow: 0 8px 18px rgba(76, 159, 232, .08); }
+    body[data-theme="sky-data"] .hero { background: linear-gradient(135deg, #4c9fe8, #75cce9); border-radius: 14px; }
+    body[data-theme="sky-data"] .price, body[data-theme="sky-data"] .hero strong { font-variant-numeric: tabular-nums; letter-spacing: -.06em; }
+    body[data-theme="lavender"] { font-family: "Avenir Next", "PingFang SC", sans-serif; }
+    body[data-theme="lavender"] .card { border-radius: 30px; box-shadow: 0 16px 34px rgba(140, 110, 230, .12); }
+    body[data-theme="lavender"] .btn { border-radius: 999px; }
+    body[data-theme^="mono-"] { font-family: "Helvetica Neue", "PingFang SC", sans-serif; }
+    body[data-theme^="mono-"] h1, body[data-theme^="mono-"] .title h2 { font-family: "Helvetica Neue", "PingFang SC", sans-serif; font-weight: 900; letter-spacing: -.075em; }
+    body[data-theme^="mono-"] .card { border-radius: 8px; box-shadow: none; }
+    body[data-theme^="mono-"] .btn { border-radius: 6px; }
+    body[data-theme^="mono-"] .avatar { border-radius: 8px; }
+    body[data-theme="neon-night"] .card { border-radius: 6px; box-shadow: none; }
+    body[data-theme="neon-night"] .btn { border-radius: 4px; box-shadow: 0 0 0 1px var(--accent), 0 0 18px color-mix(in srgb, var(--accent) 42%, transparent); }
+    body[data-theme="neon-night"] .tag { border-radius: 4px; text-transform: uppercase; }
+    body[data-theme="orchid"] .card, body[data-theme="rose"] .card { border-radius: 26px; }
+    body[data-theme="amber"] .card { border-radius: 12px; }
+    body[data-theme="amber"] .btn { border-radius: 10px; }
+
+
+    /* 手机内的小程序皮肤：主题同步改变内容密度、语气和页面构图 */
+    body[data-theme="sound"] .phone .screen { background: #111; color: #fff; }
+    body[data-theme="sound"] .phone .page { padding-left: 18px; padding-right: 18px; }
+    body[data-theme="sound"] .phone .topline { padding-top: 22px; }
+    body[data-theme="sound"] .phone .title h2 { font-size: 28px; text-transform: uppercase; }
+    body[data-theme="sound"] .phone .conversation { padding: 14px 0; border-radius: 0; }
+    body[data-theme="sound"] .phone .section-label { text-transform: uppercase; letter-spacing: .08em; }
+    body[data-theme="sound"] .phone .card { background: #191919; border-color: #363636; color: #fff; }
+    body[data-theme="sound"] .phone .card p, body[data-theme="sound"] .phone .conversation small { color: #a6a6a6; }
+    body[data-theme="citrus"] .phone .screen { background: linear-gradient(160deg, #f4dfc4, #c96b31); }
+    body[data-theme="citrus"] .phone .page { padding: 16px; }
+    body[data-theme="citrus"] .phone .topline { padding-top: 16px; }
+    body[data-theme="citrus"] .phone .card { background: rgba(255,247,236,.72); }
+    body[data-theme="citrus"] .phone .hero { box-shadow: 0 14px 28px rgba(103,42,20,.18); }
+    body[data-theme="neon-night"] .phone .screen { background: #111; color: #f6f6f6; }
+    body[data-theme="neon-night"] .phone .page { padding: 16px; }
+    body[data-theme="neon-night"] .phone .card { background: #191919; border-color: #3a3a3a; }
+    body[data-theme="neon-night"] .phone .conversation { border-bottom-color: #353535; }
+    body[data-theme="neon-night"] .phone .section-label span, body[data-theme="neon-night"] .phone .price { color: var(--accent); }
+    body[data-theme="sky-data"] .phone .screen { background: #eaf7ff; }
+    body[data-theme="sky-data"] .phone .page { padding: 16px; }
+    body[data-theme="sky-data"] .phone .card { background: rgba(255,255,255,.86); }
+    body[data-theme="sky-data"] .phone .hero { box-shadow: 0 12px 24px rgba(76,159,232,.18); }
+    body[data-theme="forest"] .phone .title h2, body[data-theme="botanical"] .phone .title h2, body[data-theme="sage"] .phone .title h2 { font-family: "Songti SC", "STSong", serif; }
+    body[data-theme="forest"] .phone .card, body[data-theme="botanical"] .phone .card { border-radius: 24px; }
+    body[data-theme="lavender"] .phone .screen { background: #fbf7ff; }
+    body[data-theme="lavender"] .phone .page { padding: 16px; }
+    body[data-theme="lavender"] .phone .card { background: #fff; border-color: #eadffc; }
+    body[data-theme="lavender"] .phone .conversation { border-bottom-color: #eadffc; }
+    body[data-theme^="mono-"] .phone .screen { background: #fff; }
+    body[data-theme^="mono-"] .phone .page { padding: 16px; }
+    body[data-theme^="mono-"] .phone .topline h2 { font-weight: 900; letter-spacing: -.08em; }
+    body[data-theme^="mono-"] .phone .conversation { border-bottom-color: #ddd; }
+    body[data-theme^="mono-"] .phone .card { background: #fafafa; }
+    body[data-theme="mono-lime"] .phone .hero, body[data-theme="mono-electric"] .phone .hero, body[data-theme="mono-lemon"] .phone .hero, body[data-theme="mono-orange"] .phone .hero { background: #171717; }
+    body[data-theme="mono-lime"] .phone .hero strong, body[data-theme="mono-electric"] .phone .hero strong, body[data-theme="mono-lemon"] .phone .hero strong, body[data-theme="mono-orange"] .phone .hero strong { color: var(--accent); }
+    body[data-theme="orchid"] .phone .card, body[data-theme="rose"] .phone .card { border-radius: 24px; }
+    body[data-theme="amber"] .phone .card { border-radius: 12px; }
+
+
+      from { transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1); }
+      to { transform: translate3d(5%, 4%, 0) rotate(10deg) scale(1.08); }
+    }
+    @keyframes shine {
+      from { transform: translateX(-120%) skewX(-18deg); }
+      to { transform: translateX(180%) skewX(-18deg); }
+    }
+    @keyframes pop {
+      from { opacity: 0; transform: translateY(12px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 18% 12%, color-mix(in srgb, var(--brand) 18%, transparent), transparent 30rem),
+        radial-gradient(circle at 86% 8%, color-mix(in srgb, var(--warning) 13%, transparent), transparent 24rem),
+        linear-gradient(135deg, color-mix(in srgb, var(--page) 84%, #fff), var(--page));
+      font-family: "Avenir Next", "SF Pro Display", "PingFang SC", "Noto Sans SC", sans-serif;
+      transition: background .28s ease, color .28s ease;
+    }
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      z-index: -1;
+      width: 34rem;
+      height: 34rem;
+      border-radius: 50%;
+      filter: blur(18px);
+      opacity: .5;
+      pointer-events: none;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
+    body::before {
+      left: -12rem;
+      top: -10rem;
+      background: radial-gradient(circle, color-mix(in srgb, var(--brand) 22%, transparent), transparent 68%);
+    }
+    body::after {
+      right: -14rem;
+      bottom: -16rem;
+      background: radial-gradient(circle, color-mix(in srgb, var(--warning) 16%, transparent), transparent 70%);
+      animation-delay: -7s;
+    }
+
+    .stage {
+      width: min(1180px, calc(100vw - 40px));
+      margin: 0 auto;
+      padding: 34px 0 46px;
+      display: grid;
+      grid-template-columns: 360px 430px 300px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .brief, .panel {
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
+      box-shadow: var(--shadow);
+      border-radius: 30px;
+      backdrop-filter: blur(18px);
+    }
+
+    .brief { padding: 28px; position: sticky; top: 28px; }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--brand);
+      background: var(--surface-2);
+      border-radius: 999px;
+      padding: 7px 11px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+    .eyebrow::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 0 5px color-mix(in srgb, currentColor 14%, transparent);
+    }
+    h1 {
+      margin: 18px 0 10px;
+      font-family: "Songti SC", "Noto Serif SC", serif;
+      font-size: 34px;
+      line-height: 1.08;
+      letter-spacing: -.06em;
+    }
+    .brief p { margin: 0; color: var(--subtle); line-height: 1.8; font-size: 14px; }
+    .rule {
+      margin-top: 22px;
+      padding: 16px;
+      border-radius: 20px;
+      background: var(--surface-2);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 13px;
+    }
+    .rule strong { color: var(--brand); }
+
+    .phone-wrap { display: grid; justify-items: center; gap: 14px; }
+    .theme-switch {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      width: 100%;
+      padding: 6px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 80%, transparent);
+    }
+    .theme-switch button {
+      border: 0;
+      min-height: 38px;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--subtle);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform .2s ease, color .2s ease, background .2s ease, box-shadow .2s ease;
+    }
+    .theme-switch button:hover { transform: translateY(-1px); color: var(--brand); }
+    .theme-switch button.active {
+      color: var(--ink-on-brand);
+      background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+      box-shadow: 0 12px 26px color-mix(in srgb, var(--brand) 30%, transparent);
+    }
+
+    .phone {
+      width: 390px;
+      height: 812px;
+      overflow: hidden;
+      border-radius: 46px;
+      border: 1px solid color-mix(in srgb, var(--border) 78%, var(--text));
+      background: var(--page);
+      box-shadow: 0 34px 90px rgba(15, 23, 42, .24);
+      position: relative;
+      transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+      transition: transform .18s ease, box-shadow .24s ease, border-color .24s ease;
+      will-change: transform;
+    }
+    .phone:hover { box-shadow: 0 42px 110px color-mix(in srgb, var(--brand) 20%, rgba(15, 23, 42, .22)); }
+    .statusbar {
+      height: 34px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      padding: 0 24px 6px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .screen { height: calc(100% - 34px); position: relative; overflow: hidden; }
+    .page {
+      position: absolute;
+      inset: 0;
+      padding: 10px 16px 96px;
+      overflow: auto;
+      display: none;
+      scrollbar-width: none;
+    }
+    .page.active { display: block; animation: rise .24s ease both; }
+    @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      margin: 4px 0 16px;
+    }
+    .title h2 {
+      margin: 0;
+      font-family: "Songti SC", "Noto Serif SC", serif;
+      font-size: 25px;
+      letter-spacing: -.04em;
+    }
+    .title p { margin: 5px 0 0; color: var(--subtle); font-size: 12px; }
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--subtle);
+      display: grid;
+      place-items: center;
+    }
+
+    .search {
+      height: 42px;
+      border-radius: 999px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--subtle);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 14px;
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+
+    .message-tabs { display:grid; grid-template-columns:repeat(2, 1fr); gap:6px; margin: 4px 0 14px; padding:4px; border:1px solid var(--border); border-radius:999px; background:rgba(255,255,255,.52); }
+    .message-tabs button { border:0; border-radius:999px; padding:9px 8px; background:transparent; color:var(--subtle); font:inherit; font-size:12px; font-weight:800; }
+    .message-tabs button.active { background:var(--surface); color:var(--brand); box-shadow:0 5px 14px rgba(15,23,42,.08); }
+    .locked-card { border:1px solid rgba(124,58,237,.22); background:linear-gradient(135deg, rgba(237,233,254,.92), rgba(255,247,236,.92)); }
+
+    .section-label {
+      margin: 18px 2px 9px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .section-label span { color: var(--brand); font-size: 11px; font-weight: 700; }
+
+    .conversation {
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      background: transparent;
+      display: grid;
+      grid-template-columns: 48px 1fr auto;
+      gap: 12px;
+      padding: 12px 2px;
+      text-align: left;
+      color: inherit;
+    }
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      flex: 0 0 auto;
+      background: var(--surface-2);
+      color: var(--brand);
+      font-weight: 900;
+      border: 1px solid var(--border);
+    }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .group-avatar { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; padding: 2px; background: var(--border); }
+    .group-avatar img { width: 100%; height: 100%; object-fit: cover; min-width: 0; min-height: 0; }
+    .group-avatar img:nth-child(1) { border-radius: 10px 2px 2px 2px; }
+    .group-avatar img:nth-child(2) { border-radius: 2px 10px 2px 2px; }
+    .group-avatar img:nth-child(3) { border-radius: 2px 2px 2px 10px; }
+    .group-avatar img:nth-child(4) { border-radius: 2px 2px 10px 2px; }
+    .conversation strong { display: block; font-size: 14px; }
+    .conversation small { display: block; margin-top: 4px; color: var(--subtle); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .meta { text-align: right; color: var(--subtle); font-size: 10px; }
+    .badge {
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      margin-top: 6px;
+      border-radius: 999px;
+      display: inline-grid;
+      place-items: center;
+      background: var(--danger);
+      color: #fff;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      color: var(--brand);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .tag.warn { color: var(--warning); background: color-mix(in srgb, var(--warning) 12%, var(--surface)); }
+    .tag.ok { color: var(--success); background: color-mix(in srgb, var(--success) 12%, var(--surface)); }
+
+    .card {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: 0 10px 28px color-mix(in srgb, var(--brand) 7%, transparent);
+    }
+    .card + .card { margin-top: 12px; }
+    .card h3 { margin: 0; font-size: 16px; letter-spacing: -.02em; }
+    .card p { margin: 7px 0 0; color: var(--subtle); font-size: 12px; line-height: 1.65; }
+    .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .price { color: var(--brand); font-weight: 900; }
+    .btn {
+      border: 0;
+      min-height: 42px;
+      border-radius: 15px;
+      padding: 0 16px;
+      background: var(--brand);
+      color: var(--ink-on-brand);
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .btn.secondary { background: var(--surface-2); color: var(--brand); }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .mini {
+      border-radius: 18px;
+      background: var(--surface-2);
+      padding: 12px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .mini span { display: block; margin-top: 5px; color: var(--subtle); font-size: 10px; font-weight: 600; }
+
+    .seg {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      gap: 6px;
+      padding: 5px;
+      border-radius: 18px;
+      background: var(--surface-2);
+      margin-bottom: 14px;
+    }
+    .seg button {
+      border: 0;
+      min-height: 38px;
+      border-radius: 14px;
+      background: transparent;
+      color: var(--subtle);
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .seg button.active { background: var(--surface); color: var(--brand); box-shadow: 0 8px 18px rgba(15, 23, 42, .08); }
+    .identity { grid-template-columns: repeat(3, 1fr); }
+    .plates { grid-template-columns: repeat(4, 1fr); }
+
+    .member-row, .entry {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .member-row:last-child, .entry:last-child { border-bottom: 0; }
+    .member-row .avatar, .entry .avatar { width: 42px; height: 42px; border-radius: 15px; }
+    .grow { flex: 1; min-width: 0; }
+    .grow strong { display: block; font-size: 13px; }
+    .grow small { display: block; margin-top: 3px; color: var(--subtle); font-size: 10px; }
+
+    .hero {
+      border-radius: 28px;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+      color: var(--ink-on-brand);
+      box-shadow: var(--shadow);
+    }
+    .hero p { margin: 6px 0 0; opacity: .76; font-size: 12px; }
+    .hero strong { font-size: 24px; letter-spacing: -.04em; }
+
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--brand) 13%, var(--surface));
+      margin-top: 12px;
+    }
+    .progress i { display: block; height: 100%; width: 68%; background: var(--brand); border-radius: inherit; }
+
+    .page.active .card,
+    .page.active .conversation,
+    .page.active .member-row,
+    .page.active .entry { animation: pop .42s cubic-bezier(.2,.8,.2,1) both; }
+    .page.active .card:nth-of-type(2),
+    .page.active .conversation:nth-of-type(2),
+    .page.active .member-row:nth-of-type(2),
+    .page.active .entry:nth-of-type(2) { animation-delay: .04s; }
+    .page.active .card:nth-of-type(3),
+    .page.active .conversation:nth-of-type(3),
+    .page.active .member-row:nth-of-type(3),
+    .page.active .entry:nth-of-type(3) { animation-delay: .08s; }
+    .page.active .card:nth-of-type(4),
+    .page.active .conversation:nth-of-type(4),
+    .page.active .member-row:nth-of-type(4),
+    .page.active .entry:nth-of-type(4) { animation-delay: .12s; }
+    .card, .conversation, .member-row, .entry, .mini { transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease, background .22s ease; }
+    .card:hover, .conversation:hover, .member-row:hover, .entry:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--brand) 34%, var(--border));
+    }
+    .btn { position: relative; overflow: hidden; transition: transform .2s ease, box-shadow .2s ease; }
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: -40% auto -40% -30%;
+      width: 42%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.58), transparent);
+      transform: translateX(-120%) skewX(-18deg);
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 28px color-mix(in srgb, var(--brand) 24%, transparent); }
+    .btn:hover::after { animation: shine .72s ease; }
+    .hero { position: relative; overflow: hidden; }
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: -60% auto -60% -20%;
+      width: 46%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.42), transparent);
+      transform: translateX(-140%) skewX(-18deg);
+      animation: shine 4.8s ease-in-out infinite;
+    }
+    .bottom-nav button { position: relative; }
+    .bottom-nav button::before {
+      content: "";
+      position: absolute;
+      top: 4px;
+      width: 34px;
+      height: 22px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--brand) 14%, transparent);
+      opacity: 0;
+      transform: scale(.72);
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .bottom-nav button.active::before { opacity: 1; transform: scale(1); }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 82px;
+      padding: 8px 10px max(10px, env(safe-area-inset-bottom));
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 2px;
+      border-top: 1px solid var(--border);
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      backdrop-filter: blur(20px);
+    }
+    .bottom-nav button {
+      border: 0;
+      background: transparent;
+      color: var(--subtle);
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .bottom-nav svg { width: 21px; height: 21px; stroke-width: 1.8; }
+    .bottom-nav button.active { color: var(--brand); }
+    .bottom-nav button.active svg { stroke-width: 2.25; }
+
+    .panel { padding: 20px; position: sticky; top: 28px; }
+    .panel h3 { margin: 0 0 12px; font-size: 15px; }
+    .check { display: grid; gap: 10px; color: var(--subtle); font-size: 12px; line-height: 1.6; }
+    .check b { color: var(--text); }
+
+    @media (max-width: 1120px) {
+      .stage { grid-template-columns: 1fr; justify-items: center; }
+      .brief, .panel { position: static; width: min(430px, 100%); }
+      .phone { width: min(390px, calc(100vw - 28px)); }
+    }
+  </style>
+</head>
+<body data-theme="peach">
+  <main class="stage">
+    <aside class="brief">
+      <span class="eyebrow">纠正版预览</span>
+      <h1 id="brief-title">主理人公社<br />回到需求文档结构</h1>
+      <p id="brief-copy">这版预览把上一版错误的“工作台 / 社群”导航，纠正为需求文档固定的五个入口：消息、项目、主理台、成长、我的。</p>
+      <div class="rule">
+        <strong>视觉联动：</strong><br />16 套主题同步改变色彩、字体气质、卡片质感和文案语气；消息页按微信式会话列表承载服务、群聊、推荐群和系统通知。
+      </div>
+    </aside>
+
+    <section class="phone-wrap" aria-label="小程序可视化预览">
+      <div class="theme-switch" aria-label="UI 风格切换">
+        <button class="active" data-theme-btn="peach">蜜桃流光</button>
+        <button data-theme-btn="orchid">兰雾霓虹</button>
+        <button data-theme-btn="amber">琥珀镭射</button>
+        <button data-theme-btn="rose">玫粉电波</button>
+        <button data-theme-btn="mono-lime">墨黑荧光绿</button>
+        <button data-theme-btn="mono-electric">石墨电蓝</button>
+        <button data-theme-btn="mono-lemon">墨黑柠檬黄</button>
+        <button data-theme-btn="mono-orange">深灰荧光橙</button>
+        <button data-theme-btn="forest">深绿荧光柠</button>
+        <button data-theme-btn="sage">留白鼠尾草</button>
+        <button data-theme-btn="sound">黑白播客红</button>
+        <button data-theme-btn="citrus">橙棕效率场</button>
+        <button data-theme-btn="neon-night">深夜荧光黄</button>
+        <button data-theme-btn="sky-data">浅蓝数据岛</button>
+        <button data-theme-btn="lavender">淡紫生活志</button>
+        <button data-theme-btn="botanical">植物生活派</button>
+      </div>
+
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span>主理人公社</span></div>
+        <div class="screen">
+          <section class="page active" data-page="messages">
+            <div class="topline">
+              <div class="title"><h2 data-copy="messages.title">消息</h2><p data-copy="messages.subtitle">服务人员、群动态和业务提醒都在这里</p></div>
+              <span class="icon-btn" aria-hidden="true">⌕</span>
+            </div>
+            <div class="search" data-copy="messages.search">搜索服务人员、群或通知</div>
+
+            <div class="message-tabs" role="tablist" aria-label="消息分类"><button class="active" type="button" role="tab" aria-selected="true">对话</button><button type="button" role="tab" aria-selected="false">社群广场</button></div>
+            <div class="section-label">置顶会话 <span>2 条待处理</span></div>
+            <button class="conversation">
+              <span class="avatar"><img src="preview-avatars/guwen.jpg" alt="林岚头像" /></span>
+              <span class="grow"><strong>专属顾问 · 林岚</strong><small>你的代理申请资料已审核通过，下一步进入待培训。</small></span>
+              <span class="meta">09:42<br /><span class="badge">2</span></span>
+            </button>
+            <button class="conversation">
+              <span class="avatar group-avatar" aria-label="AI增长实战群头像"><img src="preview-avatars/avatar-01.jpg" alt="" /><img src="preview-avatars/avatar-04.jpg" alt="" /><img src="preview-avatars/avatar-07.jpg" alt="" /><img src="preview-avatars/avatar-10.jpg" alt="" /></span>
+              <span class="grow"><strong>AI 增长实战群</strong><small>周明：今晚 20:00 首轮内容确认，记得查看作业要求。</small></span>
+              <span class="meta">09:18<br /><span class="badge">6</span></span>
+            </button>
+            <button class="conversation">
+              <span class="avatar"><img src="preview-avatars/caiwu.jpg" alt="财务助手头像" /></span>
+              <span class="grow"><strong>佣金提醒</strong><small>3 笔推广订单已完成支付，佣金进入待结算。</small></span>
+              <span class="meta">昨天<br /><span class="tag warn">待结算</span></span>
+            </button>
+
+            <div class="section-label">已同步群聊 <span>4 个已解锁</span></div>
+            <button class="conversation">
+              <span class="avatar group-avatar" aria-label="城市主理人群头像"><img src="preview-avatars/avatar-02.jpg" alt="" /><img src="preview-avatars/avatar-05.jpg" alt="" /><img src="preview-avatars/avatar-08.jpg" alt="" /><img src="preview-avatars/avatar-11.jpg" alt="" /></span>
+              <span class="grow"><strong>城市主理人共创群</strong><small>群公告：本周线下共创会报名已开启。</small></span>
+              <span class="meta">昨天<br /><span class="badge">3</span></span>
+            </button>
+
+            <div class="section-label">待解锁群 <span>升级后加入</span></div>
+            <div class="card locked-card">
+              <div class="card-head"><h3>品牌增长进阶群</h3><span class="tag">待解锁</span></div>
+              <p>升级后解锁完整群消息、历史文件与导师答疑；当前可先查看公开内容。</p>
+              <div style="display:flex; gap:10px; margin-top:14px;"><button class="btn">立即解锁</button><button class="btn secondary">查看权益</button></div>
+            </div>
+            <div class="section-label">系统通知 <span>全部已读</span></div>
+            <button class="conversation">
+              <span class="avatar"><img src="preview-avatars/avatar-12.jpg" alt="系统通知头像" /></span>
+              <span class="grow"><strong>主理人公社助手</strong><small>你的成长任务已更新，打开成长页查看今日待办。</small></span>
+              <span class="meta">周一</span>
+            </button>
+          </section>
+
+          <section class="page" data-page="projects">
+            <div class="topline">
+              <div class="title"><h2>项目与商城</h2><p>发现聚域项目，购买配套产品和服务</p></div>
+              <span class="icon-btn" aria-hidden="true">⌕</span>
+            </div>
+            <div class="seg" style="grid-template-columns: repeat(2, 1fr);"><button class="active">项目推荐</button><button>商城</button></div>
+            <div class="card">
+              <div class="card-head"><span class="tag ok">报名中</span><span class="price">¥1,280 起</span></div>
+              <h3 style="margin-top:12px;">AI 超级广告公司</h3>
+              <p>适合会员 / 代理 / 团长。报名后自动生成项目参与资格、项目订单、成长记录、相关群访问权限和服务人员会话。</p>
+              <div class="grid-2" style="margin-top:14px;"><div class="mini">项目时间<span>10.16 - 11.06</span></div><div class="mini">项目负责人<span>周明</span></div></div>
+              <button class="btn" style="width:100%; margin-top:14px;">立即报名</button>
+            </div>
+            <div class="card">
+              <div class="card-head"><span class="tag">进行中</span><span class="price">会员价 ¥699</span></div>
+              <h3 style="margin-top:12px;">社群增长陪跑计划</h3>
+              <p>项目服务包含项目群、课程、资料、导师、直播、回看、活动、训练任务和会员权益。</p>
+              <button class="btn secondary" style="width:100%; margin-top:14px;">查看参与进度</button>
+            </div>
+          </section>
+
+          <section class="page" data-page="console">
+            <div class="topline">
+              <div class="title"><h2>主理台</h2><p>按身份处理团队、经营、资产和推广</p></div>
+              <span class="tag">会员 + 代理</span>
+            </div>
+            <div class="seg identity"><button>会员</button><button class="active">代理</button><button>团长</button></div>
+            <div class="seg plates"><button class="active">团队</button><button>经营</button><button>资产</button><button>推广</button></div>
+            <div class="hero"><p>代理团队</p><strong>128 人</strong><p>直属代理 12 · 直属团长 26 · 直属会员 90</p></div>
+            <div class="section-label">团队组织中心 <span>直属可看明细</span></div>
+            <div class="card">
+              <div class="member-row"><span class="avatar">陈</span><span class="grow"><strong>陈美玲</strong><small>直属团长 · 培训中 · 最近活跃 今天 09:20</small></span><span class="tag ok">正常</span></div>
+              <div class="member-row"><span class="avatar">李</span><span class="grow"><strong>李雪</strong><small>直属会员 · 待跟进 · 意向：项目报名</small></span><span class="tag warn">待跟进</span></div>
+              <div class="member-row"><span class="avatar">周</span><span class="grow"><strong>周航</strong><small>发展网络 · 仅展示层级、人数和业绩聚合</small></span><span class="tag">聚合</span></div>
+            </div>
+            <div class="grid-2" style="margin-top:12px;"><button class="btn">审核团长申请</button><button class="btn secondary">分配导师</button></div>
+          </section>
+
+          <section class="page" data-page="growth">
+            <div class="topline">
+              <div class="title"><h2>成长</h2><p>服务、培训、任务和认证都在这里推进</p></div>
+              <span class="tag">S1</span>
+            </div>
+            <div class="hero"><p>当前成长阶段</p><strong>S1 · 入门认证</strong><p>完成必修课程、考试、系统操作任务和合规确认后进入 S2。</p><div class="progress"><i style="width:46%"></i></div></div>
+            <div class="section-label">今日任务 <span>4 项</span></div>
+            <div class="card">
+              <div class="member-row"><span class="avatar">学</span><span class="grow"><strong>平台和业务结构</strong><small>学习 · 25 分钟 · 完成后进入课程测试</small></span><span class="tag">进行中</span></div>
+              <div class="member-row"><span class="avatar">作</span><span class="grow"><strong>完成系统操作测试</strong><small>作业 · 截止今天 18:00</small></span><span class="tag warn">待提交</span></div>
+              <div class="member-row"><span class="avatar">益</span><span class="grow"><strong>会员权益到账</strong><small>服务 · 可预约顾问诊断一次</small></span><span class="tag ok">可使用</span></div>
+            </div>
+          </section>
+
+          <section class="page" data-page="mine">
+            <div class="topline">
+              <div class="title"><h2>我的</h2><p>身份、订单、权益和个人资产</p></div>
+              <span class="icon-btn" aria-hidden="true">⋯</span>
+            </div>
+            <div class="hero" style="display:flex; gap:14px; align-items:center;"><span class="avatar" style="width:62px; height:62px; border-radius:22px; background:rgba(255,255,255,.18); color:inherit; border-color:rgba(255,255,255,.28);">王</span><span><p>会员 + 代理</p><strong>王总</strong><p>D3 · 事业合伙人 · 成长值 2680</p></span></div>
+            <div class="section-label">账户入口 <span>完整版</span></div>
+            <div class="card">
+              <div class="entry"><span class="avatar">订</span><span class="grow"><strong>我的订单</strong><small>2 笔进行中 · 1 笔待发货</small></span><span>›</span></div>
+              <div class="entry"><span class="avatar">权</span><span class="grow"><strong>我的权益</strong><small>12 项可使用 · 2 项即将到期</small></span><span>›</span></div>
+              <div class="entry"><span class="avatar">群</span><span class="grow"><strong>我的群权限</strong><small>4 个已解锁 · 1 个试看中</small></span><span>›</span></div>
+              <div class="entry"><span class="avatar">培</span><span class="grow"><strong>我的培训记录</strong><small>S1 入门认证 · 完成度 46%</small></span><span>›</span></div>
+              <div class="entry"><span class="avatar">资</span><span class="grow"><strong>我的资产</strong><small>待结算 ¥1,280 · 可提现 ¥8,460</small></span><span>›</span></div>
+            </div>
+          </section>
+
+          <nav class="bottom-nav" aria-label="主导航">
+            <button class="active" data-nav="messages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a8 8 0 0 1-8 8H5l-2 2V12a8 8 0 0 1 8-8h2a8 8 0 0 1 8 8Z"/></svg><span>消息</span></button>
+            <button data-nav="projects"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>项目</span></button>
+            <button data-nav="console"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M4 5h16v14H4z"/><path d="M4 10h16M10 10v9"/></svg><span>主理台</span></button>
+            <button data-nav="growth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 3v18M5 10c4 0 7-2 7-7 0 5 3 7 7 7"/></svg><span>成长</span></button>
+            <button data-nav="mine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg><span>我的</span></button>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <h3>这版预览用来确认什么</h3>
+      <div class="check">
+        <div><b>导航是否纠正：</b>消息、项目、主理台、成长、我的。</div>
+        <div><b>消息是否成为首页：</b>微信式会话列表，不再是工作台卡片。</div>
+        <div><b>项目是否收敛：</b>只有项目推荐和商城两个入口。</div>
+        <div><b>主理台是否固定：</b>会员 / 代理 / 团长 + 团队 / 经营 / 资产 / 推广。</div>
+        <div><b>主题是否方便选择：</b>16 套主题覆盖浅色潮流、黑白亮色、自然生活、播客社区、效率工具、数据仪表盘和电商视觉。</div>
+      </div>
+    </aside>
+  </main>
+
+  <script>
+    const pages = document.querySelectorAll('[data-page]');
+    const navButtons = document.querySelectorAll('[data-nav]');
+    navButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        navButtons.forEach(item => item.classList.toggle('active', item === button));
+        pages.forEach(page => page.classList.toggle('active', page.dataset.page === button.dataset.nav));
+      });
+    });
+
+    const themeKey = 'principal-society-preview-theme';
+    const allowedThemes = ['peach', 'orchid', 'amber', 'rose', 'mono-lime', 'mono-electric', 'mono-lemon', 'mono-orange', 'forest', 'sage', 'sound', 'citrus', 'neon-night', 'sky-data', 'lavender', 'botanical'];
+    const savedTheme = localStorage.getItem(themeKey);
+    if (allowedThemes.includes(savedTheme)) {
+      document.body.dataset.theme = savedTheme;
+    } else {
+      localStorage.setItem(themeKey, 'peach');
+    }
+    const themeCopy = {
+      peach: ['主理人公社<br />让关系有温度', '轻盈、亲切、有人情味。把服务、群聊和成长任务放在一条自然的陪伴路径里。'],
+      orchid: ['主理人公社<br />灵感正在发生', '用更大胆的紫色层次和流动卡片，表达共创、连接与持续发生的灵感。'],
+      amber: ['主理人公社<br />把行动变成结果', '橙色行动感对应项目报名、任务推进和经营转化，让每个下一步都更明确。'],
+      rose: ['主理人公社<br />一起把事做漂亮', '偏内容社区的浪漫表达，适合展示品牌、课程、导师与高价值社群。'],
+      'mono-lime': ['主理人公社<br />黑底，亮出增长', '黑白骨架配荧光绿重点，信息更直接，适合强调数据、任务和可执行动作。'],
+      'mono-electric': ['主理人公社<br />把网络接上电', '电蓝是连接与效率的信号，适合代理团队、项目协作和实时消息。'],
+      'mono-lemon': ['主理人公社<br />今天就做下一步', '柠檬黄承担行动提示，黑白界面保持克制，让任务优先级一眼可见。'],
+      'mono-orange': ['主理人公社<br />让经营更有火力', '深灰与荧光橙组合，突出订单、佣金、推广和商业转化。'],
+      forest: ['主理人公社<br />在真实关系里生长', '深绿、留白与柠檬亮色，强调长期主义、自然连接和主理人的信任感。'],
+      sage: ['主理人公社<br />把复杂留在幕后', '极简留白与衬线标题，让服务、课程和权益像一份清晰的私人手册。'],
+      sound: ['主理人公社<br />听见同频的人', '黑白播客式内容流，突出真人、群体和观点，让消息页更像一个持续更新的社群频道。'],
+      citrus: ['主理人公社<br />今天的灵感开工了', '橙棕效率场把项目、日程和任务放进更有节奏的工作台，适合高频推进。'],
+      'neon-night': ['主理人公社<br />把机会点亮', '深夜黑底与荧光黄强调稀缺权益、关键指标和必须完成的动作。'],
+      'sky-data': ['主理人公社<br />看懂你的成长数据', '浅蓝数据岛把成长值、任务、资产和经营信号拆成轻盈易读的指标卡片。'],
+      lavender: ['主理人公社<br />把生活过成一场共创', '淡紫、粉色和商品陈列感，适合课程、商城、活动和生活方式型主理人。'],
+      botanical: ['主理人公社<br />让好项目自然发生', '植物生活派以深绿和柔和留白传达真实、可持续、有人情味的主理人品牌。']
+    };
+    const appCopy = {
+      peach: { messages: ['消息', '今天也有人在陪你推进', '找顾问、找群、找提醒', '置顶会话'], projects: ['项目与商城', '从灵感到落地，选一个现在就开始', '项目推荐', '商城'], console: ['主理台', '把团队、经营、资产和推广放到手边', '会员 + 代理', '今天优先处理'], growth: ['成长', '每一步都算数，继续往前走', 'S1 · 入门认证', '今日任务'], mine: ['我的', '你的身份、权益和资产都在这里', '会员 + 代理', '账户入口'] },
+      orchid: { messages: ['灵感收件箱', '新的连接和共创正在发生', '搜索人、群或灵感', '正在发生'], projects: ['灵感集市', '挑一个值得一起做大的机会', '共创项目', '灵感商品'], console: ['共创台', '让团队和伙伴一起把想法变成作品', '代理 · 共创者', '本周共创'], growth: ['灵感成长', '课程、导师和任务，都是下一次跃迁', 'S1 · 灵感启程', '正在发生'], mine: ['我的灵感档案', '收藏你的身份、权益与共创足迹', '会员 · 共创者', '我的收藏'] },
+      amber: { messages: ['行动中心', '每条消息，都是下一步的线索', '搜索顾问、项目或任务', '马上行动'], projects: ['项目与商城', '选项目、抢先机、把结果做出来', '立即参与', '配套商城'], console: ['经营主场', '团队、经营、资产、推广，一屏推进', '代理 + 团长', '今日经营'], growth: ['行动进度', '完成一项，再解锁下一项能力', 'S1 · 正在升级', '待完成事项'], mine: ['我的经营档案', '身份、订单、权益和收益清清楚楚', '代理 · 团长', '账户管理'] },
+      rose: { messages: ['社群来信', '和同频的人，一起把事做漂亮', '寻找顾问、群聊与新朋友', '精选会话'], projects: ['共创项目', '好项目值得被认真选择', '品牌项目', '生活方式商城'], console: ['主理人工作室', '管理你的伙伴、作品与影响力', '会员 + 代理', '我的社群'], growth: ['成长手册', '导师、课程、活动，慢慢长成自己的节奏', 'S1 · 初次见面', '今日灵感'], mine: ['我的名片', '你的身份与每一份参与都值得被看见', '会员 · 代理', '我的权益'] },
+      forest: { messages: ['消息', '重要的人和事，在这里慢慢生长', '搜索伙伴、群组或提醒', '置顶伙伴'], projects: ['项目与商城', '选择一片值得耕耘的土壤', '共创项目', '日常好物'], console: ['主理台', '照看团队、经营、资产与推广', '代理 · 团长', '今日照看'], growth: ['成长', '一步一步，建立长期的能力与信任', 'S1 · 生长中', '今日练习'], mine: ['我的', '你的身份、权益和资产', '会员 · 代理', '我的家园'] },
+      sage: { messages: ['来信', '清楚地看见每一条需要回应的事', '搜索联系人、群或通知', '置顶来信'], projects: ['项目 / 商城', '把选择做得更少，把行动做得更准', '项目', '商城'], console: ['主理台', '一个页面，处理四类重要事务', '代理', '今日清单'], growth: ['成长记录', '课程、任务、认证，按自己的节奏完成', 'S1 · 入门认证', '待办清单'], mine: ['我的档案', '身份、订单、权益、资产', '会员 + 代理', '账户入口'] },
+      sound: { messages: ['INBOX', 'People, groups, ideas — keep in touch', 'SEARCH PEOPLE / GROUPS / NOTES', 'PINNED'], projects: ['PROJECTS / SHOP', 'Find the next thing worth making', 'PROJECTS', 'SHOP'], console: ['CONTROL ROOM', 'Your people. Your momentum. Your signal.', 'CREATOR MODE', 'TODAY’S SIGNAL'], growth: ['GROWTH LOG', 'Learn, ship, repeat.', 'LEVEL 01 · START HERE', 'NEXT UP'], mine: ['PROFILE', 'Your access, work and story.', 'MEMBER / PARTNER', 'YOUR SPACE'] },
+      citrus: { messages: ['今天做什么', '把消息变成一张可执行的清单', '搜索人、群或待办', '优先处理'], projects: ['项目工具箱', '选一个任务，马上进入执行状态', '正在招募', '效率商城'], console: ['效率工作台', '团队、经营、资产、推广，按节奏推进', '代理 + 团长', '今日排程'], growth: ['升级计划', '课程和任务像日历一样清楚', 'S1 · 任务进行中', '今天要做'], mine: ['我的工作台', '把订单、权益和资产安排好', '主理人', '我的清单'] },
+      'neon-night': { messages: ['MISSION FEED', '重要提醒，不要错过窗口期', 'SEARCH SIGNALS / GROUPS', 'HIGH PRIORITY'], projects: ['OPPORTUNITIES', '把下一次机会抢在别人前面', 'OPEN NOW', 'STORE'], console: ['OPERATOR MODE', '团队、经营、资产、推广，全部点亮', 'AGENT ONLINE', 'ACTIVE MISSIONS'], growth: ['LEVEL UP', '完成任务，解锁更多权限', 'LEVEL 01 · ACTIVE', 'MISSIONS'], mine: ['ACCESS CARD', '你的身份与权限状态', 'MEMBER / AGENT', 'ACCESS & ASSETS'] },
+      'sky-data': { messages: ['消息数据', '把每一条提醒变成可读的信号', '搜索联系人、群和提醒', '关键消息'], projects: ['项目与商城', '用数据选项目，用行动拿结果', '项目推荐', '商城数据'], console: ['经营仪表盘', '团队、经营、资产和推广一目了然', '代理 · 128 人', '关键指标'], growth: ['成长数据', '看见完成度，也看见下一步', 'S1 · 46%', '今日指标'], mine: ['我的数据', '身份、订单、权益和资产总览', '会员 + 代理', '账户数据'] },
+      lavender: { messages: ['消息花园', '和喜欢的人一起，把日常过得更有趣', '搜索朋友、群组或活动', '精选消息'], projects: ['项目与好物', '挑一个让生活变好的参与方式', '共创项目', '生活商城'], console: ['主理人空间', '经营社群，也经营自己的节奏', '会员 + 代理', '今日空间'], growth: ['成长日记', '课程、活动与导师，陪你慢慢变好', 'S1 · 新鲜开始', '今日安排'], mine: ['我的生活志', '你的身份、权益、订单与收藏', '会员 · 代理', '我的内容'] },
+      botanical: { messages: ['消息', '让好关系自然发生', '搜索伙伴、群组或提醒', '置顶会话'], projects: ['项目与好物', '选择对人、对生活、对未来都好的事', '自然项目', '生活商城'], console: ['主理台', '照看团队，也照看每一次真实连接', '会员 + 团长', '今日生长'], growth: ['成长', '学习、行动、复盘，然后继续生长', 'S1 · 生长中', '今日功课'], mine: ['我的', '你的身份、权益、群权限和资产', '主理人', '我的空间'] }
+    };
+    const syncPhoneCopy = () => {
+      const copy = appCopy[document.body.dataset.theme] || appCopy.peach;
+      ['messages', 'projects', 'console', 'growth', 'mine'].forEach(pageName => {
+        const page = document.querySelector(`[data-page="${pageName}"]`);
+        const title = page.querySelector('.title h2');
+        const subtitle = page.querySelector('.title p');
+        const labels = page.querySelectorAll('.section-label');
+        title.textContent = copy[pageName][0];
+        subtitle.textContent = copy[pageName][1];
+        if (pageName === 'messages') {
+          page.querySelector('.search').textContent = copy.messages[2];
+          if (labels[0]) labels[0].firstChild.textContent = `${copy.messages[3]} `;
+        } else if (pageName === 'projects') {
+          page.querySelector('.seg button:nth-child(1)').textContent = copy.projects[2];
+          page.querySelector('.seg button:nth-child(2)').textContent = copy.projects[3];
+        } else if (pageName === 'console') {
+          page.querySelector('.section-label').firstChild.textContent = `${copy.console[3]} `;
+        } else if (pageName === 'growth') {
+          page.querySelector('.section-label').firstChild.textContent = `${copy.growth[3]} `;
+        } else if (pageName === 'mine') {
+          page.querySelector('.section-label').firstChild.textContent = `${copy.mine[3]} `;
+        }
+      });
+    };
+
+    const briefTitle = document.querySelector('#brief-title');
+    const briefCopy = document.querySelector('#brief-copy');
+    const syncThemeCopy = () => {
+      const copy = themeCopy[document.body.dataset.theme] || themeCopy.peach;
+      briefTitle.innerHTML = copy[0];
+      briefCopy.textContent = copy[1];
+      syncPhoneCopy();
+    };
+    new MutationObserver(syncThemeCopy).observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
+
+    const themeButtons = document.querySelectorAll('[data-theme-btn]');
+    const syncThemeButtons = () => themeButtons.forEach(button => button.classList.toggle('active', button.dataset.themeBtn === document.body.dataset.theme));
+    themeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        document.body.dataset.theme = button.dataset.themeBtn;
+        localStorage.setItem(themeKey, button.dataset.themeBtn);
+        syncThemeButtons();
+        syncThemeCopy();
+      });
+    });
+    syncThemeButtons();
+    syncThemeCopy();
+
+    const phone = document.querySelector('.phone');
+    const phoneWrap = document.querySelector('.phone-wrap');
+    if (phone && phoneWrap && matchMedia('(pointer: fine)').matches) {
+      phoneWrap.addEventListener('pointermove', event => {
+        const rect = phone.getBoundingClientRect();
+        const x = (event.clientX - rect.left) / rect.width - .5;
+        const y = (event.clientY - rect.top) / rect.height - .5;
+        phone.style.setProperty('--ry', `${x * 5}deg`);
+        phone.style.setProperty('--rx', `${y * -5}deg`);
+      });
+      phoneWrap.addEventListener('pointerleave', () => {
+        phone.style.setProperty('--ry', '0deg');
+        phone.style.setProperty('--rx', '0deg');
+      });
+    }
+  </script>
+</body>
+</html>

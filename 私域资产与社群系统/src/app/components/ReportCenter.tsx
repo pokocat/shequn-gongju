@@ -77,7 +77,9 @@ const channelDetail = [
 ];
 
 const DATE_RANGES = ["本月", "上月", "近3月", "近6月", "本年"];
-const TABS = ["概览报表", "城市分析", "项目报表", "渠道来源"];
+export const REPORT_TABS = ["概览报表", "城市分析", "项目报表", "渠道来源"] as const;
+export type ReportTab = typeof REPORT_TABS[number];
+const TABS = REPORT_TABS;
 
 const Tip = ({ active, payload, label }: any) =>
   active && payload?.length ? (
@@ -445,19 +447,29 @@ function ChannelTab() {
   );
 }
 
-export default function ReportCenter() {
+export default function ReportCenter({
+  activeTab: controlledTab,
+  onActiveTabChange,
+  showTabs = true,
+}: {
+  activeTab?: ReportTab;
+  onActiveTabChange?: (tab: ReportTab) => void;
+  showTabs?: boolean;
+} = {}) {
   useThemeSingleton();
-const [dateRange, setDateRange] = useState("本月");
-  const [activeTab, setActiveTab] = useState("概览报表");
+  const [dateRange, setDateRange] = useState("本月");
+  const [internalTab, setInternalTab] = useState<ReportTab>("概览报表");
+  const activeTab = controlledTab ?? internalTab;
+
+  const selectTab = (tab: ReportTab) => {
+    setInternalTab(tab);
+    onActiveTabChange?.(tab);
+  };
 
   return (
     <div className="p-6 space-y-5" style={{ background: S.bg, fontFamily: "monospace", minHeight: "100%" }}>
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-bold" style={{ color: S.text, fontFamily: "monospace" }}>数据报表中心</h1>
-          <p className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>全面掌握业务数据，驱动增长决策</p>
-        </div>
+      <div className="flex items-center justify-end">
         <div className="flex items-center gap-3">
           <div className="flex overflow-hidden" style={{ border: `1px solid ${S.borderMed}`, borderRadius: S.radius }}>
             {DATE_RANGES.map(r => (
@@ -480,21 +492,22 @@ const [dateRange, setDateRange] = useState("本月");
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 p-1" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, width: "fit-content", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
-        {TABS.map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)}
-            className="px-4 py-2 text-sm font-bold transition-all"
-            style={{
-              background: activeTab === tab ? "#1e293b" : "transparent",
-              color: activeTab === tab ? S.accent : S.muted,
-              borderRadius: S.radiusSm,
-              fontFamily: "monospace",
-            }}>
-            {tab}
-          </button>
-        ))}
-      </div>
+      {showTabs && (
+        <div className="flex gap-1 p-1" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, width: "fit-content", boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
+          {TABS.map(tab => (
+            <button key={tab} onClick={() => selectTab(tab)}
+              className="px-4 py-2 text-sm font-bold transition-all"
+              style={{
+                background: activeTab === tab ? "#1e293b" : "transparent",
+                color: activeTab === tab ? S.accent : S.muted,
+                borderRadius: S.radiusSm,
+                fontFamily: "monospace",
+              }}>
+              {tab}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Content */}
       {activeTab === "概览报表" && <OverviewTab />}

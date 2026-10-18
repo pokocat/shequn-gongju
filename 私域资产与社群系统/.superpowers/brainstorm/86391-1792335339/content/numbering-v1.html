@@ -1,0 +1,55 @@
+<div style="max-width:1100px;margin:0 auto;color:#172033;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+  <h2 style="margin-bottom:6px">统一编号体系建议</h2>
+  <p class="subtitle">按层级区分编号前缀；编号自动生成、永久唯一，不因名称修改而变化。</p>
+
+  <div class="mockup" style="margin-top:22px;border:1px solid #d8dee9;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 8px 24px rgba(36,48,70,.08)">
+    <div class="mockup-header" style="padding:14px 18px;background:#f5f7fb;border-bottom:1px solid #e4e8f0;font-weight:700">层级关系与编号示意</div>
+    <div class="mockup-body" style="padding:24px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:stretch">
+        <div style="border-left:3px solid #5b67d8;padding-left:18px">
+          <div style="font-size:12px;color:#667085;margin-bottom:7px">L0 · 全局根节点</div>
+          <div style="font-size:19px;font-weight:800">超级生态</div>
+          <div style="margin-top:8px;font-family:ui-monospace,monospace;color:#4654bd;font-weight:700">SE-0001</div>
+          <div style="margin:22px 0 0 16px;border-left:2px solid #d9deef;padding-left:18px">
+            <div style="font-size:12px;color:#667085">L1 · 行业生态</div>
+            <div style="font-weight:750;margin-top:4px">医美健康生态</div>
+            <div style="font-family:ui-monospace,monospace;color:#5260c8;margin-top:5px">ECO-0001</div>
+            <div style="margin:18px 0 0 16px;border-left:2px solid #e6e9f2;padding-left:18px">
+              <div style="font-size:12px;color:#667085">L2 · SaaS 合作伙伴</div>
+              <div style="font-weight:700;margin-top:4px">聚域 SaaS</div>
+              <div style="font-family:ui-monospace,monospace;color:#5260c8;margin-top:5px">SAS-0001</div>
+              <div style="margin:16px 0 0 16px;border-left:2px solid #eef0f5;padding-left:18px">
+                <div style="font-size:12px;color:#667085">L3 · 平台</div>
+                <div style="font-weight:700;margin-top:4px">聚域平台</div>
+                <div style="font-family:ui-monospace,monospace;color:#5260c8;margin-top:5px">PLT-0001</div>
+                <div style="margin:14px 0 0 16px;border-left:2px solid #f1f2f6;padding-left:18px">
+                  <div style="font-size:12px;color:#667085">L4 · 项目</div>
+                  <div style="font-weight:700;margin-top:4px">某某连锁项目</div>
+                  <div style="font-family:ui-monospace,monospace;color:#5260c8;margin-top:5px">PRJ-0001</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#f8faff;border:1px solid #e1e6f5;border-radius:12px;padding:18px">
+          <div style="font-size:12px;color:#667085;margin-bottom:10px">编号规则</div>
+          <div style="display:grid;gap:10px">
+            <div style="display:flex;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:8px"><span>超级生态</span><strong style="font-family:ui-monospace,monospace;color:#5260c8">SE-0001</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:8px"><span>行业生态</span><strong style="font-family:ui-monospace,monospace;color:#5260c8">ECO-0001</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:8px"><span>SaaS 合作伙伴</span><strong style="font-family:ui-monospace,monospace;color:#5260c8">SAS-0001</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:8px"><span>平台</span><strong style="font-family:ui-monospace,monospace;color:#5260c8">PLT-0001</strong></div>
+            <div style="display:flex;justify-content:space-between;padding:10px 12px;background:#fff;border-radius:8px"><span>项目</span><strong style="font-family:ui-monospace,monospace;color:#5260c8">PRJ-0001</strong></div>
+          </div>
+          <div style="margin-top:16px;padding:11px 12px;border-radius:8px;background:#eef8f2;color:#276749;font-size:12px;line-height:1.6">创建时自动生成；删除后不复用；名称修改不影响编号；父子关联通过系统 ID 维护。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px">
+    <div class="mockup" style="padding:16px;border:1px solid #e2e6ef;border-radius:12px;background:#fff"><div style="font-weight:750">展示层</div><div style="font-family:ui-monospace,monospace;color:#5260c8;margin-top:9px">ECO-0001</div><p style="font-size:12px;color:#667085;margin:8px 0 0">用于列表、详情、审批、客服沟通。</p></div>
+    <div class="mockup" style="padding:16px;border:1px solid #e2e6ef;border-radius:12px;background:#fff"><div style="font-weight:750">系统层</div><div style="font-family:ui-monospace,monospace;color:#5260c8;margin-top:9px">内部唯一 ID</div><p style="font-size:12px;color:#667085;margin:8px 0 0">用于数据库、权限、数据关联，不直接暴露。</p></div>
+    <div class="mockup" style="padding:16px;border:1px solid #e2e6ef;border-radius:12px;background:#fff"><div style="font-weight:750">业务层</div><div style="font-family:ui-monospace,monospace;color:#5260c8;margin-top:9px">父级 + 子级</div><p style="font-size:12px;color:#667085;margin:8px 0 0">编号不嵌套，避免层级调整导致批量变更。</p></div>
+  </div>
+</div>
