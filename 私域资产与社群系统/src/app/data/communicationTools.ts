@@ -555,6 +555,7 @@ export type ProjectStatus = "active" | "preparing" | "archived";
 
 export interface Project {
   id: string;                    // "p_ai_community"
+  code: string;                  // "PRJ-0001"
   name: string;                  // "北京 PRO 会员"
   short?: string;                // "FLM-BJ-PRO"
   subtitle?: string;             // "健康运营 · PRO 会员服务线"
@@ -570,73 +571,73 @@ export interface Project {
 
 export const initialProjects: Project[] = [
   {
-    id: "p_ai_community", name: "AI学习社群", short: "AI-LEARN",
+    id: "p_ai_community", code: "PRJ-0001", name: "AI学习社群", short: "AI-LEARN",
     subtitle: "AI 工具使用交流与成长社群", location: "全国",
     owner: "吴思源", ownerUid: "acc_wusiyuan", status: "active",
     budget: "¥30万/季", createdAt: "2026-01-15",
   },
   {
-    id: "p_ai_nutrition", name: "AI营养补剂会员平台", short: "AI-NUTRI",
+    id: "p_ai_nutrition", code: "PRJ-0002", name: "AI营养补剂会员平台", short: "AI-NUTRI",
     subtitle: "AI 个性化营养推荐 · 补剂会员电商", location: "全国",
     owner: "王芳", ownerUid: "acc_wangfang", status: "active",
     budget: "¥40万/季", createdAt: "2026-02-10",
   },
   {
-    id: "p_ai_host", name: "AI主理人公社", short: "AI-HOST",
+    id: "p_ai_host", code: "PRJ-0003", name: "AI主理人公社", short: "AI-HOST",
     subtitle: "AI 赋能个体主理人 · 内容变现与IP孵化社群", location: "全国",
     owner: "张磊", ownerUid: "acc_zhanglei", status: "active",
     budget: "¥25万/季", createdAt: "2026-03-05",
   },
   {
-    id: "p_ai_talent", name: "AI艺人孵化平台", short: "AI-TALENT",
+    id: "p_ai_talent", code: "PRJ-0004", name: "AI艺人孵化平台", short: "AI-TALENT",
     subtitle: "AI 虚拟艺人孵化与商业化运营", location: "全国",
     owner: "林小燕", ownerUid: "acc_linxiaoyan", status: "active",
     budget: "¥50万/季", createdAt: "2026-02-01",
   },
   {
-    id: "p_ai_talent_ip", name: "AI艺人授权平台", short: "AI-TLIP",
+    id: "p_ai_talent_ip", code: "PRJ-0005", name: "AI艺人授权平台", short: "AI-TLIP",
     subtitle: "AI 虚拟艺人形象授权 · 商业合作分发", location: "全国",
     owner: "陈明", ownerUid: "acc_chenming", status: "preparing",
     budget: "¥35万/季", createdAt: "2026-04-20",
   },
   {
-    id: "p_ai_star_slice", name: "AI明星切片平台", short: "AI-STAR",
+    id: "p_ai_star_slice", code: "PRJ-0006", name: "AI明星切片平台", short: "AI-STAR",
     subtitle: "明星IP切片授权 · AI 二次创作与分发", location: "全国",
     owner: "刘刚", ownerUid: "acc_liugang", status: "active",
     budget: "¥60万/季", createdAt: "2026-03-15",
   },
   {
-    id: "p_ai_short", name: "AI短剧平台", short: "AI-SHORT",
+    id: "p_ai_short", code: "PRJ-0007", name: "AI短剧平台", short: "AI-SHORT",
     subtitle: "AI 短剧剧本生成 · 生产与投流一体化", location: "全国",
     owner: "赵志远", ownerUid: "acc_zhaozhiyuan", status: "active",
     budget: "¥80万/季", createdAt: "2026-04-01",
   },
   {
-    id: "p_ai_ads", name: "AI超级广告平台", short: "AI-ADS",
+    id: "p_ai_ads", code: "PRJ-0008", name: "AI超级广告平台", short: "AI-ADS",
     subtitle: "AI 广告素材批量生成 · 投放ROI优化", location: "全国",
     owner: "孙浩", ownerUid: "acc_sunhao", status: "preparing",
     budget: "¥100万/季", createdAt: "2026-05-10",
   },
   {
-    id: "p_ai_payk", name: "AI知识付费平台", short: "AI-PAYK",
+    id: "p_ai_payk", code: "PRJ-0009", name: "AI知识付费平台", short: "AI-PAYK",
     subtitle: "AI 课程/专栏/读书会等知识付费产品线", location: "全国",
     owner: "李梦华", ownerUid: "acc_limenghua", status: "active",
     budget: "¥40万/季", createdAt: "2026-03-01",
   },
   {
-    id: "p_ai_edu", name: "AI教育平台", short: "AI-EDU",
+    id: "p_ai_edu", code: "PRJ-0010", name: "AI教育平台", short: "AI-EDU",
     subtitle: "AI 赋能教培机构 · 课程与学员全链路管理", location: "全国",
     owner: "林小燕", ownerUid: "acc_linxiaoyan", status: "preparing",
     budget: "¥60万/季", createdAt: "2026-04-12",
   },
   {
-    id: "p_ai_advisor", name: "AI军师", short: "AI-ADVISOR",
+    id: "p_ai_advisor", code: "PRJ-0011", name: "AI军师", short: "AI-ADVISOR",
     subtitle: "AI 商业智库 · 为创业者提供决策参谋与数据洞察", location: "全国",
     owner: "吴思源", ownerUid: "acc_wusiyuan", status: "active",
     budget: "¥20万/季", createdAt: "2026-06-01",
   },
   {
-    id: "p_ai_founders_ip", name: "AI创始IP", short: "AI-FOUND",
+    id: "p_ai_founders_ip", code: "PRJ-0012", name: "AI创始IP", short: "AI-FOUND",
     subtitle: "创始人个人IP打造 · AI 内容矩阵运营", location: "全国",
     owner: "吴思源", ownerUid: "acc_wusiyuan", status: "preparing",
     budget: "¥30万/季", createdAt: "2026-06-15",

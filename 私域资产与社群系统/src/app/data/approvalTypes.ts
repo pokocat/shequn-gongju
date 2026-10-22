@@ -67,12 +67,14 @@ export type ApprovalPayload =
     }
   | {
       type: "saas_onboard";
+      code: string;
       name: string;
       eco: string;
       desc: string;
     }
   | {
       type: "platform_onboard";
+      code: string;
       name: string;
       saas: string;
       eco: string;
@@ -460,6 +462,7 @@ export const mockApprovals: Approval[] = [
     },
     payload: {
       type: "saas_onboard",
+      code: "SAS-0001",
       name: "宠物产业发展伙伴",
       eco: "宠物生态",
       desc: "私域账号资产+微信社群一体化",
@@ -510,6 +513,7 @@ export const mockApprovals: Approval[] = [
     },
     payload: {
       type: "platform_onboard",
+      code: "PLT-0001",
       name: "健康运营平台",
       saas: "宠物产业发展伙伴",
       eco: "健康医药美业生态",

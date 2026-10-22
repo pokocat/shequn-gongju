@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
+  buildEntityCode,
   buildPlatformCreateDefaults,
   getDirectPlatforms,
   getEcosystemContext,
   getIdentityConfigTarget,
+  getNextEntityCode,
   getPlatformsForEco,
   getPlatformsForSaas,
   getPlatformOwnerLabel,
@@ -53,5 +55,32 @@ describe("生态页面上下文", () => {
   it("从生态或 SaaS 节点生成新平台默认归属", () => {
     expect(buildPlatformCreateDefaults("健康生态")).toEqual({ eco: "健康生态", saas: "" });
     expect(buildPlatformCreateDefaults("健康生态", "健康 SaaS")).toEqual({ eco: "健康生态", saas: "健康 SaaS" });
+  });
+
+  it("生成固定格式的实体编号", () => {
+    expect(buildEntityCode("PRJ", 1)).toBe("PRJ-0001");
+    expect(buildEntityCode("ECO", 12)).toBe("ECO-0012");
+  });
+
+  it("按指定 prefix 的最大编号继续生成，并跳过 gaps", () => {
+    expect(getNextEntityCode([
+      { code: "PRJ-0001" },
+      { code: "PRJ-0003" },
+    ], "PRJ")).toBe("PRJ-0004");
+  });
+
+  it("不同 prefix 相互独立", () => {
+    const records = [
+      { code: "PRJ-0002" },
+      { code: "ECO-0009" },
+    ];
+
+    expect(getNextEntityCode(records, "PRJ")).toBe("PRJ-0003");
+    expect(getNextEntityCode(records, "ECO")).toBe("ECO-0010");
+  });
+
+  it("同时保留项目名称和实体编号", () => {
+    const project = { name: "AI教育", code: "PRJ-0007" };
+    expect(project).toEqual({ name: "AI教育", code: "PRJ-0007" });
   });
 });

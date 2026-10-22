@@ -66,6 +66,18 @@ const PROJECT_LABEL_MAP: Record<string, string> = {
   p_xian_branch: "西安分站",
 };
 
+function getNextProjectCode() {
+  const used = initialProjects
+    .map(project => project.code)
+    .concat(Object.values(PROJECT_LABEL_MAP))
+    .concat(Object.values(PROJECT_CODE_MAP))
+    .map(value => value.match(/^PRJ-(\d+)\b/)?.[1])
+    .filter(Boolean)
+    .map(value => Number(value))
+    .filter(Number.isFinite);
+  return `PRJ-${String(Math.max(0, ...used) + 1).padStart(4, "0")}`;
+}
+
 const TOP_TABS: { key: TopTabKey; label: string; icon: typeof Users }[] = [
   { key: "all", label: "全部账号", icon: Building2 },
   { key: "wechat", label: "个人微信", icon: Users },
@@ -103,9 +115,18 @@ const TYPE_ICON = {
 
 const PAGE_SIZE = 10;
 
+const PROJECT_CODE_MAP: Record<string, string> = {};
+
+function projectLabel(id: string) {
+  const project = initialProjects.find(item => item.id === id);
+  const name = PROJECT_LABEL_MAP[id] || project?.name || id;
+  const code = PROJECT_CODE_MAP[id] || project?.code;
+  return code ? `${code} · ${name}` : name;
+}
+
 function projectName(ids: string[]): string {
   if (ids.length === 0) return "— 未分配 —";
-  return ids.map(id => PROJECT_LABEL_MAP[id] || id).join(" / ");
+  return ids.map(projectLabel).join(" / ");
 }
 
 // 列表模式列定义（参考 WeChatManagement 的 cols）
@@ -356,7 +377,7 @@ const { tools, setTools } = useTools();
   // ── 弹窗状态 ───────────────────────────────────────────────
   const [confirmAction, setConfirmAction] = useState<{ toolId: string; action: "disable" | "archive" | "send_nurture"; label: string } | null>(null);
   const [handoverDraft, setHandoverDraft] = useState<{ toolId: string; targetUid: string } | null>(null);
-  const [projectBindingDraft, setProjectBindingDraft] = useState<{ toolId: string; selectedIds: string[]; newName: string; newCode: string } | null>(null);
+  const [projectBindingDraft, setProjectBindingDraft] = useState<{ toolId: string; selectedIds: string[]; newName: string } | null>(null);
   const [newToolDrawer, setNewToolDrawer] = useState<null | { draft: Partial<Tool> & { mode: RegistrationMode; name?: string; identifier?: string; notes?: string }; step: 1 | 2 }>(null);
   const [toast, setToast] = useState("");
 
@@ -598,7 +619,7 @@ const { tools, setTools } = useTools();
   function openProjectBinding(toolId: string) {
     const tool = tools.find(item => item.id === toolId);
     if (!tool) return;
-    setProjectBindingDraft({ toolId, selectedIds: [...tool.boundProjectIds], newName: "", newCode: "" });
+    setProjectBindingDraft({ toolId, selectedIds: [...tool.boundProjectIds], newName: "" });
   }
 
   function saveProjectBinding() {
@@ -608,8 +629,10 @@ const { tools, setTools } = useTools();
     let selectedIds = [...projectBindingDraft.selectedIds];
     const name = projectBindingDraft.newName.trim();
     if (name) {
-      const id = projectBindingDraft.newCode.trim() || `p_custom_${Date.now().toString().slice(-6)}`;
+      const id = `p_custom_${Date.now().toString().slice(-6)}`;
+      const code = getNextProjectCode();
       PROJECT_LABEL_MAP[id] = name;
+      PROJECT_CODE_MAP[id] = code;
       selectedIds = Array.from(new Set([...selectedIds, id]));
     }
     mutateTool(tool.id, { boundProjectIds: selectedIds }, "分配到项目", selectedIds.length ? `绑定项目：${selectedIds.map(id => PROJECT_LABEL_MAP[id] || id).join("、")}` : "已解除全部项目绑定");
@@ -747,8 +770,8 @@ const { tools, setTools } = useTools();
             </div>
             <div style={{ marginTop: 10, padding: 8, background: S.surface, border: `1px dashed ${S.borderMed}`, borderRadius: 7 }}>
               <div style={{ fontWeight: 700, marginBottom: 5 }}>快速新建项目（最小档案）</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 150px", gap: 6 }}><input value={projectBindingDraft.newName} onChange={event => setProjectBindingDraft(draft => draft ? { ...draft, newName: event.target.value } : null)} placeholder="项目名称" style={{ padding: "6px 8px", border: `1px solid ${S.borderMed}`, borderRadius: 5 }} /><input value={projectBindingDraft.newCode} onChange={event => setProjectBindingDraft(draft => draft ? { ...draft, newCode: event.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, "") } : null)} placeholder="项目代码（可选）" style={{ padding: "6px 8px", border: `1px solid ${S.borderMed}`, borderRadius: 5, fontFamily: "monospace" }} /></div>
-              <div style={{ marginTop: 5, fontSize: 10, color: S.muted }}>这里只创建名称和代码；会员等级、群规则等请到“项目与生态”完善。</div>
+              <div style={{ display: "grid", gap: 6 }}><input value={projectBindingDraft.newName} onChange={event => setProjectBindingDraft(draft => draft ? { ...draft, newName: event.target.value } : null)} placeholder="项目名称" style={{ padding: "6px 8px", border: `1px solid ${S.borderMed}`, borderRadius: 5 }} /></div>
+              <div style={{ marginTop: 5, fontSize: 10, color: S.muted }}>系统将自动生成 PRJ 编号；会员等级、群规则等请到“项目与生态”完善。</div>
             </div>
           </div>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 14 }}><button type="button" onClick={() => setProjectBindingDraft(null)} style={{ padding: "7px 14px", border: `1px solid ${S.borderMed}`, borderRadius: 7, background: "#fff", color: S.textSec }}>取消</button><button type="button" onClick={saveProjectBinding} style={{ padding: "7px 15px", border: "none", borderRadius: 7, background: S.ink, color: S.accent, fontWeight: 700 }}>保存绑定</button></div>
@@ -2021,7 +2044,7 @@ function ProjectPanel({
               <Building2 size={14} style={{ color: active ? S.accent : S.muted, flexShrink: 0, marginTop: 2 }} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
-                  <div className="text-xs font-medium truncate" style={{ fontFamily: "monospace", color: active ? S.onPrimary : S.text }}>{p.name}</div>
+                  <div className="text-xs font-medium truncate" style={{ fontFamily: "monospace", color: active ? S.onPrimary : S.text }}>{p.code} · {p.name}</div>
                   {count > 0 && (
                     <span style={{ fontSize: 10, color: S.muted, fontFamily: "monospace", flexShrink: 0 }}>{count}</span>
                   )}
@@ -2088,8 +2111,8 @@ function ProjectDetail({
               <Building2 size={20} style={{ color: S.primary }} />
               <div>
                 <div className="text-base font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>
-                  {project ? project.name : "📊 平台库存"}
-                </div>
+                    {project ? `${project.code} · ${project.name}` : "📊 平台库存"}
+                  </div>
                 <div className="text-[11px] mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>
                   {project
                     ? `${project.subtitle || ""}${project.location ? ` · ${project.location}` : ""}${project.short ? ` · ${project.short}` : ""}`
