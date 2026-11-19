@@ -50,10 +50,12 @@ type Props = {
   // 发起邀请人，简单 demo：先固定成 Mock 账号中的陈宇航
   inviterUid?: string;
   inviterName?: string;
+  subjectCode?: string;
+  subjectName?: string;
 };
 
 export default function InviteDrawer({
- open, onClose, inviterUid = "acc_chenyuhang", inviterName = "陈宇航" }: Props) {
+ open, onClose, inviterUid = "acc_chenyuhang", inviterName = "陈宇航", subjectCode, subjectName }: Props) {
   useThemeSingleton();
 const _cls = useStyles();
   const { invites, setInvites } = useInvites();
@@ -199,7 +201,7 @@ const _cls = useStyles();
             <div>
               <div className="text-sm font-bold">邀请注册</div>
               <div className="text-[11px]" style={{ color: S.muted }}>
-                发起邀请 → 对方填写 → 邀请人审核 → 生成账号
+                {subjectCode ? `为 ${subjectCode}${subjectName ? ` · ${subjectName}` : ""} 邀请合伙伙伴补充资料` : "发起邀请 → 对方填写 → 邀请人审核 → 生成账号"}
               </div>
             </div>
           </div>

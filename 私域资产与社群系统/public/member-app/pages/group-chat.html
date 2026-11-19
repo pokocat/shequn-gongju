@@ -25,6 +25,13 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .chat-row--mine .chat-bub{ border-top-right-radius:4.587px; background:linear-gradient(135deg,#8B5CF6 0%,#7C3AED 100%); border-color:transparent; color:var(--on-signal); box-shadow:0 1.72px 6.88px rgba(124,58,237,0.22); }
 .chat-ai-bar{ display:flex; align-items:center; justify-content:space-between; gap:8.027px; margin:2.293px 0 10.32px; padding:6.88px 10.32px; background:var(--sunk); border:0.573px solid var(--line-soft); border-radius:10.32px; }
 .chat-ai-bar .t-tiny{ color:var(--ink-600); }
+.gc-summary-group{margin-top:10px;padding-top:8px;border-top:1px solid var(--line-soft)}
+.gc-summary-label{font-size:var(--fs-meta);font-weight:700;color:var(--ink-900);margin-bottom:4px}
+.gc-summary-item,.gc-summary-empty{font-size:var(--fs-tiny);line-height:1.55;color:var(--ink-700);padding:2px 0}
+.gc-summary-item:before{content:'·';color:var(--brand);font-weight:700;margin-right:5px}
+.gc-summary-empty{color:var(--ink-500)}
+.gc-answer-source{margin-top:7px;padding-top:6px;border-top:1px solid var(--line-soft);font-size:var(--fs-micro);color:var(--ink-500)}
+.mk-field[contenteditable="true"]:empty:before{content:attr(data-placeholder);color:var(--ink-500)}
 </style>
 </head>
 <body class="mp-body">
@@ -55,7 +62,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   <span class="mp-sep"></span>
   <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
 </div>
-      <div class="screen screen--bar chat-screen wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text" id="g-title">群会话</span><div class="subbar-slot wx-view"></div></div></div></div><div class="chat-flow wx-view"><div class="chat-sysline wx-view"><span class="mono wx-text"><span id="g-sys">已同步群消息</span> · <span id="g-sub"></span></span></div><div id="msg-list" class="wx-view"></div><div class="chat-readonly wx-view">以上为企微群同步记录 · 只读视图 · 群聊请在微信内进行</div></div><div class="gc-panel wx-view" id="gc-sum" role="dialog" aria-label="AI 总结面板"><div class="gr-sum-h wx-view">群聊 AI 总结</div><ul id="ai-list"></ul><div class="t-tiny mt-8 wx-view" style="color:var(--ink-500);">数据来源：同步群消息 · 已脱敏 · 每 30 分钟更新</div></div><div class="gc-panel wx-view" id="gc-ask" role="dialog" aria-label="AI 问答面板"><div class="gr-sum-h wx-view">问群 AI</div><div class="gc-q-list wx-view"><button class="gc-q-chip wx-view" type="button" data-q="hot">本周群内最热议的话题？</button><button class="gc-q-chip wx-view" type="button" data-q="todo">有哪些和我相关的待办？</button></div><div class="gc-answer wx-view" id="gc-answer" hidden><div class="gc-answer-h wx-view">AI 回答</div><span id="gc-answer-t" class="wx-text"></span></div><div class="gc-field wx-view"><div class="mk-field wx-view" id="gc-input" role="textbox" tabindex="0" aria-label="输入问题">问我任何群聊问题（演示）</div><button class="gc-send wx-view" type="button" id="gc-send">发送</button></div></div><div class="gc-dock wx-view"><button class="gc-btn gc-btn--pri wx-view" type="button" id="gc-btn-sum" aria-expanded="false">AI 总结 · <span class="mono wx-text" id="gc-sum-count"></span></button><button class="gc-btn wx-view" type="button" id="gc-btn-ask" aria-expanded="false">问群 AI</button></div></div></div>
+      <div class="screen screen--bar chat-screen wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text" id="g-title">群会话</span><div class="subbar-slot wx-view"></div></div></div></div><div class="chat-flow wx-view"><div class="chat-sysline wx-view"><span class="mono wx-text"><span id="g-sys">已同步群消息</span> · <span id="g-sub"></span></span></div><div id="msg-list" class="wx-view"></div><div class="chat-readonly wx-view">以上为企微群同步记录 · 只读视图 · 群聊请在微信内进行</div></div><div class="gc-panel wx-view" id="gc-sum" role="dialog" aria-label="AI 总结面板"><div class="gr-sum-h wx-view">群聊 AI 总结</div><div id="ai-list" class="gc-summary-list"></div><div class="t-tiny mt-8 wx-view" style="color:var(--ink-500);">来源：企业微信群同步记录（当前可见消息） · 只读 · 每 30 分钟更新</div></div><div class="gc-panel wx-view" id="gc-ask" role="dialog" aria-label="AI 问答面板"><div class="gr-sum-h wx-view">问群 AI</div><div class="t-tiny wx-view" style="color:var(--ink-500);margin-top:4px;">基于当前群的可见同步记录回答，不会向微信群发送消息</div><div class="gc-q-list wx-view"><button class="gc-q-chip wx-view" type="button" data-q="hot">本周群内最热议的话题？</button><button class="gc-q-chip wx-view" type="button" data-q="todo">有哪些和我相关的待办？</button><button class="gc-q-chip wx-view" type="button" data-q="decision">群里确认了哪些结论或决定？</button></div><div class="gc-answer wx-view" id="gc-answer" hidden><div class="gc-answer-h wx-view">AI 回答</div><span id="gc-answer-t" class="wx-text"></span><div id="gc-answer-source" class="gc-answer-source wx-text"></div></div><div class="gc-field wx-view"><div class="mk-field wx-view" id="gc-input" role="textbox" tabindex="0" contenteditable="true" aria-label="输入问题" data-placeholder="输入问题，向群聊 AI 提问"></div><button class="gc-send wx-view" type="button" id="gc-send">发送</button></div></div><div class="gc-dock wx-view"><button class="gc-btn gc-btn--pri wx-view" type="button" id="gc-btn-sum" aria-expanded="false">AI 总结 · <span class="mono wx-text" id="gc-sum-count"></span></button><button class="gc-btn wx-view" type="button" id="gc-btn-ask" aria-expanded="false">问群 AI</button></div></div></div>
       <div class="mp-home"></div>
     </div>
   </div>
@@ -196,6 +203,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
       if (m && SESSIONS[m[1]]) g = m[1];
     } catch (e2) { g = "ca1"; }
     var s = SESSIONS[g];
+    currentSession = s;
     document.title = s.title + " · 群会话同步";
     $("#g-title").textContent = s.title;
     $("#g-sys").textContent = s.sys;
@@ -205,10 +213,21 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
     if (cntEl) cntEl.textContent = cnt ? cnt[1] + " 条" : "已生成";
     var list = $("#ai-list");
     list.innerHTML = "";
-    s.ai.forEach(function (line) {
-      var li = document.createElement("li");
-      li.textContent = line;
-      list.appendChild(li);
+    var visibleText = s.msgs.filter(function (m) { return m[0] !== "t"; }).map(function (m) { return m[1]; }).join(" ");
+    var groups = [
+      ["核心话题", s.ai.filter(function (line) { return /热议|干货|共性问题|进度/.test(line); })],
+      ["已确认结论", s.ai.filter(function (line) { return /结论|数据|里程碑/.test(line); })],
+      ["我的待办", s.ai.filter(function (line) { return /待办|提醒|截止|反馈/.test(line); }).concat(visibleText.match(/我[^。！？]*?(?:交|提交|投|收到|参加)[^。！？]*/g) || [])],
+      ["关注事项", s.ai.filter(function (line) { return /提示|节点|问题/.test(line); })]
+    ];
+    groups.forEach(function (group) {
+      var section = document.createElement("section");
+      section.className = "gc-summary-group";
+      var h = document.createElement("div"); h.className = "gc-summary-label"; h.textContent = group[0]; section.appendChild(h);
+      var items = group[1].filter(function (v, i, arr) { return v && arr.indexOf(v) === i; });
+      if (!items.length) { var empty = document.createElement("div"); empty.className = "gc-summary-empty"; empty.textContent = "暂无可确认内容"; section.appendChild(empty); }
+      else { items.forEach(function (line) { var p = document.createElement("div"); p.className = "gc-summary-item"; p.textContent = line; section.appendChild(p); }); }
+      list.appendChild(section);
     });
     var box = $("#msg-list");
     box.innerHTML = "";
@@ -318,32 +337,33 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
     if (e.key === "Escape") closePanels();
   });
 
-  var ANSWERS = {
-    hot: "根据最近同步的群消息，本周最热议的是「今晚直播连麦名单」，共有 9 位成员参与接龙；其次是《社群冷启动》第 3 节作业的提交提醒。",
-    todo: "与你相关的待办有 2 项：①《社群冷启动》作业今晚 23:59 截止（你已提交，等待批改）；② 周三 20:00 的直播讲评记得参加。"
-  };
+  var currentSession = null;
+  function answerQuestion(question, key) {
+    var s = currentSession;
+    var text = (s.msgs || []).filter(function (m) { return m[0] !== "t"; }).map(function (m) { return m[1]; }).join(" ");
+    var answer = "当前可见同步记录无法确认这件事。";
+    if (key === "hot" || /热议|话题|讨论/.test(question)) answer = s.ai.filter(function (line) { return /热议|干货|共性问题|进度/.test(line); }).join("；") || "当前可见同步记录没有足够的热议话题信息。";
+    else if (key === "todo" || /待办|任务|截止|提醒/.test(question)) answer = s.ai.filter(function (line) { return /待办|提醒|截止|反馈/.test(line); }).concat(text.match(/我[^。！？]*?(?:交|提交|投|收到|参加)[^。！？]*/g) || []).join("；") || "当前可见同步记录没有确认到与你相关的待办。";
+    else if (key === "decision" || /结论|决定|确认/.test(question)) answer = s.ai.filter(function (line) { return /结论|数据|里程碑/.test(line); }).join("；") || "当前可见同步记录无法确认明确的结论或决定。";
+    return answer;
+  }
+  function showAnswer(question, key) {
+    $("#gc-answer-t").textContent = answerQuestion(question, key);
+    $("#gc-answer-source").textContent = "回答来源：当前群已同步且可见的消息与 AI 摘要；未读取会员专属锁定内容。";
+    $("#gc-answer").hidden = false;
+  }
   document.querySelectorAll(".gc-q-chip").forEach(function (c) {
-    c.addEventListener("click", function () {
-      var key = c.getAttribute("data-q");
-      var t = $("#gc-answer-t");
-      t.textContent = ANSWERS[key] || "AI 正在整理回答…";
-      $("#gc-answer").hidden = false;
-    });
+    c.addEventListener("click", function () { showAnswer(c.textContent, c.getAttribute("data-q")); });
   });
   $("#gc-send").addEventListener("click", function () {
     var inp = $("#gc-input");
-    var hasQ = inp.textContent.trim() && inp.textContent.indexOf("问我任何") < 0;
-    if (!hasQ) {
-      inp.textContent = "试试点击上面的预设问题（演示）";
-      inp.classList.add("is-focus");
-      setTimeout(function () { inp.classList.remove("is-focus"); }, 800);
-      return;
-    }
-    var t = $("#gc-answer-t");
-    t.textContent = "演示环境：已收到你的问题，正式版将由群聊 AI 基于同步记录回答。";
-    $("#gc-answer").hidden = false;
+    var question = inp.textContent.trim();
+    if (!question) { inp.focus(); inp.classList.add("is-focus"); setTimeout(function () { inp.classList.remove("is-focus"); }, 800); return; }
+    showAnswer(question, "");
   });
-
+  $("#gc-input").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("#gc-send").click(); } });
+  $("#gc-input").addEventListener("focus", function () { this.classList.add("is-focus"); });
+  $("#gc-input").addEventListener("blur", function () { this.classList.remove("is-focus"); });
   render();
   initJump();
 })();

@@ -24,7 +24,10 @@
     "selection": { "参与投票": null, "查看清单": null },
     "homework": { "去完成": "tasks", "查看示例": null },
     "baokuan": { "查看结论": "diagnosis", "报名试跑": null },
-    "neirong": { "参与报名": null, "看往期": null }
+    "neirong": { "参与报名": null, "看往期": null },
+    "vip-renewal": { "查看完整内容": "member", "升级会员查看完整内容": "member" },
+    "city-summit": { "查看完整内容": "member", "升级会员查看完整内容": "member" },
+    "merchant-alliance": { "查看完整内容": "member", "升级会员查看完整内容": "member" }
   };
 
   function init() {
@@ -326,6 +329,19 @@
     }, "切换语音输入");
     bindTool(tools[1], function () { showToast("演示环境：暂不支持表情面板"); }, "表情");
     bindTool(tools[2], function () { showToast("演示环境：暂不支持更多功能"); }, "更多功能");
+
+    /* ---------- 会员群解锁入口 ---------- */
+    document.addEventListener("click", function (e) {
+      var unlock = e.target && e.target.closest ? e.target.closest("[data-chat-unlock]") : null;
+      if (!unlock) return;
+      e.preventDefault();
+      var groupId = unlock.getAttribute("data-chat-unlock") || gParam;
+      var params = new URLSearchParams(location.search);
+      params.set("g", groupId);
+      var search = "?" + params.toString();
+      if (parent !== window) parent.postMessage({ mpNavigate: "member", search: search }, "*");
+      else location.href = "member.html" + search;
+    });
 
     /* Esc 关闭弹窗 */
     document.addEventListener("keydown", function (e) {

@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useState, createContext, useContext, type ReactNode } from "react";
+import { Suspense, lazy, useEffect, useRef, useState, createContext, useContext, type ReactNode } from "react";
 import { Monitor, Globe, Smartphone } from "lucide-react";
 import PCLayout from "./components/PCLayout";
 import { CommunicationTool, initialTools } from "./data/communicationTools";
@@ -275,6 +275,16 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
   ActiveComponent: React.ComponentType;
 }) {
   const { palette } = useTheme();
+  const [preview, setPreview] = useState({ x: 0, y: 0, scale: 1 });
+  const [desktop, setDesktop] = useState(() => window.matchMedia("(min-width: 768px)").matches);
+  const drag = useRef<{ x: number; y: number; startX: number; startY: number } | null>(null);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const update = () => setDesktop(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  const activePreview = desktop ? preview : { x: 0, y: 0, scale: 1 };
   return (
     <ToolsProvider value={toolsValue}>
       <AccountsProvider value={accountsValue}>
@@ -310,6 +320,15 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
           </div>
         )}
 
+        {desktop && (view === "zhuliren-1" || view === "zhuliren-2") && (
+          <div className="fixed left-4 top-4 z-[60] flex items-center gap-2 rounded-xl border px-3 py-2 shadow-lg" style={{ background: S.glass, borderColor: S.glassBorder, color: S.textSec, backdropFilter: "blur(10px)" }}>
+            <button type="button" aria-label="拖动预览" className="cursor-grab touch-none select-none rounded px-2 py-1 text-xs font-bold active:cursor-grabbing" onPointerDown={e => { if (e.button !== 0) return; drag.current = { x: preview.x, y: preview.y, startX: e.clientX, startY: e.clientY }; e.currentTarget.setPointerCapture(e.pointerId); }} onPointerMove={e => { if (!drag.current) return; const { x, y, startX, startY } = drag.current; setPreview(p => ({ ...p, x: x + e.clientX - startX, y: y + e.clientY - startY })); }} onPointerUp={() => { drag.current = null; }} onPointerCancel={() => { drag.current = null; }}>⠿ 拖动</button>
+            <button type="button" aria-label="缩小预览" onClick={() => setPreview(p => ({ ...p, scale: Math.max(0.5, Math.round((p.scale - 0.1) * 10) / 10) }))} className="px-2 text-lg">−</button>
+            <span className="min-w-[3em] text-center text-xs">{Math.round(preview.scale * 100)}%</span>
+            <button type="button" aria-label="放大预览" onClick={() => setPreview(p => ({ ...p, scale: Math.min(1.5, Math.round((p.scale + 0.1) * 10) / 10) }))} className="px-2 text-lg">+</button>
+            <button type="button" onClick={() => setPreview({ x: 0, y: 0, scale: 1 })} className="rounded px-2 py-1 text-xs font-bold">复位</button>
+          </div>
+        )}
         {view === "pc" ? (
           <PCLayout view={view} selectView={selectView} activeModule={activeModule} onModuleChange={selectModule}>
             <Suspense fallback={<div className="size-full" />}>
@@ -322,11 +341,11 @@ function AppShell({ toolsValue, accountsValue, invitesValue, approvalsValue, vie
           </PCLayout>
         ) : view === "zhuliren-1" ? (
           <Suspense fallback={<div className="size-full" />}>
-            <ZhuLiRenV1 />
+            <ZhuLiRenV1 preview={activePreview} />
           </Suspense>
         ) : view === "zhuliren-2" ? (
           <Suspense fallback={<div className="size-full" />}>
-            <ZhuLiRenApp />
+            <ZhuLiRenApp preview={activePreview} />
           </Suspense>
         ) : view === "zhuliren-pc" ? (
           <Suspense fallback={<div className="size-full" />}>

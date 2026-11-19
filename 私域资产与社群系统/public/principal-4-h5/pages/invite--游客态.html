@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>邀请推荐 · 游客态</title>
+<link rel="stylesheet" href="../css/app.css">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.iv-hero{ padding: 17.2px 17.2px 0; overflow: hidden; }
+.iv-hero-top{ gap: 4.587px; }
+.iv-title{
+  display: block; font-family: var(--font-serif); font-size: var(--fs-h1); font-weight: 600;
+  line-height: 1.2; letter-spacing: 1.147px; color: var(--ink-900);
+}
+
+.iv-lead{ display: block; margin-top: 5.733px; font-size: var(--fs-sec); color: var(--ink-700); line-height: 1.6; }
+.iv-rule-link{
+  display: inline-flex; align-items: center; gap: 4.587px;
+  min-height: 36.693px; margin-top: 4.587px;
+  font-size: var(--fs-sec); font-weight: 500; color: var(--ink-800);
+}
+
+
+.iv-stats{
+  display: flex; margin: 10.32px -17.2px 0; padding: 12.613px 0 14.907px;
+  border-top: 0.573px solid var(--line-brand);
+}
+.iv-stat{ flex: 1; min-width: 0; padding: 0 12.613px; border-left: 0.573px solid var(--line-brand); }
+.iv-stat:first-child{ border-left: none; padding-left: 17.2px; }
+.iv-stat-n{ display: block; font-size: 29.813px; line-height: 1.1; color: var(--ink-900); }
+.iv-stat-n--pulse{ color: var(--pulse-600); }
+.iv-stat-u{ margin-left: 2.293px; font-family: var(--font-zh); font-size: var(--fs-meta); color: var(--ink-700); }
+.iv-stat-l{ display: block; margin-top: 3.44px; font-size: var(--fs-tiny); color: var(--ink-700); line-height: 1.4; }
+
+.iv-mo{
+  display: block; margin-top: 2.293px;
+  font-size: var(--fs-tiny); font-weight: 400; color: var(--pulse-600);
+}
+.iv-mo--flat{ font-weight: 400; color: var(--ink-700); }
+
+
+.iv-code-card{ padding: 17.2px; }
+.iv-code-grid{
+  display: grid; grid-template-columns: minmax(0, 1fr) 104.347px;
+  gap: 12.613px 13.76px; align-items: start;
+}
+.iv-code-main{ min-width: 0; }
+.iv-code-l{ display: block; font-size: var(--fs-meta); color: var(--ink-600); }
+.iv-code{
+  display: block; min-width: 0; margin-top: 8.027px;
+  font-size: 26.373px; line-height: 1.2; font-weight: 500; color: var(--ink-900); letter-spacing: 1.72px;
+  overflow-wrap: anywhere; word-break: break-all;
+}
+
+.iv-copy{
+  position: relative;
+  display: inline-flex; align-items: center; gap: 4.587px;
+  height: 41.28px; margin-top: 12.613px; padding: 0 14.907px;
+  border-radius: var(--r-box); background: var(--signal-500);
+  font-size: var(--fs-sec); font-weight: 500; color: var(--on-signal);
+}
+.iv-copy::after{ content: ""; position: absolute; left: 0; right: 0; top: -4.587px; bottom: -4.587px; }
+.iv-copy:active{ background: var(--signal-600); }
+.iv-code-note{ grid-column: 1 / -1; min-width: 0; padding-top: 11.467px; border-top: 0.573px solid var(--line-soft); }
+.iv-note-t{ display: block; font-size: var(--fs-meta); color: var(--ink-700); line-height: 1.6; }
+.iv-note-s{ display: block; margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); }
+.iv-qr-cell{ width: 104.347px; }
+
+.iv-qr{ padding: 6.88px; border-width: 0.573px; border-radius: var(--r-box); box-shadow: none; box-sizing: border-box; }
+
+.iv-qr-empty{
+  width: 104.347px; min-height: 104.347px; box-sizing: border-box;
+  padding: 12.613px 6.88px; border-radius: var(--r-box); text-align: center;
+  background: var(--sunk); border: 0.573px dashed var(--line-strong);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.iv-qr-hint{ display: block; margin-top: 5.733px; font-size: var(--fs-tiny); color: var(--ink-700); line-height: 1.4; }
+
+
+.iv-sec{ display: flex; align-items: center; gap: 6.88px; margin: 22.933px 3.44px 9.173px; }
+.iv-sec-link{ display: flex; align-items: center; gap: 2.293px; min-height: 36.693px; font-size: var(--fs-meta); color: var(--ink-700); }
+.iv-sec-n{ font-size: var(--fs-tiny); color: var(--ink-600); }
+
+
+.iv-poster{ gap: 13.76px; }
+.ps-thumb{
+  width: 103.2px; height: 165.12px; box-sizing: border-box; flex: none;
+  padding: 10.32px 8.027px; border-radius: var(--r-box);
+  background: var(--grad-wheat);
+  border: 0.573px solid var(--line-brand);
+  display: flex; flex-direction: column;
+}
+.ps-brand{ font-size: 13.76px; font-weight: 500; color: var(--signal-800); letter-spacing: 0.573px; }
+.ps-slogan{ font-size: var(--fs-micro); color: var(--ink-700); margin-top: 3.44px; }
+
+.ps-code{
+  margin-top: auto; padding: 5.733px;
+  border-radius: var(--r-chip); background: var(--paper);
+  border: 0.573px solid var(--line-brand); overflow: hidden;
+}
+.ps-code-l{ display: block; font-size: var(--fs-micro); color: var(--ink-600); }
+.ps-code-v{
+  display: block; margin-top: 1.147px;
+  font-size: 11.467px; line-height: 1.25; font-weight: 400; color: var(--ink-900); letter-spacing: 0.573px;
+  overflow-wrap: anywhere; word-break: break-all;
+}
+.ps-pt{ display: flex; align-items: flex-start; gap: 6.88px; padding: 5.733px 0; }
+.ps-pt-t{ display: block; font-size: var(--fs-sec); font-weight: 500; color: var(--ink-900); }
+.ps-pt-d{ display: block; margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); line-height: 1.45; }
+
+
+.iv-list{ padding: 2.293px 16.053px; }
+.iv-row{ display: flex; align-items: center; gap: 11.467px; padding: 11.467px 0; border-top: 0.573px solid var(--line); }
+.iv-row:first-child{ border-top: none; }
+.iv-row-top{ display: flex; align-items: center; gap: 6.88px; }
+.iv-name{ font-size: var(--fs-h4); font-weight: 400; color: var(--ink-900); }
+.iv-lv{ font-size: var(--fs-tiny); color: var(--ink-600); }
+.iv-bound{ display: block; margin-top: 3.44px; font-size: var(--fs-tiny); color: var(--ink-600); }
+.iv-st{ display: block; font-size: var(--fs-meta); font-weight: 400; color: var(--ink-600); }
+.iv-st--paid{ color: var(--ok); }
+.iv-sub{ display: block; margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); }
+.iv-more{ display: block; padding: 10.32px 0 12.613px; text-align: center; font-size: var(--fs-tiny); color: var(--ink-600); border-top: 0.573px solid var(--line-soft); }
+
+
+.iv-foot{
+  display: flex; align-items: flex-start; gap: 5.733px;
+  margin: 13.76px 3.44px 0;
+  font-size: var(--fs-tiny); color: var(--ink-600); line-height: 1.6;
+}
+
+.invite-actions{ position: relative; bottom: auto; margin-top: 8.027px; }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>邀请推荐 · 游客态</h1>
+    <code>/pages/invite/index</code>
+    <span class="mp-tag">游客态</span>
+  </div>
+  <p class="mp-note">刻意没有「预计收益 ¥2,870」——返佣不进中台（护栏 15），这里只说成长值奖励，且明说不涉及现金返利。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+      
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2E24%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">邀请推荐</span><div class="subbar-slot wx-view"></div></div></div></div><div class="wxc wxc-guest"><div class="card card-pad wx-view"><div class="blank wx-view"><div class="blank-mark wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2C20%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M9%2017H7A5%205%200%200%201%207%207h2%22%20%2F%3E%3Cpath%20d%3D%22M15%207h2a5%205%200%201%201%200%2010h-2%22%20%2F%3E%3Cline%20x1%3D%228%22%20x2%3D%2216%22%20y1%3D%2212%22%20y2%3D%2212%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="blank-title wx-text">登录后获取你的邀请码</span><span class="blank-hint wx-text">邀请码与小程序码挂在你的会员号上，好友经你的码注册才能记到你名下。登录后在这里复制或生成海报。</span><div class="btn-grad mt-16 wx-view mp-nav" data-nav="login">微信登录</div><span class="gs-note wx-text">登录只获取微信身份，可随时取消返回</span></div></div></div></div></div>
+      
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "invite--游客态";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+</body></html>

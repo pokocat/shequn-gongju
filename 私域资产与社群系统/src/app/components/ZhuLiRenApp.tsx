@@ -31,7 +31,19 @@ const peopleAvatarBase = "/principal-1-h5/assets/avatars/people";
 const peopleAvatars = [`${peopleAvatarBase}/avatar-13.jpg`, `${peopleAvatarBase}/avatar-14.jpg`, `${peopleAvatarBase}/avatar-15.jpg`, `${peopleAvatarBase}/avatar-16.jpg`, `${peopleAvatarBase}/avatar-17.jpg`, `${peopleAvatarBase}/avatar-18.jpg`];
 
 function communityAvatars(id: string): string[] {
-  const offsets: Record<string, number[]> = { "community-ai-growth": [0, 1, 2, 3], "community-leader": [4, 5, 0, 3], "community-course": [2, 5, 1, 4] };
+  const offsets: Record<string, number[]> = {
+    "ca1-growth": [0, 1, 2, 3],
+    selection: [1, 3, 4, 5],
+    homework: [0, 2, 4, 5],
+    baokuan: [2, 3, 5, 0],
+    neirong: [1, 4, 0, 2],
+    "vip-renewal": [3, 5, 1, 4],
+    "city-summit": [4, 0, 5, 2],
+    "merchant-alliance": [5, 2, 3, 1],
+    "community-ai-growth": [0, 1, 2, 3],
+    "community-leader": [4, 5, 0, 3],
+    "community-course": [2, 5, 1, 4]
+  };
   const picks = offsets[id] ?? [0, 1, 2, 3];
   return picks.map(index => peopleAvatars[index]);
 }
@@ -79,13 +91,27 @@ function CommunityHome({ communities, onOpen, onToast }: { communities: Communit
 
 function MessagesHome({ onOpen, onToast, copy }: { onOpen: (name: string, preview: string) => void; onToast: (message: string) => void; copy: PrincipalThemeCopy["messages"] }) {
   const conversations = [
-    { name: "主理人服务台", preview: "小林：已为你整理本周经营建议", kind: "服务人员", unread: 2, avatar: peopleAvatars[0] },
-    { name: "AI增长实战群", preview: "陈美玲：首轮内容已经更新", kind: "我的群", unread: 6, group: true },
-    { name: "主理人经营群", preview: "王教练：今晚 20:00 直播提醒", kind: "我的群", unread: 1, group: true },
-    { name: "项目共创推荐", preview: "发现 3 个与你匹配的新项目", kind: "推荐群", unread: 0, group: true },
-    { name: "公社系统通知", preview: "你的成长值已更新，获得 +80", kind: "系统通知", unread: 0, avatar: peopleAvatars[4] },
+    { name: "成长教练 · Dr. Chen", preview: "你的本周成长任务已更新", kind: "置顶会话", unread: 6, avatar: peopleAvatars[5] },
+    { name: "课程顾问 · Mia Zhou", preview: "新课表已为你预留名额", kind: "服务人员", unread: 1, avatar: peopleAvatars[1] },
+    { name: "社群运营 · 小林", preview: "已为你同步本周社群安排", kind: "服务人员", unread: 0, avatar: peopleAvatars[0] },
+    { name: "财务官 · Ava Lin", preview: "你的续费订单已完成核对", kind: "服务人员", unread: 5, avatar: peopleAvatars[2] },
+    { name: "班班 · 赵一川", preview: "请查收本周作业提醒", kind: "服务人员", unread: 1, avatar: peopleAvatars[3] },
+    { name: "服务导师 · 王砚舟", preview: "今晚 20:00 有一场陪跑直播", kind: "服务人员", unread: 2, avatar: peopleAvatars[4] },
+    { name: "专属顾问 · 陈静", preview: "有新的权益方案可以查看", kind: "服务人员", unread: 0, avatar: peopleAvatars[5] },
+    { name: "CA1 · 主理人成长营 1 期", preview: "班班：本周作业已发布", kind: "我的群", unread: 2, group: true, groupId: "ca1-growth" },
+    { name: "私域选品共学营", preview: "Mia：选品资料包已更新", kind: "我的群", unread: 0, group: true, groupId: "selection" },
+    { name: "CA1 · 作业互助小组", preview: "赵一川：优秀作业已整理", kind: "我的群", unread: 0, group: true, groupId: "homework" },
+    { name: "私域续费实战营", preview: "Ava：续费案例复盘已发布", kind: "我的群", unread: 3, group: true, groupId: "vip-renewal" },
+    { name: "选品天团 · 私域爆品共创群", preview: "发现 3 个与你匹配的新项目", kind: "推荐群", unread: 0, group: true, groupId: "baokuan" },
+    { name: "内容工厂 · 朋友圈文案互助群", preview: "本周热门文案模板已更新", kind: "推荐群", unread: 0, group: true, groupId: "neirong" },
+    { name: "城市主理人峰会群", preview: "完成身份升级后解锁群聊", kind: "待解锁群", unread: 0, group: true, groupId: "city-summit" },
+    { name: "商家联盟交流群", preview: "完成商家认证后解锁群聊", kind: "待解锁群", unread: 0, group: true, groupId: "merchant-alliance" },
+    { name: "平台公告", preview: "9 月新课表已发布", kind: "系统通知", unread: 2, avatar: peopleAvatars[4] },
+    { name: "服务通知", preview: "你的工单已处理完成", kind: "系统通知", unread: 1, avatar: peopleAvatars[0] },
+    { name: "交易通知", preview: "年卡会员续费成功", kind: "系统通知", unread: 0, avatar: peopleAvatars[2] }
   ];
-  return <><Header title={copy.title} subtitle={copy.subtitle} onSearch={() => onToast("消息搜索已准备")} /><div className="px-4 pb-6"><div className="mb-4 flex items-center justify-between"><h2 className="text-[15px] font-semibold text-[var(--ps-text)]">{copy.section}</h2><Pill tone="danger">{conversations.filter(item => item.unread).length} 项待处理</Pill></div><div className="overflow-hidden rounded-[var(--ps-radius)] border border-[var(--ps-border)] bg-[var(--ps-surface)]">{conversations.map((item, index) => <button key={item.name} onClick={() => onOpen(item.name, item.preview)} className={`flex w-full items-center gap-3 px-4 py-4 text-left ${index ? "border-t border-[var(--ps-border)]" : ""}`}><span className="relative">{item.group ? <GroupAvatar avatars={communityAvatars(index === 1 ? "community-ai-growth" : "community-leader")} fallback={item.name.slice(0, 1)} className="h-11 w-11" /> : <Avatar src={item.avatar} fallback={item.name.slice(0, 1)} className="h-11 w-11 rounded-2xl" />}{item.unread > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--ps-danger)] px-1 text-[9px] font-bold text-white">{item.unread}</span>}</span><span className="min-w-0 flex-1"><span className="flex items-center gap-2"><strong className="truncate text-[13px] text-[var(--ps-text)]">{item.name}</strong><Pill tone={item.kind === "系统通知" ? "muted" : item.kind === "推荐群" ? "brand" : "warning"}>{item.kind}</Pill></span><span className="mt-1 block truncate text-[11px] text-[var(--ps-subtle)]">{item.preview}</span></span><span className="text-[10px] text-[var(--ps-subtle)]">刚刚</span></button>)}</div></div></>;
+  const unreadCount = conversations.reduce((total, item) => total + item.unread, 0);
+  return <><Header title={copy.title} subtitle={copy.subtitle} onSearch={() => onToast("消息搜索已准备")} /><div className="px-4 pb-6"><div className="mb-4 flex items-center justify-between"><h2 className="text-[15px] font-semibold text-[var(--ps-text)]">最近会话</h2><Pill tone="danger">{unreadCount} 条未读</Pill></div><div className="overflow-hidden rounded-[var(--ps-radius)] border border-[var(--ps-border)] bg-[var(--ps-surface)]">{conversations.map((item, index) => <button key={item.name} onClick={() => onOpen(item.name, item.preview)} className={`flex w-full items-center gap-3 px-4 py-4 text-left ${index ? "border-t border-[var(--ps-border)]" : ""}`}><span className="relative">{item.group ? <GroupAvatar avatars={communityAvatars(item.groupId)} fallback={item.name.slice(0, 1)} className="h-11 w-11" /> : <Avatar src={item.avatar} fallback={item.name.slice(0, 1)} className="h-11 w-11 rounded-2xl" />}{item.unread > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[var(--ps-danger)] px-1 text-[9px] font-bold text-white">{item.unread}</span>}</span><span className="min-w-0 flex-1"><span className="flex items-center gap-2"><strong className="truncate text-[13px] text-[var(--ps-text)]">{item.name}</strong><Pill tone={item.kind === "系统通知" || item.kind === "待解锁群" ? "muted" : item.kind === "推荐群" ? "brand" : "warning"}>{item.kind}</Pill></span><span className="mt-1 block truncate text-[11px] text-[var(--ps-subtle)]">{item.preview}</span></span><span className="text-[10px] text-[var(--ps-subtle)]">刚刚</span></button>)}</div></div></>;
 }
 
 function PrincipalConsole({ copy, onToast }: { copy: PrincipalThemeCopy["console"]; onToast: (message: string) => void }) {
@@ -123,7 +149,7 @@ function Detail({ detail, onBack, onComplete, onToast }: { detail: Exclude<Detai
   return <div className="min-h-screen bg-[var(--ps-page)]"><header className="flex items-center gap-3 px-5 pb-4 pt-[max(18px,env(safe-area-inset-top))]"><button aria-label="返回" onClick={onBack} className="rounded-full p-2 text-[var(--ps-subtle)]"><ChevronLeft size={21} /></button><div><h1 className="text-[19px] font-semibold text-[var(--ps-text)]">{isCommunity ? "社群详情" : "项目详情"}</h1><p className="text-[11px] text-[var(--ps-subtle)]">查看当前状态和下一步</p></div></header><main className="space-y-4 px-4 pb-8">{isCommunity ? <><section className="rounded-[var(--ps-radius)] bg-[var(--ps-brand)] p-5 text-white"><div className="flex items-center gap-3"><GroupAvatar avatars={communityAvatars(item.id)} fallback={item.name.slice(0, 1)} className="h-14 w-14" /><Pill tone="muted">{item.type}</Pill></div><h2 className="mt-4 text-[23px] font-semibold">{item.name}</h2><p className="mt-2 text-[12px] text-white/75">{item.memberCount} 位成员 · 最近更新 {item.updatedAt}</p></section><section className="grid grid-cols-3 gap-2">{[["成员", item.memberCount], ["活跃度", `${item.activityScore}%`], ["待跟进", item.pendingFollowUps]].map(([label, value]) => <div key={label} className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-3"><span className="text-[10px] text-[var(--ps-subtle)]">{label}</span><strong className="mt-2 block text-[18px] text-[var(--ps-text)]">{value}</strong></div>)}</section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><SectionTitle title="动态" /><p className="text-[12px] leading-6 text-[var(--ps-subtle)]">今日新增 {item.todayNewMembers} 位成员，当前有 {item.pendingFollowUps} 位成员待跟进。</p></section></> : <><section className="rounded-[var(--ps-radius)] bg-[var(--ps-brand)] p-5 text-white"><Pill tone="muted">{item.type}</Pill><h2 className="mt-4 text-[23px] font-semibold">{item.name}</h2><p className="mt-2 text-[12px] text-white/75">当前阶段：{item.status}</p><div className="mt-5 h-2 overflow-hidden rounded-full bg-white/20"><div className="h-full rounded-full bg-white" style={{ width: `${item.progress}%` }} /></div><p className="mt-2 text-right text-[11px] text-white/75">{item.progress}%</p></section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><SectionTitle title="下一步动作" /><p className="text-[14px] font-semibold text-[var(--ps-text)]">{item.nextAction}</p><p className="mt-1 text-[11px] text-[var(--ps-subtle)]">截止 {item.nextActionDueAt}</p></section><section className="rounded-2xl border border-[var(--ps-border)] bg-[var(--ps-surface)] p-4"><SectionTitle title="里程碑" />{item.milestones.map(milestone => <div key={milestone.id} className="flex items-center gap-3 border-b border-[var(--ps-border)] py-3 last:border-0"><span className={`flex h-7 w-7 items-center justify-center rounded-full ${milestone.status === "已完成" ? "bg-[var(--ps-soft)] text-[var(--ps-brand)]" : "bg-black/5 text-[var(--ps-subtle)]"}`}>{milestone.status === "已完成" ? <Check size={14} /> : <Target size={14} />}</span><span className="flex-1 text-[12px] text-[var(--ps-text)]">{milestone.title}</span><span className="text-[10px] text-[var(--ps-subtle)]">{milestone.dueAt}</span></div>)}</section><button onClick={onComplete} className="min-h-12 w-full rounded-xl bg-[var(--ps-brand)] py-3 text-[12px] font-semibold text-white">更新项目进展</button></>}</main></div>;
 }
 
-export default function ZhuLiRenApp() {
+export default function ZhuLiRenApp({ preview }: { preview?: { x: number; y: number; scale: number } }) {
   const [activeTab, setActiveTab] = useState<TabId>("messages");
   const [detail, setDetail] = useState<DetailView>(null);
   const [principal, setPrincipal] = useState(initialPrincipal);
@@ -153,5 +179,5 @@ export default function ZhuLiRenApp() {
   };
   const content = detail?.type === "theme" ? <ThemePicker current={theme} onSelect={id => { setTheme(id); setToast(`已切换为${getPrincipalTheme(id).name}`); setDetail(null); }} onBack={() => setDetail(null)} /> : detail ? <Detail detail={detail} onBack={() => setDetail(null)} onComplete={completeDetail} onToast={setToast} /> : activeTab === "messages" ? <MessagesHome copy={activeTheme.copy.messages} onOpen={(name, preview) => setDetail({ type: "message", name, preview })} onToast={setToast} /> : activeTab === "projects" ? <ProjectHome projects={projects} onOpen={item => setDetail({ type: "project", item })} onToast={setToast} copy={activeTheme.copy.projects} /> : activeTab === "console" ? <PrincipalConsole copy={activeTheme.copy.console} onToast={setToast} /> : activeTab === "growth" ? <GrowthHome tasks={tasks} onOpen={task => setDetail({ type: "growth", task })} copy={activeTheme.copy.growth} /> : <MeHome principal={principal} copy={activeTheme.copy.mine} onAccount={openAccount} onTheme={() => setDetail({ type: "theme" })} onToast={setToast} />;
 
-  return <div className={`min-h-screen bg-[var(--ps-page)] text-[var(--ps-text)] layout-${activeTheme.layout}`} data-layout={activeTheme.layout} style={{ ...themeVars, fontFamily: activeTheme.fontFamily }}><div className="mx-auto min-h-screen w-full max-w-[430px] overflow-hidden bg-[var(--ps-page)]"><main className="min-h-screen pb-[86px]">{content}</main>{!detail && <BottomNav active={activeTab} onChange={setActiveTab} unread={unread} />}{toast && <div role="status" aria-live="polite" className="fixed bottom-[92px] left-1/2 z-40 w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 rounded-2xl bg-[var(--ps-text)] px-4 py-3 text-center text-[12px] font-medium text-[var(--ps-page)] shadow-[var(--ps-shadow)]">{toast}</div>}</div></div>;
+  return <div className={`min-h-screen bg-[var(--ps-page)] text-[var(--ps-text)] layout-${activeTheme.layout}`} data-layout={activeTheme.layout} style={{ ...themeVars, fontFamily: activeTheme.fontFamily }}><div className="mx-auto min-h-screen w-full max-w-[430px] overflow-hidden bg-[var(--ps-page)]" style={preview && (preview.x !== 0 || preview.y !== 0 || preview.scale !== 1) ? { transform: `translate(${preview.x}px, ${preview.y}px) scale(${preview.scale})`, transformOrigin: "center center" } : undefined}><main className="min-h-screen pb-[86px]">{content}</main>{!detail && <BottomNav active={activeTab} onChange={setActiveTab} unread={unread} />}{toast && <div role="status" aria-live="polite" className="fixed bottom-[92px] left-1/2 z-40 w-[calc(100%-32px)] max-w-[398px] -translate-x-1/2 rounded-2xl bg-[var(--ps-text)] px-4 py-3 text-center text-[12px] font-medium text-[var(--ps-page)] shadow-[var(--ps-shadow)]">{toast}</div>}</div></div>;
 }

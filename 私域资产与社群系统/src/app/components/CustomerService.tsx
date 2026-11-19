@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { getAvatar } from "./Avatar";
+import { LevelAvatar, identityLevelCode } from "./Avatar";
 import {
   Search,
   Plus,
@@ -1800,17 +1800,7 @@ function StaffDetail({
       >
         {/* 头部信息 */}
         <div className="flex flex-wrap items-start gap-5 p-5">
-          <img
-            src={getAvatar(staff.id - 1)}
-            alt={staff.name}
-            style={{
-              width: 60,
-              height: 60,
-              borderRadius: S.radius,
-              objectFit: "cover",
-              flexShrink: 0,
-            }}
-          />
+          <LevelAvatar index={staff.id - 1} level={identityLevelCode("服务老师")} size={60} radius={S.radius} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <span
@@ -3038,16 +3028,7 @@ export default function CustomerService() {
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <img
-                      src={getAvatar(index)}
-                      alt={officer.name}
-                      style={{
-                        width: 38,
-                        height: 38,
-                        borderRadius: S.radiusSm,
-                        objectFit: "cover",
-                      }}
-                    />
+                    <LevelAvatar index={index} level={identityLevelCode("服务老师")} size={38} radius={S.radiusSm} />
                     <div className="min-w-0 flex-1">
                       <div
                         className="font-semibold text-sm"
@@ -3355,16 +3336,7 @@ export default function CustomerService() {
                         className="flex-shrink-0 flex items-center gap-2"
                         style={{ width: 150 }}
                       >
-                        <img
-                          src={getAvatar(staff.id - 1)}
-                          alt={staff.name}
-                          style={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: "50%",
-                            objectFit: "cover",
-                          }}
-                        />
+                        <LevelAvatar index={staff.id - 1} level={identityLevelCode("服务老师")} size={24} radius="50%" />
                         <span
                           className="font-semibold"
                           style={{ color: S.text }}
@@ -3588,11 +3560,11 @@ export default function CustomerService() {
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-3">
-                      <img
-                        src={getAvatar(detailStaff.id - 1)}
-                        alt={detailStaff.name}
-                        className="h-11 w-11 shrink-0 object-cover"
-                        style={{ borderRadius: S.radiusSm }}
+                      <LevelAvatar
+                        index={detailStaff.id - 1}
+                        level={identityLevelCode(detailStaff.role)}
+                        size={44}
+                        radius={S.radiusSm}
                       />
                       <div className="min-w-0">
                         <div className="truncate text-sm font-semibold" style={{ color: S.text }}>

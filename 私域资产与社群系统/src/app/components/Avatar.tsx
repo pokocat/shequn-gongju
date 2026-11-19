@@ -26,6 +26,40 @@ export function getAvatar(idx: number): string {
   return AVATARS[Math.abs(idx) % AVATARS.length];
 }
 
+export function identityLevelCode(value?: string): string | undefined {
+  if (!value) return undefined;
+  if (/^V[1-5]$|^D[1-5]$|^G[1-5]$|^S[1-5]$|^Y[1-5]$/.test(value)) return value;
+  if (value.includes("代理")) return "D4";
+  if (value.includes("服务") || value.includes("客服")) return "S3";
+  if (value.includes("运营")) return "Y3";
+  if (value.includes("供应") || value.includes("商家")) return "G3";
+  if (value.includes("PRO") || value.includes("VIP")) return "V3";
+  if (value.includes("体验")) return "V2";
+  if (value.includes("游客") || value.includes("普通") || value.includes("会员")) return "V1";
+  return undefined;
+}
+
+export function LevelAvatar({
+  index,
+  level,
+  size = 32,
+  radius = "50%",
+  style,
+}: {
+  index: number;
+  level?: string;
+  size?: number;
+  radius?: string;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <span style={{ position: "relative", width: size, height: size, display: "inline-flex", flexShrink: 0 }}>
+      <Avatar index={index} size={size} radius={radius} style={style} />
+      {level && <span style={{ position: "absolute", left: "50%", bottom: -5, transform: "translateX(-50%)", padding: "0 4px", lineHeight: "13px", fontSize: 8, fontWeight: 700, color: "#fff", background: level.startsWith("D") ? "#7c3aed" : "#0f766e", borderRadius: 999, whiteSpace: "nowrap" }}>{level}</span>}
+    </span>
+  );
+}
+
 export function Avatar({
   index,
   size = 32,

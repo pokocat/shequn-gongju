@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工单进度 · 游客态</title>
+<link rel="stylesheet" href="../css/app.css">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.tr-hero{ display: flex; align-items: center; gap: 6.88px; padding: 17.2px 13.76px 17.2px 17.2px; }
+.tr-tags{ display: flex; flex-wrap: wrap; gap: 5.733px; }
+.tr-title{
+  display: block; margin-top: 10.32px;
+  font-family: var(--font-serif); font-size: 28.093px; font-weight: 600;
+  line-height: 1.2; letter-spacing: 1.147px; color: var(--ink-900);
+}
+.tr-lead{ display: block; margin-top: 5.733px; font-size: var(--fs-sec); color: var(--ink-700); line-height: 1.6; }
+
+
+.pg{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pg-step{ position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 2.293px; }
+.pg-step--link::before{
+  content: ""; position: absolute; top: 10.893px; left: 50%; right: -50%;
+  height: 1.147px; background: var(--line-strong);
+}
+.pg-step--lit::before{ background: var(--signal-500); }
+.pg-node{
+  position: relative; z-index: 1;
+  width: 22.933px; height: 22.933px; border-radius: 50%; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card-bg); border: 1.147px solid var(--line-strong);
+}
+.pg-step--done .pg-node{ background: var(--signal-500); border-color: var(--signal-500); }
+.pg-step--active .pg-node{ border-color: var(--signal-500); box-shadow: 0 0 0 4.587px var(--signal-wash); }
+.pg-step--active .pg-node::after{
+  content: ""; width: 9.173px; height: 9.173px; border-radius: 50%; background: var(--signal-500);
+}
+.pg-step--fail .pg-node{ background: var(--danger-fill); border-color: var(--danger-fill); }
+.pg-t{ margin-top: 9.173px; font-size: var(--fs-meta); font-weight: 400; color: var(--ink-900); }
+.pg-step--todo .pg-t{ color: var(--ink-600); font-weight: 500; }
+.pg-s{ margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); }
+.pg-step--active .pg-s{ color: var(--pulse-600); font-weight: 500; }
+.pg-step--fail .pg-s{ color: var(--danger); font-weight: 500; }
+.pg-d{ margin-top: 1.147px; font-size: var(--fs-micro); color: var(--ink-500); }
+
+
+.tr-info .ic-row{ padding: 12.613px 0; }
+.tr-info .ic-l{ color: var(--ink-600); }
+.tr-info .col-h + .ic-row{ border-top: none; }
+.tr-copy{ position: relative; display: flex; align-items: center; gap: 4.587px; min-height: 36.693px; }
+
+
+.tr-desc{ display: block; font-size: var(--fs-h4); color: var(--ink-800); line-height: 1.8; white-space: pre-line; }
+
+.tr-person{ gap: 12.04px; }
+.tr-person-name{ gap: 6.88px; }
+.tr-wait-row{ gap: 6.88px; }
+
+.tr-event-t{ display: block; font-size: var(--fs-h4); font-weight: 500; color: var(--ink-900); }
+.tr-event{ padding-top: 5.733px; }
+
+.tr-tip{ padding: 11.467px 0; min-height: 50.453px; }
+.tr-tip-t{ display: block; font-size: var(--fs-body); font-weight: 500; color: var(--ink-900); }
+
+
+.tr-hit{ position: relative; }
+.tr-hit::after{ content: ""; position: absolute; top: -9.173px; bottom: -9.173px; left: -4.587px; right: -4.587px; }
+
+
+.rv-wait{ padding-top: 16.053px; }
+.rv-blank{ padding: 22.933px 11.467px 11.467px; }
+.rv-lead{ display: block; margin-top: 6.88px; font-size: var(--fs-sec); color: var(--ink-600); line-height: 1.6; }
+.rv-svc{
+  display: flex; align-items: center; gap: 11.467px;
+  margin-top: 14.907px; padding-bottom: 13.76px; border-bottom: 0.573px solid var(--line);
+}
+.rv-svc-t{ display: block; font-size: var(--fs-h4); font-weight: 500; color: var(--ink-900); }
+.rv-svc-m{ display: block; margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); }
+
+.rv-rate{ display: flex; align-items: center; justify-content: space-between; margin-top: 10.32px; }
+.rv-stars{ display: flex; margin-left: -9.173px; }
+
+.rv-star{ padding: 9.173px; }
+.rv-label{ font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: 500; color: var(--pulse-600); }
+
+.rv-sec{ margin-top: 14.907px; }
+.rv-k{ display: block; margin-bottom: 8.027px; font-size: var(--fs-sec); font-weight: 500; color: var(--ink-900); }
+.rv-k-sub{ font-weight: 400; color: var(--ink-600); }
+.rv-tags{ display: flex; flex-wrap: wrap; gap: 8.027px; }
+.rv-chip{ position: relative; }
+.rv-chip::after{ content: ""; position: absolute; top: -8.027px; bottom: -8.027px; left: 0; right: 0; }
+.rv-text{ height: 96.32px; }
+.rv-yn{ gap: 6.88px; }
+.rv-submit{ margin-top: 20.64px; }
+.cta--busy{ opacity: 0.72; }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>工单进度 · 游客态</h1>
+    <code>/pages/ticket-result/index</code>
+    <span class="mp-tag">游客态</span>
+  </div>
+  <p class="mp-note">四步进度（浓咖啡节点 + 细线）+ 事件流。工单解决且未评价时底部出现「评价服务」，点开是评价弹层；已评价过再从旧链接进来是改分态。补充材料的去路是企业微信找服务老师——会员端没有上传通道。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+      
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2E24%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">工单进度</span><div class="subbar-slot wx-view"></div></div></div></div><div class="wxc wxc-guest"><div class="card card-pad wx-view"><div class="blank wx-view"><div class="blank-mark wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:25.8px;height:25.8px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2C20%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M6%2022a2%202%200%200%201-2-2V4a2%202%200%200%201%202-2h8a2.4%202.4%200%200%201%201.704.706l3.588%203.588A2.4%202.4%200%200%201%2020%208v12a2%202%200%200%201-2%202z%22%20%2F%3E%3Cpath%20d%3D%22M14%202v5a1%201%200%200%200%201%201h5%22%20%2F%3E%3Cpath%20d%3D%22M10%209H8%22%20%2F%3E%3Cpath%20d%3D%22M16%2013H8%22%20%2F%3E%3Cpath%20d%3D%22M16%2017H8%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="blank-title wx-text">登录后查看工单进度</span><span class="blank-hint wx-text">工单只对提交它的人可见。登录后这里会显示处理到了哪一步、谁在处理，以及老师给你的回复。</span><div class="btn-grad mt-16 wx-view mp-nav" data-nav="login">微信登录</div><span class="gs-note wx-text">登录只获取微信身份，可随时取消返回</span></div></div></div></div></div>
+      
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "ticket-result--游客态";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+</body></html>

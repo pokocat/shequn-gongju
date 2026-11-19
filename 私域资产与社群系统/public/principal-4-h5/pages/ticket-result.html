@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>工单进度</title>
+<link rel="stylesheet" href="../css/app.css">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.tr-hero{ display: flex; align-items: center; gap: 6.88px; padding: 17.2px 13.76px 17.2px 17.2px; }
+.tr-tags{ display: flex; flex-wrap: wrap; gap: 5.733px; }
+.tr-title{
+  display: block; margin-top: 10.32px;
+  font-family: var(--font-serif); font-size: 28.093px; font-weight: 600;
+  line-height: 1.2; letter-spacing: 1.147px; color: var(--ink-900);
+}
+.tr-lead{ display: block; margin-top: 5.733px; font-size: var(--fs-sec); color: var(--ink-700); line-height: 1.6; }
+
+
+.pg{ display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pg-step{ position: relative; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 0 2.293px; }
+.pg-step--link::before{
+  content: ""; position: absolute; top: 10.893px; left: 50%; right: -50%;
+  height: 1.147px; background: var(--line-strong);
+}
+.pg-step--lit::before{ background: var(--signal-500); }
+.pg-node{
+  position: relative; z-index: 1;
+  width: 22.933px; height: 22.933px; border-radius: 50%; box-sizing: border-box;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--card-bg); border: 1.147px solid var(--line-strong);
+}
+.pg-step--done .pg-node{ background: var(--signal-500); border-color: var(--signal-500); }
+.pg-step--active .pg-node{ border-color: var(--signal-500); box-shadow: 0 0 0 4.587px var(--signal-wash); }
+.pg-step--active .pg-node::after{
+  content: ""; width: 9.173px; height: 9.173px; border-radius: 50%; background: var(--signal-500);
+}
+.pg-step--fail .pg-node{ background: var(--danger-fill); border-color: var(--danger-fill); }
+.pg-t{ margin-top: 9.173px; font-size: var(--fs-meta); font-weight: 400; color: var(--ink-900); }
+.pg-step--todo .pg-t{ color: var(--ink-600); font-weight: 500; }
+.pg-s{ margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); }
+.pg-step--active .pg-s{ color: var(--pulse-600); font-weight: 500; }
+.pg-step--fail .pg-s{ color: var(--danger); font-weight: 500; }
+.pg-d{ margin-top: 1.147px; font-size: var(--fs-micro); color: var(--ink-500); }
+
+
+.tr-info .ic-row{ padding: 12.613px 0; }
+.tr-info .ic-l{ color: var(--ink-600); }
+.tr-info .col-h + .ic-row{ border-top: none; }
+.tr-copy{ position: relative; display: flex; align-items: center; gap: 4.587px; min-height: 36.693px; }
+
+
+.tr-desc{ display: block; font-size: var(--fs-h4); color: var(--ink-800); line-height: 1.8; white-space: pre-line; }
+
+.tr-person{ gap: 12.04px; }
+.tr-person-name{ gap: 6.88px; }
+.tr-wait-row{ gap: 6.88px; }
+
+.tr-event-t{ display: block; font-size: var(--fs-h4); font-weight: 500; color: var(--ink-900); }
+.tr-event{ padding-top: 5.733px; }
+
+.tr-tip{ padding: 11.467px 0; min-height: 50.453px; }
+.tr-tip-t{ display: block; font-size: var(--fs-body); font-weight: 500; color: var(--ink-900); }
+
+
+.tr-hit{ position: relative; }
+.tr-hit::after{ content: ""; position: absolute; top: -9.173px; bottom: -9.173px; left: -4.587px; right: -4.587px; }
+
+
+.rv-wait{ padding-top: 16.053px; }
+.rv-blank{ padding: 22.933px 11.467px 11.467px; }
+.rv-lead{ display: block; margin-top: 6.88px; font-size: var(--fs-sec); color: var(--ink-600); line-height: 1.6; }
+.rv-svc{
+  display: flex; align-items: center; gap: 11.467px;
+  margin-top: 14.907px; padding-bottom: 13.76px; border-bottom: 0.573px solid var(--line);
+}
+.rv-svc-t{ display: block; font-size: var(--fs-h4); font-weight: 500; color: var(--ink-900); }
+.rv-svc-m{ display: block; margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); }
+
+.rv-rate{ display: flex; align-items: center; justify-content: space-between; margin-top: 10.32px; }
+.rv-stars{ display: flex; margin-left: -9.173px; }
+
+.rv-star{ padding: 9.173px; }
+.rv-label{ font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: 500; color: var(--pulse-600); }
+
+.rv-sec{ margin-top: 14.907px; }
+.rv-k{ display: block; margin-bottom: 8.027px; font-size: var(--fs-sec); font-weight: 500; color: var(--ink-900); }
+.rv-k-sub{ font-weight: 400; color: var(--ink-600); }
+.rv-tags{ display: flex; flex-wrap: wrap; gap: 8.027px; }
+.rv-chip{ position: relative; }
+.rv-chip::after{ content: ""; position: absolute; top: -8.027px; bottom: -8.027px; left: 0; right: 0; }
+.rv-text{ height: 96.32px; }
+.rv-yn{ gap: 6.88px; }
+.rv-submit{ margin-top: 20.64px; }
+.cta--busy{ opacity: 0.72; }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>工单进度</h1>
+    <code>/pages/ticket-result/index</code>
+    
+  </div>
+  <p class="mp-note">四步进度（浓咖啡节点 + 细线）+ 事件流。工单解决且未评价时底部出现「评价服务」，点开是评价弹层；已评价过再从旧链接进来是改分态。补充材料的去路是企业微信找服务老师——会员端没有上传通道。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+      
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2E24%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">工单进度</span><div class="subbar-slot wx-view"></div></div></div></div><div class="card card--hero tr-hero wx-view"><div class="f-1 wx-view"><div class="tr-tags wx-view"><span class="tag tag--green wx-text">已解决</span><span class="tag tag--gray wx-text">已分配处理人</span></div><span class="tr-title wx-text">工单已解决</span><span class="tr-lead wx-text">如果问题仍未解决，可以再提交一张工单并附上本单编号</span></div><div class="wxc wxc-art"><div class="art wx-view" style="width:86px;height:86px;flex-shrink:0;"><img class="art-img wx-image" style="object-fit:contain;" src="../assets/art/check.png" alt="" /></div></div></div><div class="card card-pad gap wx-view"><div class="f-between mb-16 wx-view"><span class="col-h wx-text">处理进度</span><div class="link-trail tr-hit wx-view"><span class="wx-text">刷新</span><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E6052%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M3%2012a9%209%200%200%201%209-9%209.75%209.75%200%200%201%206.74%202.74L21%208%22%20%2F%3E%3Cpath%20d%3D%22M21%203v5h-5%22%20%2F%3E%3Cpath%20d%3D%22M21%2012a9%209%200%200%201-9%209%209.75%209.75%200%200%201-6.74-2.74L3%2016%22%20%2F%3E%3Cpath%20d%3D%22M8%2016H3v5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><div class="pg wx-view"><div class="pg-step pg-step--done pg-step--link pg-step--lit wx-view"><div class="pg-node wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="pg-t wx-text">提交工单</span><span class="pg-s wx-text">已完成</span><span class="pg-d mono wx-text">09-01 15:22</span></div><div class="pg-step pg-step--done pg-step--link pg-step--lit wx-view"><div class="pg-node wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="pg-t wx-text">平台受理</span><span class="pg-s wx-text">已完成</span><span class="pg-d mono wx-text">09-01 15:40</span></div><div class="pg-step pg-step--done pg-step--link pg-step--lit wx-view"><div class="pg-node wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="pg-t wx-text">分配老师</span><span class="pg-s wx-text">已完成</span><span class="pg-d mono wx-text">09-01 15:41</span></div><div class="pg-step pg-step--done  pg-step--lit wx-view"><div class="pg-node wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:11.467px;height:11.467px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="pg-t wx-text">反馈结果</span><span class="pg-s wx-text">已完成</span><span class="pg-d mono wx-text">09-01 18:12</span></div></div></div><div class="card card-pad gap tr-info wx-view"><span class="col-h mb-8 block wx-text">工单信息</span><div class="ic-row wx-view"><span class="ic-l wx-text">工单编号</span><div class="tr-copy wx-view"><span class="ic-v mono wx-text">T-20260901-0007</span><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E6052%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2214%22%20height%3D%2214%22%20x%3D%228%22%20y%3D%228%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M4%2016c-1.1%200-2-.9-2-2V4c0-1.1.9-2%202-2h10c1.1%200%202%20.9%202%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><div class="ic-row wx-view"><span class="ic-l wx-text">问题类型</span><span class="ic-v wx-text">课程与课件</span></div><div class="ic-row wx-view"><span class="ic-l wx-text">提交时间</span><span class="ic-v mono wx-text">2026-09-01 15:22</span></div><div class="ic-row wx-view"><span class="ic-l wx-text">承诺时限</span><span class="ic-v wx-text"><span class="mono wx-text">8</span> 小时</span></div><div class="ic-row wx-view"><span class="ic-l wx-text">预计反馈时间</span><span class="ic-v mono wx-text">2026-09-01 23:22</span></div></div><div class="card card-pad gap wx-view"><span class="col-h mb-10 block wx-text">我提交的问题</span><span class="tr-desc wx-text">在课件下载页点「课程逐字稿」没有反应，换了微信和手机都试过，其他几个文件能正常下载。</span></div><div class="card card-pad gap wx-view"><div class="f-between mb-10 wx-view"><span class="col-h wx-text">处理反馈</span><span class="t-tiny mono wx-text">2026-09-01 18:12</span></div><span class="tr-desc wx-text">已定位到问题：那份逐字稿的文件名里有一个全角括号，导致下载链接被截断。已重新上传，请退出小程序重新进入课件页再试一次。如果仍然不行，请在企业微信里告我一声。</span></div><div class="card card-pad gap wx-view"><span class="col-h mb-12 block wx-text">为你处理的服务老师</span><div class="f tr-person wx-view"><div class="wxc wxc-avatar"><div class="avatar avatar--t3 wx-view" style="width:50.453px;height:50.453px;"><span class="avatar-ini wx-text" style="font-size:21.213px;">赵</span></div></div><div class="f-1 wx-view"><div class="f tr-person-name wx-view"><span class="t-h4 wx-text">赵一川</span><span class="seal wx-text">专属服务</span></div><span class="t-tiny mt-4 block wx-text">服务老师</span></div><div class="btn-sm btn-sm--ghost tr-hit wx-view mp-nav" data-nav="advisor">联系</div></div></div><div class="card card-pad gap wx-view"><span class="col-h mb-10 block wx-text">处理记录</span><div class="timeline wx-view"><div class="tl-item wx-view"><div class="tl-rail wx-view"><div class="tl-node wx-view"></div><div class="tl-line wx-view"></div></div><div class="f-1 tr-event wx-view"><span class="tr-event-t wx-text">提交工单</span><span class="t-tiny mt-4 block wx-text">会员提交工单，分类「课程与课件」</span><span class="t-micro mono mt-4 block wx-text">2026-09-01 15:22</span></div></div><div class="tl-item wx-view"><div class="tl-rail wx-view"><div class="tl-node wx-view"></div><div class="tl-line wx-view"></div></div><div class="f-1 tr-event wx-view"><span class="tr-event-t wx-text">平台受理</span><span class="t-micro mono mt-4 block wx-text">2026-09-01 15:40</span></div></div><div class="tl-item wx-view"><div class="tl-rail wx-view"><div class="tl-node wx-view"></div><div class="tl-line wx-view"></div></div><div class="f-1 tr-event wx-view"><span class="tr-event-t wx-text">分配老师</span><span class="t-tiny mt-4 block wx-text">指派服务老师赵一川承接</span><span class="t-micro mono mt-4 block wx-text">2026-09-01 15:41</span></div></div><div class="tl-item wx-view"><div class="tl-rail wx-view"><div class="tl-node wx-view"></div></div><div class="f-1 tr-event wx-view"><span class="tr-event-t wx-text">反馈结果</span><span class="t-tiny mt-4 block wx-text">赵一川回复并关闭工单</span><span class="t-micro mono mt-4 block wx-text">2026-09-01 18:12</span></div></div></div></div><div class="card card-pad gap wx-view"><span class="col-h mb-4 block wx-text">需要帮忙</span><div class="row-item tr-tip wx-view mp-nav" data-nav="advisor"><div class="row-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:17.2px;height:17.2px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237A5A20%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cg%20transform%3D%22translate(0.1%201.05)%20scale(0.952)%22%3E%3Cpath%20d%3D%22M9%204C5.1%204%202%206.7%202%2010c0%201.9%201%203.5%202.6%204.6L4%2017l2.7-1.3c.7.2%201.5.3%202.3.3M16%208c-3.3%200-6%202.2-6%205s2.7%205%206%205c.7%200%201.4-.1%202-.3L22%2019l-.6-2c1-.8%201.6-2%201.6-3.2%200-2.8-2.7-5-6-5Z%22%2F%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="tr-tip-t wx-text">补充材料</span><span class="t-tiny block wx-text">在企业微信发给服务老师</span></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:13.76px;height:13.76px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23998A79%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="row-item tr-tip wx-view mp-nav" data-nav="advisor"><div class="row-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:17.2px;height:17.2px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237A5A20%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M3%2014h3a2%202%200%200%201%202%202v3a2%202%200%200%201-2%202H5a2%202%200%200%201-2-2v-7a9%209%200%200%201%2018%200v7a2%202%200%200%201-2%202h-1a2%202%200%200%201-2-2v-3a2%202%200%200%201%202-2h3%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="tr-tip-t wx-text">联系老师</span><span class="t-tiny block wx-text">找到你的专属服务顾问</span></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:13.76px;height:13.76px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23998A79%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="row-item tr-tip wx-view mp-nav" data-nav="notifications"><div class="row-ico wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:17.2px;height:17.2px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%237A5A20%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.268%2021a2%202%200%200%200%203.464%200%22%20%2F%3E%3Cpath%20d%3D%22M3.262%2015.326A1%201%200%200%200%204%2017h16a1%201%200%200%200%20.74-1.673C19.41%2013.956%2018%2012.499%2018%208A6%206%200%200%200%206%208c0%204.499-1.411%205.956-2.738%207.326%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><div class="f-1 wx-view"><span class="tr-tip-t wx-text">留意消息</span><span class="t-tiny block wx-text">处理进展在站内消息通知</span></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:13.76px;height:13.76px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23998A79%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div><div class="action-bar wx-view"><div class="action-row wx-view"><div class="cta cta--primary wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:17.2px;height:17.2px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M11.525%202.295a.53.53%200%200%201%20.95%200l2.31%204.679a2.123%202.123%200%200%200%201.595%201.16l5.166.756a.53.53%200%200%201%20.294.904l-3.736%203.638a2.123%202.123%200%200%200-.611%201.878l.882%205.14a.53.53%200%200%201-.771.56l-4.618-2.428a2.122%202.122%200%200%200-1.973%200L6.396%2021.01a.53.53%200%200%201-.77-.56l.881-5.139a2.122%202.122%200%200%200-.611-1.879L2.16%209.795a.53.53%200%200%201%20.294-.906l5.165-.755a2.122%202.122%200%200%200%201.597-1.16z%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">评价服务</span></div><div class="cta cta--ghost wx-view mp-nav" data-nav="ticket"><span class="wx-text">我的工单</span></div></div></div></div>
+      
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "ticket-result";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+</body></html>

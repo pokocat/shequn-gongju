@@ -31,8 +31,8 @@ describe("主理人1 消息页 · 统一会话列表", () => {
     expect(page).not.toContain("待解锁 · 由服务老师分配权益后开始同步");
   });
 
-  it("5 个已加入群携带群标识直接进入群聊页", () => {
-    expect(count(/data-nav="group-chat"/g)).toBe(5);
+  it("8 个群会话入口均携带群标识直接进入群聊页", () => {
+    expect(count(/data-nav="group-chat"/g)).toBe(8);
     ["ca1-growth", "selection", "homework", "baokuan", "neirong"].forEach(
       (groupId) => {
         expect(page).toContain(`data-g="${groupId}"`);
@@ -40,16 +40,17 @@ describe("主理人1 消息页 · 统一会话列表", () => {
     );
   });
 
-  it("3 个会员群以相同样式展示，仅通过 data-vip 标记权限差异", () => {
-    expect(count(/data-vip="/g)).toBe(3);
-    ["私域续费实战营", "城市主理人峰会群", "商家联盟交流群"].forEach((name) => {
-      expect(page).toContain(`data-nav="group--社群广场" data-vip="${name}"`);
+  it("3 个会员群进入独立群聊并携带权限标识", () => {
+    expect(count(/data-access="partial"/g)).toBe(3);
+    ["vip-renewal", "city-summit", "merchant-alliance"].forEach((groupId) => {
+      expect(page).toContain(`data-nav="group-chat"`);
+      expect(page).toContain(`data-g="${groupId}"`);
     });
-    expect(page).toContain("联盟助手：本周跨城货源对接清单已更新");
+    expect(count(/data-vip="/g)).toBe(0);
   });
 
-  it("点击分流：会员群弹升级提示且立即返回，不继续导航", () => {
-    expect(page).toMatch(/if \(vip\) \{\s*showVipToast\(vip\);\s*return;\s*\}/);
+  it("会员群入口不再被旧 Toast 逻辑拦截", () => {
+    expect(page).not.toMatch(/if \(vip\) \{\s*showVipToast\(vip\);\s*return;\s*\}/);
   });
 
   it("会员 toast 弹出后 2800ms 自动复位为服务通知默认文案", () => {
@@ -116,16 +117,32 @@ describe("主理人1 通知中心页（message）", () => {
 describe("主理人1 群会话页（group-chat）", () => {
   it("按 ?g= 参数渲染对应群，覆盖消息页全部 5 个群", () => {
     expect(groupChatPage).toContain('new URLSearchParams(location.search).get("g")');
-    ["ca1-growth", "selection", "homework", "baokuan", "neirong"].forEach(
+    ["ca1-growth", "selection", "homework", "baokuan", "neirong", "vip-renewal", "city-summit", "merchant-alliance"].forEach(
       (groupId) => {
         expect(groupChatPage).toContain(`"${groupId}"`);
       },
     );
-    ["CA1 · 主理人成长营 1 期", "私域选品共学营", "CA1 · 作业互助小组", "选品天团 · 私域爆品共创群", "内容工厂 · 朋友圈文案互助群"].forEach(
-      (name) => {
-        expect(groupChatPage).toContain(name);
-      },
-    );
+    [
+      "CA1 · 主理人成长营 1 期",
+      "私域选品共学营",
+      "CA1 · 作业互助小组",
+      "选品天团 · 私域爆品共创群",
+      "内容工厂 · 朋友圈文案互助群",
+      "高级会员 · 续费增长群",
+      "城市主理人 · 闭门峰会群",
+      "商家联盟 · 供应链情报群",
+    ].forEach((name) => {
+      expect(groupChatPage).toContain(name);
+    });
+  });
+
+  it("会员群显示企业微信群同步范围、锁定内容和升级入口", () => {
+    ["syncLabel", "syncTime", "syncScope", "lockedMessages"].forEach((field) => {
+      expect(groupChatPage).toContain(field);
+    });
+    expect(groupChatPage).toContain("升级会员查看完整内容");
+    expect(groupChatPage).toContain("data-chat-unlock");
+    expect(groupChatPage).toContain("member-unlocked-");
   });
 
   it("不再是群列表页：无页内 Tab、无待分配矛盾文案", () => {
@@ -178,11 +195,17 @@ const chatInteractions = readFileSync(
 describe("主理人1 会话交互脚本（chat-interactions）", () => {
   it("群页按 ?g= 解析各群卡片跳转映射", () => {
     expect(chatInteractions).toContain("GROUP_NAV");
-    ["ca1-growth", "selection", "homework", "baokuan", "neirong"].forEach(
+    ["ca1-growth", "selection", "homework", "baokuan", "neirong", "vip-renewal", "city-summit", "merchant-alliance"].forEach(
       (id) => {
         expect(chatInteractions).toContain(`"${id}"`);
       },
     );
+  });
+
+  it("会员群解锁入口保留群 ID并通过 member 页面完成回跳", () => {
+    expect(chatInteractions).toContain("data-chat-unlock");
+    expect(chatInteractions).toContain('params.set("g", groupId)');
+    expect(chatInteractions).toContain('mpNavigate: "member"');
   });
 
   it("会话页输入栏升级为本地演示发送：div 输入框自动转换 + 发送按钮", () => {

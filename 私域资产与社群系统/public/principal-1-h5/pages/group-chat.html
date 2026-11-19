@@ -24,6 +24,13 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .chat-from{ display:block; margin:0 0 3.44px 2.293px; font-size:var(--fs-micro); color:var(--ink-500); }
 .chat-stack{ display:flex; flex-direction:column; gap:8.027px; max-width:76%; min-width:0; }
 .chat-bub{ max-width:76%; padding:9.173px 12.04px; box-sizing:border-box; border-radius:14.907px; background:var(--card-bg); border:0.573px solid var(--line); box-shadow:var(--sh-1); font-size:var(--fs-sec); color:var(--ink-800); line-height:1.65; word-break:break-word; }
+.gc-summary-group{margin-top:10px;padding-top:8px;border-top:1px solid var(--line-soft)}
+.gc-summary-label{font-size:var(--fs-meta);font-weight:700;color:var(--ink-900);margin-bottom:4px}
+.gc-summary-item,.gc-summary-empty{font-size:var(--fs-tiny);line-height:1.55;color:var(--ink-700);padding:2px 0}
+.gc-summary-item:before{content:'·';color:var(--brand);font-weight:700;margin-right:5px}
+.gc-summary-empty{color:var(--ink-500)}
+.gc-answer-source{margin-top:7px;padding-top:6px;border-top:1px solid var(--line-soft);font-size:var(--fs-micro);color:var(--ink-500)}
+.mk-field[contenteditable="true"]:empty:before{content:attr(data-placeholder);color:var(--ink-500)}
 .chat-col .chat-bub, .chat-stack .chat-bub{ max-width:100%; }
 .chat-row:not(.chat-row--mine) .chat-bub{ border-top-left-radius:4.587px; }
 .chat-row--mine .chat-bub{ border-top-right-radius:4.587px; background:linear-gradient(135deg,#8B5CF6 0%,#7C3AED 100%); border-color:transparent; color:var(--on-signal); box-shadow:0 1.72px 6.88px rgba(124,58,237,0.22); }
@@ -43,6 +50,12 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
 .chat-tool{ flex:0 0 auto; width:34.4px; height:34.4px; display:flex; align-items:center; justify-content:center; }
 .chat-field{ flex:1; min-width:0; height:37.547px; display:flex; align-items:center; padding:0 14.907px; box-sizing:border-box; border-radius:var(--r-pill); background:var(--card-bg); border:0.573px solid var(--line); font-size:var(--fs-sec); color:var(--ink-500); }
 .chat-count{ flex:0 0 auto; font-size:var(--fs-tiny); color:var(--ink-500); }
+.sync-note{margin:8px 12px 12px;padding:9px 11px;border:1px solid var(--line-soft);border-radius:10px;background:rgba(124,58,237,.07);font-size:var(--fs-tiny);line-height:1.55;color:var(--ink-600)}
+.sync-note strong{display:block;color:var(--brand);font-size:var(--fs-meta);margin-bottom:2px}
+.locked-row{opacity:.92}.locked-bub{background:linear-gradient(135deg,#f2ecff,#fffaf2);border:1px dashed var(--line-brand);color:var(--ink-600)}
+.locked-label{display:block;font-size:var(--fs-micro);font-weight:700;color:var(--brand);margin:0 0 3px 2px}
+.unlock-card{margin:0 0 12px 44px;padding:12px;border:1px solid var(--line-brand);border-radius:12px;background:linear-gradient(135deg,#faf7ff,#fffaf2);box-shadow:var(--sh-1)}
+.unlock-card strong{display:block;color:var(--ink-900);font-size:var(--fs-sec);margin-bottom:4px}.unlock-card p{margin:0 0 9px;font-size:var(--fs-tiny);color:var(--ink-600);line-height:1.5}.unlock-cta{display:inline-flex;align-items:center;justify-content:center;padding:7px 12px;border-radius:999px;background:var(--brand);color:var(--on-signal);font-size:var(--fs-meta);font-weight:700;cursor:pointer}
 </style>
 </head>
 <body class="mp-body">
@@ -71,7 +84,7 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   <span class="mp-sep"></span>
   <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
 </div>
-<div class="screen screen--bar chat-screen wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subbar wx-view" style="padding-top:53.893px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text" id="chat-name">群会话</span><div class="subbar-slot wx-view"><span class="chat-count mono wx-text" id="chat-count"></span></div></div></div></div><div class="chat-flow wx-view" id="chat-flow"></div><div class="chat-dock wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M12%202a3%203%200%200%200-3%203v7a3%203%200%200%200%206%200V5a3%203%200%200%200-3-3Z%22%2F%3E%3Cpath%20d%3D%22M19%2010v2a7%207%200%200%201-14%200v-2%22%2F%3E%3Cpath%20d%3D%22M12%2019v3%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><input id="chat-field" class="chat-field wx-input" type="text" placeholder="和群友聊聊…" aria-label="发送消息" autocomplete="off"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%3Cpath%20d%3D%22M9%209h.01%22%2F%3E%3Cpath%20d%3D%22M15%209h.01%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%3Cpath%20d%3D%22M8%2012h8%22%2F%3E%3Cpath%20d%3D%22M12%208v8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div>
+<div class="screen screen--bar chat-screen wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subbar wx-view" style="padding-top:53.893px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text" id="chat-name">群会话</span><div class="subbar-slot wx-view"><span class="chat-count mono wx-text" id="chat-count"></span></div></div></div></div><div class="chat-flow wx-view" id="chat-flow"></div><div class="gc-panel wx-view" id="gc-sum" role="dialog" aria-label="AI 总结面板"><div class="gr-sum-h wx-view">群聊 AI 总结</div><div id="ai-list" class="gc-summary-list"></div><div class="t-tiny mt-8 wx-view" style="color:var(--ink-500);">来源：企业微信群同步记录（当前可见消息） · 只读</div></div><div class="gc-panel wx-view" id="gc-ask" role="dialog" aria-label="AI 问答面板"><div class="gr-sum-h wx-view">问群 AI</div><div class="t-tiny wx-view" style="color:var(--ink-500);margin-top:4px;">基于当前群的可见同步记录回答，不会向微信群发送消息</div><div class="gc-q-list wx-view"><button class="gc-q-chip wx-view" type="button" data-q="hot">本群热议什么？</button><button class="gc-q-chip wx-view" type="button" data-q="todo">有哪些待办？</button><button class="gc-q-chip wx-view" type="button" data-q="decision">确认了哪些结论或决定？</button></div><div class="gc-answer wx-view" id="gc-answer" hidden><div class="gc-answer-h wx-view">AI 回答</div><span id="gc-answer-t" class="wx-text"></span><div id="gc-answer-source" class="gc-answer-source wx-text"></div></div><div class="gc-field wx-view"><div class="mk-field wx-view" id="gc-input" role="textbox" tabindex="0" contenteditable="true" aria-label="输入问题" data-placeholder="输入问题，向群聊 AI 提问"></div><button class="gc-send wx-view" type="button" id="gc-send">发送</button></div></div><div class="gc-dock wx-view"><button class="gc-btn gc-btn--pri wx-view" type="button" id="gc-btn-sum" aria-expanded="false">AI 总结</button><button class="gc-btn wx-view" type="button" id="gc-btn-ask" aria-expanded="false">问群 AI</button></div><div class="chat-dock wx-view" style="display:none!important"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M12%202a3%203%200%200%200-3%203v7a3%203%200%200%200%206%200V5a3%203%200%200%200-3-3Z%22%2F%3E%3Cpath%20d%3D%22M19%2010v2a7%207%200%200%201-14%200v-2%22%2F%3E%3Cpath%20d%3D%22M12%2019v3%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><input id="chat-field" class="chat-field wx-input" type="text" placeholder="和群友聊聊…" aria-label="发送消息" autocomplete="off"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%3Cpath%20d%3D%22M8%2014s1.5%202%204%202%204-2%204-2%22%2F%3E%3Cpath%20d%3D%22M9%209h.01%22%2F%3E%3Cpath%20d%3D%22M15%209h.01%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A4433%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%2F%3E%3Cpath%20d%3D%22M8%2012h8%22%2F%3E%3Cpath%20d%3D%22M12%208v8%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div>
       <div class="mp-home"></div>
     </div>
   </div>
@@ -193,6 +206,66 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
         ctas: [["参与报名", null], ["看往期", null]],
         note: "每人带一版初稿进互评，改稿意见当周消化。"
       }
+    },
+    "vip-renewal": {
+      name: "高级会员 · 续费增长群",
+      count: 36,
+      host: "../assets/avatars/people/avatar-16.jpg",
+      syncLabel: "已同步企业微信群",
+      syncTime: "今天 10:40",
+      syncScope: "最近 7 天 · 公开讨论与运营公告",
+      access: "partial",
+      msgs: [
+        { t: "今天 10:40 · 企业微信同步" },
+        { from: "服务老师", ava: "../assets/avatars/people/avatar-16.jpg", text: "本周续费名单已更新，优先跟进到期前 7 天的会员" },
+        { from: "阿宁", ava: "../assets/avatars/people/avatar-13.jpg", text: "已收到，我先把高意向客户标出来" },
+        { me: true, text: "我这边也完成第一轮筛选了" }
+      ],
+      lockedMessages: [
+        { from: "服务老师", ava: "../assets/avatars/people/avatar-16.jpg", text: "高级会员专属：本周续费话术和客户分层名单已同步" },
+        { from: "运营组", ava: "../assets/avatars/people/avatar-14.jpg", text: "高级会员专属：续费转化率复盘与下周策略" }
+      ],
+      card: { ico: "chart", title: "续费增长周报 · 部分可见", rows: [["同步来源", "企业微信群"], ["更新时间", "今天 10:40"], ["可见范围", "公开讨论"]], ctas: [["升级会员查看完整内容", "member"]], note: "当前仅展示公开讨论，升级高级会员后可查看完整群消息。" }
+    },
+    "city-summit": {
+      name: "城市主理人 · 闭门峰会群",
+      count: 52,
+      host: "../assets/avatars/people/avatar-15.jpg",
+      syncLabel: "已同步企业微信群",
+      syncTime: "昨天 18:20",
+      syncScope: "峰会通知与公开议程",
+      access: "partial",
+      msgs: [
+        { t: "昨天 18:20 · 企业微信同步" },
+        { from: "峰会秘书处", ava: "../assets/avatars/people/avatar-15.jpg", text: "杭州场签到时间调整为 13:30，地址不变" },
+        { from: "陈书言", ava: "../assets/avatars/people/avatar-16.jpg", text: "议程表已发，大家先确认自己的圆桌主题" },
+        { me: true, text: "收到，下午见" }
+      ],
+      lockedMessages: [
+        { from: "峰会秘书处", ava: "../assets/avatars/people/avatar-15.jpg", text: "高级会员专属：闭门圆桌嘉宾名单与席位安排" },
+        { from: "陈书言", ava: "../assets/avatars/people/avatar-16.jpg", text: "高级会员专属：会后资源对接名单和复盘纪要" }
+      ],
+      card: { ico: "live", title: "城市峰会 · 参会提醒", rows: [["同步来源", "企业微信群"], ["更新时间", "昨天 18:20"], ["公开范围", "通知与议程"]], ctas: [["升级会员查看完整内容", "member"]], note: "峰会通知公开可见，闭门圆桌与资源对接内容需升级会员。" }
+    },
+    "merchant-alliance": {
+      name: "商家联盟 · 供应链情报群",
+      count: 68,
+      host: "../assets/avatars/people/avatar-14.jpg",
+      syncLabel: "已同步企业微信群",
+      syncTime: "今天 09:15",
+      syncScope: "供应链公告与部分公开情报",
+      access: "partial",
+      msgs: [
+        { t: "今天 09:15 · 企业微信同步" },
+        { from: "联盟小助手", ava: "../assets/avatars/people/avatar-14.jpg", text: "本周三家仓配服务商开放试用，报名表已更新" },
+        { from: "老周", ava: "../assets/avatars/people/avatar-17.jpg", text: "华东仓的发货时效有数据了吗？" },
+        { from: "联盟小助手", ava: "../assets/avatars/people/avatar-14.jpg", text: "公开口径是次日达，详细报价请查看会员资料" }
+      ],
+      lockedMessages: [
+        { from: "联盟小助手", ava: "../assets/avatars/people/avatar-14.jpg", text: "高级会员专属：三家供应商底价、联系人和合作条款" },
+        { from: "联盟小助手", ava: "../assets/avatars/people/avatar-14.jpg", text: "高级会员专属：本月重点品类的库存预警表" }
+      ],
+      card: { ico: "doc", title: "供应链试用 · 报名入口", rows: [["同步来源", "企业微信群"], ["更新时间", "今天 09:15"], ["公开范围", "公告与部分情报"]], ctas: [["升级会员查看完整内容", "member"]], note: "公开消息可直接查看，底价和库存资料升级会员后解锁。" }
     }
   };
 
@@ -227,25 +300,76 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   function render(group) {
     document.getElementById("chat-name").textContent = group.name;
     document.getElementById("chat-count").textContent = group.count + " 人";
-    var html = group.msgs.map(function (m) {
+    var unlocked = false;
+    try { unlocked = localStorage.getItem("member-unlocked-" + getGroupId()) === "1"; } catch (e) {}
+    var html = "";
+    if (group.syncLabel) {
+      html += '<div class="sync-note wx-view"><strong class="wx-text">' + esc(group.syncLabel) + '</strong><span class="wx-text">同步时间：' + esc(group.syncTime) + ' · 同步范围：' + esc(group.syncScope) + '</span></div>';
+    }
+    html += group.msgs.map(function (m) {
       if (m.t) return '<div class="chat-time wx-view"><span class="mono wx-text">' + esc(m.t) + "</span></div>";
-      if (m.me) {
-        return '<div class="chat-row chat-row--mine wx-view">' + mineAvaHtml() +
-          '<div class="chat-bub wx-view"><span class="wx-text">' + esc(m.text) + "</span></div></div>";
-      }
-      return '<div class="chat-row wx-view">' + avaHtml(m.ava) +
-        '<div class="chat-col wx-view"><span class="chat-from wx-text">' + esc(m.from) + "</span>" +
-        '<div class="chat-bub wx-view"><span class="wx-text">' + esc(m.text) + "</span></div></div></div>";
+      if (m.me) return '<div class="chat-row chat-row--mine wx-view">' + mineAvaHtml() + '<div class="chat-bub wx-view"><span class="wx-text">' + esc(m.text) + "</span></div></div>";
+      return '<div class="chat-row wx-view">' + avaHtml(m.ava) + '<div class="chat-col wx-view"><span class="chat-from wx-text">' + esc(m.from) + '</span><div class="chat-bub wx-view"><span class="wx-text">' + esc(m.text) + '</span></div></div></div>';
     }).join("");
-    /* 「以下是新消息」分隔 + 群富卡片（与私聊页同款卡片样式） */
+    if (group.lockedMessages && !unlocked) {
+      html += group.lockedMessages.map(function (m) {
+        return '<div class="chat-row locked-row wx-view">' + avaHtml(m.ava) + '<div class="chat-col wx-view"><span class="chat-from wx-text">' + esc(m.from) + '</span><div class="locked-label wx-text">会员专属内容 · 已锁定</div><div class="chat-bub locked-bub wx-view"><span class="wx-text">升级会员后查看完整消息</span></div></div></div>';
+      }).join("");
+      html += '<div class="unlock-card wx-view"><strong class="wx-text">升级会员查看完整内容</strong><p class="wx-text">解锁企业微信群中的完整讨论、名单与复盘资料。</p><div class="unlock-cta wx-view" data-chat-unlock="' + esc(getGroupId()) + '"><span class="wx-text">立即升级</span></div></div>';
+    } else if (group.lockedMessages) {
+      html += group.lockedMessages.map(function (m) {
+        return '<div class="chat-row wx-view">' + avaHtml(m.ava) + '<div class="chat-col wx-view"><span class="chat-from wx-text">' + esc(m.from) + '</span><div class="chat-bub wx-view"><span class="wx-text">' + esc(m.text) + '</span></div></div></div>';
+      }).join("");
+    }
     html += '<div class="chat-new wx-view"><span class="wx-text">以下是新消息</span></div>';
-    html += '<div class="chat-row wx-view">' + avaHtml(group.host) +
-      '<div class="chat-stack wx-view">' + cardHtml(group.card) +
-      '<div class="chat-bub wx-view"><span class="wx-text">' + esc(group.card.note) + "</span></div></div></div>";
+    var card = group.card;
+    if (unlocked && group.lockedMessages) {
+      card = {
+        ico: group.card.ico,
+        title: group.card.title.replace(" · 部分可见", " · 完整内容").replace(" · 参会提醒", " · 完整资料").replace(" · 报名入口", " · 完整资料"),
+        rows: group.card.rows,
+        ctas: [["完整内容已解锁", null]],
+        note: "会员专属内容已解锁，可查看完整群消息与资料。"
+      };
+    }
+    html += '<div class="chat-row wx-view">' + avaHtml(group.host) + '<div class="chat-stack wx-view">' + cardHtml(card) + '<div class="chat-bub wx-view"><span class="wx-text">' + esc(card.note) + "</span></div></div></div>";
     document.getElementById("chat-flow").innerHTML = html;
   }
 
+  function getGroupId() {
+    try { return new URLSearchParams(location.search).get("g") || "ca1-growth"; } catch (e) { return "ca1-growth"; }
+  }
+
+  var currentGroup = null;
+  function renderAi(group) {
+    currentGroup = group;
+    var text = (group.msgs || []).filter(function (m) { return m.text; }).map(function (m) { return m.text; }).join(" ");
+    var groups = [
+      ["核心话题", text.match(/[^。！？]*(?:直播|投票|选品|续费|峰会|供应链|文案)[^。！？]*/g) || []],
+      ["已确认结论", text.match(/[^。！？]*(?:已定|定了|结论|统一用|确定|胜出|领先)[^。！？]*/g) || []],
+      ["我的待办", text.match(/[^。！？]*(?:我[^。！？]*(?:收到|完成|筛选|跟|发|确认|参加|投票))[^。！？]*/g) || []],
+      ["关注事项", text.match(/[^。！？]*(?:截止|优先|提醒|报名|调整|详细)[^。！？]*/g) || []]
+    ];
+    var list = document.getElementById("ai-list"); list.innerHTML = "";
+    groups.forEach(function (g) { var sec = document.createElement("section"); sec.className = "gc-summary-group"; var h = document.createElement("div"); h.className = "gc-summary-label"; h.textContent = g[0]; sec.appendChild(h); var items = g[1].filter(function (v, i, a) { return v && a.indexOf(v) === i; }); if (!items.length) { var empty = document.createElement("div"); empty.className = "gc-summary-empty"; empty.textContent = "暂无可确认内容"; sec.appendChild(empty); } else items.forEach(function (v) { var p = document.createElement("div"); p.className = "gc-summary-item"; p.textContent = v; sec.appendChild(p); }); list.appendChild(sec); });
+  }
+  function answer(question, key) {
+    var text = (currentGroup.msgs || []).filter(function (m) { return m.text; }).map(function (m) { return m.text; }).join(" ");
+    if (key === "hot" || /热议|话题|讨论/.test(question)) return text.match(/[^。！？]*(?:直播|投票|选品|续费|峰会|供应链|文案)[^。！？]*/g)?.join("；") || "当前可见同步记录没有足够的热议话题信息。";
+    if (key === "todo" || /待办|任务|截止|提醒/.test(question)) return text.match(/[^。！？]*(?:截止|优先|报名|提醒|我[^。！？]*(?:收到|完成|筛选|跟|发|确认|参加))[^。！？]*/g)?.join("；") || "当前可见同步记录没有确认到待办。";
+    if (key === "decision" || /结论|决定|确认/.test(question)) return text.match(/[^。！？]*(?:已定|定了|结论|统一用|确定|胜出|领先)[^。！？]*/g)?.join("；") || "当前可见同步记录无法确认明确的结论或决定。";
+    return "当前可见同步记录无法确认这件事。";
+  }
+  function showAnswer(question, key) { document.getElementById("gc-answer-t").textContent = answer(question, key); document.getElementById("gc-answer-source").textContent = "回答来源：当前群已同步且可见的消息；未读取会员专属锁定内容。"; document.getElementById("gc-answer").hidden = false; }
+
   render(resolveGroup());
+  renderAi(resolveGroup());
+  document.querySelectorAll(".gc-q-chip").forEach(function (c) { c.addEventListener("click", function () { showAnswer(c.textContent, c.getAttribute("data-q")); }); });
+  document.getElementById("gc-send").addEventListener("click", function () { var input = document.getElementById("gc-input"), q = input.textContent.trim(); if (!q) { input.focus(); input.classList.add("is-focus"); return; } showAnswer(q, ""); });
+  document.getElementById("gc-input").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); document.getElementById("gc-send").click(); } });
+  var sumPanel = document.getElementById("gc-sum"), askPanel = document.getElementById("gc-ask"), sumBtn = document.getElementById("gc-btn-sum"), askBtn = document.getElementById("gc-btn-ask");
+  function toggle(panel, btn, other, otherBtn) { var on = !panel.classList.contains("is-open"); other.classList.remove("is-open"); otherBtn.classList.remove("is-on"); panel.classList.toggle("is-open", on); btn.classList.toggle("is-on", on); btn.setAttribute("aria-expanded", on ? "true" : "false"); }
+  sumBtn.addEventListener("click", function () { toggle(sumPanel, sumBtn, askPanel, askBtn); }); askBtn.addEventListener("click", function () { toggle(askPanel, askBtn, sumPanel, sumBtn); });
 
   try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
   document.querySelectorAll("[data-nav]").forEach(function (el) {

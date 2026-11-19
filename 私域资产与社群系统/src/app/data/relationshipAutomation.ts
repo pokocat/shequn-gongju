@@ -54,6 +54,7 @@ export type RelationshipAutomationTask = {
   aiStatus: AiReviewStatus;
   aiMessage: string;
   humanReviewStatus: HumanReviewStatus;
+  successCounted: boolean;
   humanMessage?: string;
   finalStatus?: RelationshipTaskStatus;
   failureReason?: string;
@@ -87,6 +88,7 @@ export type HumanReviewInput = {
 export type RelationshipResult = {
   task: RelationshipAutomationTask;
   finalStatus: RelationshipTaskStatus;
+  successCounted: boolean;
 };
 
 export type RelationshipAutomationService = {
@@ -129,6 +131,7 @@ const createTask = (
     aiStatus: "AI疑似成功",
     aiMessage: "自动化已完成，等待人工确认会员关系结果",
     humanReviewStatus: "待人工复核",
+    successCounted: false,
   };
 };
 
@@ -166,6 +169,7 @@ export const createLocalRelationshipAutomationService = (): RelationshipAutomati
         throw new Error(`找不到自动化任务：${input.taskId}`);
       }
       const success = input.finalStatus === "已申请" || input.finalStatus === "已通过";
+      const successCounted = success && !task.successCounted;
       const next = save({
         ...task,
         humanReviewStatus: success ? "人工确认成功" : "人工确认失败",
@@ -174,8 +178,9 @@ export const createLocalRelationshipAutomationService = (): RelationshipAutomati
         finalStatus: input.finalStatus,
         aiStatus: success ? "AI确认成功" : "AI确认失败",
         aiMessage: input.message ?? "人工复核结果已同步",
+        successCounted: task.successCounted || successCounted,
       });
-      return { task: next, finalStatus: input.finalStatus };
+      return { task: next, finalStatus: input.finalStatus, successCounted };
     },
     async cancelTask(taskId) {
       const task = tasks.get(taskId);

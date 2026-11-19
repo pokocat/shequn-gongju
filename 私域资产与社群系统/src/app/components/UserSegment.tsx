@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getAvatar } from "./Avatar";
+import { LevelAvatar, identityLevelCode } from "./Avatar";
 import { Search, Plus, X, Tag, Users, TrendingUp, Star, Zap, ChevronRight, CheckSquare, Download } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 const TAGS = [
@@ -273,7 +273,7 @@ const [activeView, setActiveView] = useState<"用户列表" | "RFM分层" | "标
                       </td>
                       <td className="px-3 py-3">
                         <div className="flex items-center gap-2">
-                          <img src={getAvatar(user.id - 1)} alt={user.name} style={{ width: 32, height: 32, borderRadius: S.radiusSm, objectFit: "cover" }} />
+                          <LevelAvatar index={user.id - 1} level={identityLevelCode(user.level)} size={32} radius={S.radiusSm} />
                           <span className="text-sm font-bold" style={{ color: S.text }}>{user.name}</span>
                         </div>
                       </td>

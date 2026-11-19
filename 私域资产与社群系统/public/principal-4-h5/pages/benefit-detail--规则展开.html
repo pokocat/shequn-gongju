@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>权益详情 · 规则展开</title>
+<link rel="stylesheet" href="../css/app.css">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.bd-hero{ padding: 17.2px 17.2px 0; overflow: hidden; }
+.bd-hero-top{ gap: 4.587px; }
+
+.bd-title{
+  display: block; margin: 9.173px 0 5.733px;
+  font-family: var(--font-serif); font-size: 28.093px; font-weight: 600;
+  line-height: 1.2; letter-spacing: 1.147px; color: var(--ink-900);
+}
+
+.bd-lead{ display: block; font-size: var(--fs-sec); color: var(--ink-700); line-height: 1.65; }
+
+
+.bd-state{
+  display: flex; align-items: stretch;
+  margin: 13.76px -17.2px 0; padding: 13.76px 17.2px 16.053px;
+  border-top: 0.573px solid var(--line-brand);
+}
+.bd-left{ flex: 0 0 135.307px; display: flex; flex-direction: column; padding-right: 12.613px; border-right: 0.573px solid var(--line-brand); }
+.bd-right{ flex: 1; min-width: 0; padding-left: 13.76px; display: flex; flex-direction: column; gap: 10.32px; }
+.bd-k{ display: block; font-size: var(--fs-tiny); color: var(--ink-700); }
+.bd-big{ display: block; margin: 3.44px 0 2.293px; font-size: 40.133px; line-height: 1.05; color: var(--ink-900); }
+.bd-sub{ display: block; margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-700); line-height: 1.45; }
+.bd-line{ display: flex; flex-direction: column; }
+.bd-ok{ display: flex; align-items: center; gap: 3.44px; margin-top: 2.293px; font-size: var(--fs-body); font-weight: 500; color: var(--ok); }
+.bd-v{ display: block; margin-top: 2.293px; font-size: var(--fs-body); color: var(--ink-900); }
+
+
+.bd-lock{
+  display: flex; align-items: flex-start; gap: 9.173px;
+  margin: 13.76px -17.2px 0; padding: 13.76px 17.2px 16.053px;
+  border-top: 0.573px solid var(--line-brand);
+}
+.bd-lock-t{ display: block; font-size: var(--fs-body); font-weight: 500; color: var(--ink-900); }
+.bd-lock-r{ display: block; margin-top: 3.44px; font-size: var(--fs-sec); color: var(--pulse-600); line-height: 1.55; }
+
+
+.bd-sec{ display: flex; align-items: center; gap: 6.88px; margin: 22.933px 3.44px 9.173px; }
+
+.bd-rules-entry{
+  display: inline-flex; align-items: center; gap: 3.44px;
+  min-height: 36.693px; padding: 0 2.293px 0 9.173px;
+  font-size: var(--fs-meta); color: var(--ink-700);
+}
+
+
+.bd-list{ padding: 2.293px 16.053px; }
+.bd-row{ display: flex; gap: 13.76px; padding: 12.613px 0; border-top: 0.573px solid var(--line); }
+.bd-row:first-child{ border-top: none; }
+.bd-row-l{ flex: 0 0 80.267px; font-size: var(--fs-sec); color: var(--ink-600); }
+.bd-row-v{ flex: 1; min-width: 0; font-size: var(--fs-sec); color: var(--ink-900); line-height: 1.6; }
+
+
+.how-row{ display: flex; align-items: flex-start; gap: 12.613px; padding: 9.173px 0; }
+.how-row--sep{ border-top: 0.573px solid var(--line-soft); }
+.how-n{ flex: 0 0 22.933px; font-size: 25.227px; line-height: 1; color: var(--pulse-600); text-align: center; }
+.how-t{ display: block; font-size: var(--fs-body); font-weight: 500; color: var(--ink-900); }
+.how-d{ display: block; margin-top: 2.293px; font-size: var(--fs-meta); color: var(--ink-600); line-height: 1.5; }
+
+
+.bd-teacher{ display: flex; align-items: center; gap: 11.467px; }
+.bd-teacher:active{ opacity: 0.8; }
+.bd-t-name{ display: block; font-size: var(--fs-h4); font-weight: 400; color: var(--ink-900); }
+.bd-t-meta{ display: block; margin-top: 2.293px; font-size: var(--fs-tiny); color: var(--ink-600); }
+.bd-t-note{ display: block; margin-top: 5.733px; font-size: var(--fs-meta); color: var(--ink-700); }
+.bd-t-go{ display: flex; align-items: center; gap: 2.293px; flex-shrink: 0; font-size: var(--fs-meta); color: var(--ink-700); }
+
+
+.bd-rules{ display: block; white-space: pre-line; font-size: var(--fs-body); color: var(--ink-800); line-height: 1.8; }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>权益详情 · 规则展开</h1>
+    <code>/pages/benefit-detail/index</code>
+    <span class="mp-tag">规则展开</span>
+  </div>
+  <p class="mp-note">单个权益的说明、次数、使用流程与承接老师。次数口径分「已用 / 剩余」两句话说，不合成一个进度条。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+      
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2E24%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">权益详情</span><div class="subbar-slot wx-view"></div></div></div></div><div class="card card--hero bd-hero wx-view"><div class="f-start bd-hero-top wx-view"><div class="f-1 wx-view"><span class="seal wx-text">年卡会员 专享</span><span class="bd-title wx-text">经营诊断</span><span class="bd-lead wx-text">由服务老师结合你的社群与业务数据人工撰写经营建议，一般 2 个工作日内反馈。</span></div><div class="wxc wxc-art"><div class="art wx-view" style="width:108.933px;height:102.053px;flex-shrink:0;"><img class="art-img wx-image" style="object-fit:contain;" src="../assets/art/aigem.png" alt="" /></div></div></div><div class="bd-state wx-view"><div class="bd-left wx-view"><span class="bd-k wx-text">本月剩余</span><span class="num bd-big wx-text">1 次</span><span class="bd-sub wx-text">本季已用 0 次 / 共 1 次</span></div><div class="bd-right wx-view"><div class="bd-line wx-view"><span class="bd-k wx-text">当前状态</span><div class="bd-ok wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%238A9160%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M20%206%209%2017l-5-5%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">可使用</span></div><span class="bd-sub wx-text">本季度还可使用 1 次</span></div><div class="bd-line wx-view"><span class="bd-k wx-text">最近使用</span><span class="mono bd-v wx-text">2026-08-30</span><span class="bd-sub wx-text">上一次由赵一川出具</span></div></div></div></div><div class="bd-sec wx-view"><span class="sec-tick wx-text"></span><span class="col-h f-1 wx-text">权益详情</span><div class="bd-rules-entry wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:13.76px;height:13.76px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%234E4034%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%2016v-4%22%20%2F%3E%3Cpath%20d%3D%22M12%208h.01%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">使用规则</span></div></div><div class="card bd-list wx-view"><div class="bd-row wx-view"><span class="bd-row-l wx-text">适用身份</span><span class="bd-row-v wx-text">年卡会员及以上</span></div><div class="bd-row wx-view"><span class="bd-row-l wx-text">使用次数</span><span class="bd-row-v wx-text">每季度 1 次，年度共 4 次</span></div><div class="bd-row wx-view"><span class="bd-row-l wx-text">反馈时效</span><span class="bd-row-v wx-text">提交后 2 个工作日内</span></div><div class="bd-row wx-view"><span class="bd-row-l wx-text">承接方</span><span class="bd-row-v wx-text">专属服务老师</span></div><div class="bd-row wx-view"><span class="bd-row-l wx-text">有效期</span><span class="bd-row-v wx-text">跟随会员卡有效期</span></div></div><div class="bd-sec wx-view"><span class="sec-tick wx-text"></span><span class="col-h f-1 wx-text">使用流程</span></div><div class="card card-pad wx-view"><div class="how-row wx-view"><span class="num how-n wx-text">1</span><div class="f-1 wx-view"><span class="how-t wx-text">提交预约</span><span class="how-d wx-text">填写诊断对象、核心问题与期望目标</span></div></div><div class="how-row how-row--sep wx-view"><span class="num how-n wx-text">2</span><div class="f-1 wx-view"><span class="how-t wx-text">指派服务老师</span><span class="how-d wx-text">由运营指派承接人，进度在诊断记录里可见</span></div></div><div class="how-row how-row--sep wx-view"><span class="num how-n wx-text">3</span><div class="f-1 wx-view"><span class="how-t wx-text">出具报告</span><span class="how-d wx-text">服务老师人工撰写，2 个工作日内反馈</span></div></div><div class="how-row how-row--sep wx-view"><span class="num how-n wx-text">4</span><div class="f-1 wx-view"><span class="how-t wx-text">评价服务</span><span class="how-d wx-text">报告查看后可对本次服务评分</span></div></div></div><div class="bd-sec wx-view"><span class="sec-tick wx-text"></span><span class="col-h f-1 wx-text">我的服务老师</span></div><div class="card card-pad bd-teacher wx-view mp-nav" data-nav="advisor"><div class="wxc wxc-avatar"><div class="avatar avatar--t3 wx-view" style="width:45.867px;height:45.867px;"><span class="avatar-ini wx-text" style="font-size:19.493px;">赵</span></div></div><div class="f-1 wx-view"><span class="bd-t-name wx-text">赵一川</span><span class="bd-t-meta wx-text">服务老师 · 华东 · 杭州</span><span class="bd-t-note wx-text">使用这项权益遇到问题，可以直接找他。</span></div><div class="bd-t-go wx-view"><span class="wx-text">联系</span><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E6052%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m9%2018%206-6-6-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div><div class="action-bar wx-view"><div class="action-row wx-view"><div class="cta cta--primary wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:18.347px;height:18.347px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M22%2012h-2.48a2%202%200%200%200-1.93%201.46l-2.35%208.36a.25.25%200%200%201-.48%200L9.24%202.18a.25.25%200%200%200-.48%200l-2.35%208.36A2%202%200%200%201%204.49%2012H2%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">预约经营诊断</span></div><div class="cta cta--ghost wx-view mp-nav" data-nav="benefits"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:17.2px;height:17.2px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2C20%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M10.5%203%208%209l4%2013%204-13-2.5-6%22%20%2F%3E%3Cpath%20d%3D%22M17%203a2%202%200%200%201%201.6.8l3%204a2%202%200%200%201%20.013%202.382l-7.99%2010.986a2%202%200%200%201-3.247%200l-7.99-10.986A2%202%200%200%201%202.4%207.8l2.998-3.997A2%202%200%200%201%207%203z%22%20%2F%3E%3Cpath%20d%3D%22M2%209h20%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="wx-text">全部权益</span></div></div></div><div class="wxc wxc-sheet"><div class="sheet-mask wx-view"><div class="sheet-body sheet-body--default wx-view"><div class="sheet-head wx-view"><span class="sheet-title wx-text">使用规则</span><div class="sheet-close wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:19.493px;height:19.493px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E6052%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M18%206%206%2018%22%20%2F%3E%3Cpath%20d%3D%22m6%206%2012%2012%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><span class="bd-rules mt-14 wx-text">① 每季度 1 次，季度内未使用不结转到下一季；② 需在预约表单里填写核心问题与期望目标，信息不足会被退回补充；③ 报告由服务老师人工撰写，不是自动生成；④ 会员到期后未使用的次数一并失效。</span></div></div></div></div>
+      
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "benefit-detail--规则展开";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+</body></html>

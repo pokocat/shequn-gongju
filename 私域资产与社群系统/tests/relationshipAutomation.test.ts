@@ -21,6 +21,7 @@ describe("关系自动化任务", () => {
 
     expect(new Set(tasks.map(task => task.id)).size).toBe(3);
     expect((await service.listTasks(1)).length).toBe(3);
+    expect(tasks.every(task => task.successCounted === false)).toBe(true);
   });
 
   it("人工复核后保存最终关系状态", async () => {
@@ -43,5 +44,15 @@ describe("关系自动化任务", () => {
     expect(result.finalStatus).toBe("已通过");
     expect(result.task.humanReviewStatus).toBe("人工确认成功");
     expect(result.task.aiStatus).toBe("AI确认成功");
+    expect(result.successCounted).toBe(true);
+
+    const repeated = await service.confirmTaskResult({
+      taskId: task.id,
+      finalStatus: "已通过",
+      message: "重复确认",
+      operator: "当前服务人员",
+    });
+    expect(repeated.successCounted).toBe(false);
+    expect(repeated.task.successCounted).toBe(true);
   });
 });

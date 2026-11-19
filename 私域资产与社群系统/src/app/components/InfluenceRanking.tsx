@@ -1,6 +1,6 @@
 import { useMemo, useEffect, useState, useRef } from "react";
 import { Search, QrCode, ChevronRight, TrendingUp, Clock, Send, Plus, X, Tags, Package, Truck, MessageSquare, CalendarDays, ClipboardCheck, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen, PanelTopClose, PanelTopOpen, RefreshCw, GitBranch, Users, Store, ShieldCheck, Check, History, SlidersHorizontal, UserRound, UserPlus } from "lucide-react";
-import { getAvatar } from "./Avatar";
+import { LevelAvatar } from "./Avatar";
 import { S, useThemeSingleton } from "../theme";
 import { SCOPE_CONFIGS, dataScopeOptions, type DataScope, type ScopeOperationId, type ScopeRow, type ScopeTreeNode } from "./workbenchScopes";
 import { businessIdentityLabels, getIdentityCodeLabel, getIdentityMetadata, identityTypeLabel, memberIdentityCodeForRank, memberLevelForRank, memberLevelOptions, platformRoleOptions, type IdentityCode, type IdentityStatus, type IdentityType } from "../data/levelConfig";
@@ -210,43 +210,45 @@ const relationTree: RelationNode = {
   ]
 };
 
+const scopeTreeToRelationTree = (node: ScopeTreeNode, level = 1): RelationNode => ({
+  name: node.name,
+  level,
+  relationRole: level === 1 ? "当前视角" : "关联节点",
+  children: node.children.map(child => scopeTreeToRelationTree(child, level + 1)),
+});
+
 function TreeNode({ node, depth = 0, selectedName, onSelect, query = "", filter = "全部" }: { node: RelationNode; depth?: number; selectedName: string; onSelect: (node: RelationNode) => void; query?: string; filter?: string }) {
   const [open, setOpen] = useState(depth < 2);
   const hasChildren = node.children.length > 0;
-  const identityText = node.primaryIdentity ? `${node.primaryIdentity.code} ${node.primaryIdentity.name} ${identityTypeLabel(node.primaryIdentity.type)}` : "";
-  const text = `${node.name} ${node.memberName ?? ""} ${node.relationRole ?? ""} ${identityText}`.toLowerCase();
-  const matches = (!query || text.includes(query.toLowerCase())) && (filter === "全部" || node.relationRole === filter || node.primaryIdentity?.name === filter);
+  const text = `${node.name} ${node.memberName ?? ""} ${node.primaryIdentity?.code ?? ""} ${node.primaryIdentity?.name ?? ""}`.toLowerCase();
+  const matches = (!query || text.includes(query.toLowerCase())) && (filter === "全部" || node.primaryIdentity?.code === filter);
   const hasMatchingChild = node.children.some(child => {
-    const childText = `${child.name} ${child.memberName ?? ""} ${child.relationRole ?? ""} ${child.primaryIdentity?.code ?? ""} ${child.primaryIdentity?.name ?? ""}`.toLowerCase();
-    return (!query || childText.includes(query.toLowerCase())) && (filter === "全部" || child.relationRole === filter || child.primaryIdentity?.name === filter);
+    const childText = `${child.name} ${child.memberName ?? ""} ${child.primaryIdentity?.code ?? ""} ${child.primaryIdentity?.name ?? ""}`.toLowerCase();
+    return (!query || childText.includes(query.toLowerCase())) && (filter === "全部" || child.primaryIdentity?.code === filter);
   });
   if ((query || filter !== "全部") && !matches && !hasMatchingChild) return null;
   const isEmptyBranch = node.relationRole === "空分支";
-  const extraIdentityCount = Math.max(0, (node.identities?.length ?? 0) - 1);
   return (
     <div className="relative" style={{ paddingLeft: depth > 0 ? 18 : 0 }}>
+      {depth > 0 && <span aria-hidden="true" className="absolute left-0 top-0 h-1/2 w-3" style={{ borderBottom: `1px solid ${S.borderMed}` }} />}
       <div
-        className="flex items-center gap-2 py-2 px-2 cursor-pointer transition-colors"
+        className="flex min-h-9 items-center gap-2 px-1.5 py-1 cursor-pointer transition-colors"
         style={{
-          background: selectedName === node.name ? S.accentLight : depth === 0 ? "rgba(204,255,0,0.08)" : "transparent",
-          borderRadius: S.radiusSm,
-          borderLeft: selectedName === node.name ? `3px solid ${S.accent}` : "3px solid transparent",
-          opacity: isEmptyBranch ? 0.72 : 1,
+          background: selectedName === node.name ? S.accentLight : "transparent",
+          borderRadius: 5,
+          opacity: isEmptyBranch ? 0.58 : 1,
         }}
         onClick={() => onSelect(node)}
       >
-        {hasChildren ? <button type="button" aria-label={open ? "收起分支" : "展开分支"} onClick={event => { event.stopPropagation(); setOpen(v => !v); }} className="flex h-5 w-5 items-center justify-center"><ChevronRight size={12} style={{ color: S.muted, transform: open ? "rotate(90deg)" : "none", transition: "transform 0.2s" }} /></button> : <span className="w-5" />}
-        <div className="flex flex-col items-center gap-0.5 flex-shrink-0">
-          {node.memberName ? <img src={getAvatar(node.avatarIndex || 0)} alt={node.name} className="h-7 w-7" style={{ borderRadius: "50%", objectFit: "cover" }} /> : <div className="flex h-7 w-7 items-center justify-center" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: "50%" }}><GitBranch size={12} style={{ color: S.muted }} /></div>}
-          {!isEmptyBranch && node.primaryIdentity && <span className="px-1 py-0.5 text-[8px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: node.primaryIdentity ? getIdentityMetadata(node.primaryIdentity.code).color : S.muted, borderRadius: "999px", lineHeight: 1.1 }}>{getIdentityCodeLabel(node.primaryIdentity.code, extraIdentityCount)}</span>}
-        </div>
+        {hasChildren ? <button type="button" aria-label={open ? "收起分支" : "展开分支"} onClick={event => { event.stopPropagation(); setOpen(v => !v); }} className="flex h-4 w-4 flex-shrink-0 items-center justify-center"><ChevronRight size={11} style={{ color: S.muted, transform: open ? "rotate(90deg)" : "none", transition: "transform 0.15s" }} /></button> : <span className="w-4 flex-shrink-0" />}
+        {node.memberName ? <LevelAvatar index={node.avatarIndex ?? 0} level={node.primaryIdentity?.code} size={28} radius="50%" /> : <span className="h-7 w-7 flex-shrink-0" />}
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5 flex-wrap"><span className="text-xs font-bold" style={{ color: isEmptyBranch ? S.muted : S.text }}>{node.name}</span>{node.relationRole && <span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: isEmptyBranch ? S.bg : "#eef2ff", color: isEmptyBranch ? S.muted : "#4f46e5", borderRadius: "999px" }}>{node.relationRole}</span>}</div>
-          {node.memberName && <div className="mt-0.5 text-[10px]" style={{ color: S.muted }}>{node.memberName}{node.primaryIdentity ? ` · ${node.primaryIdentity.name}` : ""}</div>}
+          <div className="flex min-w-0 items-center"><span className="truncate text-[11px] font-semibold" style={{ color: isEmptyBranch ? S.muted : S.text }}>{node.name}</span></div>
+          {node.memberName && <div className="truncate text-[9px]" style={{ color: S.muted }}>{node.memberName}</div>}
         </div>
-        {isEmptyBranch && <button type="button" className="flex items-center gap-1 px-1.5 py-1 text-[9px] font-bold" style={{ color: S.primary, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={event => { event.stopPropagation(); onSelect(node); }}><UserPlus size={11} />添加</button>}
+        {isEmptyBranch && <button type="button" className="px-1.5 py-0.5 text-[9px]" style={{ color: S.primary, border: `1px solid ${S.border}`, borderRadius: 4 }} onClick={event => { event.stopPropagation(); onSelect(node); }}>添加</button>}
       </div>
-      {open && hasChildren && <div style={{ borderLeft: `2px solid ${S.borderMed}`, marginLeft: 10 }}>{node.children.map((child, index) => <TreeNode key={`${child.name}-${index}`} node={child} depth={depth + 1} selectedName={selectedName} onSelect={onSelect} query={query} filter={filter} />)}</div>}
+      {open && hasChildren && <div style={{ borderLeft: `1px solid ${S.borderMed}`, marginLeft: 8 }}>{node.children.map((child, index) => <TreeNode key={`${child.name}-${index}`} node={child} depth={depth + 1} selectedName={selectedName} onSelect={onSelect} query={query} filter={filter} />)}</div>}
     </div>
   );
 }
@@ -539,6 +541,7 @@ export default function InfluenceRanking() {
   const [relationQuery, setRelationQuery] = useState("");
   const [relationFilter, setRelationFilter] = useState("全部");
   const [selectedRelationNode, setSelectedRelationNode] = useState<RelationNode>(relationTree);
+  const currentRelationTree = isMemberScope ? relationTree : scopeTreeToRelationTree(scopeCfg!.tree);
   const [isOperationCollapsed, setIsOperationCollapsed] = useState(false);
   const [isDataScopeCollapsed, setIsDataScopeCollapsed] = useState(false);
   const [isTableCollapsed, setIsTableCollapsed] = useState(false);
@@ -554,6 +557,7 @@ export default function InfluenceRanking() {
   const [orderQuery, setOrderQuery] = useState("");
   const [orderDateRange, setOrderDateRange] = useState("全部日期");
   const [activeOperation, setActiveOperation] = useState<(typeof operationTabs)[number]["id"]>("issue");
+  const [activeScopeTab, setActiveScopeTab] = useState("会员排行");
   const [tableSearch, setTableSearch] = useState("");
   const [editingGroupAsset, setEditingGroupAsset] = useState(false);
   const [groupAsset, setGroupAsset] = useState({
@@ -1021,8 +1025,15 @@ export default function InfluenceRanking() {
     setSelectedTaskIndex(0);
     setActiveTagFilter("全部");
     setAgentLevelFilter("全部身份");
+    setRelationQuery("");
+    setRelationFilter("全部");
+    setTableSearch("");
+    setIsDataScopeCollapsed(false);
+    setActiveOperation(next === "members" ? "issue" : SCOPE_CONFIGS[next].operations[0].id);
+    setSelectedRelationNode(next === "members" ? relationTree : scopeTreeToRelationTree(SCOPE_CONFIGS[next].tree));
     if (next === "members") {
       setMemberDataView("overview");
+      setActiveScopeTab("会员排行");
       setSelectedMemberProject("全部项目");
       setMemberProjectRelationFilter("全部状态");
       setMemberProjectStageFilter("全部阶段");
@@ -1032,7 +1043,7 @@ export default function InfluenceRanking() {
       setSelectedRow(null);
     } else {
       const cfg = SCOPE_CONFIGS[next];
-      setActiveProfileTab(cfg.profileTabs[0]);
+      setActiveScopeTab(cfg.rankingTabs[0]);
       setSelectedRow(cfg.rows[0]);
     }
   };
@@ -1195,26 +1206,16 @@ export default function InfluenceRanking() {
 
       {/* ── 中间区域 ──────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto overflow-x-hidden">
-        {/* 数据视角切换器：位于排行表格上方，切换列表展示的内容类型；窄容器下自动换行避免被右侧档案栏遮挡 */}
-        <div className="flex items-center gap-1.5 px-4 pt-2 flex-shrink-0 flex-wrap" role="group" aria-label="数据视角切换">
-          <span className="text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>处理对象</span>
-          <button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setIsDataScopeCollapsed(value => !value)}>{isDataScopeCollapsed ? "展开" : "收起"}</button>
+        <div className="flex items-center gap-2 px-4 pt-3 flex-shrink-0" role="tablist" aria-label="工作台数据视角">
+          {dataScopeOptions.map(option => {
+            const isActive = dataScope === option.id;
+            return <button key={option.id} type="button" role="tab" aria-selected={isActive} onClick={() => switchDataScope(option.id)} className="px-3 py-2 text-xs font-bold whitespace-nowrap" style={{ background: isActive ? "#1e293b" : S.surface, color: isActive ? S.accent : S.muted, border: `1px solid ${isActive ? "#1e293b" : S.border}`, borderRadius: S.radiusSm }}>{option.label}</button>;
+          })}
+        </div>
+        <div className="flex items-center gap-1.5 px-4 pt-2 flex-shrink-0 flex-wrap" role="group" aria-label="数据视角切换器">
+          <span className="text-xs font-bold whitespace-nowrap" style={{ color: S.textSec }}>当前视角</span>
           {!isDataScopeCollapsed && <div className="flex items-center gap-0.5 p-0.5 min-w-0 flex-wrap" style={{ background: "#f1f5f9", border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-            {dataScopeOptions.map(option => {
-              const isActive = dataScope === option.id;
-              return (
-                <button
-                  key={option.id}
-                  type="button"
-                  aria-pressed={isActive}
-                  onClick={() => switchDataScope(option.id)}
-                  className="px-2 py-1 text-[10px] font-bold whitespace-nowrap transition-all"
-                  style={{ background: isActive ? "#1e293b" : "transparent", color: isActive ? S.accent : S.muted, borderRadius: 4 }}
-                >
-                  {option.label}
-                </button>
-              );
-            })}
+            {(isMemberScope ? ["会员排行"] : scopeCfg!.rankingTabs).map(tab => <button key={tab} type="button" aria-pressed={activeScopeTab === tab} onClick={() => setActiveScopeTab(tab)} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: activeScopeTab === tab ? "#1e293b" : "transparent", color: activeScopeTab === tab ? S.accent : S.muted, borderRadius: 4 }}>{tab}</button>)}
           </div>}
         </div>
 
@@ -1295,8 +1296,7 @@ export default function InfluenceRanking() {
                 <div className="w-6 h-6 flex items-center justify-center text-xs font-bold" style={{ background: u.rank <= 3 ? "#1e293b" : "rgba(15,23,42,0.06)", color: u.rank <= 3 ? S.accent : S.textSec, borderRadius: S.radiusSm }}>{u.rank}</div>
               </div>
               <div className="flex-shrink-0" style={{ width: 160 }}>
-                <div className="flex items-center gap-2">
-                  <div className="flex flex-col items-center gap-0.5 flex-shrink-0"><img src={getAvatar(u.rank - 1)} alt={u.name} style={{ width: 28, height: 28, borderRadius: S.radiusSm, objectFit: "cover" }} /><span className="px-0.5 py-0.5 text-[7px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", border: `1px solid ${S.accentMid}`, borderRadius: "999px", lineHeight: 1.1 }}>{memberIdentityCodeForRank(u.rank)}</span></div>
+                <div className="flex items-center gap-2"><div className="flex-shrink-0"><LevelAvatar index={u.rank - 1} level={memberIdentityCodeForRank(u.rank)} size={28} radius={S.radiusSm} /></div>
                   <div className="min-w-0"><div className="font-bold truncate" style={{ color: S.text }}>{u.name}<span className="ml-1 px-1 py-0.5 text-[9px] font-bold" style={{ background: "#eef2ff", color: "#4f46e5", borderRadius: S.radiusSm }}>{businessIdentityLabels[platformIdentityForRank(u.rank)]}</span></div><div className="text-[10px] truncate" style={{ color: S.muted }}>{u.wechat} · {u.city}</div></div>
                 </div>
               </div>
@@ -1393,12 +1393,12 @@ export default function InfluenceRanking() {
             <div className="flex items-center gap-2">
               <TrendingUp size={14} style={{ color: S.text }} />
               <span className="text-sm font-bold whitespace-nowrap" style={{ color: S.text }}>关系链</span>
-              <span className="text-[10px] whitespace-nowrap" style={{ color: S.muted }}>{relationTree.children.length + relationTree.children.reduce((sum, child) => sum + child.children.length, 0)} 个关联节点</span>
+              <span className="text-[10px] whitespace-nowrap" style={{ color: S.muted }}>{currentRelationTree.children.length + currentRelationTree.children.reduce((sum, child) => sum + child.children.length, 0)} 个关联节点</span>
               <button type="button" title="收起关系链" aria-label="收起关系链" onClick={() => setIsRelationCollapsed(true)} className="ml-auto w-7 h-7 flex items-center justify-center" style={{ color: S.muted, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><PanelLeftClose size={14} /></button>
             </div>
-            <div className="mt-3 flex items-center gap-1.5 px-2 py-1.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Search size={11} style={{ color: S.muted }} /><input value={relationQuery} onChange={event => setRelationQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none text-xs" style={{ color: S.textSec }} placeholder="搜索成员、微信号或身份" /></div>
-            <div className="mt-2 flex items-center gap-1 overflow-x-auto pb-1" aria-label="关系链筛选">{["全部", "会员", "群主", "服务老师", "社群成员", "空分支"].map(filter => <button key={filter} type="button" onClick={() => setRelationFilter(filter)} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: relationFilter === filter ? S.accent : S.bg, color: relationFilter === filter ? S.onAccent : S.muted, border: `1px solid ${relationFilter === filter ? S.accent : S.border}`, borderRadius: 999 }}><SlidersHorizontal size={10} className="inline mr-1" />{filter}</button>)}</div>
-            <div className="mt-2 max-h-[300px] overflow-auto"><TreeNode node={relationTree} selectedName={selectedRelationNode.name} onSelect={setSelectedRelationNode} query={relationQuery} filter={relationFilter} /></div>
+            <div className="mt-3 flex items-center gap-1.5 px-2 py-1.5" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}><Search size={11} style={{ color: S.muted }} /><input value={relationQuery} onChange={event => setRelationQuery(event.target.value)} className="min-w-0 flex-1 bg-transparent outline-none text-xs" style={{ color: S.textSec }} placeholder="搜索微信名、真人姓名或等级" /></div>
+            <div className="mt-2 flex items-center gap-1 overflow-x-auto pb-1" aria-label="关系链等级筛选">{(isMemberScope ? ["全部会员", "V1", "V2", "V3", "V4", "V5"] : isAgentScope ? ["全部代理", "D1", "D2", "D3", "D4", "D5"] : ["全部"]).map(filter => { const value = filter.startsWith("全部") ? "全部" : filter; return <button key={filter} type="button" onClick={() => setRelationFilter(value)} className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: relationFilter === value ? S.accent : S.bg, color: relationFilter === value ? S.onAccent : S.muted, border: `1px solid ${relationFilter === value ? S.accent : S.border}`, borderRadius: 999 }}><SlidersHorizontal size={10} className="inline mr-1" />{filter}</button>; })}</div>
+            <div className="mt-2 max-h-[300px] overflow-auto"><TreeNode node={currentRelationTree} selectedName={selectedRelationNode.name} onSelect={setSelectedRelationNode} query={relationQuery} filter={relationFilter} /></div>
           </div>}
 
           {/* 统一运营操作台 */}
@@ -1417,9 +1417,9 @@ export default function InfluenceRanking() {
               <div className="flex items-center gap-2"><span className="px-2 py-1 text-[10px] font-bold whitespace-nowrap" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>当前{isMemberScope ? "会员" : scopeCfg!.noun}</span><button type="button" className="px-2 py-1 text-[10px] font-bold" style={{ background: S.bg, color: S.textSec, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }} onClick={() => setIsOperationCollapsed(value => !value)}>{isOperationCollapsed ? "展开" : "收起"}</button></div>
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 p-3" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>
-              <div className="col-span-2 lg:col-span-1 flex items-center gap-2"><div className="flex flex-col items-center gap-0.5 flex-shrink-0"><img src={selectedRelationNode.memberName ? getAvatar(selectedRelationNode.avatarIndex || 0) : getAvatar(0)} alt={selectedRelationNode.name} className="h-9 w-9" style={{ borderRadius: "50%", objectFit: "cover" }} />{selectedRelationNode.primaryIdentity && <span className="px-1 py-0.5 text-[8px] font-bold" style={{ background: S.accentLight, color: getIdentityMetadata(selectedRelationNode.primaryIdentity.code).color, borderRadius: "999px" }}>{getIdentityCodeLabel(selectedRelationNode.primaryIdentity.code, Math.max(0, (selectedRelationNode.identities?.length ?? 0) - 1))}</span>}</div><div className="min-w-0"><div className="flex items-center gap-1"><UserRound size={12} style={{ color: S.primary }} /><span className="text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.name}</span></div><div className="text-[10px] truncate" style={{ color: S.muted }}>{selectedRelationNode.memberName || "待添加成员"}</div></div></div>
+              <div className="col-span-2 lg:col-span-1 flex items-center gap-2"><LevelAvatar index={selectedRelationNode.avatarIndex || 0} level={selectedRelationNode.primaryIdentity?.code} size={36} radius="50%" /><div className="min-w-0"><div className="flex items-center gap-1"><UserRound size={12} style={{ color: S.primary }} /><span className="text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.name}</span></div><div className="text-[10px] truncate" style={{ color: S.muted }}>{selectedRelationNode.memberName || "待添加成员"}</div></div></div>
               <div><div className="text-[10px]" style={{ color: S.muted }}>身份类型 / 名称</div><div className="mt-1 text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.primaryIdentity ? `${identityTypeLabel(selectedRelationNode.primaryIdentity.type)} · ${selectedRelationNode.primaryIdentity.name}` : "—"}</div></div>
-              <div><div className="text-[10px]" style={{ color: S.muted }}>关系角色 / 微信号</div><div className="mt-1 text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.relationRole || "—"} · {selectedRelationNode.wechatId || "—"}</div></div>
+              <div><div className="text-[10px]" style={{ color: S.muted }}>微信名 / 真人姓名</div><div className="mt-1 text-xs font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.name} · {selectedRelationNode.memberName || "—"}</div></div>
               <div className="flex items-end gap-1.5 justify-end"><button type="button" onClick={() => showProfileNotice(`已打开 ${selectedRelationNode.memberName || selectedRelationNode.name} 的档案`)} className="px-2 py-1 text-[10px] font-bold" style={{ color: S.textSec, background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radiusSm }}>查看档案</button><button type="button" onClick={() => showProfileNotice(selectedRelationNode.relationRole === "空分支" ? `已准备向 ${selectedRelationNode.name} 添加成员` : `已准备为 ${selectedRelationNode.name} 添加下级`)} className="px-2 py-1 text-[10px] font-bold" style={{ color: S.onAccent, background: S.accent, borderRadius: S.radiusSm }}><UserPlus size={11} className="inline mr-1" />{selectedRelationNode.relationRole === "空分支" ? "添加成员" : "添加下级"}</button></div>
               <div className="col-span-2 lg:col-span-4 grid grid-cols-2 lg:grid-cols-4 gap-2 pt-1" style={{ borderTop: `1px solid ${S.border}` }}>
                 <div><div className="text-[10px]" style={{ color: S.muted }}>身份范围</div><div className="mt-1 text-[10px] font-bold truncate" style={{ color: S.text }}>{selectedRelationNode.primaryIdentity?.scope || "—"}</div></div>
@@ -1532,9 +1532,8 @@ export default function InfluenceRanking() {
             </div>
           </div>
           <div className="flex items-start gap-2.5 mt-2">
-            <div className="flex flex-col items-center gap-1 flex-shrink-0">
-              <img src={getAvatar(selectedUser.rank - 1)} alt={selectedUser.name} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover", border: `1px solid ${S.border}` }} />
-              <span className="px-1.5 py-0.5 text-[9px] font-bold" style={{ background: S.accentLight, color: "#5a6e00", borderRadius: "999px" }}>{memberIdentityCodeForRank(selectedUser.rank)}</span>
+            <div className="flex-shrink-0">
+              <LevelAvatar index={selectedUser.rank - 1} level={memberIdentityCodeForRank(selectedUser.rank)} size={40} radius={S.radiusSm} style={{ border: `1px solid ${S.border}` }} />
             </div>
             <div className="min-w-0 flex-1">
               <div className="flex items-center justify-between gap-2">
@@ -2057,7 +2056,7 @@ export default function InfluenceRanking() {
             </div>
             <div className="p-5 space-y-3">
               <div className="flex items-center gap-3 px-3 py-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}>
-                <img src={getAvatar(member.rank - 1)} alt={member.name} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover" }} />
+                <LevelAvatar index={member.rank - 1} level={memberIdentityCodeForRank(member.rank)} size={40} radius={S.radiusSm} />
                 <div className="min-w-0"><div className="text-xs font-bold truncate" style={{ color: S.text }}>{member.name}</div><div className="mt-0.5 text-[11px] truncate" style={{ color: S.muted }}>微信号：{member.wechat} · {member.city}</div></div>
               </div>
               <div className="grid grid-cols-2 gap-2">
@@ -2102,7 +2101,7 @@ export default function InfluenceRanking() {
             </div>
             <div className="p-5">
               <div className="flex items-center gap-3 px-3 py-3" style={{ background: S.accentLight, border: `1px solid ${S.accentMid}`, borderRadius: S.radius }}>
-                <img src={getAvatar(selectedUser.rank - 1)} alt={selectedUser.name} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover" }} />
+                <LevelAvatar index={selectedUser.rank - 1} level={memberIdentityCodeForRank(selectedUser.rank)} size={40} radius={S.radiusSm} />
                 <div className="min-w-0"><div className="text-xs font-bold truncate" style={{ color: S.text }}>{selectedUser.name}</div><div className="mt-0.5 text-[11px] truncate" style={{ color: S.muted }}>微信号：{selectedUser.wechat} · {selectedUser.city}</div></div>
               </div>
               <div className="mx-auto my-5 grid h-60 w-60 place-items-center" style={{ background: "#ffffff", border: `10px solid #ffffff`, outline: `1px solid ${S.borderMed}`, borderRadius: S.radius, color: S.text }}>

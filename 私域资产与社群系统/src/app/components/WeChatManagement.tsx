@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { getAvatar } from "./Avatar";
+import { LevelAvatar, identityLevelCode } from "./Avatar";
 import { Search, Plus, X, ChevronLeft, ChevronRight, ChevronDown, Upload, Building2, Users, MessageCircle, ArrowRight, Link, QrCode, Download, Copy, List, LayoutGrid, AlertTriangle, SlidersHorizontal, Edit3, Eye, EyeOff, ShieldCheck, LockKeyhole, History, CheckCircle2, RefreshCw, RotateCcw, GripVertical, MoreHorizontal, Activity, Phone, Briefcase, Check, PencilLine } from "lucide-react";
 import { getCommunityScopeKey, saveScopeRules, useCommunityData } from "../data/communityDataStore";
 import { getGroupRulesForProject, tierColorMap, type GroupTypeRule } from "../data/projectGroupRules";
@@ -1468,7 +1468,7 @@ function WecomBrowseList({ accounts, selected, onSelect, onQrCode, onTransfer }:
               onClick={() => onSelect(isSelected ? null : w.id)}
             >
               <span className="flex items-center gap-2 min-w-0">
-                <img src={getAvatar(w.id - 1)} alt="" style={{ width: 28, height: 28, borderRadius: S.radiusSm, objectFit: "cover" }} />
+                <LevelAvatar index={w.id - 1} level={identityLevelCode("运营")} size={28} radius={S.radiusSm} />
                 <span className="min-w-0"><b className="block truncate text-xs" style={{ color: S.text }}>{w.wecomId}</b><small className="block truncate" style={{ color: S.muted, fontSize: "10px" }}>{w.corpId}</small></span>
               </span>
               <span className="min-w-0"><b className="block truncate text-xs" style={{ color: S.text }}>{w.linkedPersonal}</b><small className="block truncate" style={{ color: S.muted, fontSize: "10px" }}>关联添加成员</small></span>
@@ -1503,7 +1503,7 @@ function WecomQrModal({ account, onClose, onCopy }: { account: typeof wecomAccou
         </div>
         <div className="p-5">
           <div className="flex items-center gap-3 p-3" style={{ background: S.accentLight, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-            <img src={getAvatar(account.id - 1)} alt={account.admin} style={{ width: 36, height: 36, borderRadius: S.radiusSm, objectFit: "cover" }} />
+            <LevelAvatar index={account.id - 1} level={identityLevelCode("运营")} size={36} radius={S.radiusSm} />
             <div className="min-w-0"><div className="truncate text-xs font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{account.linkedPersonal}</div><div className="mt-0.5 text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>负责人：{account.admin}</div></div>
           </div>
           <div className="mx-auto my-5 grid h-52 w-52 place-items-center" style={{ background: "#ffffff", border: `1px solid ${S.borderMed}`, borderRadius: S.radius, color: S.text }}><QrCode size={126} strokeWidth={1.25} /></div>
@@ -1616,7 +1616,7 @@ function PersonalWechatCards({ accounts, selectedRow, onSelect }: { accounts: ty
               style={{ background: isSelected ? selBg : S.surface, border: isSelected ? `2px solid ${S.accent}` : `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: isSelected ? "0 4px 16px rgba(15,23,42,0.08)" : "0 1px 4px rgba(0,0,0,0.05)", fontWeight: isSelected ? 600 : 500 }}
             >
               <div className="flex items-start gap-3">
-                {isStock ? <div className="w-10 h-10 flex items-center justify-center" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm }}><MessageCircle size={16} /></div> : <img src={getAvatar(parseInt(w.no) - 1)} alt={w.nickname} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover" }} />}
+                {isStock ? <div className="w-10 h-10 flex items-center justify-center" style={{ background: "#f1f5f9", color: S.muted, borderRadius: S.radiusSm }}><MessageCircle size={16} /></div> : <LevelAvatar index={parseInt(w.no) - 1} level={identityLevelCode("运营")} size={40} radius={S.radiusSm} />}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-1.5"><b className="truncate text-sm" style={{ color: S.text, fontFamily: "monospace" }}>{isStock ? "备用微信号" : w.nickname}</b><span className="px-1.5 py-0.5 text-xs font-medium" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{w.status}</span></div>
                   <div className="mt-0.5 truncate text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{w.wechatId} · {w.city}</div>
@@ -1787,7 +1787,7 @@ function PersonalWechatDetail({ account, onClose, onAction, onUpdate, startEditi
       </div>
       <div className="flex-1 overflow-auto p-4 space-y-4">
         <div className="flex items-start gap-3">
-          {isStock ? <div className="w-12 h-12 grid place-items-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm, color: S.muted }}><MessageCircle size={18} /></div> : <img src={getAvatar(parseInt(account.no) - 1)} alt={account.nickname} style={{ width: 48, height: 48, borderRadius: S.radiusSm, objectFit: "cover" }} />}
+          {isStock ? <div className="w-12 h-12 grid place-items-center" style={{ background: "#f1f5f9", borderRadius: S.radiusSm, color: S.muted }}><MessageCircle size={18} /></div> : <LevelAvatar index={parseInt(account.no) - 1} level={identityLevelCode("运营")} size={48} radius={S.radiusSm} />}
           {/* 发放到人 生命周期标签已去掉（避免和使用中状态胶囊重复） */}
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap"><b className="text-sm truncate" style={{ color: S.text, fontFamily: "monospace" }}>{isStock ? "备用微信号" : account.nickname}</b><span className="px-1.5 py-0.5 text-xs" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{account.status}</span></div>
@@ -1969,7 +1969,7 @@ function WecomDetail({ account, onClose, onAction }: { account: typeof wecomAcco
       </div>
       <div className="flex-1 overflow-auto p-4 space-y-4">
         <div className="flex items-start gap-3">
-          <img src={getAvatar(account.id - 1)} alt={account.admin} style={{ width: 48, height: 48, borderRadius: S.radiusSm, objectFit: "cover" }} />
+          <LevelAvatar index={account.id - 1} level={identityLevelCode("运营")} size={48} radius={S.radiusSm} />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap"><b className="text-sm truncate" style={{ color: S.text, fontFamily: "monospace" }}>{account.wecomId}</b><span className="px-1.5 py-0.5 text-xs" style={{ background: status.bg, color: status.color, borderRadius: S.radiusSm, fontFamily: "monospace" }}>{account.status}</span></div>
             <div className="mt-1 text-xs" style={{ color: S.textSec, fontFamily: "monospace" }}>{account.corpId}</div>
@@ -2168,7 +2168,7 @@ function WecomTab({ viewMode, onViewModeChange }: { viewMode: BrowseMode; onView
             return (
               <div key={w.id} className="p-4 cursor-pointer transition-all" style={{ background: isSelected ? selBgCard : S.surface, border: isSelected ? `2px solid ${S.accent}` : `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: isSelected ? "0 4px 16px rgba(15,23,42,0.08)" : "0 1px 4px rgba(0,0,0,0.05)", fontWeight: isSelected ? 600 : 500 }} onClick={() => setSelected(isSelected ? null : w.id)}>
                 <div className="flex items-start gap-3 mb-3">
-                  <img src={getAvatar(w.id - 1)} alt={w.admin} style={{ width: 40, height: 40, borderRadius: S.radiusSm, objectFit: "cover", flexShrink: 0 }} />
+                  <LevelAvatar index={w.id - 1} level={identityLevelCode("运营")} size={40} radius={S.radiusSm} />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{w.wecomId}</span>
@@ -2220,7 +2220,7 @@ function WecomTab({ viewMode, onViewModeChange }: { viewMode: BrowseMode; onView
           </div>
           <div className="flex-1 overflow-auto p-4 space-y-4">
             <div className="py-4 text-center" style={{ background: S.bg, border: `1px solid ${S.border}`, borderRadius: S.radius }}>
-              <img src={getAvatar(detail.id - 1)} alt={detail.admin} style={{ width: 56, height: 56, borderRadius: S.radius, objectFit: "cover", margin: "0 auto 8px", display: "block" }} />
+              <LevelAvatar index={detail.id - 1} level={identityLevelCode("运营")} size={56} radius={S.radius} />
               <div className="text-sm font-semibold" style={{ color: S.text, fontFamily: "monospace" }}>{detail.wecomId}</div>
               <div className="text-xs mt-0.5" style={{ color: S.muted, fontFamily: "monospace" }}>{detail.corpId}</div>
               <div className="mt-2 flex items-center justify-center gap-2">
@@ -2827,8 +2827,7 @@ const [search, setSearch] = useState("");
             <div className="p-4 space-y-3">
               {/* 账号卡 */}
               <div className="flex items-center gap-3">
-                <img src={getAvatar(allocationResult.account.avatarIdx)} alt={allocationResult.account.nickname}
-                  style={{ width: 40, height: 40, borderRadius: 10, objectFit: "cover", border: `2px solid ${S.accent}` }} />
+                <LevelAvatar index={allocationResult.account.avatarIdx} level={identityLevelCode("运营")} size={40} radius={10} style={{ border: `2px solid ${S.accent}` }} />
                 <div className="min-w-0 flex-1">
                   <div className="text-[13px] font-bold truncate" style={{ color: S.text, fontFamily: "monospace" }}>
                     {allocationResult.account.nickname}
@@ -3274,7 +3273,7 @@ const [search, setSearch] = useState("");
                         {!person ? (
                           <div className="w-10 h-10 flex items-center justify-center" style={{ background: S.accent, color: S.primaryDark, borderRadius: S.radiusSm }}><ShieldCheck size={17} /></div>
                         ) : (
-                          <div className="w-10 h-10 flex-shrink-0 overflow-hidden" style={{ borderRadius: S.radiusSm }}><img src={getAvatar(person.avatarIdx)} alt={person.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} /></div>
+                          <div className="w-10 h-10 flex-shrink-0" style={{ borderRadius: S.radiusSm }}><LevelAvatar index={person.avatarIdx} level={identityLevelCode(person.role)} size={40} radius={S.radiusSm} /></div>
                         )}
                         <div className="min-w-0">
                           <div className="text-sm font-bold flex items-center gap-2 flex-wrap" style={{ fontFamily: "monospace", color: S.text }}>
@@ -3421,7 +3420,7 @@ function AccountRowForGroups({
         <div className="flex-shrink-0 text-[10px]" style={columnStyle("no", { width: 36, color: S.muted, fontFamily: "monospace" })}>{a.no}</div>
         <div className="flex-shrink-0" style={columnStyle("lifecycle", { width: 62 })}><button type="button" title={`入库 ${a.nurturing.daysSinceOnboard} 天 · 7天:${a.nurturing.day7Pass ? "✓" : "✗"} · 好友≥200:${a.nurturing.friendGatePass ? "✓" : "✗"} · 实名:${a.nurturing.certGatePass ? "✓" : "✗"} · 风控命中 ${a.nurturing.riskHits} · 点此推进`} className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px]" style={{ background: lc.bg, color: lc.color, border: `1px solid ${lc.border}`, borderRadius: 999, fontFamily: "monospace", lineHeight: 1.2 }} onClick={e => { e.stopPropagation(); onAdvance(); }}><span style={{ width: 4, height: 4, background: lc.dot, borderRadius: 99 }} />{lc.label}</button></div>
         <div className="flex-shrink-0 flex items-center gap-1" style={columnStyle("status", { width: 54 })}><span style={{ width: 7, height: 7, background: tint.dot, borderRadius: 99, flexShrink: 0 }} /><span className="text-[10px] font-semibold" style={{ color: tint.text, fontFamily: "monospace" }}>{tint.label}</span></div>
-        <div className="flex-shrink-0" style={columnStyle("avatar", { width: 40 })}>{a.status === "未使用" ? <div className="w-6 h-6 grid place-items-center" style={{ background: "#f1f5f9", borderRadius: 6, color: S.muted }}><MessageCircle size={12} /></div> : <img src={getAvatar(parseInt(a.no) - 1)} alt={a.nickname} style={{ width: 24, height: 24, borderRadius: 6, objectFit: "cover" }} />}</div>
+        <div className="flex-shrink-0" style={columnStyle("avatar", { width: 40 })}>{a.status === "未使用" ? <div className="w-6 h-6 grid place-items-center" style={{ background: "#f1f5f9", borderRadius: 6, color: S.muted }}><MessageCircle size={12} /></div> : <LevelAvatar index={parseInt(a.no) - 1} level={identityLevelCode("运营")} size={24} radius={6} />}</div>
         <div className="flex-shrink-0 min-w-0 whitespace-nowrap text-[11px]" title={a.nickname} style={columnStyle("nickname", { width: 88, color: S.textSec, fontFamily: "monospace" })}>{a.nickname === "—" ? "待配置" : a.nickname}</div>
         <div className="flex-shrink-0 min-w-0 whitespace-nowrap text-[11px] font-semibold" title={a.wechatId} style={columnStyle("wechatId", { width: 94, color: S.text, fontFamily: "monospace" })}>{a.wechatId}{a.approvalRef && <span className="ml-1 text-[9px]" style={{ color: "#92400e" }}>·{a.approvalRef}</span>}</div>
         <div className="flex-shrink-0 min-w-0 truncate text-[11px]" style={columnStyle("project", { width: 82, color: a.project === "待配置" ? S.muted : S.textSec, fontFamily: "monospace" })}>{a.project}</div>

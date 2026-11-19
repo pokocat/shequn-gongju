@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getAvatar } from "./Avatar";
+import { LevelAvatar, identityLevelCode } from "./Avatar";
 import { Search, Zap, CheckCircle, ChevronRight, Users, AlertTriangle } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 const pendingUsers = [
@@ -112,7 +112,7 @@ const [selectedUser, setSelectedUser] = useState<number | null>(1);
               {/* User info card */}
               <div className="p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
                 <div className="flex items-center gap-3 mb-3">
-                  <img src={getAvatar(user.id - 1)} alt={user.name} style={{ width: 40, height: 40, borderRadius: S.radius, objectFit: "cover" }} />
+                    <LevelAvatar index={user.id - 1} level={identityLevelCode(user.identity)} size={40} radius={S.radius} />
                   <div>
                     <div className="text-sm font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.name}</div>
                     <div className="text-xs" style={{ color: S.muted, fontFamily: "monospace" }}>{user.phone}</div>

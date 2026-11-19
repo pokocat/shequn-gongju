@@ -289,6 +289,12 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
       perks: ["1 对 1 陪跑咨询", "全量行业数据报告", "LV5 旗舰等级标识"],
       note: "成长等级通过任务、作业与邀请积累成长值免费解锁，无需付费。" }
   };
+  var groupId = "";
+  try { groupId = new URLSearchParams(location.search).get("g") || ""; } catch (e) {}
+  var unlockContext = !!groupId;
+  if (unlockContext) {
+    document.body.classList.add("member-unlock-context");
+  }
   var cur = null;
   function open(key) {
     var d = DATA[key]; if (!d) return;
@@ -315,7 +321,18 @@ if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', func
   document.getElementById("up-cancel").addEventListener("click", close);
   mask.addEventListener("click", close);
   document.getElementById("up-go").addEventListener("click", function () {
-    if (cur) location.href = cur.go + ".html" + location.search;
+    if (!cur) return;
+    if (unlockContext && (cur.go === "advisor" || cur.go === "tasks")) {
+      try { localStorage.setItem("member-unlocked-" + groupId, "1"); } catch (e) {}
+      var backSearch = "?g=" + encodeURIComponent(groupId);
+      if (parent !== window) {
+        parent.postMessage({ mpNavigate: "group-chat", search: backSearch }, "*");
+      } else {
+        location.href = "group-chat.html" + backSearch;
+      }
+      return;
+    }
+    location.href = cur.go + ".html" + location.search;
   });
   document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
 })();

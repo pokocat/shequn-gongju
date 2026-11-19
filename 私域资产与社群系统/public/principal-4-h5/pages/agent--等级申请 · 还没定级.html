@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="zh-CN"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>代理工作台 · 等级申请 · 还没定级</title>
+<link rel="stylesheet" href="../css/app.css">
+<script>
+var q = location.search;
+if (q.indexOf('embed') >= 0) document.documentElement.className = 'mp-embed';
+if (q.indexOf('full=1') >= 0) document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('mp-full'); });
+</script>
+<style>.ag-hero{ padding: 17.2px 16.053px 0; overflow: hidden; }
+
+.ag-title{ display: block; margin: 9.173px 0 3.44px; font-family: var(--font-serif); font-size: 28.093px; font-weight: 600; color: var(--ink-900); letter-spacing: 1.147px; }
+
+.ag-total{ display: flex; align-items: baseline; gap: 5.733px; }
+.ag-num{ font-size: 40.133px; line-height: 1.05; color: var(--ink-900); }
+.ag-total-l{ font-size: var(--fs-sec); font-weight: 400; color: var(--ink-700); }
+
+
+.ag-tier{
+  display: flex; align-items: center; gap: 9.173px;
+  margin-top: 12.613px; padding: 3.44px 0;
+  border-top: 0.573px solid var(--line);
+}
+.ag-tier-v{ display: flex; align-items: baseline; flex-wrap: wrap; gap: 5.733px; font-size: var(--fs-meta); color: var(--ink-700); }
+.ag-tier-name{ font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: 500; color: var(--ink-900); }
+.ag-tier-since{ font-size: var(--fs-tiny); color: var(--ink-700); }
+
+.ag-tier-note{ font-size: var(--fs-meta); color: var(--ink-700); }
+.ag-tier-note--warn{ color: var(--pulse-700); font-weight: 500; }
+
+.ag-tier-go{
+  display: flex; align-items: center; gap: 2.293px; flex-shrink: 0;
+  min-height: 50.453px; padding: 0 2.293px 0 12.613px;
+  font-size: var(--fs-meta); font-weight: 400; color: var(--ink-900);
+}
+
+.ag-tier-wait{
+  display: flex; align-items: flex-start; gap: 5.733px;
+  margin-bottom: 11.467px; padding: 8.027px 10.32px;
+  border-radius: var(--r-box);
+  background: var(--warn-wash);
+  font-size: var(--fs-tiny); color: var(--pulse-700); line-height: 1.6;
+}
+.ag-stats{ margin: 0 -16.053px; }
+
+.ag-stats .s3-l, .ag-stats .s3-v{ display: block; }
+
+
+.ag-row{ min-height: 50.453px; }
+.ag-name{ display: block; font-size: var(--fs-h4); font-weight: 400; color: var(--ink-900); }
+
+.ag-cap{ font-size: var(--fs-meta); font-weight: 400; color: var(--ink-700); }
+.ag-cap--full{ color: var(--pulse-600); }
+.ag-right{ display: flex; align-items: center; gap: 6.88px; flex-shrink: 0; margin-left: 9.173px; }
+
+
+.ag-stages{ display: flex; gap: 6.88px; overflow-x: auto; padding-bottom: 9.173px; }
+.ag-stage{ flex-shrink: 0; font-size: var(--fs-meta); padding: 5.733px 12.613px; }
+
+
+.ag-stu-right{ flex-shrink: 0; margin-left: 9.173px; text-align: right; }
+
+
+.ag-foot{ display: flex; align-items: flex-start; gap: 6.88px; margin-top: 16.053px; padding: 0 4.587px 22.933px; }
+
+
+.at-pad{ padding: 16.053px 0; }
+.at-now{ display: flex; align-items: center; gap: 9.173px; margin-top: 13.76px; padding-bottom: 12.613px; border-bottom: 0.573px solid var(--line-soft); }
+
+.at-tier{ display: block; font-family: var(--font-serif); font-size: var(--fs-h1); font-weight: 600; color: var(--ink-900); letter-spacing: 1.147px; }
+
+.at-none{ display: block; font-size: var(--fs-h3); font-weight: 500; color: var(--ink-700); }
+.at-lead{ display: block; margin-top: 5.733px; font-size: var(--fs-meta); color: var(--ink-600); line-height: 1.6; }
+
+
+.at-state{
+  margin-top: 12.613px; padding: 11.467px 12.613px;
+  border-radius: var(--r-box); background: var(--card-bg-2);
+  border: 0.573px solid var(--line); border-left: 3.44px solid var(--line-strong);
+}
+.at-state--wait{ border-left-color: var(--pulse-400); }
+.at-state--ok{ border-left-color: var(--ok-fill); }
+.at-state--no{ border-left-color: var(--danger-fill); }
+.at-state-t{ font-size: var(--fs-h4); font-weight: 500; color: var(--ink-900); }
+.at-comment{ margin-top: 8.027px; padding: 9.173px 10.32px; border-radius: var(--r-box); background: var(--sunk); }
+
+.at-sec{ display: flex; align-items: baseline; margin: 18.347px 0 6.88px; }
+.at-sec-t{ font-family: var(--font-serif); font-size: var(--fs-h3); font-weight: 500; color: var(--ink-900); }
+.at-blank{ padding: 17.2px 11.467px 22.933px; }
+
+
+.at-row{
+  display: flex; align-items: center; gap: 10.32px;
+  min-height: 50.453px; padding: 11.467px 11.467px; margin-top: 8.027px;
+  border-radius: var(--r-box);
+  background: var(--card-bg-2); border: 0.573px solid var(--line);
+  box-sizing: border-box;
+}
+
+.at-row--cur{ background: var(--sunk-3); border-color: var(--line-brand); }
+.at-row--on{ border-color: var(--signal-500); box-shadow: 0 0 0 0.573px var(--signal-500); }
+.at-row--lock{ opacity: 0.72; }
+.at-row-h{ gap: 5.733px; }
+.at-rank{
+  flex: 0 0 27.52px; height: 27.52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: var(--fs-h4); color: var(--ink-900);
+  background: var(--paper); border: 0.573px solid var(--line-strong); box-sizing: border-box;
+}
+.at-name{ font-size: var(--fs-h4); font-weight: 400; color: var(--ink-900); }
+.at-check{
+  flex-shrink: 0; width: 20.64px; height: 20.64px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--signal-500);
+}
+
+
+.at-ph{ color: var(--ink-500); font-size: var(--fs-sec); }
+
+
+.at-snap{ display: flex; align-items: baseline; justify-content: space-between; gap: 9.173px; padding: 9.173px 0; border-top: 0.573px solid var(--line-soft); }
+.at-snap-l{ font-size: var(--fs-sec); color: var(--ink-700); }
+.at-snap-v{ font-size: var(--fs-h4); font-weight: 500; color: var(--ink-900); }
+.at-snap-v.num{ font-size: 18.92px; font-weight: 500; }
+
+.at-foot{ display: flex; align-items: flex-start; gap: 6.88px; margin-top: 13.76px; padding: 10.32px 11.467px; border-radius: var(--r-box); background: var(--sunk); }
+.at-submit{ margin-top: 16.053px; }</style>
+</head>
+<body class="mp-body">
+<div class="mp-shell">
+  <div class="mp-meta">
+    <h1>代理工作台 · 等级申请 · 还没定级</h1>
+    <code>/pages/agent/index</code>
+    <span class="mp-tag">等级申请 · 还没定级</span>
+  </div>
+  <p class="mp-note">代理视角：自己名下的群与学员安置进度。代理等级申请（原 agent-tier 页）并成了这一页的底部弹层：提交只建审批单、不立即生效；阶梯只有两档（T1/T2），第三层是 C 端团长；刻意不展示任何佣金比例与收益预估（护栏 51 / 15之二①）。</p>
+  <div class="mp-bar">
+    <button onclick="document.body.classList.toggle('mp-full')">切换整页 / 一屏</button>
+    <button onclick="location.href='../index.html'">返回总览</button>
+  </div>
+  <div class="mp-frame">
+    <div class="mp-page">
+      
+<div class="mp-statusbar">
+  <span>9:41</span>
+  <span class="mp-icons">
+    <svg width="18" height="12" viewBox="0 0 18 12" fill="#33210F"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="6" width="3" height="6" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+    <svg width="16" height="12" viewBox="0 0 16 12" fill="none" stroke="#33210F" stroke-width="1.6" stroke-linecap="round"><path d="M1 4.2a10 10 0 0 1 14 0"/><path d="M3.6 7a6.4 6.4 0 0 1 8.8 0"/><circle cx="8" cy="10.2" r="1.1" fill="#33210F" stroke="none"/></svg>
+    <svg width="25" height="12" viewBox="0 0 25 12" fill="none"><rect x=".6" y=".6" width="21" height="10.8" rx="3" stroke="#33210F" stroke-opacity=".4"/><rect x="2.2" y="2.2" width="15" height="7.6" rx="1.8" fill="#33210F"/><path d="M23 4.3v3.4a2 2 0 0 0 0-3.4z" fill="#33210F" fill-opacity=".45"/></svg>
+  </span>
+</div>
+<div class="mp-capsule">
+  <i><svg viewBox="0 0 24 24" fill="#33210F"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></i>
+  <span class="mp-sep"></span>
+  <i><svg viewBox="0 0 24 24" fill="none" stroke="#33210F" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.2"/></svg></i>
+</div>
+      <div class="screen screen--bar wx-view"><div class="ambience wx-view"></div><div class="layer wx-view"><div class="wxc wxc-subhead"><div class="subhead wx-view" style="padding-top:53.893px;"><div class="subbar wx-view" style="padding-right:94.027px;"><div class="subbar-back wx-view mp-nav" data-nav="__back__"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:21.787px;height:21.787px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%233A2E24%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22m15%2018-6-6%206-6%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div><span class="subbar-title wx-text">我的团队</span><div class="subbar-slot wx-view"></div></div></div></div><div class="card card--hero ag-hero wx-view"><div class="f-start wx-view"><div class="f-1 wx-view"><div class="f f-wrap wx-view" style="gap:8.027px;"><span class="ag-title wx-text">我的团队</span><span class="seal wx-text">代理</span></div><div class="ag-total wx-view"><span class="num ag-num wx-text">42</span><span class="ag-total-l wx-text">位学员</span></div></div><div class="wxc wxc-art"><div class="art wx-view" style="width:100.907px;height:100.907px;flex-shrink:0;"><img class="art-img wx-image" style="object-fit:contain;" src="../assets/art/medallion.png" alt="" /><div class="art-ico wx-view" style="padding-top:12.04px;"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:24.08px;height:24.08px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M16%2021v-2a4%204%200%200%200-4-4H6a4%204%200%200%200-4%204v2%22%20%2F%3E%3Cpath%20d%3D%22M16%203.128a4%204%200%200%201%200%207.744%22%20%2F%3E%3Cpath%20d%3D%22M22%2021v-2a4%204%200%200%200-3-3.87%22%20%2F%3E%3Ccircle%20cx%3D%229%22%20cy%3D%227%22%20r%3D%224%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div></div><div class="ag-tier wx-view"><div class="f-1 wx-view"><span class="ag-tier-note wx-text">运营尚未给你定级</span></div></div><div class="stat-3 ag-stats wx-view"><div class="stat-3-item wx-view"><span class="s3-l wx-text">待分班</span><span class="s3-v num wx-text">5</span></div><div class="stat-3-item wx-view"><span class="s3-l wx-text">已分班待入群</span><span class="s3-v num wx-text">9</span></div><div class="stat-3-item wx-view"><span class="s3-l wx-text">在训</span><span class="s3-v num wx-text">28</span></div></div></div><div class="card card-pad gap wx-view"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">我名下的群</span><span class="t-tiny wx-text">共 <span class="mono wx-text">3</span> 个 · 点一行复制群编号</span></div><div class="row-item ag-row wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">CA1 · 主理人成长营 第 1 期学习群</span><span class="t-tiny mt-2 block wx-text">班级群 · 杭州 · 在营</span></div><div class="ag-right wx-view"><span class="ag-cap mono wx-text">86/100</span><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23998A79%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2214%22%20height%3D%2214%22%20x%3D%228%22%20y%3D%228%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M4%2016c-1.1%200-2-.9-2-2V4c0-1.1.9-2%202-2h10c1.1%200%202%20.9%202%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><div class="row-item ag-row wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">CA2 · 主理人成长营 第 2 期学习群</span><span class="t-tiny mt-2 block wx-text">班级群 · 杭州 · 招募中</span></div><div class="ag-right wx-view"><span class="ag-cap mono wx-text">41/100</span><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23998A79%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2214%22%20height%3D%2214%22%20x%3D%228%22%20y%3D%228%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M4%2016c-1.1%200-2-.9-2-2V4c0-1.1.9-2%202-2h10c1.1%200%202%20.9%202%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><div class="row-item ag-row wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">华东选品交流群</span><span class="t-tiny mt-2 block wx-text">主题群 · 上海 · 已满</span></div><div class="ag-right wx-view"><span class="ag-cap mono ag-cap--full wx-text">100/100</span><div class="wxc wxc-icon"><div class="ico wx-view" style="width:12.613px;height:12.613px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23998A79%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Crect%20width%3D%2214%22%20height%3D%2214%22%20x%3D%228%22%20y%3D%228%22%20rx%3D%222%22%20ry%3D%222%22%20%2F%3E%3Cpath%20d%3D%22M4%2016c-1.1%200-2-.9-2-2V4c0-1.1.9-2%202-2h10c1.1%200%202%20.9%202%202%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div><div class="card card-pad gap wx-view"><div class="f-between mb-8 wx-view"><span class="col-h wx-text">我的学员</span><span class="t-tiny wx-text">共 <span class="mono wx-text">5</span> 位</span></div><div class="ag-stages wx-view"><span class="chip ag-stage chip--on wx-text">全部</span><span class="chip ag-stage wx-text">待推荐人分班</span><span class="chip ag-stage wx-text">已分班</span><span class="chip ag-stage wx-text">在训</span></div><div class="row-item wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">苏见月</span><span class="t-tiny mt-2 block wx-text">CA2 · 第 2 期 · 杭州</span></div><div class="ag-stu-right wx-view"><span class="tag tag--gray wx-text">待推荐人分班</span><span class="t-micro mono mt-4 block wx-text">报名 2026-09-01</span></div></div><div class="row-item wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">何知远</span><span class="t-tiny mt-2 block wx-text">CA2 · 第 2 期 · 宁波</span></div><div class="ag-stu-right wx-view"><span class="tag tag--gray wx-text">待推荐人分班</span><span class="t-micro mono mt-4 block wx-text">报名 2026-08-28</span></div></div><div class="row-item wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">林致远</span><span class="t-tiny mt-2 block wx-text">CA2 · 第 2 期 · CA2 学习群 · 杭州</span></div><div class="ag-stu-right wx-view"><span class="tag tag--gray wx-text">已分班</span><span class="t-micro mono mt-4 block wx-text">分班 2026-08-24</span></div></div><div class="row-item wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">郑白鹭</span><span class="t-tiny mt-2 block wx-text">CA1 · 第 1 期 · CA1 学习群 · 上海</span></div><div class="ag-stu-right wx-view"><span class="tag tag--gray wx-text">在训</span><span class="t-micro mono mt-4 block wx-text">入群 2026-08-18</span></div></div><div class="row-item wx-view"><div class="f-1 wx-view"><span class="ag-name wx-text">汪听澜</span><span class="t-tiny mt-2 block wx-text">CA1 · 第 1 期 · CA1 学习群 · 杭州</span></div><div class="ag-stu-right wx-view"><span class="tag tag--gray wx-text">在训</span><span class="t-micro mono mt-4 block wx-text">入群 2026-08-18</span></div></div></div><div class="ag-foot wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:13.76px;height:13.76px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E6052%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%2016v-4%22%20%2F%3E%3Cpath%20d%3D%22M12%208h.01%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-micro wx-text">分班、改群等操作在管理台完成（用你的推荐人账号登录）。本页只读，数据与管理台同源。</span></div></div><div class="wxc wxc-sheet"><div class="sheet-mask wx-view"><div class="sheet-body sheet-body--default wx-view"><div class="sheet-head wx-view"><span class="sheet-title wx-text">申请变更等级</span><div class="sheet-close wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:19.493px;height:19.493px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E6052%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M18%206%206%2018%22%20%2F%3E%3Cpath%20d%3D%22m6%206%2012%2012%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div><div class="at-now wx-view"><div class="f-1 wx-view"><span class="at-none wx-text">运营尚未给你定级</span><span class="at-lead wx-text">等级决定你的分销佣金比例，变更要经运营审批</span></div><div class="wxc wxc-art"><div class="art wx-view" style="width:68.8px;height:68.8px;flex-shrink:0;"><img class="art-img wx-image" style="object-fit:contain;" src="../assets/art/medallion.png" alt="" /><div class="art-ico wx-view" style="padding-top:8.027px;"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:16.627px;height:16.627px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23F4E6C6%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Cpath%20d%3D%22M11.562%203.266a.5.5%200%200%201%20.876%200L15.39%208.87a1%201%200%200%200%201.516.294L21.183%205.5a.5.5%200%200%201%20.798.519l-2.834%2010.246a1%201%200%200%201-.956.734H5.81a1%201%200%200%201-.957-.734L2.02%206.02a.5.5%200%200%201%20.798-.519l4.276%203.664a1%201%200%200%200%201.516-.294z%22%20%2F%3E%3Cpath%20d%3D%22M5%2021h14%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div></div></div></div></div><div class="f-between at-sec wx-view"><span class="at-sec-t wx-text">等级阶梯</span><span class="t-tiny wx-text">选一档</span></div><div class="at-row wx-view"><span class="at-rank num wx-text">1</span><div class="f-1 wx-view"><div class="f at-row-h wx-view"><span class="at-name wx-text">初级代理</span></div><span class="t-tiny mt-4 block wx-text">开通代理身份后的起始档</span></div></div><div class="at-sec wx-view"><span class="at-sec-t wx-text">申请理由</span><span class="star wx-text"> *</span></div><span class="t-tiny mb-8 block wx-text">说明你为什么申请这一档——团队规模、近期业绩、要承接的项目。审批人只看你写的这段和下面这份数据。</span><div class="textarea wx-textarea wx-field"><span class="wx-ph at-ph">例如：本月新增直属 12 人，已带出两个满员学习群，申请升到高级代理承接华东选品专场</span></div><div class="ta-r mt-6 wx-view"><span class="t-micro mono wx-text">0/200</span></div><div class="at-foot wx-view"><div class="wxc wxc-icon"><div class="ico wx-view" style="width:13.76px;height:13.76px;background-image:url(&quot;data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236E6052%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20transform%3D%22translate(1.8%201.8)%20scale(0.85)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%2210%22%20%2F%3E%3Cpath%20d%3D%22M12%2016v-4%22%20%2F%3E%3Cpath%20d%3D%22M12%208h.01%22%20%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E&quot;);background-size:100% 100%;background-repeat:no-repeat;flex-shrink:0;"></div></div><span class="t-micro f-1 wx-text">等级目前只影响分销佣金比例，且只对变更生效之后支付的订单生效，不回溯已结算的佣金。 权益与分配联动待建设。</span></div><div class="cta cta--primary at-submit wx-view"><span class="wx-text">提交等级申请</span></div></div></div></div></div>
+      
+      <div class="mp-home"></div>
+    </div>
+  </div>
+</div>
+<script>
+// 跨页跳转：data-nav 由导出脚本从 data-url / data-path / navigator 解析出来（见 render.navTarget）。
+// 保留当前查询串，这样在 shell 里点进去的下一页仍然是 embed / 整页态。
+(function () {
+  var SLUG = "agent--等级申请 · 还没定级";
+  try { if (parent !== window) parent.postMessage({ mpScreen: SLUG }, "*"); } catch (e) {}
+  document.addEventListener("click", function (e) {
+    var el = e.target && e.target.closest ? e.target.closest("[data-nav]") : null;
+    if (!el) return;
+    e.preventDefault();
+    var t = el.getAttribute("data-nav");
+    if (t === "__back__") {
+      // 深链进来时没有上一页可回；交给宿主 shell 打开页面清单，而不是静默什么都不发生
+      if (history.length > 1) history.back();
+      else { try { if (parent !== window) parent.postMessage({ mpBack: true }, "*"); } catch (e2) {} }
+      return;
+    }
+    location.href = t + ".html" + location.search;
+  });
+})();
+</script>
+</body></html>

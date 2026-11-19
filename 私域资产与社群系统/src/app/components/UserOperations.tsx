@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { getAvatar } from "./Avatar";
+import { LevelAvatar, identityLevelCode } from "./Avatar";
 import { Search, Phone, MessageCircle, ShoppingCart, Users, FileText, Star, Clock, CheckCircle, AlertTriangle, Plus } from "lucide-react";
 import { S, useThemeSingleton } from "../theme";
 const users = [
@@ -51,7 +51,7 @@ const [search, setSearch] = useState("");
               onClick={() => { setSelectedId(u.id); setActiveTab(0); }}
             >
               <div className="flex items-center gap-2">
-                <img src={getAvatar(u.id - 1)} alt={u.name} style={{ width: 32, height: 32, borderRadius: S.radiusSm, objectFit: "cover", flexShrink: 0 }} />
+                <LevelAvatar index={u.id - 1} level={identityLevelCode(u.identity)} size={32} radius={S.radiusSm} />
                 <div className="min-w-0">
                   <div className="text-xs font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{u.name}</div>
                   <div className="text-xs truncate" style={{ color: S.muted, fontFamily: "monospace" }}>{u.phone}</div>
@@ -72,7 +72,7 @@ const [search, setSearch] = useState("");
         {/* User header */}
         <div className="p-4" style={{ background: S.surface, border: `1px solid ${S.border}`, borderRadius: S.radius, boxShadow: "0 1px 4px rgba(0,0,0,0.05)" }}>
           <div className="flex items-start gap-4">
-            <img src={getAvatar(user.id - 1)} alt={user.name} style={{ width: 56, height: 56, borderRadius: S.radius, objectFit: "cover", flexShrink: 0 }} />
+            <LevelAvatar index={user.id - 1} level={identityLevelCode(user.identity)} size={56} radius={S.radius} />
             <div className="flex-1">
               <div className="flex items-center gap-3">
                 <span className="text-lg font-bold" style={{ color: S.text, fontFamily: "monospace" }}>{user.name}</span>
